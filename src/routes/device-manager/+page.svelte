@@ -40,17 +40,6 @@
   </section>
 
   <section>
-    <h2>Chords</h2>
-    <div class="icon bg">piano</div>
-    <table>
-      <tr>
-        <th>three</th>
-        <td><i>␣</i><i>3</i></td>
-      </tr>
-    </table>
-  </section>
-
-  <section>
     <h2>Serial Terminal</h2>
     <div class="icon bg">terminal</div>
     <Terminal />
@@ -128,24 +117,6 @@
       color: var(--md-sys-color-on-surface-variant);
       background: var(--md-sys-color-surface-variant);
     }
-  }
-
-  table td {
-    display: flex;
-    gap: 4px;
-  }
-
-  table i {
-    display: block;
-
-    aspect-ratio: 1;
-    padding-block: 4px;
-    padding-inline: 8px;
-
-    font-style: normal;
-
-    border: 1px solid var(--md-sys-color-outline);
-    border-radius: 8px;
   }
 
   .device-grid {

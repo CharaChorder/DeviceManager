@@ -1,5 +1,6 @@
-import {LineBreakTransformer} from "$lib/serial/webserial/util/line-break-transformer.js"
+import {LineBreakTransformer} from "$lib/serial/line-break-transformer.js"
 import {serialLog} from "$lib/serial/connection.js"
+import {ACTION_MAP} from "$lib/serial/webserial/constants/action-map.js"
 
 export class CharaDevice {
   /** @type {Promise<SerialPort>} */
@@ -127,7 +128,43 @@ export class CharaDevice {
   async send(...command) {
     return this.runWith(async (send, read) => {
       await send(...command)
-      return read()
+      const commandString = command.join(" ").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+      return read().then(it => it.replace(new RegExp(`^${commandString} `), ""))
     })
+  }
+
+  /**
+   * @returns {Promise<number>}
+   */
+  async getChordCount() {
+    return Number.parseInt(await this.send("CML C0"))
+  }
+
+  /**
+   * @param index {number}
+   * @returns {Promise<{actions: number[]; phrase: string, unk: number}>}
+   */
+  async getChord(index) {
+    const chord = await this.send(`CML C1 ${index}`)
+    const [keys, rawPhrase, b] = chord.split(" ")
+    let phrase = []
+    for (let i = 0; i < rawPhrase.length; i += 2) {
+      phrase.push(Number.parseInt(rawPhrase.substring(i, i + 2), 16))
+    }
+    let bigKeys = BigInt(`0x${keys}`)
+    let actions = []
+    for (let i = 0; i < 12; i++) {
+      const action = Number(bigKeys & BigInt(0b1111111111))
+      if (action !== 0) {
+        actions.push(ACTION_MAP[action])
+      }
+      bigKeys >>= BigInt(10)
+    }
+
+    return {
+      actions,
+      phrase: String.fromCodePoint(...phrase),
+      unk: Number(b),
+    }
   }
 }

@@ -5,7 +5,7 @@
 </script>
 
 <nav>
-  <h1>dot i/o</h1>
+  <a href="/" class="title">dot i/o</a>
 
   <div class="steps">
     <a href={base} title="CPM - characters per minute" class="icon train cpm">music_note</a>
@@ -45,9 +45,13 @@
     width: 100%;
   }
 
-  h1 {
+  .title {
     margin-block: 0;
+
     font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
   }
 
   .icon {

@@ -31,7 +31,7 @@
  * `38,655,229,952`
  * `0x00000000900080000`
  */
-export const _actionMap = [
+export const ACTION_MAP = [
   "NUL", //0x00 0
   "CCFunc", //0x01
   "STX", //0x02 2
