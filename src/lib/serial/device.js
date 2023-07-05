@@ -61,6 +61,7 @@ export class CharaDevice {
    */
   async #read() {
     return this.#reader.then(async it => {
+      /** @type {string} */
       const result = await it.read().then(({value}) => value)
       serialLog.update(it => {
         it.push({

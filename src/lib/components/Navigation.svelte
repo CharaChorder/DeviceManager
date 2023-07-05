@@ -1,7 +1,8 @@
 <script>
-  import {serialPort} from "$lib/serial/connection.js"
+  import {serialPort, syncing} from "$lib/serial/connection.js"
   import {browser} from "$app/environment"
   import {base} from "$app/paths"
+  import {slide} from "svelte/transition"
 </script>
 
 <nav>
@@ -29,8 +30,11 @@
       href="{base}/device-manager"
       title="Device Manager"
       class="icon connect"
-      class:error={$serialPort === undefined}>cable</a
+      class:error={$serialPort === undefined}
+      class:syncing={$syncing}
     >
+      cable
+    </a>
     <a href={base} title="Statistics" class="icon account">person</a>
   </div>
 </nav>
@@ -56,6 +60,8 @@
 
   .icon {
     cursor: pointer;
+
+    position: relative;
 
     aspect-ratio: 1;
     padding: 4px;
@@ -115,5 +121,39 @@
     font-size: 32px;
     color: var(--md-sys-color-on-secondary-container);
     background: var(--md-sys-color-secondary-container);
+  }
+
+  @keyframes sync {
+    from {
+      rotate: 0deg;
+    }
+
+    to {
+      rotate: -360deg;
+    }
+  }
+
+  .connect::after {
+    pointer-events: none;
+    content: "sync";
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-background);
+
+    opacity: 0;
+    background: var(--md-sys-color-background);
+    border-radius: 50%;
+
+    transition: opacity 250ms ease;
+    animation: sync 1s linear infinite;
+  }
+
+  .connect.syncing::after {
+    opacity: 1;
   }
 </style>

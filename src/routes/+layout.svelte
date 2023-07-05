@@ -4,7 +4,7 @@
   import {onMount} from "svelte"
   import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
   import Navigation from "$lib/components/Navigation.svelte"
-  import {serialPort} from "$lib/serial/connection.js"
+  import {chords, serialPort, syncing} from "$lib/serial/connection.js"
   import {CharaDevice} from "$lib/serial/device.js"
 
   /** @type {import('$lib/serial/device.js').CharaDevice} */
@@ -17,8 +17,17 @@
     const dark = true // window.matchMedia("(prefers-color-scheme: dark)").matches
     applyTheme(theme, {target: document.body, dark})
 
+    syncing.set(true)
     device ??= new CharaDevice()
     serialPort.set(device)
+
+    const chordCount = await device.getChordCount()
+    const chordInfo = []
+    for (let i = 0; i < chordCount; i++) {
+      chordInfo.push(await device.getChord(i))
+    }
+    chords.set(chordInfo)
+    syncing.set(false)
   })
 </script>
 

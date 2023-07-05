@@ -1,5 +1,5 @@
 <script>
-  import {serialPort} from "$lib/serial/connection.js"
+  import {chords, serialPort} from "$lib/serial/connection.js"
   import keySymbols from "$lib/assets/key-symbols.json"
 </script>
 
@@ -11,25 +11,19 @@
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
 <h2>Chords</h2>
-{#if $serialPort}
-  {#await $serialPort.getChordCount() then chordCount}
-    <p>You have {chordCount} chords</p>
-    <table>
-      {#each Array.from({length: chordCount}) as _, i}
-        {#await $serialPort.getChord(i) then { phrase, actions }}
-          <tr>
-            <th>{phrase}</th>
-            <td>
-              {#each actions as action}
-                <i>{keySymbols[action] || action}</i>
-              {/each}
-            </td>
-          </tr>
-        {/await}
-      {/each}
-    </table>
-  {/await}
-{/if}
+<p>You have {$chords.length} chords</p>
+<table>
+  {#each $chords as { phrase, actions }}
+    <tr>
+      <th>{phrase}</th>
+      <td>
+        {#each actions as action}
+          <i>{keySymbols[action] || action}</i>
+        {/each}
+      </td>
+    </tr>
+  {/each}
+</table>
 
 <style lang="scss">
   table i {
