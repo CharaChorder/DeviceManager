@@ -10,70 +10,27 @@
 <h1>Device Manager</h1>
 
 <div class="device-grid">
-  <section>
-    <h2>Control</h2>
-    <div class="icon bg">memory</div>
-    <div class="row">
-      <button disabled class="icon secondary" title="Save changes to device">rule_settings</button>
-      <button disabled title="Reboot" class="icon">restart_alt</button>
-      <button disabled>
-        {#if $serialPort}
-          <span class="icon">usb_off</span> Disconnect
-        {:else}
-          <span class="icon">usb</span> Connect
-        {/if}
-      </button>
-    </div>
-    {#if $serialPort}
-      <pre>{#await $serialPort.version then version}{version}{/await}<br
-        />{#await $serialPort.deviceId then id}{id}{/await}</pre>
-    {/if}
-  </section>
-
-  <section>
-    <h2>Layout</h2>
-    <div class="icon bg">keyboard</div>
-    <div class="row">
-      <button class="icon" title="Import Layout">download</button>
-      <button class="icon" title="Export Layout">upload</button>
-    </div>
-  </section>
-
-  <section>
-    <h2>Serial Terminal</h2>
-    <div class="icon bg">terminal</div>
+  <div class="row">
+    <button class="secondary">
+      {#if $serialPort}
+        <span class="icon">usb_off</span> Disconnect
+      {:else}
+        <span class="icon">usb</span> Connect
+      {/if}
+    </button>
+    <button title="Reboot" class="icon">restart_alt</button>
+    <button class="icon" title="Reboot to bootloader">rule_settings</button>
+  </div>
+  <div class="terminal">
     <Terminal />
-  </section>
+  </div>
 </div>
 
 <style lang="scss">
-  section {
-    position: relative;
-    min-height: 128px;
-    padding: 8px;
-    border-radius: 32px;
-
-    > h2 {
-      font-size: 1.5rem;
-    }
-
-    > div.icon.bg {
-      user-select: none;
-
-      position: absolute;
-      z-index: -1;
-      top: -4px;
-      left: -8px;
-
-      font-size: 64px;
-
-      opacity: 0.05;
-    }
-  }
-
   .row {
     display: flex;
     gap: 8px;
+    height: fit-content;
   }
 
   button {
@@ -119,8 +76,19 @@
     }
   }
 
+  .terminal {
+    flex-grow: 1;
+  }
+
   .device-grid {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
+    contain: size;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 16px;
+
+    width: calc(min(100%, 28cm));
+    height: 100%;
   }
 </style>

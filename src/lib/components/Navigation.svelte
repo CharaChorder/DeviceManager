@@ -46,7 +46,8 @@
     align-items: center;
     justify-content: space-between;
 
-    width: 100%;
+    margin-block: 8px;
+    margin-inline: 16px;
   }
 
   .title {

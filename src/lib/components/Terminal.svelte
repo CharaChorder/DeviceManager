@@ -17,10 +17,12 @@
 
   /** @type {HTMLDivElement} */
   let io
+
+  export let resizable = false
 </script>
 
 <form on:submit={submit}>
-  <div bind:this={io} class="io">
+  <div bind:this={io} class="io" class:resizable>
     {#each $serialLog as { type, value }}
       <p class={type} transition:slide>{value}</p>
     {/each}
@@ -33,22 +35,25 @@
 
 <style lang="scss">
   form {
-    resize: both;
-
     position: relative;
 
+    contain: strict;
     overflow: hidden;
     display: flex;
     flex-direction: column;
 
-    width: calc(min(100%, 16.5cm));
-    height: 8cm;
+    width: 100%;
+    height: 100%;
 
     font-family: "Noto Sans Mono", monospace;
     font-size: 0.75rem;
     color: var(--md-sys-color-on-secondary);
 
     border-radius: 16px;
+
+    &.resizable {
+      resize: both;
+    }
   }
 
   ::-webkit-scrollbar {
@@ -126,7 +131,7 @@
     }
   }
 
-  fieldset::after {
+  .terminal.resizable fieldset::after {
     content: "";
 
     position: absolute;
