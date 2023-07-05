@@ -6,6 +6,7 @@
   import Navigation from "$lib/components/Navigation.svelte"
   import {hasSerialPermission} from "$lib/serial/device.js"
   import {initSerial} from "$lib/serial/connection.js"
+  import {pwaInfo} from "virtual:pwa-info"
 
   onMount(async () => {
     const theme = themeFromSourceColor(argbFromHex("#6D81C7"), [
@@ -14,9 +15,30 @@
     const dark = true // window.matchMedia("(prefers-color-scheme: dark)").matches
     applyTheme(theme, {target: document.body, dark})
 
+    if (pwaInfo) {
+      /** @type {import('vite-plugin-pwa/types').RegisterSWOptions} */
+      const swOptions = {
+        immediate: true,
+        onRegisteredSW(url, registration) {
+          console.log("Service Worker Registered", url, registration)
+        },
+        onRegisterError(error) {
+          console.log("ServiceWorker Registration Error", error)
+        },
+      }
+      const {registerSW} = await import("virtual:pwa-register")
+      registerSW(swOptions)
+    }
+
     if (await hasSerialPermission()) await initSerial()
   })
+
+  $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ""
 </script>
+
+<svelte:head>
+  {@html webManifestLink}
+</svelte:head>
 
 <Navigation />
 

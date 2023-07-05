@@ -17,6 +17,9 @@
   </div>
 
   <div class="actions">
+    {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
+      <PwaStatus />
+    {/await}
     {#if browser && !("serial" in navigator)}
       <abbr
         title="Your browser does not support serial connections. Try using Chrome instead."
