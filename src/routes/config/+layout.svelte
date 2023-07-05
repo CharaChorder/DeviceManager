@@ -4,14 +4,14 @@
 </script>
 
 <nav>
-  <a href="{base}/config/chords" class:active={$page.url.pathname.endsWith("chords/")}>
+  <a href="{base}/config/chords/" class:active={$page.url.pathname.endsWith("chords/")}>
     <span class="icon">piano</span>Chords
   </a>
-  <a href="{base}/config/layout" class:active={$page.url.pathname.endsWith("layout/")}>
+  <a href="{base}/config/layout/" class:active={$page.url.pathname.endsWith("layout/")}>
     <span class="icon">keyboard</span>
     Layout
   </a>
-  <a href="{base}/config/settings" class:active={$page.url.pathname.endsWith("settings/")}>
+  <a href="{base}/config/settings/" class:active={$page.url.pathname.endsWith("settings/")}>
     <span class="icon">settings</span>
     Settings
   </a>

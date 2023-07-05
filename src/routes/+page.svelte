@@ -1,6 +1,4 @@
 <script>
-  import {chords, serialPort} from "$lib/serial/connection.js"
-  import keySymbols from "$lib/assets/key-symbols.json"
 </script>
 
 <svelte:head>

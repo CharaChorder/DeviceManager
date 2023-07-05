@@ -2,11 +2,10 @@
   import {serialPort, syncing} from "$lib/serial/connection.js"
   import {browser} from "$app/environment"
   import {base} from "$app/paths"
-  import {slide} from "svelte/transition"
 </script>
 
 <nav>
-  <a href="/" class="title">dot i/o</a>
+  <a href={base} class="title">dot i/o</a>
 
   <div class="steps">
     <a href={base} title="CPM - characters per minute" class="icon train cpm">music_note</a>
