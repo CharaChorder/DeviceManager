@@ -2,6 +2,15 @@ import {LineBreakTransformer} from "$lib/serial/line-break-transformer.js"
 import {serialLog} from "$lib/serial/connection.js"
 import {ACTION_MAP} from "$lib/serial/webserial/constants/action-map.js"
 
+export const VENDOR_ID = 0x239a
+
+/**
+ * @returns {Promise<boolean>}
+ */
+export async function hasSerialPermission() {
+  return navigator.serial.getPorts().then(it => it.length > 0)
+}
+
 export class CharaDevice {
   /** @type {Promise<SerialPort>} */
   #port
@@ -26,7 +35,9 @@ export class CharaDevice {
    */
   constructor(baudRate = 115200) {
     this.#port = navigator.serial.getPorts().then(async ports => {
-      const port = ports.find(it => it.getInfo().usbVendorId === 0x239a)
+      const port =
+        ports.find(it => it.getInfo().usbVendorId === VENDOR_ID) ??
+        (await navigator.serial.requestPort({filters: [{usbVendorId: VENDOR_ID}]}))
       await port.open({baudRate})
       const info = port.getInfo()
       serialLog.update(it => {

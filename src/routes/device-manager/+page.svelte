@@ -1,6 +1,7 @@
 <script>
-  import {serialPort} from "$lib/serial/connection.js"
+  import {initSerial, serialPort} from "$lib/serial/connection.js"
   import Terminal from "$lib/components/Terminal.svelte"
+  import {browser} from "$app/environment"
 </script>
 
 <svelte:head>
@@ -11,15 +12,15 @@
 
 <div class="device-grid">
   <div class="row">
-    <button class="secondary">
-      {#if $serialPort}
-        <span class="icon">usb_off</span> Disconnect
-      {:else}
-        <span class="icon">usb</span> Connect
-      {/if}
-    </button>
-    <button title="Reboot" class="icon">restart_alt</button>
-    <button class="icon" title="Reboot to bootloader">rule_settings</button>
+    {#if $serialPort === undefined}
+      <button class="secondary" disabled={browser && !("serial" in navigator)} on:click={initSerial}>
+        <span class="icon">usb</span>Pair
+      </button>
+    {/if}
+    <button title="Reboot" class="icon" disabled={$serialPort === undefined}>restart_alt</button>
+    <button title="Reboot to bootloader" class="icon" disabled={$serialPort === undefined}
+      >rule_settings</button
+    >
   </div>
   <div class="terminal">
     <Terminal />

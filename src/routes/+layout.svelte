@@ -4,11 +4,8 @@
   import {onMount} from "svelte"
   import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
   import Navigation from "$lib/components/Navigation.svelte"
-  import {chords, serialPort, syncing} from "$lib/serial/connection.js"
-  import {CharaDevice} from "$lib/serial/device.js"
-
-  /** @type {import('$lib/serial/device.js').CharaDevice} */
-  let device // @hmr:keep
+  import {hasSerialPermission} from "$lib/serial/device.js"
+  import {initSerial} from "$lib/serial/connection.js"
 
   onMount(async () => {
     const theme = themeFromSourceColor(argbFromHex("#6D81C7"), [
@@ -17,18 +14,7 @@
     const dark = true // window.matchMedia("(prefers-color-scheme: dark)").matches
     applyTheme(theme, {target: document.body, dark})
 
-    syncing.set(true)
-    device ??= new CharaDevice()
-    serialPort.set(device)
-
-    const chordCount = await device.getChordCount()
-    const chordInfo = []
-    for (let i = 0; i < chordCount; i++) {
-      chordInfo.push(await device.getChord(i))
-    }
-    chordInfo.sort(({phrase: a}, {phrase: b}) => a.localeCompare(b))
-    chords.set(chordInfo)
-    syncing.set(false)
+    if (await hasSerialPermission()) await initSerial()
   })
 </script>
 
