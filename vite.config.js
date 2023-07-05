@@ -3,5 +3,20 @@ import {defineConfig} from "vite"
 import {SvelteKitPWA} from "@vite-pwa/sveltekit"
 
 export default defineConfig({
-  plugins: [sveltekit(), SvelteKitPWA()],
+  plugins: [
+    sveltekit(),
+    SvelteKitPWA({
+      kit: {
+        adapterFallback: "/200.html",
+        trailingSlash: "never",
+      },
+      base: "/",
+      workbox: {
+        modifyURLPrefix: {
+          "": "/",
+          "./": "/",
+        },
+      },
+    }),
+  ],
 })

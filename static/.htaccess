@@ -4,6 +4,10 @@ RewriteEngine On
 RewriteCond %{HTTPS}  !=on
 RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
 
+# remove trailing slash
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [L,R] # R=301
+
 # SPA mode
 RewriteBase /
 RewriteRule ^200\.html$ - [L]
@@ -11,6 +15,6 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /200.html [L]
 
-# remove trailing slash
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)/$ /$1 [L,R=301]
+# redirect not found urls to .html files
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^./]+)/?$ $1.html [QSA]

@@ -2,16 +2,22 @@
   import "$lib/style/fonts/noto-sans-mono.scss"
   import "$lib/style/fonts/material-symbols-rounded.scss"
   import {onMount} from "svelte"
-  import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
+  import {
+    applyTheme,
+    argbFromHex,
+    hexFromArgb,
+    themeFromSourceColor,
+  } from "@material/material-color-utilities"
   import Navigation from "$lib/components/Navigation.svelte"
   import {hasSerialPermission} from "$lib/serial/device.js"
   import {initSerial} from "$lib/serial/connection.js"
   import {pwaInfo} from "virtual:pwa-info"
 
+  const theme = themeFromSourceColor(argbFromHex("#6D81C7"), [
+    {name: "success", value: argbFromHex("#00ff00"), blend: true},
+  ])
+
   onMount(async () => {
-    const theme = themeFromSourceColor(argbFromHex("#6D81C7"), [
-      {name: "success", value: argbFromHex("#00ff00"), blend: true},
-    ])
     const dark = true // window.matchMedia("(prefers-color-scheme: dark)").matches
     applyTheme(theme, {target: document.body, dark})
 
@@ -38,6 +44,9 @@
 
 <svelte:head>
   {@html webManifestLink}
+  <title>dot i/o</title>
+  <meta name="description" content="Tool for CharaChorder devices" />
+  <meta name="theme-color" content={hexFromArgb(theme.schemes.dark.background)} />
 </svelte:head>
 
 <Navigation />

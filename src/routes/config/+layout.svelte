@@ -1,19 +1,20 @@
 <script>
   import {page} from "$app/stores"
+
+  const paths = [
+    {href: "/config/chords", title: "Chords", icon: "piano"},
+    {href: "/config/layout", title: "Layout", icon: "keyboard"},
+    {href: "/config/settings", title: "Settings", icon: "settings"},
+  ]
 </script>
 
 <nav>
-  <a href="/config/chords" class:active={$page.url.pathname.endsWith("chords/")}>
-    <span class="icon">piano</span>Chords
-  </a>
-  <a href="/config/layout" class:active={$page.url.pathname.endsWith("layout/")}>
-    <span class="icon">keyboard</span>
-    Layout
-  </a>
-  <a href="/config/settings" class:active={$page.url.pathname.endsWith("settings/")}>
-    <span class="icon">settings</span>
-    Settings
-  </a>
+  {#each paths as { href, title, icon }}
+    <a {href} class:active={$page.url.pathname === href}>
+      <span class="icon">{icon}</span>
+      {title}
+    </a>
+  {/each}
 </nav>
 
 <slot />
