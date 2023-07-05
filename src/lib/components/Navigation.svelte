@@ -1,0 +1,114 @@
+<script>
+  import {serialPort} from "$lib/serial/connection.js"
+  import {browser} from "$app/environment"
+</script>
+
+<nav>
+  <h1>dot i/o</h1>
+
+  <div class="steps">
+    <a href="/train/cpm" title="CPM - characters per minute" class="icon train cpm">music_note</a>
+    <a href="/train/chm" title="ChM - chords mastered" class="icon train chords">piano</a>
+    <a href="/train/avg-wpm" title="aWPM - average words per minute" class="icon test avg">avg_pace</a>
+    <a href="/train/stm" title="StM - sentences mastered" class="icon train sentences">lyrics</a>
+    <a href="/train/top-wpm" title="tWPM - top words per minute" class="icon test top">speed</a>
+    <a href="/train/cm" title="CM - concepts mastered" class="icon train concepts">cognition</a>
+  </div>
+
+  <div class="actions">
+    {#if browser && !("serial" in navigator)}
+      <abbr
+        title="Your browser does not support serial connections. Try using Chrome instead."
+        class="icon error"
+      >
+        warning
+      </abbr>
+    {/if}
+    <a
+      href="/device-manager"
+      title="Device Manager"
+      class="icon connect"
+      class:error={$serialPort === undefined}>cable</a
+    >
+    <a href="/" title="Statistics" class="icon account">person</a>
+  </div>
+</nav>
+
+<style lang="scss">
+  nav {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+  }
+
+  h1 {
+    margin-block: 0;
+    font-size: 1.5rem;
+  }
+
+  .icon {
+    cursor: pointer;
+
+    aspect-ratio: 1;
+    padding: 4px;
+
+    color: inherit;
+    text-decoration: none;
+
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+
+    &.error {
+      color: var(--md-sys-color-on-error);
+      background: var(--md-sys-color-error);
+    }
+
+    &:hover {
+      color: var(--md-sys-color-on-primary);
+      background: var(--md-sys-color-primary);
+    }
+  }
+
+  .steps {
+    display: flex;
+
+    > a.icon {
+      aspect-ratio: unset;
+      margin-inline: -4px;
+      padding-inline: 16px;
+
+      font-size: 24px;
+      color: var(--md-sys-on-surface-variant);
+
+      background: var(--md-sys-color-surface-variant);
+      clip-path: polygon(25% 50%, 0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+      border-radius: 0;
+
+      &:hover {
+        color: var(--md-sys-color-on-tertiary);
+        background: var(--md-sys-color-tertiary);
+
+        &,
+        ~ * {
+          translate: 8px 0;
+        }
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .icon.account {
+    font-size: 32px;
+    color: var(--md-sys-color-on-secondary-container);
+    background: var(--md-sys-color-secondary-container);
+  }
+</style>
