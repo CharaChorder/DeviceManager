@@ -3,40 +3,36 @@
   import {slide} from "svelte/transition"
 
   /**
-   * @param event {KeyboardEvent}
+   * @param event {InputEvent}
    */
-  function keypress(event) {
-    if (event.code === "Enter") {
-      event.preventDefault()
-      const command = prompt.textContent.trim()
-      prompt.textContent = ""
-      $serialPort.send(command)
-      io.scrollTo({top: io.scrollHeight})
-    }
+  function submit(event) {
+    event.preventDefault()
+    $serialPort.send(value.trim())
+    value = ""
+    io.scrollTo({top: io.scrollHeight})
   }
 
-  /** @type {HTMLSpanElement} */
-  let prompt
+  /** @type {string} */
+  let value
 
   /** @type {HTMLDivElement} */
   let io
 </script>
 
-<div class="terminal" tabindex="0" on:focus={() => prompt.focus()}>
+<form on:submit={submit}>
   <div bind:this={io} class="io">
     {#each $serialLog as { type, value }}
       <p class={type} transition:slide>{value}</p>
     {/each}
     <div class="anchor" />
   </div>
-  <div class="prompt">
-    <b>$</b><span on:keypress={keypress} bind:this={prompt} contenteditable class="prompt" />
-    <div class="resize-me" />
-  </div>
-</div>
+  <fieldset>
+    <input on:submit={submit} bind:value />
+  </fieldset>
+</form>
 
 <style lang="scss">
-  .terminal {
+  form {
     resize: both;
 
     position: relative;
@@ -52,7 +48,6 @@
     font-size: 0.75rem;
     color: var(--md-sys-color-on-secondary);
 
-    background: var(--md-sys-color-secondary);
     border-radius: 16px;
   }
 
@@ -71,7 +66,35 @@
     display: none;
   }
 
+  fieldset::before {
+    content: "$";
+
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+
+    font-weight: 900;
+  }
+
+  input {
+    width: 100%;
+    margin-block-start: -16px;
+    padding: 8px;
+    padding-block-start: 24px;
+    padding-inline-start: calc(8px + 1.5ch);
+
+    font-family: "Noto Sans Mono", monospace;
+    font-weight: 600;
+    color: var(--md-sys-color-on-secondary);
+
+    appearance: none;
+    background: var(--md-sys-color-secondary);
+    border: none;
+  }
+
   .io {
+    z-index: 1;
+
     overflow-y: auto;
     flex: 1;
 
@@ -87,15 +110,28 @@
     outline: none;
   }
 
-  .prompt {
+  fieldset {
+    all: unset;
+
     position: relative;
-    margin: 0.5rem;
+
+    display: block;
+
+    opacity: 0.8;
+
+    transition: opacity 250ms ease;
+
+    &:focus-within {
+      opacity: 1;
+    }
   }
 
-  .resize-me {
+  fieldset::after {
+    content: "";
+
     position: absolute;
-    right: -2px;
-    bottom: 0;
+    right: 6px;
+    bottom: 8px;
     rotate: -45deg;
 
     width: 10px;

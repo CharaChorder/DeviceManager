@@ -7,12 +7,12 @@
   <h1>dot i/o</h1>
 
   <div class="steps">
-    <a href="/train/cpm" title="CPM - characters per minute" class="icon train cpm">music_note</a>
-    <a href="/train/chm" title="ChM - chords mastered" class="icon train chords">piano</a>
-    <a href="/train/avg-wpm" title="aWPM - average words per minute" class="icon test avg">avg_pace</a>
-    <a href="/train/stm" title="StM - sentences mastered" class="icon train sentences">lyrics</a>
-    <a href="/train/top-wpm" title="tWPM - top words per minute" class="icon test top">speed</a>
-    <a href="/train/cm" title="CM - concepts mastered" class="icon train concepts">cognition</a>
+    <a href="/" title="CPM - characters per minute" class="icon train cpm">music_note</a>
+    <a href="/" title="ChM - chords mastered" class="icon train chords">piano</a>
+    <a href="/" title="aWPM - average words per minute" class="icon test avg">avg_pace</a>
+    <a href="/" title="StM - sentences mastered" class="icon train sentences">lyrics</a>
+    <a href="/" title="tWPM - top words per minute" class="icon test top">speed</a>
+    <a href="/" title="CM - concepts mastered" class="icon train concepts">cognition</a>
   </div>
 
   <div class="actions">

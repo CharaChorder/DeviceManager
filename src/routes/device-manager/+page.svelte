@@ -119,19 +119,9 @@
       border-radius: 50%;
     }
 
-    &.primary {
-      color: var(--md-sys-color-on-primary);
-      background: var(--md-sys-color-primary);
-    }
-
     &.secondary {
       color: var(--md-sys-color-on-secondary);
       background: var(--md-sys-color-secondary);
-    }
-
-    &.tertiary {
-      color: var(--md-sys-color-on-tertiary);
-      background: var(--md-sys-color-tertiary);
     }
 
     &:hover:not(:disabled) {
