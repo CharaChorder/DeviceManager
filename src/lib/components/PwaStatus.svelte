@@ -4,7 +4,7 @@
   const {needRefresh, updateServiceWorker, offlineReady} = useRegisterSW()
 </script>
 
-{#if !$needRefresh}
+{#if $needRefresh}
   <button title="Update ready" class="icon" on:click={() => updateServiceWorker(true)}>update</button>
 {:else if $offlineReady}
   <div title="App can now be used offline" class="icon">offline_pin</div>
