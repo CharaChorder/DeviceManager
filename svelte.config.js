@@ -5,7 +5,12 @@ import preprocess from "svelte-preprocess"
 const config = {
   preprocess: [preprocess()],
   kit: {
-    adapter: adapter(),
+    paths: {
+      relative: false,
+    },
+    adapter: adapter({
+      fallback: "200.html",
+    }),
   },
 }
 

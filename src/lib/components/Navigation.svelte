@@ -1,19 +1,18 @@
 <script>
   import {serialPort, syncing} from "$lib/serial/connection.js"
   import {browser} from "$app/environment"
-  import {base} from "$app/paths"
 </script>
 
 <nav>
-  <a href={base} class="title">dot i/o</a>
+  <a href="/" class="title">dot i/o</a>
 
   <div class="steps">
-    <a href={base} title="CPM - characters per minute" class="icon train cpm">music_note</a>
-    <a href={base} title="ChM - chords mastered" class="icon train chords">piano</a>
-    <a href={base} title="aWPM - average words per minute" class="icon test avg">avg_pace</a>
-    <a href={base} title="StM - sentences mastered" class="icon train sentences">lyrics</a>
-    <a href={base} title="tWPM - top words per minute" class="icon test top">speed</a>
-    <a href={base} title="CM - concepts mastered" class="icon train concepts">cognition</a>
+    <a href="/" title="CPM - characters per minute" class="icon train cpm">music_note</a>
+    <a href="/" title="ChM - chords mastered" class="icon train chords">piano</a>
+    <a href="/" title="aWPM - average words per minute" class="icon test avg">avg_pace</a>
+    <a href="/" title="StM - sentences mastered" class="icon train sentences">lyrics</a>
+    <a href="/" title="tWPM - top words per minute" class="icon test top">speed</a>
+    <a href="/" title="CM - concepts mastered" class="icon train concepts">cognition</a>
   </div>
 
   <div class="actions">
@@ -29,7 +28,7 @@
       </abbr>
     {/if}
     <a
-      href="{base}/device-manager"
+      href="/device-manager"
       title="Device Manager"
       class="icon connect"
       class:error={$serialPort === undefined}
@@ -37,7 +36,7 @@
     >
       cable
     </a>
-    <a href={base} title="Statistics" class="icon account">person</a>
+    <a href="/" title="Statistics" class="icon account">person</a>
   </div>
 </nav>
 
