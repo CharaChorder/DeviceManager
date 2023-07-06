@@ -20,6 +20,9 @@ export default {
     "restart_alt",
     "usb",
     "rule_settings",
+    "123",
+    "abc",
+    "function",
   ],
   codePoints: {
     speed: "e9e4",

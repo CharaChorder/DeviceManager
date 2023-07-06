@@ -1,6 +1,5 @@
 <script>
-  export let activeLayer = 1
-  export let layers = 3
+  export let activeLayer = 0
 
   export let layout = [
     ["a", "b", "c"],
@@ -8,15 +7,30 @@
     ["g", "h", "i"],
     ["j", "k", "l"],
   ]
+
+  export let layerNames = ["Primary Layer", "Number Layer", "Function Layer"]
+
+  const virtualLayerMap = [1, 0, 2]
+  const characterOffset = 8
+
+  function offsetDistance(quadrant, layer, activeLayer) {
+    const layerOffsetIndex = virtualLayerMap[layer] - virtualLayerMap[activeLayer]
+    const layerOffset = quadrant > 2 ? -characterOffset : characterOffset
+    return 25 * quadrant + layerOffsetIndex * layerOffset
+  }
+
+  function getKeyDescriptions(keys) {
+    return keys.map((it, i) => (it ? `${it} (${layerNames[i]})` : "")).join("\n")
+  }
 </script>
 
 <div class="radial">
-  {#each layout as key, j}
-    <!--suppress Stylelint -->
-    <button on:click={() => (activeLayer = (activeLayer + 1) % layers)}>
-      {#each key as value, i}
-        <span class:active={activeLayer === i} style="offset-distance: {j * 25 + (i - activeLayer) * 8}%"
-          >{value}</span
+  {#each layout as keys, quadrant}
+    <button on:click={() => (activeLayer = (activeLayer + 1) % 3)} title={getKeyDescriptions(keys)}>
+      {#each keys as value, layer}
+        <span
+          class:active={virtualLayerMap[activeLayer] === virtualLayerMap[layer]}
+          style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%">{value}</span
         >
       {/each}
     </button>
@@ -24,6 +38,8 @@
 </div>
 
 <style lang="scss">
+  @use "sass:math";
+
   $border-width: 18px;
   $gap: 6px;
   $size: 96;
@@ -42,11 +58,11 @@
   }
 
   span {
-    $cr: $size / 2 - 2 * $offset;
+    $cr: math.div($size, 2) - 2 * $offset;
 
     scale: 0.9;
     offset-path: path(
-      "M#{$size / 2} #{$offset}A#{$cr} #{$cr} 0 1 1 #{$size / 2} #{$size - $offset}A#{$cr} #{$cr} 0 1 1 #{$size / 2} #{$offset}Z"
+      "M#{math.div($size, 2)} #{$offset}A#{$cr} #{$cr} 0 1 1 #{math.div($size, 2)} #{$size - $offset}A#{$cr} #{$cr} 0 1 1 #{math.div($size, 2)} #{$offset}Z"
     );
     offset-rotate: 0deg;
 
@@ -63,7 +79,7 @@
 
     opacity: 0.3;
 
-    transition: all 250ms ease;
+    transition: scale 250ms ease, opacity 250ms ease, offset-distance 250ms ease;
 
     &.active {
       scale: 1;
