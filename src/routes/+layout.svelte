@@ -1,6 +1,6 @@
 <script>
-  import "$lib/style/fonts/noto-sans-mono.scss"
-  import "$lib/style/fonts/material-symbols-rounded.scss"
+  import "$lib/fonts/noto-sans-mono.scss"
+  import "$lib/fonts/material-symbols-rounded.scss"
   import {onMount} from "svelte"
   import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
   import Navigation from "$lib/components/Navigation.svelte"
@@ -87,7 +87,7 @@
   h1 {
     margin-block-start: 0;
     font-size: 4rem;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--md-sys-color-secondary);
   }
 </style>

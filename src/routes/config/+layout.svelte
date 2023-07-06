@@ -31,6 +31,9 @@
     border-radius: 32px;
   }
 
+  .icon {
+  }
+
   a {
     display: flex;
     gap: 4px;
@@ -41,7 +44,7 @@
     padding: 8px;
     padding-inline: 16px;
 
-    font-weight: 800;
+    font-weight: 600;
     color: var(--md-sys-color-on-surface-variant);
     text-decoration: none;
 
@@ -51,6 +54,8 @@
   }
 
   a.active {
+    --icon-fill: 1;
+
     color: var(--md-sys-color-on-primary);
     background: var(--md-sys-color-primary);
   }

@@ -75,6 +75,8 @@
     border: none;
     border-radius: 50%;
 
+    transition: all 250ms ease;
+
     &.error {
       color: var(--md-sys-color-on-error);
       background: var(--md-sys-color-error);
