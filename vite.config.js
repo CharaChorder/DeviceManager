@@ -9,9 +9,10 @@ export default defineConfig({
     sveltekit(),
     SvelteKitPWA({
       kit: {
-        adapterFallback: "/200.html",
         trailingSlash: "always",
       },
+      scope: "/",
+      base: "/",
       includeAssets: ["favicon.png"],
       manifest: {
         name: "dot i/o",
@@ -24,13 +25,6 @@ export default defineConfig({
             type: "image/svg+xml",
           },
         ],
-      },
-      base: "/",
-      workbox: {
-        modifyURLPrefix: {
-          "": "/",
-          "./": "/",
-        },
       },
     }),
   ],
