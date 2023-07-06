@@ -16,6 +16,10 @@ export default {
     "warning",
     "cable",
     "person",
+    "sync",
+    "restart_alt",
+    "usb",
+    "rule_settings",
   ],
   codePoints: {
     speed: "e9e4",
