@@ -22,9 +22,6 @@
       /** @type {import('vite-plugin-pwa/types').RegisterSWOptions} */
       const swOptions = {
         immediate: true,
-        onRegisteredSW(url, registration) {
-          console.log("Service Worker Registered", url, registration)
-        },
         onRegisterError(error) {
           console.log("ServiceWorker Registration Error", error)
         },
