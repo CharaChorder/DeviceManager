@@ -28,7 +28,7 @@
       </abbr>
     {/if}
     <a
-      href="/device-manager"
+      href="/device-manager/"
       title="Device Manager"
       class="icon connect"
       class:error={$serialPort === undefined}

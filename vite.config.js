@@ -2,7 +2,7 @@ import {sveltekit} from "@sveltejs/kit/vite"
 import {defineConfig} from "vite"
 import {SvelteKitPWA} from "@vite-pwa/sveltekit"
 // noinspection ES6PreferShortImport
-// import {themeColor} from "./src/lib/style/theme.server.js"
+import {themeColor} from "./src/lib/style/theme.server.js"
 
 export default defineConfig({
   plugins: [
@@ -10,13 +10,13 @@ export default defineConfig({
     SvelteKitPWA({
       kit: {
         adapterFallback: "/200.html",
-        trailingSlash: "never",
+        trailingSlash: "always",
       },
       includeAssets: ["favicon.png"],
       manifest: {
         name: "dot i/o",
         id: "dot_io_v2",
-        // theme_color: themeColor,
+        theme_color: themeColor,
         icons: [
           {
             src: "icon.svg",

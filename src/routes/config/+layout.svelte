@@ -2,9 +2,9 @@
   import {page} from "$app/stores"
 
   const paths = [
-    {href: "/config/chords", title: "Chords", icon: "piano"},
-    {href: "/config/layout", title: "Layout", icon: "keyboard"},
-    {href: "/config/settings", title: "Settings", icon: "settings"},
+    {href: "/config/chords/", title: "Chords", icon: "piano"},
+    {href: "/config/layout/", title: "Layout", icon: "keyboard"},
+    {href: "/config/settings/", title: "Settings", icon: "settings"},
   ]
 </script>
 

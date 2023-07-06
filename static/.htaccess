@@ -1,20 +1,12 @@
 RewriteEngine On
 
 # force https
-RewriteCond %{HTTPS}  !=on
-RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-# remove trailing slash
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)/$ /$1 [L,R] # R=301
-
-# SPA mode
+# https://kit.svelte.dev/docs/single-page-apps#apache
 RewriteBase /
 RewriteRule ^200\.html$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /200.html [L]
-
-# redirect not found urls to .html files
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^([^./]+)/?$ $1.html [QSA]
