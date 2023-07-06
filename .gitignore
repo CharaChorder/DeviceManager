@@ -7,5 +7,7 @@ node_modules
 .env
 .env.*
 !.env.example
+venv
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+src/lib/assets/icons.min.woff2

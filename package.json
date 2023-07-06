@@ -8,6 +8,7 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
+    "minify-icons": "node tools/minify-icon-font.js",
     "lint": "prettier --plugin-search-dir . --check .",
     "format": "prettier --plugin-search-dir . --write ."
   },
@@ -26,6 +27,7 @@
     "@sveltejs/adapter-static": "^2.0.2",
     "@sveltejs/kit": "^1.20.4",
     "@material/material-color-utilities": "^0.2.7",
+    "fontkit": "^2.0.2",
     "prettier": "^2.8.0",
     "prettier-plugin-svelte": "^2.10.1",
     "svelte": "^4.0.0",

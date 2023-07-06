@@ -1,10 +1,8 @@
-/* fallback */
 @font-face {
   font-family: "Material Symbols Rounded";
   font-weight: 100 700;
   font-style: normal;
-  src: url("@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-full-normal.woff2")
-    format("woff2");
+  src: url("$lib/assets/icons.min.woff2") format("woff2");
 }
 
 .icon {

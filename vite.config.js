@@ -14,6 +14,9 @@ export default defineConfig({
       scope: "/",
       base: "/",
       includeAssets: ["favicon.png"],
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,woff2,json,csv,png,svg}"],
+      },
       manifest: {
         name: "dot i/o",
         id: "dot_io_v2",

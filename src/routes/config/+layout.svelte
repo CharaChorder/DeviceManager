@@ -31,9 +31,6 @@
     border-radius: 32px;
   }
 
-  .icon {
-  }
-
   a {
     display: flex;
     gap: 4px;
