@@ -8,7 +8,10 @@
     ["j", "k", "l"],
   ]
 
-  export let layerNames = ["Primary Layer", "Number Layer", "Function Layer"]
+  /** @type {'primary' | 'secondary' | 'tertiary'} */
+  export let type = "primary"
+
+  const layerNames = ["Primary Layer", "Number Layer", "Function Layer"]
 
   const virtualLayerMap = [1, 0, 2]
   const characterOffset = 8
@@ -24,7 +27,7 @@
   }
 </script>
 
-<div class="radial">
+<div class="radial {type}">
   {#each layout as keys, quadrant}
     <button title={getKeyDescriptions(keys)}>
       {#each keys as value, layer}

@@ -12,13 +12,13 @@
   {/each}
 </fieldset>
 
-<div class="col" style="gap: 0">
+<div class="col layout" style="gap: 0">
   <div class="row" style="gap: 156px">
     <div class="row">
       <RingInput {activeLayer} />
       <div class="col">
         <RingInput {activeLayer} />
-        <RingInput {activeLayer} />
+        <RingInput {activeLayer} type="secondary" />
       </div>
       <div class="col">
         <RingInput {activeLayer} />
@@ -62,7 +62,7 @@
     align-items: center;
     justify-content: center;
 
-    margin: 16px;
+    margin-block-end: -36px;
     padding: 0;
 
     border: none;
