@@ -26,7 +26,7 @@
 
 <div class="radial">
   {#each layout as keys, quadrant}
-    <button on:click={() => (activeLayer = (activeLayer + 1) % 3)} title={getKeyDescriptions(keys)}>
+    <button title={getKeyDescriptions(keys)}>
       {#each keys as value, layer}
         <span
           class:active={virtualLayerMap[activeLayer] === virtualLayerMap[layer]}
@@ -59,6 +59,8 @@
 
   span {
     $cr: math.div($size, 2) - 2 * $offset;
+
+    will-change: scale, offset-distance;
 
     scale: 0.9;
     offset-path: path(
@@ -111,7 +113,7 @@
     mask-image: url("$lib/assets/quater-ring.svg");
     mask-size: 100% 100%;
 
-    &:hover {
+    &:active {
       color: var(--md-sys-color-on-tertiary);
       background: var(--md-sys-color-tertiary);
     }

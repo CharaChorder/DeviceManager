@@ -71,7 +71,7 @@
       background: var(--md-sys-color-secondary);
     }
 
-    &:hover:not(:disabled) {
+    &:active:not(:disabled) {
       color: var(--md-sys-color-on-surface-variant);
       background: var(--md-sys-color-surface-variant);
     }

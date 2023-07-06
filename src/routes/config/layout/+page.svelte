@@ -2,4 +2,12 @@
   import LayoutCC1 from "$lib/components/LayoutCC1.svelte"
 </script>
 
-<LayoutCC1 />
+<section>
+  <LayoutCC1 />
+</section>
+
+<style lang="scss">
+  section {
+    margin: auto;
+  }
+</style>

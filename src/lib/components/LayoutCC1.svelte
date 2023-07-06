@@ -12,17 +12,46 @@
   {/each}
 </fieldset>
 
-<div class="row">
-  <RingInput {activeLayer} />
-  <div class="col">
+<div class="col" style="gap: 0">
+  <div class="row" style="gap: 156px">
+    <div class="row">
+      <RingInput {activeLayer} />
+      <div class="col">
+        <RingInput {activeLayer} />
+        <RingInput {activeLayer} />
+      </div>
+      <div class="col">
+        <RingInput {activeLayer} />
+        <RingInput {activeLayer} />
+      </div>
+      <RingInput {activeLayer} />
+    </div>
+
+    <div class="row">
+      <RingInput {activeLayer} />
+      <div class="col">
+        <RingInput {activeLayer} />
+        <RingInput {activeLayer} />
+      </div>
+      <div class="col">
+        <RingInput {activeLayer} />
+        <RingInput {activeLayer} />
+      </div>
+      <RingInput {activeLayer} />
+    </div>
+  </div>
+  <div class="row" style="gap: 48px; margin-top: -32px">
     <RingInput {activeLayer} />
     <RingInput {activeLayer} />
   </div>
-  <div class="col">
+  <div class="row" style="gap: 160px">
     <RingInput {activeLayer} />
     <RingInput {activeLayer} />
   </div>
-  <RingInput {activeLayer} />
+  <div class="row" style="gap: 320px; margin-top: -12px">
+    <RingInput {activeLayer} />
+    <RingInput {activeLayer} />
+  </div>
 </div>
 
 <style lang="scss">
@@ -40,6 +69,8 @@
   }
 
   button.icon {
+    cursor: pointer;
+
     z-index: 1;
 
     font-size: 24px;
@@ -80,18 +111,17 @@
 
   .row,
   .col {
+    display: flex;
     gap: 8px;
     align-items: center;
     justify-content: center;
   }
 
   .row {
-    display: flex;
     flex-direction: row;
   }
 
   .col {
-    display: flex;
     flex-direction: column;
   }
 </style>

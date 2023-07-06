@@ -59,6 +59,15 @@
     color: var(--md-sys-color-tertiary);
   }
 
+  a:hover:not(:active),
+  button:hover:not(:active) {
+    filter: brightness(70%);
+
+    &.active {
+      filter: brightness(120%);
+    }
+  }
+
   body {
     overflow: hidden;
     display: flex;

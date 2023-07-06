@@ -1,6 +1,7 @@
 <script>
   import {serialPort, syncing} from "$lib/serial/connection.js"
   import {browser} from "$app/environment"
+  import {page} from "$app/stores"
 </script>
 
 <nav>
@@ -31,6 +32,7 @@
       href="/device-manager/"
       title="Device Manager"
       class="icon connect"
+      class:active={$page.url.pathname === "/device-manager/"}
       class:error={$serialPort === undefined}
       class:syncing={$syncing}
     >
@@ -82,7 +84,8 @@
       background: var(--md-sys-color-error);
     }
 
-    &:hover {
+    &.active,
+    &:active {
       color: var(--md-sys-color-on-primary);
       background: var(--md-sys-color-primary);
     }
@@ -103,7 +106,8 @@
       clip-path: polygon(25% 50%, 0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
       border-radius: 0;
 
-      &:hover {
+      &.active,
+      &:active {
         color: var(--md-sys-color-on-tertiary);
         background: var(--md-sys-color-tertiary);
 
@@ -145,6 +149,10 @@
     bottom: 0;
     left: 0;
 
+    display: table-cell;
+
+    padding-top: 0.5px;
+
     font-size: 16px;
     font-weight: 600;
     color: var(--md-sys-color-on-background);
@@ -153,8 +161,16 @@
     background: var(--md-sys-color-background);
     border-radius: 50%;
 
+    alignment-baseline: top;
+
     transition: opacity 250ms ease;
     animation: sync 1s linear infinite;
+  }
+
+  .connect:active::after,
+  .connect.active::after {
+    color: var(--md-sys-color-on-primary);
+    background: var(--md-sys-color-primary);
   }
 
   .connect.syncing::after {
