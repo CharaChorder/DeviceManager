@@ -10,6 +10,9 @@ export const serialLog = writable([])
 /** @type {import('svelte/store').Writable<Array<{actions: number[]; phrase: string}>>} */
 export const chords = writable([])
 
+/** @type {import('svelte/store').Writable<[number[], number[], number[]]>} */
+export const layout = writable([[], [], []])
+
 /** @type {import('svelte/store').Writable<boolean>} */
 export const syncing = writable(false)
 
@@ -20,6 +23,14 @@ export async function initSerial() {
   syncing.set(true)
   device ??= new CharaDevice()
   serialPort.set(device)
+
+  const parsedLayout = [[], [], []]
+  for (let layer = 1; layer <= 3; layer++) {
+    for (let i = 0; i < 90; i++) {
+      parsedLayout[layer - 1][i] = await device.getLayoutKey(layer, i)
+    }
+  }
+  layout.set(parsedLayout)
 
   const chordCount = await device.getChordCount()
   const chordInfo = []

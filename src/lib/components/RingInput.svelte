@@ -1,12 +1,12 @@
 <script>
+  import {layout} from "$lib/serial/connection.js"
+  import {ACTION_MAP} from "$lib/serial/webserial/constants/action-map.js"
+  import keySymbols from "$lib/assets/key-symbols.json"
+
   export let activeLayer = 0
 
-  export let layout = [
-    ["a", "b", "c"],
-    ["d", "e", "f"],
-    ["g", "h", "i"],
-    ["j", "k", "l"],
-  ]
+  /** @type {{d: number, n: number, w: number, e: number, s: number}} */
+  export let keys
 
   /** @type {'primary' | 'secondary' | 'tertiary'} */
   export let type = "primary"
@@ -23,18 +23,35 @@
   }
 
   function getKeyDescriptions(keys) {
-    return keys.map((it, i) => (it ? `${it} (${layerNames[i]})` : "")).join("\n")
+    return keys.map(([, it], i) => (it ? `${it} (${layerNames[i]})` : "")).join("\n")
+  }
+
+  /**
+   * @param id {number}
+   * @param layout {[number[], number[], number[]]}
+   * @returns [string, string][]
+   */
+  function getActions(id, layout) {
+    return Array.from({length: 3}).map((_, i) => {
+      const actionId = layout?.[i][id]
+      return actionId !== undefined
+        ? [keySymbols[ACTION_MAP[actionId]], ACTION_MAP[actionId]]
+        : ["❓", undefined]
+    })
   }
 </script>
 
 <div class="radial {type}">
-  {#each layout as keys, quadrant}
-    <button title={getKeyDescriptions(keys)}>
-      {#each keys as value, layer}
-        <span
-          class:active={virtualLayerMap[activeLayer] === virtualLayerMap[layer]}
-          style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%">{value}</span
-        >
+  {#each [keys.n, keys.e, keys.s, keys.w] as id, quadrant}
+    {@const actions = getActions(id, $layout)}
+    <button title={getKeyDescriptions(actions)}>
+      {#each actions as [value, raw], layer}
+        {#if value || raw}
+          <span
+            class:active={virtualLayerMap[activeLayer] === virtualLayerMap[layer]}
+            style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%">{value || raw}</span
+          >
+        {/if}
       {/each}
     </button>
   {/each}
@@ -64,6 +81,7 @@
     $cr: math.div($size, 2) - 2 * $offset;
 
     will-change: scale, offset-distance;
+    user-select: none;
 
     scale: 0.9;
     offset-path: path(
@@ -82,7 +100,7 @@
 
     font-size: 16px;
 
-    opacity: 0.3;
+    opacity: 0.2;
 
     transition: scale 250ms ease, opacity 250ms ease, offset-distance 250ms ease;
 
@@ -136,5 +154,13 @@
     &:nth-child(4) {
       clip-path: polygon(50% 50%, 0 0, 0 100%);
     }
+  }
+
+  .secondary > button {
+    filter: brightness(80%) contrast(120%);
+  }
+
+  .tertiary > button {
+    filter: brightness(80%) contrast(110%);
   }
 </style>

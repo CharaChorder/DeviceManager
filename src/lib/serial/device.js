@@ -179,4 +179,15 @@ export class CharaDevice {
       unk: Number(b),
     }
   }
+
+  /**
+   * @param layer {number}
+   * @param id {number}
+   * @returns {Promise<number>}
+   */
+  async getLayoutKey(layer, id) {
+    const layout = await this.send(`VAR B3 A${layer} ${id}`)
+    const [position] = layout.split(" ").map(Number)
+    return position
+  }
 }
