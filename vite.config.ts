@@ -6,6 +6,10 @@ import {SvelteKitPWA} from "@vite-pwa/sveltekit"
 import ViteYaml from "@modyfi/vite-plugin-yaml"
 
 export default defineConfig({
+  build: {
+    // we rely on the serial api, so just chrome is fine
+    target: ["chrome114"],
+  },
   plugins: [
     ViteYaml(),
     sveltekit(),

@@ -4,9 +4,6 @@ import type {Chord} from "$lib/serial/connection"
 
 export const VENDOR_ID = 0x239a
 
-/**
- * @returns {Promise<boolean>}
- */
 export async function hasSerialPermission() {
   return navigator.serial.getPorts().then(it => it.length > 0)
 }
@@ -23,9 +20,6 @@ export class CharaDevice {
   version: Promise<string>
   deviceId: Promise<string>
 
-  /**
-   * @param baudRate
-   */
   constructor(baudRate = 115200) {
     this.port = navigator.serial.getPorts().then(async ports => {
       const port =

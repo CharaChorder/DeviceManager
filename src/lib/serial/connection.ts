@@ -23,8 +23,7 @@ export const layout = writable<CharaLayout>([[], [], []])
 
 export const syncing = writable(false)
 
-/** @type {CharaDevice} */
-let device // @hmr:keep
+let device: CharaDevice // @hmr:keep
 
 export async function initSerial() {
   syncing.set(true)
