@@ -1,5 +1,5 @@
 <script>
-  import {serialPort, syncing} from "$lib/serial/connection.js"
+  import {serialPort, syncing} from "$lib/serial/connection"
   import {browser} from "$app/environment"
   import {page} from "$app/stores"
 </script>

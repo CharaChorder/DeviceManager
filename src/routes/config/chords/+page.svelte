@@ -1,6 +1,6 @@
-<script>
-  import {chords} from "$lib/serial/connection.js"
-  import {KEYMAP_CODES} from "$lib/serial/keymap-codes.js"
+<script lang="ts">
+  import {chords} from "$lib/serial/connection"
+  import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
 </script>
 
 <svelte:head>

@@ -1,21 +1,18 @@
-// @ts-check
 export class LineBreakTransformer {
-  constructor() {
-    this.chunks = ""
-  }
+  private chunks = ""
 
   // noinspection JSUnusedGlobalSymbols
-  transform(chunk, controller) {
+  transform(chunk: string, controller: TransformStreamDefaultController) {
     this.chunks += chunk
     const lines = this.chunks.split("\r\n")
-    this.chunks = lines.pop()
+    this.chunks = lines.pop()!
     for (const line of lines) {
       controller.enqueue(line)
     }
   }
 
   // noinspection JSUnusedGlobalSymbols
-  flush(controller) {
+  flush(controller: TransformStreamDefaultController) {
     controller.enqueue(this.chunks)
   }
 }

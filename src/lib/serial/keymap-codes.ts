@@ -1,3 +1,6 @@
+import keymapCodes from "$lib/assets/keymap_codes.json"
+import keySymbols from "$lib/assets/key-symbols.json"
+
 export interface KeyInfo {
   /**
    * Numeric action code
@@ -45,3 +48,17 @@ export type CharsetCategory =
   | "Keybard"
   | "CharaChorder"
   | "CharaChorder One"
+
+export const KEYMAP_CODES: Record<number, KeyInfo> = Object.fromEntries(
+  keymapCodes.map(([code, charset, id, title, description]) => [
+    code,
+    {
+      code: Number(code),
+      title: title || undefined,
+      charset: (charset || undefined) as CharsetCategory,
+      id: id || undefined,
+      symbol: id ? keySymbols[id as keyof typeof keySymbols] || undefined : undefined,
+      description: description || undefined,
+    },
+  ]),
+)

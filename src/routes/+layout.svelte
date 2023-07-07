@@ -1,15 +1,17 @@
-<script>
+<script lang="ts">
   import "$lib/fonts/noto-sans-mono.scss"
   import "$lib/fonts/material-symbols-rounded.scss"
   import {onMount} from "svelte"
   import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
   import Navigation from "$lib/components/Navigation.svelte"
-  import {hasSerialPermission} from "$lib/serial/device.js"
-  import {initSerial} from "$lib/serial/connection.js"
+  import {hasSerialPermission} from "$lib/serial/device"
+  import {initSerial} from "$lib/serial/connection"
+  // noinspection TypeScriptCheckImport
   import {pwaInfo} from "virtual:pwa-info"
+  import type {LayoutServerData} from "./$types"
+  import type {RegisterSWOptions} from "vite-plugin-pwa/types"
 
-  /** @type {import('./$types').LayoutServerData} */
-  export let data
+  export let data: LayoutServerData
 
   onMount(async () => {
     const theme = themeFromSourceColor(argbFromHex("#6D81C7"), [
@@ -19,15 +21,14 @@
     applyTheme(theme, {target: document.body, dark})
 
     if (pwaInfo) {
-      /** @type {import('vite-plugin-pwa/types').RegisterSWOptions} */
-      const swOptions = {
+      // noinspection TypeScriptCheckImport
+      const {registerSW} = await import("virtual:pwa-register")
+      registerSW({
         immediate: true,
         onRegisterError(error) {
           console.log("ServiceWorker Registration Error", error)
         },
-      }
-      const {registerSW} = await import("virtual:pwa-register")
-      registerSW(swOptions)
+      } satisfies RegisterSWOptions)
     }
 
     if (await hasSerialPermission()) await initSerial()

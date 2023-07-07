@@ -1,43 +1,32 @@
-<script>
-  import {layout} from "$lib/serial/connection.js"
-  import {KEYMAP_CODES} from "$lib/serial/keymap-codes.js"
+<script lang="ts">
+  import {layout} from "$lib/serial/connection"
+  import type {CharaLayout} from "$lib/serial/connection"
+  import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
+  import type {KeyInfo} from "$lib/serial/keymap-codes"
 
   export let activeLayer = 0
-
-  /** @type {{d: number, n: number, w: number, e: number, s: number}} */
-  export let keys
-
-  /** @type {'primary' | 'secondary' | 'tertiary'} */
-  export let type = "primary"
+  export let keys: Record<"d" | "n" | "w" | "e", number>
+  export let type: "primary" | "secondary" | "tertiary" = "primary"
 
   const layerNames = ["Primary Layer", "Number Layer", "Function Layer"]
 
   const virtualLayerMap = [1, 0, 2]
   const characterOffset = 8
 
-  function offsetDistance(quadrant, layer, activeLayer) {
+  function offsetDistance(quadrant: number, layer: number, activeLayer: number): number {
     const layerOffsetIndex = virtualLayerMap[layer] - virtualLayerMap[activeLayer]
     const layerOffset = quadrant > 2 ? -characterOffset : characterOffset
     return 25 * quadrant + layerOffsetIndex * layerOffset
   }
 
-  /**
-   * @param keys {import('$lib/serial/keymap.js').KeyInfo[]}
-   * @returns {*}
-   */
-  function getKeyDescriptions(keys) {
+  function getKeyDescriptions(keys: KeyInfo[]): string {
     return keys.map(({title, id, code}, i) => `${title || id || code} (${layerNames[i]})`).join("\n")
   }
 
-  /**
-   * @param id {number}
-   * @param layout {[number[], number[], number[]]}
-   * @returns import('$lib/serial/keymap.js').KeyInfo[]
-   */
-  function getActions(id, layout) {
+  function getActions(id: number, layout: CharaLayout): KeyInfo[] {
     return Array.from({length: 3}).map((_, i) => {
       const actionId = layout?.[i][id]
-      return actionId !== undefined ? KEYMAP_CODES[actionId] : {code: actionId}
+      return KEYMAP_CODES[actionId]
     })
   }
 </script>

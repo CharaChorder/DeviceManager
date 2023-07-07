@@ -1,19 +1,26 @@
 import {writable} from "svelte/store"
-import {CharaDevice} from "$lib/serial/device.js"
+import {CharaDevice} from "$lib/serial/device"
 
-/** @type {import('svelte/store').Writable<import('./device.js').CharaDevice>} */
-export const serialPort = writable()
+export const serialPort = writable<CharaDevice>()
 
-/** @type {import('svelte/store').Writable<Array<{type: 'input' | 'output' | 'system'; value: string}>>} */
-export const serialLog = writable([])
+export interface SerialLogEntry {
+  type: "input" | "output" | "system"
+  value: string
+}
 
-/** @type {import('svelte/store').Writable<Array<{actions: number[]; phrase: string}>>} */
-export const chords = writable([])
+export const serialLog = writable<SerialLogEntry[]>([])
 
-/** @type {import('svelte/store').Writable<[number[], number[], number[]]>} */
-export const layout = writable([[], [], []])
+export interface Chord {
+  actions: number[]
+  phrase: string
+}
 
-/** @type {import('svelte/store').Writable<boolean>} */
+export const chords = writable<Chord[]>([])
+
+export type CharaLayout = [number[], number[], number[]]
+
+export const layout = writable<CharaLayout>([[], [], []])
+
 export const syncing = writable(false)
 
 /** @type {CharaDevice} */
@@ -24,7 +31,7 @@ export async function initSerial() {
   device ??= new CharaDevice()
   serialPort.set(device)
 
-  const parsedLayout = [[], [], []]
+  const parsedLayout: CharaLayout = [[], [], []]
   for (let layer = 1; layer <= 3; layer++) {
     for (let i = 0; i < 90; i++) {
       parsedLayout[layer - 1][i] = await device.getLayoutKey(layer, i)

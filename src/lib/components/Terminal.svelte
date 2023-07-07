@@ -1,22 +1,16 @@
-<script>
-  import {serialLog, serialPort} from "$lib/serial/connection.js"
+<script lang="ts">
+  import {serialLog, serialPort} from "$lib/serial/connection"
   import {slide} from "svelte/transition"
 
-  /**
-   * @param event {InputEvent}
-   */
-  function submit(event) {
+  function submit(event: InputEvent) {
     event.preventDefault()
     $serialPort.send(value.trim())
     value = ""
     io.scrollTo({top: io.scrollHeight})
   }
 
-  /** @type {string} */
-  let value
-
-  /** @type {HTMLDivElement} */
-  let io
+  let value: string
+  let io: HTMLDivElement
 
   export let resizable = false
 </script>
