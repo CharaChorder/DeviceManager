@@ -34,11 +34,10 @@
 </svelte:head>
 
 {#if searchIndex}
-  <input on:input={search} type="search" placeholder="Search chords" />
+  <input on:input={search} type="search" placeholder="Search {$chords.length} chords" />
 {/if}
 
 <section>
-  <p>You have {$chords.length} chords</p>
   <table>
     {#each items.slice(0, 50) as [{ phrase, actions }, i]}
       <tr style="view-transition-name: chord-{i}">

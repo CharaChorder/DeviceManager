@@ -2,18 +2,29 @@
   import {serialPort, syncing} from "$lib/serial/connection"
   import {browser} from "$app/environment"
   import {page} from "$app/stores"
+
+  const training = [
+    {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
+    {slug: "chords", title: "ChM - Chords Mastered", icon: "piano"},
+    {slug: "avg-wpm", title: "aWPM - Average Words Per Minute", icon: "avg_pace"},
+    {slug: "sentences", title: "StM - Sentences Mastered", icon: "lyrics"},
+    {slug: "top-wpm", title: "tWPM - Top Words Per Minute", icon: "speed"},
+    {slug: "cm", title: "CM - Concepts Mastered", icon: "cognition"},
+  ]
 </script>
 
 <nav>
   <a href="/" class="title">dot i/o</a>
 
   <div class="steps">
-    <a href="/" title="CPM - characters per minute" class="icon train cpm">music_note</a>
-    <a href="/" title="ChM - chords mastered" class="icon train chords">piano</a>
-    <a href="/" title="aWPM - average words per minute" class="icon test avg">avg_pace</a>
-    <a href="/" title="StM - sentences mastered" class="icon train sentences">lyrics</a>
-    <a href="/" title="tWPM - top words per minute" class="icon test top">speed</a>
-    <a href="/" title="CM - concepts mastered" class="icon train concepts">cognition</a>
+    {#each training as { slug, title, icon }}
+      <a
+        href="/train/{slug}/"
+        {title}
+        class="icon train {slug}"
+        class:active={$page.url.pathname === `/train/${slug}/`}>{icon}</a
+      >
+    {/each}
   </div>
 
   <div class="actions">
@@ -106,6 +117,7 @@
       clip-path: polygon(25% 50%, 0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
       border-radius: 0;
 
+      &.active,
       &:active {
         color: var(--md-sys-color-on-tertiary);
         background: var(--md-sys-color-tertiary);
