@@ -40,3 +40,26 @@ jobs:
       with:
         name: build
         path: build
+  deploy:
+    name: 🚀 Deploy
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: Website
+      url: https://dotio.theaninova.de
+    steps:
+      - name: 📦 Download build artifacts
+        uses: actions/download-artifact@v2.1.1
+        with:
+          name: build
+          path: build
+      - name: 🚀 Deploy
+        uses: SamKirkland/web-deploy@v1
+        with:
+          target-server: ${{ secrets.SSH_SERVER }}
+          destination-path: ~/public_html/
+          source-path: ./build/
+          remote-user: ${{ secrets.SSH_USER }}
+          private-ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-port: ${{ secrets.SSH_PORT }}
