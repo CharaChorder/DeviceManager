@@ -1,7 +1,6 @@
 <script>
   import {layout} from "$lib/serial/connection.js"
-  import {ACTION_MAP} from "$lib/serial/webserial/constants/action-map.js"
-  import keySymbols from "$lib/assets/key-symbols.json"
+  import {KEYMAP_CODES} from "$lib/serial/keymap-codes.js"
 
   export let activeLayer = 0
 
@@ -22,21 +21,23 @@
     return 25 * quadrant + layerOffsetIndex * layerOffset
   }
 
+  /**
+   * @param keys {import('$lib/serial/keymap.js').KeyInfo[]}
+   * @returns {*}
+   */
   function getKeyDescriptions(keys) {
-    return keys.map(([, it], i) => (it ? `${it} (${layerNames[i]})` : "")).join("\n")
+    return keys.map(({title, id, code}, i) => `${title || id || code} (${layerNames[i]})`).join("\n")
   }
 
   /**
    * @param id {number}
    * @param layout {[number[], number[], number[]]}
-   * @returns [string, string][]
+   * @returns import('$lib/serial/keymap.js').KeyInfo[]
    */
   function getActions(id, layout) {
     return Array.from({length: 3}).map((_, i) => {
       const actionId = layout?.[i][id]
-      return actionId !== undefined
-        ? [keySymbols[ACTION_MAP[actionId]], ACTION_MAP[actionId]]
-        : ["❓", undefined]
+      return actionId !== undefined ? KEYMAP_CODES[actionId] : {code: actionId}
     })
   }
 </script>
@@ -45,11 +46,11 @@
   {#each [keys.n, keys.e, keys.s, keys.w] as id, quadrant}
     {@const actions = getActions(id, $layout)}
     <button title={getKeyDescriptions(actions)}>
-      {#each actions as [value, raw], layer}
-        {#if value || raw}
+      {#each actions as { symbol, id }, layer}
+        {#if symbol || id}
           <span
             class:active={virtualLayerMap[activeLayer] === virtualLayerMap[layer]}
-            style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%">{value || raw}</span
+            style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%">{symbol || id}</span
           >
         {/if}
       {/each}

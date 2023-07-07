@@ -1,6 +1,6 @@
 <script>
   import {chords} from "$lib/serial/connection.js"
-  import keySymbols from "$lib/assets/key-symbols.json"
+  import {KEYMAP_CODES} from "$lib/serial/keymap-codes.js"
 </script>
 
 <svelte:head>
@@ -15,7 +15,8 @@
         <th>{phrase}</th>
         <td>
           {#each actions as action}
-            <i>{keySymbols[action] || action}</i>
+            {@const {id, title, symbol} = KEYMAP_CODES[action]}
+            <abbr {title}>{symbol || id}</abbr>
           {/each}
         </td>
       </tr>
@@ -30,13 +31,14 @@
     border-radius: 16px;
   }
 
-  table i {
+  table abbr {
     display: block;
 
     padding-block: 4px;
     padding-inline: 8px;
 
     font-style: normal;
+    text-decoration: none;
 
     border: 1px solid var(--md-sys-color-outline);
     border-radius: 8px;

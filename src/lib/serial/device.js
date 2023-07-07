@@ -1,6 +1,5 @@
 import {LineBreakTransformer} from "$lib/serial/line-break-transformer.js"
 import {serialLog} from "$lib/serial/connection.js"
-import {ACTION_MAP} from "$lib/serial/webserial/constants/action-map.js"
 
 export const VENDOR_ID = 0x239a
 
@@ -168,7 +167,7 @@ export class CharaDevice {
     for (let i = 0; i < 12; i++) {
       const action = Number(bigKeys & BigInt(0b1111111111))
       if (action !== 0) {
-        actions.push(ACTION_MAP[action])
+        actions.push(action)
       }
       bigKeys >>= BigInt(10)
     }
