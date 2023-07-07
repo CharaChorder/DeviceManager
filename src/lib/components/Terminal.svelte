@@ -44,21 +44,6 @@
     border-radius: 16px;
   }
 
-  ::-webkit-scrollbar {
-    width: 8px;
-    background: transparent;
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--md-sys-color-on-secondary);
-    border-radius: 4px;
-  }
-
-  ::-webkit-resizer {
-    display: none;
-  }
-
   fieldset::before {
     content: "$";
 
@@ -86,6 +71,8 @@
   }
 
   .io {
+    --scrollbar-color: var(--md-sys-color-secondary);
+
     z-index: 1;
 
     overflow-y: auto;

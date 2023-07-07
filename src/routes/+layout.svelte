@@ -1,6 +1,7 @@
 <script lang="ts">
   import "$lib/fonts/noto-sans-mono.scss"
   import "$lib/fonts/material-symbols-rounded.scss"
+  import "$lib/style/scrollbar.scss"
   import {onMount} from "svelte"
   import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
   import Navigation from "$lib/components/Navigation.svelte"
