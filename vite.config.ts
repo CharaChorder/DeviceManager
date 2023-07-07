@@ -1,8 +1,8 @@
-import {sveltekit} from "@sveltejs/kit/vite"
 import {defineConfig} from "vite"
 import {SvelteKitPWA} from "@vite-pwa/sveltekit"
 // noinspection ES6PreferShortImport
-import {themeColor} from "./src/lib/style/theme.server.js"
+import {themeColor} from "./src/lib/style/theme.server"
+import {sveltekit} from "@sveltejs/kit/vite"
 
 export default defineConfig({
   plugins: [

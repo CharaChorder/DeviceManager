@@ -106,7 +106,6 @@
       clip-path: polygon(25% 50%, 0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
       border-radius: 0;
 
-      &.active,
       &:active {
         color: var(--md-sys-color-on-tertiary);
         background: var(--md-sys-color-tertiary);

@@ -1,5 +1,5 @@
 <script>
-  import {initSerial, serialPort} from "$lib/serial/connection.js"
+  import {initSerial, serialPort} from "$lib/serial/connection"
   import Terminal from "$lib/components/Terminal.svelte"
   import {browser} from "$app/environment"
 </script>

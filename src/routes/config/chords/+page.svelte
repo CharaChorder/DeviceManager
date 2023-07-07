@@ -15,8 +15,12 @@
         <th>{phrase}</th>
         <td>
           {#each actions as action}
-            {@const {id, title, symbol} = KEYMAP_CODES[action]}
-            <abbr {title}>{symbol || id}</abbr>
+            {@const keyInfo = KEYMAP_CODES[action]}
+            {#if keyInfo}
+              <abbr title={keyInfo.title}>{keyInfo.symbol || keyInfo.id}</abbr>
+            {:else}
+              <pre>{action}</pre>
+            {/if}
           {/each}
         </td>
       </tr>

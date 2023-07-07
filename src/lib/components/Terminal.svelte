@@ -11,12 +11,10 @@
 
   let value: string
   let io: HTMLDivElement
-
-  export let resizable = false
 </script>
 
 <form on:submit={submit}>
-  <div bind:this={io} class="io" class:resizable>
+  <div bind:this={io} class="io">
     {#each $serialLog as { type, value }}
       <p class={type} transition:slide>{value}</p>
     {/each}
@@ -44,10 +42,6 @@
     color: var(--md-sys-color-on-secondary);
 
     border-radius: 16px;
-
-    &.resizable {
-      resize: both;
-    }
   }
 
   ::-webkit-scrollbar {
@@ -123,21 +117,6 @@
     &:focus-within {
       opacity: 1;
     }
-  }
-
-  .terminal.resizable fieldset::after {
-    content: "";
-
-    position: absolute;
-    right: 6px;
-    bottom: 8px;
-    rotate: -45deg;
-
-    width: 10px;
-    height: 5px;
-
-    background: var(--md-sys-color-on-secondary);
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
   }
 
   .anchor {

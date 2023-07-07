@@ -20,7 +20,10 @@
   }
 
   function getKeyDescriptions(keys: KeyInfo[]): string {
-    return keys.map(({title, id, code}, i) => `${title || id || code} (${layerNames[i]})`).join("\n")
+    return keys
+      .filter(it => !!it)
+      .map(({title, id, code}, i) => `${title || id || code} (${layerNames[i]})`)
+      .join("\n")
   }
 
   function getActions(id: number, layout: CharaLayout): KeyInfo[] {
@@ -35,11 +38,12 @@
   {#each [keys.n, keys.e, keys.s, keys.w] as id, quadrant}
     {@const actions = getActions(id, $layout)}
     <button title={getKeyDescriptions(actions)}>
-      {#each actions as { symbol, id }, layer}
-        {#if symbol || id}
+      {#each actions as keyInfo, layer}
+        {@const displayTitle = keyInfo?.symbol || keyInfo?.id}
+        {#if displayTitle}
           <span
             class:active={virtualLayerMap[activeLayer] === virtualLayerMap[layer]}
-            style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%">{symbol || id}</span
+            style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%">{displayTitle}</span
           >
         {/if}
       {/each}

@@ -12,18 +12,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+// @ts-expect-error missing types
 import {openSync} from "fontkit"
 import {exec} from "child_process"
-import config from "../icons.config.js"
+import config from "../../icons.config"
 import {statSync, existsSync} from "fs"
 
-/**
- * @param command {string[] | string}
- * @returns {Promise<string>}
- */
-async function run(command) {
+async function run(command: string[] | string): Promise<string> {
   const fullCommand = Array.isArray(command) ? command.join(" ") : command
   console.log(`>> ${fullCommand}`)
 
@@ -40,7 +35,6 @@ async function run(command) {
   })
 }
 
-/** @type {Set<string>} */
 const icons = new Set(config.icons)
 
 console.log("Icons used:", [...icons.values()].sort())
@@ -48,7 +42,7 @@ const font = openSync(config.inputPath)
 
 const glyphs = ["5f-7a", "30-39"]
 for (const icon of icons) {
-  const iconGlyphs = font.layout(icon).glyphs
+  const iconGlyphs: Array<{id: string}> = font.layout(icon).glyphs
   if (iconGlyphs.length === 0) {
     console.error(`${icon} not found in font. Typo?`)
     process.exit(-1)
@@ -60,6 +54,7 @@ for (const icon of icons) {
     .map(it => it.codePointAt(0).toString(16))
 
   if (codePoints.length === 0) {
+    const codePoint = config.codePoints[icon]
     if (config.codePoints?.[icon]) {
       glyphs.push(config.codePoints[icon])
     } else {
@@ -103,11 +98,8 @@ console.log(
 
 /**
  * Bytes to respective units
- *
- * @param value {number}
- * @returns {string}
  */
-function toByteUnit(value) {
+function toByteUnit(value: number) {
   if (value < 1024) {
     return `${value}B`
   } else if (value < 1024 * 1024) {
