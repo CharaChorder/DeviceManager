@@ -15,7 +15,7 @@
 // @ts-expect-error missing types
 import {openSync} from "fontkit"
 import {exec} from "child_process"
-import config from "../../icons.config"
+import config from "../../icons.config.js"
 import {statSync, existsSync} from "fs"
 
 async function run(command: string[] | string): Promise<string> {
