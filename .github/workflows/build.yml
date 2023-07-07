@@ -1,0 +1,37 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Python 3.x
+      uses: actions/setup-python@v3.1.4
+      with:
+        python-version: 3.x
+        cache: pip
+    - run: python -m venv venv
+    - run: ./venv/bin/pip install -r requirements.txt
+    
+    - name: Use Node.js 18.16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.16.x
+        cache: 'npm'
+    - run: npm ci
+
+    - run: npm run minify-icons
+    - run: npm run build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: build
+        path: build
