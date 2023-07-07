@@ -17,6 +17,8 @@ import {openSync} from "fontkit"
 import {exec} from "child_process"
 import config from "../../icons.config.js"
 import {statSync, existsSync} from "fs"
+import {readFile} from "fs/promises"
+import {glob} from "glob"
 
 async function run(command: string[] | string): Promise<string> {
   const fullCommand = Array.isArray(command) ? command.join(" ") : command
@@ -35,7 +37,14 @@ async function run(command: string[] | string): Promise<string> {
   })
 }
 
-const icons = new Set(config.icons)
+const yamlFiles = await glob("src/lib/assets/keymaps/*.yml")
+const yamlIcons = await Promise.all(
+  yamlFiles.map(it =>
+    readFile(it, "utf8").then(file => [...file.matchAll(/^\s*icon:\s+(\w+)/gm)].map(match => match[1])),
+  ),
+).then(it => it.flat())
+
+const icons = new Set([...config.icons, ...yamlIcons])
 
 console.log("Icons used:", [...icons.values()].sort())
 const font = openSync(config.inputPath)

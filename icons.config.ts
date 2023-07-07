@@ -33,6 +33,12 @@ const config: IconsConfig = {
   ],
   codePoints: {
     speed: "e9e4",
+    arrow_split: "e985",
+    arrow_circle_down: "f181",
+    arrow_circle_up: "f182",
+    counter_1: "f784",
+    counter_2: "f783",
+    counter_3: "f782",
   },
 }
 

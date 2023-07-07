@@ -1,0 +1,53 @@
+name: Keyboard
+description: Keyboard specific actions
+icon: keyboard
+actions:
+  512: &left_ctrl
+    id: "LEFT_CTRL"
+    title: Control Keyboard Modifier
+    variant: left
+    icon: keyboard_control_key
+  513: &left_shift
+    id: "LEFT_SHIFT"
+    title: Shift Keyboard Modifier
+    variant: left
+    icon: shift
+  514: &left_alt
+    id: "LEFT_ALT"
+    title: Alt Keyboard Modifier
+    variant: left
+    icon: keyboard_option_key
+  515: &left_gui
+    id: "LEFT_GUI"
+    title: GUI Keyboard Modifier
+    variant: left
+    icon: keyboard_command_key
+  516:
+    variationOf: 512
+    <<: *left_ctrl
+    id: "RIGHT_CTRL"
+    variant: right
+  517:
+    variationOf: 513
+    <<: *left_shift
+    id: "RIGHT_SHIFT"
+  518:
+    variationOf: 514
+    <<: *left_alt
+    id: "RIGHT_ALT"
+  519:
+    variationOf: 515
+    <<: *left_gui
+    id: "RIGHT_GUI"
+  520:
+    id: "RELEASE_MOD"
+    title: Release all keyboard modifiers
+    icon: step_out
+  521:
+    id: "RELEASE_ALL"
+    title: Release all keys and keyboard modifiers
+    icon: merge_type
+  522:
+    id: "RELEASE_KEYS"
+    title: Release all keys, but not keyboard modifiers
+    icon: text_rotate_up

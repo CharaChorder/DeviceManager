@@ -39,11 +39,12 @@
     {@const actions = getActions(id, $layout)}
     <button title={getKeyDescriptions(actions)}>
       {#each actions as keyInfo, layer}
-        {@const displayTitle = keyInfo?.symbol || keyInfo?.id}
-        {#if displayTitle}
+        {#if keyInfo}
           <span
             class:active={virtualLayerMap[activeLayer] === virtualLayerMap[layer]}
-            style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%">{displayTitle}</span
+            class:icon={!!keyInfo.icon}
+            style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%"
+            >{keyInfo.icon || keyInfo.id || keyInfo.code}</span
           >
         {/if}
       {/each}
@@ -59,6 +60,7 @@
   $size: 96;
   $offset: 14;
   $scale-difference: 0.2;
+  $transition-time: 750ms;
 
   .radial {
     position: relative;
@@ -96,11 +98,17 @@
 
     opacity: 0.2;
 
-    transition: scale 250ms ease, opacity 250ms ease, offset-distance 250ms ease;
+    transition: scale $transition-time ease, opacity $transition-time ease,
+      offset-distance $transition-time ease;
 
     &.active {
       scale: 1;
       opacity: 1;
+    }
+
+    &.icon {
+      font-size: 20px;
+      font-weight: 800;
     }
   }
 

@@ -1,3 +1,5 @@
+/// <reference types="@modyfi/vite-plugin-yaml/modules" />
+
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare global {

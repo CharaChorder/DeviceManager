@@ -1,0 +1,39 @@
+name: "CharaChorder One"
+description: |
+  CharaChorder One specific actions.
+  Mainly used for chords with unassigned 3D presses
+type: unassigned
+actions:
+  600:
+    id: "LH_THUMB_3_3D"
+    title: Left Hand Thumb Top 3D Click
+  601:
+    id: "LH_THUMB_2_3D"
+    title: Left Hand Thumb Middle 3D Click
+  602:
+    id: "LH_THUMB_1_3D"
+    title: Left Hand Thumb Bottom 3D Click
+  603:
+    id: "LH_INDEX_3D"
+    title: Left Hand Index Finger 3D Click
+  604:
+    id: "LH_MID_1_3D"
+    title: Left Hand Middle Finger 3D Click
+  605:
+    id: "LH_RING_1_3D"
+    title: Left Hand Ring Finger 3D Click
+  606:
+    id: "LH_PINKY_3D"
+    title: Left Hand Pinky 3D Click,
+  # TODO...
+  # ["607", "CharaChorder One", "LH_MID_2_3D", "", ""],
+  # ["608", "CharaChorder One", "LH_RING_2_3D", "", ""],
+  # ["609", "CharaChorder One", "RH_THUMB_3_3D", "", ""],
+  # ["610", "CharaChorder One", "RH_THUMB_2_3D", "", ""],
+  # ["611", "CharaChorder One", "RH_THUMB_1_3D", "", ""],
+  # ["612", "CharaChorder One", "RH_INDEX_3D", "", ""],
+  # ["613", "CharaChorder One", "RH_MID_1_3D", "", ""],
+  # ["614", "CharaChorder One", "RH_RING_1_3D", "", ""],
+  # ["615", "CharaChorder One", "RH_PINKY_3D", "", ""],
+  # ["616", "CharaChorder One", "RH_MID_2_3D", "", ""],
+  # ["617", "CharaChorder One", "RH_RING_2_3D", "", ""]

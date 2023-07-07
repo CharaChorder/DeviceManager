@@ -17,7 +17,7 @@
           {#each actions as action}
             {@const keyInfo = KEYMAP_CODES[action]}
             {#if keyInfo}
-              <abbr title={keyInfo.title}>{keyInfo.symbol || keyInfo.id}</abbr>
+              <abbr title={keyInfo.title} class:icon={!!keyInfo.icon}>{keyInfo.icon || keyInfo.id}</abbr>
             {:else}
               <pre>{action}</pre>
             {/if}
@@ -35,17 +35,28 @@
     border-radius: 16px;
   }
 
+  table {
+    min-width: min(90vw, 16.5cm);
+  }
+
   table abbr {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     padding-block: 4px;
     padding-inline: 8px;
 
+    font-size: 16px;
     font-style: normal;
     text-decoration: none;
 
     border: 1px solid var(--md-sys-color-outline);
     border-radius: 8px;
+
+    &.icon {
+      font-size: 20px;
+    }
   }
 
   th {
@@ -55,5 +66,7 @@
   td {
     display: flex;
     gap: 4px;
+    align-items: stretch;
+    justify-content: flex-end;
   }
 </style>
