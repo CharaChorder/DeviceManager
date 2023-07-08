@@ -30,6 +30,11 @@ const config: IconsConfig = {
     "123",
     "abc",
     "function",
+    "cloud_done",
+    "backup",
+    "cloud_download",
+    "share",
+    "ios_share",
   ],
   codePoints: {
     speed: "e9e4",
@@ -39,6 +44,7 @@ const config: IconsConfig = {
     counter_1: "f784",
     counter_2: "f783",
     counter_3: "f782",
+    ios_share: "e6b8",
   },
 }
 

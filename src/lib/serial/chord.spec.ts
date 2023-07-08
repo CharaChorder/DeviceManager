@@ -2,8 +2,6 @@ import {describe, it, expect} from "vitest"
 import {
   chordAsCommandCompatible,
   chordFromCommandCompatible,
-  chordsFromFile,
-  chordsToFile,
   deserializeActions,
   serializeActions,
 } from "./chord"
@@ -39,18 +37,6 @@ describe("chords", function () {
         actions: [32, 51],
         phrase: [0x01, 0x68, 0x72, 0xd4, 0x65],
       })
-    })
-  })
-
-  describe("chl file format", function () {
-    const fileData: Chord[] = [
-      {phrase: [1, 2, 3, 4], actions: [5, 6, 7, 8, 9]},
-      {phrase: [10, 11], actions: [12, 13, 14, 15]},
-      {phrase: [16], actions: [17]},
-    ]
-
-    it("should should convert back-forth a file", function () {
-      expect(chordsFromFile(chordsToFile(fileData))).toEqual(fileData)
     })
   })
 })

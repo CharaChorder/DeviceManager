@@ -1,10 +1,11 @@
 <script lang="ts">
   import {chords} from "$lib/serial/connection"
-  import type {Chord} from "$lib/serial/connection"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import FlexSearch from "flexsearch"
   import type {Index} from "flexsearch"
   import {tick} from "svelte"
+  import type {Chord} from "$lib/serial/chord"
+  import {getSharableUrl, stringifyCompressed} from "$lib/serial/serialization"
 
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
 
@@ -24,6 +25,20 @@
       searchFilter = query && searchIndex ? searchIndex.search(query) : undefined
       await tick()
     })
+  }
+
+  async function downloadBackup() {
+    const downloadUrl = URL.createObjectURL(await stringifyCompressed($chords))
+    const element = document.createElement("a")
+    element.setAttribute("download", "chords.json.gz")
+    element.href = downloadUrl
+    element.setAttribute("target", "_blank")
+    element.click()
+    URL.revokeObjectURL(downloadUrl)
+  }
+
+  async function createShareUrl() {
+    console.log(await getSharableUrl("chords", $chords))
   }
 
   $: items = searchFilter?.map(it => [$chords[it], it]) ?? $chords.map((it, i) => [it, i])
@@ -55,6 +70,12 @@
       </tr>
     {/each}
   </table>
+  <div class="backup">
+    <button class="icon" title="Sharable URL" on:click={createShareUrl()}>share</button>
+    <div class="icon" title="Chords have been backed up to this browser.">cloud_done</div>
+    <button class="icon" title="Restore local chord backup">backup</button>
+    <button class="icon" title="Download local chord backup" on:click={downloadBackup}>cloud_download</button>
+  </div>
 </section>
 
 <style lang="scss">
@@ -85,6 +106,11 @@
     }
   }
 
+  .backup {
+    display: flex;
+    flex-direction: column;
+  }
+
   section {
     --scrollbar-color: var(--md-sys-color-surface-variant);
 
@@ -94,6 +120,7 @@
 
     overflow-x: hidden;
     overflow-y: auto;
+    display: flex;
 
     padding-inline: 8px;
 
