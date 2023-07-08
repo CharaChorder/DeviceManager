@@ -2,6 +2,7 @@ import {writable} from "svelte/store"
 import {CharaDevice} from "$lib/serial/device"
 import type {Chord} from "$lib/serial/chord"
 import type {Writable} from "svelte/store"
+import type {CharaLayout} from "$lib/serialization/layout"
 
 export const serialPort = writable<CharaDevice>()
 
@@ -13,8 +14,6 @@ export interface SerialLogEntry {
 export const serialLog = writable<SerialLogEntry[]>([])
 
 export const chords = writable<Chord[]>([])
-
-export type CharaLayout = [number[], number[], number[]]
 
 export const layout = writable<CharaLayout>([[], [], []])
 
