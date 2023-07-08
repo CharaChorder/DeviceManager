@@ -63,6 +63,7 @@
     color: var(--md-sys-color-tertiary);
   }
 
+  .button:hover:not(:active),
   a:hover:not(:active),
   button:hover:not(:active) {
     filter: brightness(70%);
