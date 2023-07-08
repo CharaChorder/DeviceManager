@@ -2,7 +2,8 @@
   import {serialPort, syncStatus} from "$lib/serial/connection"
   import {browser} from "$app/environment"
   import {page} from "$app/stores"
-  import {slide} from "svelte/transition"
+  import {slide, fly} from "svelte/transition"
+  import {canShare, triggerShare} from "$lib/share"
 
   const training = [
     {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
@@ -29,6 +30,10 @@
   </div>
 
   <div class="actions">
+    {#if $canShare}
+      <a transition:fly={{x: -8}} class="icon" on:click={triggerShare}>share</a>
+      <div transition:slide class="separator" />
+    {/if}
     {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
       <PwaStatus />
     {/await}
@@ -63,7 +68,7 @@
     >
       cable
     </a>
-    <a href="/" title="Statistics" class="icon account">person</a>
+    <a href="/stats/" title="Statistics" class="icon account">person</a>
   </div>
 </nav>
 
@@ -119,6 +124,12 @@
     border-radius: 4px;
   }
 
+  .separator {
+    width: 1px;
+    height: 24px;
+    background: var(--md-sys-color-outline-variant);
+  }
+
   nav {
     display: flex;
     gap: 4px;
@@ -142,6 +153,10 @@
     cursor: pointer;
 
     position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     aspect-ratio: 1;
     padding: 4px;
@@ -168,6 +183,9 @@
   }
 
   .steps {
+    position: absolute;
+    left: 50%;
+    translate: -50% 0;
     display: flex;
 
     > a.icon {

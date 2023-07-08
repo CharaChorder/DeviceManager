@@ -45,6 +45,8 @@
     "vite-plugin-pwa": "^0.16.4",
     "@modyfi/vite-plugin-yaml": "^1.0.4",
     "svelte-preprocess": "^5.0.4",
+    "vite-plugin-mkcert": "^1.16.0",
+    "tippy.js": "^6.3.7",
     "autoprefixer": "^10.4.14",
     "sass": "^1.63.6"
   },
