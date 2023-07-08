@@ -9,9 +9,9 @@ export interface Chord {
  * @example "000CC200000000000000000000000000 7468726565"
  */
 export function chordAsCommandCompatible(chord: Chord): string {
-  return `${serializeActions(chord.actions).toString(16).padStart(32)} ${chord.phrase.map(it =>
-    it.toString(16),
-  )}`
+  return `${serializeActions(chord.actions).toString(16).padStart(32, "0")} ${chord.phrase
+    .map(it => it.toString(16).padStart(2, "0"))
+    .join("")}`.toUpperCase()
 }
 
 /**
@@ -36,8 +36,8 @@ export function chordFromCommandCompatible(command: string): Chord {
  */
 export function serializeActions(actions: number[]): bigint {
   let native = 0n
-  for (let i = 0; i < actions.length; i++) {
-    native |= BigInt(actions[i] & 0x3ff) << BigInt((11 - i) * 10)
+  for (let i = 1; i <= actions.length; i++) {
+    native |= BigInt(actions[actions.length - i] & 0x3ff) << BigInt((12 - i) * 10)
   }
   return native
 }
@@ -91,7 +91,7 @@ export function chordsToFile(chords: Chord[]): ArrayBuffer {
   const view = new DataView(buffer)
   let byteOffset = 0
 
-  for (const byte of CHL_MAGIC) {
+  for (const byte of CHL_MAGIC.split("")) {
     view.setUint8(byteOffset++, byte.codePointAt(0)!)
   }
   view.setUint8(byteOffset++, CHL_VERSION)
@@ -99,7 +99,7 @@ export function chordsToFile(chords: Chord[]): ArrayBuffer {
   byteOffset += 4
   for (const chord of chords) {
     const actions = serializeActions(chord.actions)
-    view.setBigUint64(byteOffset, actions << 64n, true)
+    view.setBigUint64(byteOffset, actions >> 64n, true)
     byteOffset += 8
     view.setBigUint64(byteOffset, actions & 0xffff_ffff_ffff_ffffn, true)
     byteOffset += 8
@@ -121,17 +121,18 @@ export function chordsFromFile(buffer: ArrayBuffer): Chord[] {
   const view = new DataView(buffer)
   let byteOffset = 0
 
-  let magic = ""
+  const magic = []
   for (let i = 0; i < CHL_MAGIC.length; i++) {
-    magic += view.getUint8(byteOffset++)
+    magic.push(view.getUint8(byteOffset++))
   }
-  if (magic !== CHL_MAGIC) throw new Error("Not a .chl file")
+  const magicString = String.fromCodePoint(...magic)
+  if (magicString !== CHL_MAGIC) throw new Error(`Not a .chl file [magic ${magicString}]`)
   if (view.getUint8(byteOffset++) !== CHL_VERSION) throw Error("Invalid .chl [version]")
 
   const chords: Chord[] = Array.from({length: view.getUint32(byteOffset, true)})
   byteOffset += 4
   for (let i = 0; i < chords.length; i++) {
-    let actions = view.getBigUint64(byteOffset, true) >> 64n
+    let actions = view.getBigUint64(byteOffset, true) << 64n
     byteOffset += 8
     actions |= view.getBigUint64(byteOffset, true)
     byteOffset += 8
