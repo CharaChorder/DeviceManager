@@ -10,7 +10,7 @@
 
 <nav>
   {#each paths as { href, title, icon }}
-    <a {href} class:active={$page.url.pathname === href}>
+    <a {href} class:active={$page.url.pathname.startsWith(href)}>
       <span class="icon">{icon}</span>
       {title}
     </a>

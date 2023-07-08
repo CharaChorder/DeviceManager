@@ -1,5 +1,5 @@
 <script>
-  import {serialPort, syncing} from "$lib/serial/connection"
+  import {serialPort, syncStatus} from "$lib/serial/connection"
   import {browser} from "$app/environment"
   import {page} from "$app/stores"
 
@@ -39,13 +39,19 @@
         warning
       </abbr>
     {/if}
+    {#if $syncStatus === "downloading"}
+      <abbr title="Backing up settings" class="icon sync backup">backup</abbr>
+    {:else if $syncStatus === "uploading"}
+      <abbr title="Saving settings" class="icon sync save">cloud_download</abbr>
+    {:else if $syncStatus === "done"}
+      <abbr title="Device settings are up-to-date" class="icon">cloud_done</abbr>
+    {/if}
     <a
-      href="/device-manager/"
+      href="/config/"
       title="Device Manager"
       class="icon connect"
-      class:active={$page.url.pathname === "/device-manager/"}
+      class:active={$page.url.pathname.startsWith("/config/")}
       class:error={$serialPort === undefined}
-      class:syncing={$syncing}
     >
       cable
     </a>
@@ -54,6 +60,51 @@
 </nav>
 
 <style lang="scss">
+  @keyframes sync {
+    0% {
+      scale: 1 1;
+      opacity: 1;
+    }
+
+    85% {
+      scale: 1 0;
+      opacity: 1;
+    }
+
+    86% {
+      scale: 1 1;
+      opacity: 0;
+    }
+
+    100% {
+      scale: 1 1;
+      opacity: 1;
+    }
+  }
+
+  .sync::after {
+    content: "";
+
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform-origin: top;
+    translate: -50% 0;
+
+    width: 8px;
+    height: 10px;
+
+    background: var(--md-sys-color-background);
+
+    animation: sync 1s linear infinite;
+  }
+
+  .sync.save::after {
+    transform-origin: bottom;
+    top: 10px;
+    border-radius: 4px;
+  }
+
   nav {
     display: flex;
     gap: 4px;
@@ -140,51 +191,5 @@
     font-size: 32px;
     color: var(--md-sys-color-on-secondary-container);
     background: var(--md-sys-color-secondary-container);
-  }
-
-  @keyframes sync {
-    from {
-      rotate: 0deg;
-    }
-
-    to {
-      rotate: -360deg;
-    }
-  }
-
-  .connect::after {
-    pointer-events: none;
-    content: "sync";
-
-    position: absolute;
-    bottom: 0;
-    left: 0;
-
-    display: table-cell;
-
-    padding-top: 0.5px;
-
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--md-sys-color-on-background);
-
-    opacity: 0;
-    background: var(--md-sys-color-background);
-    border-radius: 50%;
-
-    alignment-baseline: top;
-
-    transition: opacity 250ms ease;
-    animation: sync 1s linear infinite;
-  }
-
-  .connect:active::after,
-  .connect.active::after {
-    color: var(--md-sys-color-on-primary);
-    background: var(--md-sys-color-primary);
-  }
-
-  .connect.syncing::after {
-    opacity: 1;
   }
 </style>

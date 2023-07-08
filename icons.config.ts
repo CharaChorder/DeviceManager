@@ -35,6 +35,9 @@ const config: IconsConfig = {
     "cloud_download",
     "share",
     "ios_share",
+    "close",
+    "arrow_back",
+    "arrow_back_ios_new",
   ],
   codePoints: {
     speed: "e9e4",

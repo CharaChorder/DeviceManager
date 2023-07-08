@@ -12,7 +12,10 @@
   function buildIndex(chords: Chord[]): Index {
     const index = new FlexSearch({tokenize: "full"})
     chords.forEach((chord, i) => {
-      index.add(i, chord.phrase)
+      index.add(
+        i,
+        chord.phrase.map(it => KEYMAP_CODES[it].id),
+      )
     })
     return index
   }
@@ -56,7 +59,11 @@
   <table>
     {#each items.slice(0, 50) as [{ phrase, actions }, i]}
       <tr style="view-transition-name: chord-{i}">
-        <th>{phrase}</th>
+        <th>
+          {#each phrase as char}
+            {KEYMAP_CODES[char].id}
+          {/each}
+        </th>
         <td>
           {#each actions as action}
             {@const keyInfo = KEYMAP_CODES[action]}

@@ -1,6 +1,7 @@
 import {writable} from "svelte/store"
 import {CharaDevice} from "$lib/serial/device"
 import type {Chord} from "$lib/serial/chord"
+import type {Writable} from "svelte/store"
 
 export const serialPort = writable<CharaDevice>()
 
@@ -17,12 +18,14 @@ export type CharaLayout = [number[], number[], number[]]
 
 export const layout = writable<CharaLayout>([[], [], []])
 
-export const syncing = writable(false)
+export const unsavedChanges = writable(0)
+
+export const syncStatus: Writable<"done" | "error" | "downloading" | "uploading"> = writable("done")
 
 let device: CharaDevice // @hmr:keep
 
 export async function initSerial() {
-  syncing.set(true)
+  syncStatus.set("downloading")
   device ??= new CharaDevice()
   serialPort.set(device)
 
@@ -40,5 +43,5 @@ export async function initSerial() {
     chordInfo.push(await device.getChord(i))
   }
   chords.set(chordInfo)
-  syncing.set(false)
+  syncStatus.set("done")
 }

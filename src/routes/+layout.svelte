@@ -11,6 +11,7 @@
   import {pwaInfo} from "virtual:pwa-info"
   import type {LayoutServerData} from "./$types"
   import type {RegisterSWOptions} from "vite-plugin-pwa/types"
+  import {initLocalStorage} from "$lib/serial/storage"
 
   export let data: LayoutServerData
 
@@ -20,6 +21,7 @@
     ])
     const dark = true // window.matchMedia("(prefers-color-scheme: dark)").matches
     applyTheme(theme, {target: document.body, dark})
+    initLocalStorage()
 
     if (pwaInfo) {
       // noinspection TypeScriptCheckImport
