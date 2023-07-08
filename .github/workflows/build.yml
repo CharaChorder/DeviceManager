@@ -3,7 +3,6 @@ name: Build
 on:
   push:
     branches: [ "master" ]
-    tags: ["v*"]
   pull_request:
     branches: [ "master" ]
 
@@ -43,7 +42,7 @@ jobs:
         path: build
   deploy:
     name: 🚀 Deploy
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    if: github.event_name == 'push' && contains(github.event.head_commit_message, '[deploy]')
     runs-on: ubuntu-latest
     needs: build
     environment:
