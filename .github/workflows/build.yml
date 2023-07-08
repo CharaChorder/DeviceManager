@@ -42,7 +42,7 @@ jobs:
         path: build
   deploy:
     name: 🚀 Deploy
-    if: github.event_name == 'push' && contains(github.event.head_commit_message, '[deploy]')
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[deploy]')
     runs-on: ubuntu-latest
     needs: build
     environment:
