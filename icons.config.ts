@@ -38,6 +38,8 @@ const config: IconsConfig = {
     "close",
     "arrow_back",
     "arrow_back_ios_new",
+    "save",
+    "settings_backup_restore",
   ],
   codePoints: {
     speed: "e9e4",

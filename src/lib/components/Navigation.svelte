@@ -2,6 +2,7 @@
   import {serialPort, syncStatus} from "$lib/serial/connection"
   import {browser} from "$app/environment"
   import {page} from "$app/stores"
+  import {slide} from "svelte/transition"
 
   const training = [
     {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
@@ -39,13 +40,20 @@
         warning
       </abbr>
     {/if}
-    {#if $syncStatus === "downloading"}
-      <abbr title="Backing up settings" class="icon sync backup">backup</abbr>
-    {:else if $syncStatus === "uploading"}
-      <abbr title="Saving settings" class="icon sync save">cloud_download</abbr>
-    {:else if $syncStatus === "done"}
-      <abbr title="Device settings are up-to-date" class="icon">cloud_done</abbr>
-    {/if}
+    <a
+      title="Backup & Restore"
+      href="/backup/"
+      class="icon {$syncStatus}"
+      class:active={$page.url.pathname.startsWith("/backup/")}
+    >
+      {#if $syncStatus === "downloading"}
+        backup
+      {:else if $syncStatus === "uploading"}
+        cloud_download
+      {:else}
+        cloud_done
+      {/if}
+    </a>
     <a
       href="/config/"
       title="Device Manager"
@@ -82,7 +90,8 @@
     }
   }
 
-  .sync::after {
+  .uploading::after,
+  .downloading::after {
     content: "";
 
     position: absolute;
@@ -99,9 +108,14 @@
     animation: sync 1s linear infinite;
   }
 
-  .sync.save::after {
-    transform-origin: bottom;
+  .downloading.active::after,
+  .uploading.active::after {
+    background: var(--md-sys-color-primary);
+  }
+
+  .sync.downloading::after {
     top: 10px;
+    transform-origin: bottom;
     border-radius: 4px;
   }
 
