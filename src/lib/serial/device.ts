@@ -1,6 +1,7 @@
 import {LineBreakTransformer} from "$lib/serial/line-break-transformer"
 import {serialLog} from "$lib/serial/connection"
-import type {Chord} from "$lib/serial/connection"
+import type {Chord} from "$lib/serial/chord"
+import {chordFromCommandCompatible} from "$lib/serial/chord"
 
 export const VENDOR_ID = 0x239a
 
@@ -130,26 +131,7 @@ export class CharaDevice {
   }
 
   async getChord(index: number): Promise<Chord> {
-    const chord = await this.send(`CML C1 ${index}`)
-    const [keys, rawPhrase] = chord.split(" ")
-    let phrase = []
-    for (let i = 0; i < rawPhrase.length; i += 2) {
-      phrase.push(Number.parseInt(rawPhrase.substring(i, i + 2), 16))
-    }
-    let bigKeys = BigInt(`0x${keys}`)
-    let actions = []
-    for (let i = 0; i < 12; i++) {
-      const action = Number(bigKeys & BigInt(0b1111111111))
-      if (action !== 0) {
-        actions.push(action)
-      }
-      bigKeys >>= BigInt(10)
-    }
-
-    return {
-      actions,
-      phrase: String.fromCodePoint(...phrase),
-    }
+    return chordFromCommandCompatible(await this.send(`CML C1 ${index}`))
   }
 
   async getLayoutKey(layer: number, id: number) {

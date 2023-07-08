@@ -1,5 +1,6 @@
 import {writable} from "svelte/store"
 import {CharaDevice} from "$lib/serial/device"
+import type {Chord} from "$lib/serial/chord"
 
 export const serialPort = writable<CharaDevice>()
 
@@ -9,11 +10,6 @@ export interface SerialLogEntry {
 }
 
 export const serialLog = writable<SerialLogEntry[]>([])
-
-export interface Chord {
-  actions: number[]
-  phrase: string
-}
 
 export const chords = writable<Chord[]>([])
 
@@ -43,7 +39,6 @@ export async function initSerial() {
   for (let i = 0; i < chordCount; i++) {
     chordInfo.push(await device.getChord(i))
   }
-  chordInfo.sort(({phrase: a}, {phrase: b}) => a.localeCompare(b))
   chords.set(chordInfo)
   syncing.set(false)
 }
