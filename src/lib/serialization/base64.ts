@@ -9,11 +9,11 @@ export async function toBase64(blob: Blob): Promise<string> {
     const reader = new FileReader()
     reader.onloadend = function () {
       resolve(
-        (reader.result as string)
+        `${(reader.result as string)
           .replace(/^data:application\/octet-stream;base64,/, "")
-          .replaceAll("+", "~")
+          .replaceAll("+", ".")
           .replaceAll("/", "_")
-          .replaceAll("=", "-"),
+          .replaceAll("=", "-")}-`,
       )
     }
     reader.readAsDataURL(blob)
@@ -23,7 +23,8 @@ export async function toBase64(blob: Blob): Promise<string> {
 export async function fromBase64(base64: string): Promise<Blob> {
   return fetch(
     `data:application/octet-stream;base64,${base64
-      .replaceAll("~", "+")
+      .replace(/-$/, "")
+      .replaceAll(".", "+")
       .replaceAll("_", "/")
       .replaceAll("-", "=")}`,
   ).then(it => it.blob())

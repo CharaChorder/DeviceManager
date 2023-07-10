@@ -34,6 +34,7 @@
             >
           {/each}
         </span>
+        &nbsp;
       {/if}
     {/each}
   </section>
@@ -54,17 +55,16 @@
   section {
     display: flex;
     flex-direction: row;
-    gap: 8px;
-
     font-size: 1.3rem;
     font-weight: 500;
   }
 
   .letter {
     position: relative;
+    filter: brightness(50%);
   }
 
-  .letter.active::before {
+  .cursor {
     content: "";
 
     position: absolute;

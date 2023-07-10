@@ -5,7 +5,6 @@ import {
   deserializeActions,
   serializeActions,
 } from "./chord"
-import type {Chord} from "./chord"
 
 describe("chords", function () {
   describe("actions", function () {
