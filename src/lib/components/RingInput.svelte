@@ -1,11 +1,11 @@
 <script lang="ts">
-  import {layout} from "$lib/serial/connection"
-  import type {CharaLayout} from "$lib/serial/connection"
+  import {highlightActions, layout} from "$lib/serial/connection"
+  import type {CharaLayout} from "$lib/serialization/layout"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import type {KeyInfo} from "$lib/serial/keymap-codes"
 
   export let activeLayer = 0
-  export let keys: Record<"d" | "n" | "w" | "e", number>
+  export let keys: Record<"d" | "s" | "n" | "w" | "e", number>
   export let type: "primary" | "secondary" | "tertiary" = "primary"
 
   const layerNames = ["Primary Layer", "Number Layer", "Function Layer"]
@@ -37,7 +37,10 @@
 <div class="radial {type}">
   {#each [keys.n, keys.e, keys.s, keys.w] as id, quadrant}
     {@const actions = getActions(id, $layout)}
-    <button title={getKeyDescriptions(actions)}>
+    <button
+      title={getKeyDescriptions(actions)}
+      class:active={actions.some(it => it && $highlightActions?.includes(it.code))}
+    >
       {#each actions as keyInfo, layer}
         {#if keyInfo}
           <span
@@ -136,6 +139,7 @@
     mask-image: url("$lib/assets/quater-ring.svg");
     mask-size: 100% 100%;
 
+    &.active,
     &:active {
       color: var(--md-sys-color-on-tertiary);
       background: var(--md-sys-color-tertiary);
