@@ -5,16 +5,15 @@
   import type {Index} from "flexsearch"
   import {tick} from "svelte"
   import type {Chord} from "$lib/serial/chord"
+  import tippy from "tippy.js"
+  import {calculateChordCoverage} from "$lib/chords/coverage"
 
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
 
   function buildIndex(chords: Chord[]): Index {
     const index = new FlexSearch({tokenize: "full"})
     chords.forEach((chord, i) => {
-      index.add(
-        i,
-        chord.phrase.map(it => KEYMAP_CODES[it].id),
-      )
+      index.add(i, chord.phrase.map(it => KEYMAP_CODES[it].id).join(""))
     })
     return index
   }
@@ -29,6 +28,10 @@
     })
   }
 
+  function sort(event: InputEvent) {
+    tippy(event.target, {})
+  }
+
   $: items = searchFilter?.map(it => [$chords[it], it]) ?? $chords.map((it, i) => [it, i])
 </script>
 
@@ -39,6 +42,8 @@
 {#if searchIndex}
   <input on:input={search} type="search" placeholder="Search {$chords.length} chords" />
 {/if}
+<button class="icon" on:click={sort}>sort</button>
+<button class="icon">filter</button>
 
 <section>
   <table>
@@ -62,6 +67,13 @@
       </tr>
     {/each}
   </table>
+  <div>
+    <p>15 Duplicate Chords</p>
+    <p>12 Chords use</p>
+    {#await calculateChordCoverage($chords) then { missing, coverage }}
+      <p>{(coverage * 100).toFixed(1)}% of English 200</p>
+    {/await}
+  </div>
 </section>
 
 <style lang="scss">

@@ -7,17 +7,15 @@
   $: content = Array.from({length: 10}).map(() => $chords[Math.floor(Math.random() * $chords.length)])
 
   let cursor = [0, 0]
+  let input = []
 
   $: {
     $highlightActions = content[cursor[0]]?.actions ?? []
   }
 
   function keypress(event: KeyboardEvent) {
-    cursor[1]++
-    if (cursor[1] >= content[cursor[0]].phrase.length) {
-      cursor[0]++
-      cursor[1] = 0
-    }
+    cursor++
+    input.push(event.key)
   }
 </script>
 
@@ -25,15 +23,12 @@
 
 <div>
   <section>
+    <!-- <div class="cursor" style="translate: calc({cursor}ch - 50%) -50%" /> -->
     {#each content as word, i}
       {#if word}
-        <span class="word">
-          {#each word.phrase as letter, j}
-            <span class="letter" class:active={i === cursor[0] && j === cursor[1]}
-              >{KEYMAP_CODES[letter].id}</span
-            >
-          {/each}
-        </span>
+        {#each word.phrase as letter, j}
+          <span>{KEYMAP_CODES[letter].id}</span>
+        {/each}
         &nbsp;
       {/if}
     {/each}
@@ -53,8 +48,11 @@
   }
 
   section {
+    position: relative;
+
     display: flex;
     flex-direction: row;
+
     font-size: 1.3rem;
     font-weight: 500;
   }
@@ -65,15 +63,16 @@
   }
 
   .cursor {
-    content: "";
-
     position: absolute;
     top: 50%;
+    left: 0;
     translate: -50% -50%;
 
     width: 2px;
     height: 1em;
 
     background: var(--md-sys-color-primary);
+
+    transition: all 250ms ease;
   }
 </style>

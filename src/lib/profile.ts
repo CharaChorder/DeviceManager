@@ -1,5 +1,5 @@
-import type {CharaLayout} from "$lib/serial/connection"
 import type {Chord} from "$lib/serial/chord"
+import type {CharaLayout} from "$lib/serialization/layout"
 
 export interface Profile {
   name: string

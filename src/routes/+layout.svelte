@@ -12,6 +12,8 @@
   import type {LayoutServerData} from "./$types"
   import type {RegisterSWOptions} from "vite-plugin-pwa/types"
   import {initLocalStorage} from "$lib/serial/storage"
+  import {browser} from "$app/environment"
+  import BrowserWarning from "./BrowserWarning.svelte"
 
   export let data: LayoutServerData
 
@@ -52,6 +54,10 @@
 <main>
   <slot />
 </main>
+
+{#if browser && !/Chrome\/[\d.]+(\s(?!Mobile)|$)/.test(navigator.userAgent)}
+  <BrowserWarning />
+{/if}
 
 <style lang="scss" global>
   * {

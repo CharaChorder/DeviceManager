@@ -1,5 +1,6 @@
 <script>
   import RingInput from "$lib/components/RingInput.svelte"
+  import layout from "$lib/assets/layouts/cc1.yml"
 
   let activeLayer = 0
 </script>
