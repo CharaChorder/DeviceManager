@@ -1,0 +1,12 @@
+.tippy-box[data-theme~="surface-variant"] {
+  color: var(--md-sys-color-on-surface-variant);
+  background-color: var(--md-sys-color-surface-variant);
+
+  filter: drop-shadow(0 0 12px #000a);
+
+  @each $placement in top, bottom, right, left {
+    &[data-placement^="#{$placement}"] > .tippy-arrow::before {
+      border-#{$placement}-color: var(--md-sys-color-surface-variant);
+    }
+  }
+}

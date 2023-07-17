@@ -27,13 +27,7 @@
   },
   {
     "name": "french",
-    "languages": [
-      "french",
-      "french_1k",
-      "french_2k",
-      "french_10k",
-      "french_600k"
-    ]
+    "languages": ["french", "french_1k", "french_2k", "french_10k", "french_600k"]
   },
   {
     "name": "german",
@@ -53,13 +47,7 @@
   },
   {
     "name": "italian",
-    "languages": [
-      "italian",
-      "italian_1k",
-      "italian_7k",
-      "italian_60k",
-      "italian_280k"
-    ]
+    "languages": ["italian", "italian_1k", "italian_7k", "italian_60k", "italian_280k"]
   },
   {
     "name": "friulian",
@@ -83,26 +71,11 @@
   },
   {
     "name": "russian",
-    "languages": [
-      "russian",
-      "russian_1k",
-      "russian_10k",
-      "russian_25k",
-      "russian_50k",
-      "russian_375k"
-    ]
+    "languages": ["russian", "russian_1k", "russian_10k", "russian_25k", "russian_50k", "russian_375k"]
   },
   {
     "name": "polish",
-    "languages": [
-      "polish",
-      "polish_2k",
-      "polish_5k",
-      "polish_10k",
-      "polish_20k",
-      "polish_40k",
-      "polish_200k"
-    ]
+    "languages": ["polish", "polish_2k", "polish_5k", "polish_10k", "polish_20k", "polish_40k", "polish_200k"]
   },
   {
     "name": "czech",
@@ -114,13 +87,7 @@
   },
   {
     "name": "ukrainian",
-    "languages": [
-      "ukrainian",
-      "ukrainian_1k",
-      "ukrainian_10k",
-      "ukrainian_50k",
-      "ukrainian_endings"
-    ]
+    "languages": ["ukrainian", "ukrainian_1k", "ukrainian_10k", "ukrainian_50k", "ukrainian_endings"]
   },
   {
     "name": "lithuanian",
@@ -132,11 +99,7 @@
   },
   {
     "name": "kurdish_central",
-    "languages": [
-      "kurdish_central",
-      "kurdish_central_2k",
-      "kurdish_central_45k"
-    ]
+    "languages": ["kurdish_central", "kurdish_central_2k", "kurdish_central_45k"]
   },
   {
     "name": "greek",
@@ -232,13 +195,7 @@
   },
   {
     "name": "persian",
-    "languages": [
-      "persian",
-      "persian_1k",
-      "persian_5k",
-      "persian_20k",
-      "persian_romanized"
-    ]
+    "languages": ["persian", "persian_1k", "persian_5k", "persian_20k", "persian_romanized"]
   },
   {
     "name": "kazakh",
@@ -354,12 +311,7 @@
   },
   {
     "name": "macedonian",
-    "languages": [
-      "macedonian",
-      "macedonian_1k",
-      "macedonian_10k",
-      "macedonian_75k"
-    ]
+    "languages": ["macedonian", "macedonian_1k", "macedonian_10k", "macedonian_75k"]
   },
   {
     "name": "belarusian",
@@ -434,13 +386,7 @@
   },
   {
     "name": "other",
-    "languages": [
-      "lojban_gismu",
-      "lojban_cmavo",
-      "pig_latin",
-      "twitch_emotes",
-      "git"
-    ]
+    "languages": ["lojban_gismu", "lojban_cmavo", "pig_latin", "twitch_emotes", "git"]
   },
   {
     "name": "amharic",

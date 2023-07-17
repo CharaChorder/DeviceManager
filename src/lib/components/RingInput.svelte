@@ -3,6 +3,7 @@
   import type {CharaLayout} from "$lib/serialization/layout"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import type {KeyInfo} from "$lib/serial/keymap-codes"
+  import {editableLayout} from "$lib/editable-layout"
 
   export let activeLayer = 0
   export let keys: Record<"d" | "s" | "n" | "w" | "e", number>
@@ -19,13 +20,6 @@
     return 25 * quadrant + layerOffsetIndex * layerOffset
   }
 
-  function getKeyDescriptions(keys: KeyInfo[]): string {
-    return keys
-      .filter(it => !!it)
-      .map(({title, id, code}, i) => `${title || id || code} (${layerNames[i]})`)
-      .join("\n")
-  }
-
   function getActions(id: number, layout: CharaLayout): KeyInfo[] {
     return Array.from({length: 3}).map((_, i) => {
       const actionId = layout?.[i][id]
@@ -38,7 +32,7 @@
   {#each [keys.n, keys.e, keys.s, keys.w] as id, quadrant}
     {@const actions = getActions(id, $layout)}
     <button
-      title={getKeyDescriptions(actions)}
+      use:editableLayout={{id, quadrant}}
       class:active={actions.some(it => it && $highlightActions?.includes(it.code))}
     >
       {#each actions as keyInfo, layer}

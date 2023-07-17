@@ -2,6 +2,7 @@
   import "$lib/fonts/noto-sans-mono.scss"
   import "$lib/fonts/material-symbols-rounded.scss"
   import "$lib/style/scrollbar.scss"
+  import "$lib/style/tippy.scss"
   import {onMount} from "svelte"
   import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
   import Navigation from "$lib/components/Navigation.svelte"
@@ -14,6 +15,19 @@
   import {initLocalStorage} from "$lib/serial/storage"
   import {browser} from "$app/environment"
   import BrowserWarning from "./BrowserWarning.svelte"
+  import "tippy.js/animations/shift-away.css"
+  import "tippy.js/dist/tippy.css"
+  import tippy from "tippy.js"
+
+  if (browser) {
+    tippy.setDefaultProps({
+      animation: "shift-away",
+      theme: "surface-variant",
+      allowHTML: true,
+      duration: 250,
+      arrow: true,
+    })
+  }
 
   export let data: LayoutServerData
 

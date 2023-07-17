@@ -19,8 +19,7 @@
     await navigator.clipboard.writeText(url.toString())
     tippy(event.target, {
       content: "Share url copied!",
-      hideOnClick: true,
-      duration: 4000,
+      delay: [0, 1000000],
       onHidden(instance) {
         instance.destroy()
       },
