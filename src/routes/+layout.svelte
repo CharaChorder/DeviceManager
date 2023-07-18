@@ -58,7 +58,7 @@
 
 <svelte:head>
   {@html webManifestLink}
-  <title>dot i/o</title>
+  <title>amaCC1ng</title>
   <meta name="description" content="Tool for CharaChorder devices" />
   <meta name="theme-color" content={data.themeColor} />
 </svelte:head>

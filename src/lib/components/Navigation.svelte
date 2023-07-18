@@ -15,7 +15,7 @@
 </script>
 
 <nav>
-  <a href="/" class="title">dot i/o</a>
+  <a href="/" class="title">amaCC1ng</a>
 
   <div class="steps">
     {#each training as { slug, title, icon }}
