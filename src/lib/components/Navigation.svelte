@@ -1,6 +1,5 @@
 <script>
   import {serialPort, syncStatus} from "$lib/serial/connection"
-  import {browser} from "$app/environment"
   import {page} from "$app/stores"
   import {slide, fly} from "svelte/transition"
   import {canShare, triggerShare} from "$lib/share"
@@ -37,14 +36,6 @@
     {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
       <PwaStatus />
     {/await}
-    {#if browser && !("serial" in navigator)}
-      <abbr
-        title="Your browser does not support serial connections. Try using Chrome instead."
-        class="icon error"
-      >
-        warning
-      </abbr>
-    {/if}
     <a
       title="Backup & Restore"
       href="/backup/"

@@ -10,6 +10,7 @@ export const editableLayout: Action<HTMLButtonElement, {id: number; quadrant: nu
   const edit = tippy(node, {
     interactive: true,
     appendTo: document.body,
+    trigger: "click",
     placement: (["top", "right", "bottom", "left"] as const)[quadrant],
     onShow(instance) {
       component ??= new InputEdit({

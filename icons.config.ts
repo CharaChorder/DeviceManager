@@ -13,6 +13,7 @@ const config: IconsConfig = {
     "piano",
     "keyboard",
     "settings",
+    "edit",
     "music_note",
     "avg_pace",
     "lyrics",
