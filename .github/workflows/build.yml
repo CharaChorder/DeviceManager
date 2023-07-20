@@ -19,8 +19,7 @@ jobs:
           python-version: 3.x
           cache: pip
       - name: ⏬ Install Python dependencies
-        run: python -m venv venv
-      - run: ./venv/bin/pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: 🐉 Use Node.js 18.16.x
         uses: actions/setup-node@v3

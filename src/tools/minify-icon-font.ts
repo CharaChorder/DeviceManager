@@ -77,15 +77,9 @@ for (const icon of icons) {
 }
 glyphs.sort()
 
-const pythonPath = "./venv/bin/python"
-if (!existsSync(pythonPath)) {
-  throw new Error(`Expected a python virtual environment at ${pythonPath}`)
-}
-console.log(await run(`${pythonPath} --version`))
 console.log(
   await run([
-    pythonPath,
-    "-m fontTools.subset",
+    "pyftsubset",
     `"${config.inputPath}"`,
     `--unicodes=${glyphs.join(",")}`,
     "--no-layout-closure",
