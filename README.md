@@ -11,8 +11,18 @@ and more complete way to configure and learn CharaChorder devices.
 
 ## Development
 
+### Nix
+
+[Enable flakes](https://nixos.wiki/wiki/Flakes#Enable_flakes), then start the development shell using
+
+```shell
+nix develop
+```
+
+### Other platforms
+
 - NodeJS >=18.16
-- Python >=3.10 virtual environment
+- Python >=3.10
 
 I know, python in JS projects is extremely annoying, unfortunately,
 it seems to be the only platform that offers a functional
