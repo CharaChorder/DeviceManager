@@ -1,4 +1,4 @@
-import {writable} from "svelte/store"
+import {get, writable} from "svelte/store"
 import {CharaDevice} from "$lib/serial/device"
 import type {Chord} from "$lib/serial/chord"
 import type {Writable} from "svelte/store"
@@ -26,10 +26,11 @@ export const syncStatus: Writable<"done" | "error" | "downloading" | "uploading"
 let device: CharaDevice // @hmr:keep
 
 export async function initSerial() {
-  syncStatus.set("downloading")
-  device ??= new CharaDevice()
+  const device = get(serialPort) ?? new CharaDevice()
+  await device.ready()
   serialPort.set(device)
 
+  syncStatus.set("downloading")
   const parsedLayout: CharaLayout = [[], [], []]
   for (let layer = 1; layer <= 3; layer++) {
     for (let i = 0; i < 90; i++) {

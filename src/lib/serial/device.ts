@@ -5,8 +5,12 @@ import {chordFromCommandCompatible} from "$lib/serial/chord"
 
 export const VENDOR_ID = 0x239a
 
-export async function hasSerialPermission() {
-  return navigator.serial.getPorts().then(it => it.length > 0)
+export async function getViablePorts(): Promise<SerialPort[]> {
+  return navigator.serial.getPorts().then(ports => ports.filter(it => it.getInfo().usbVendorId === VENDOR_ID))
+}
+
+export async function canAutoConnect() {
+  return getViablePorts().then(it => it.length === 1)
 }
 
 export class CharaDevice {
@@ -22,10 +26,11 @@ export class CharaDevice {
   deviceId: Promise<string>
 
   constructor(baudRate = 115200) {
-    this.port = navigator.serial.getPorts().then(async ports => {
+    this.port = getViablePorts().then(async ports => {
       const port =
-        ports.find(it => it.getInfo().usbVendorId === VENDOR_ID) ??
-        (await navigator.serial.requestPort({filters: [{usbVendorId: VENDOR_ID}]}))
+        ports.length === 1
+          ? ports[0]
+          : await navigator.serial.requestPort({filters: [{usbVendorId: VENDOR_ID}]})
       await port.open({baudRate})
       const info = port.getInfo()
       serialLog.update(it => {
@@ -89,6 +94,21 @@ export class CharaDevice {
     } finally {
       writer.releaseLock()
     }
+  }
+
+  async ready() {
+    await this.port
+  }
+
+  async forget() {
+    await (await this.port).forget()
+  }
+
+  async disconnect() {
+    this.abortController1.abort()
+    this.abortController2.abort()
+    ;(await this.reader).releaseLock()
+    await (await this.port).close()
   }
 
   /**

@@ -1,8 +1,13 @@
-<script>
+<script lang="ts">
   import {serialPort, syncStatus} from "$lib/serial/connection"
   import {page} from "$app/stores"
   import {slide, fly} from "svelte/transition"
   import {canShare, triggerShare} from "$lib/share"
+  import {popup} from "$lib/popup"
+  import BackupPopup from "./BackupPopup.svelte"
+  import ConnectionPopup from "./ConnectionPopup.svelte"
+  import {canAutoConnect} from "$lib/serial/device"
+  import {browser} from "$app/environment"
 
   const training = [
     {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
@@ -12,6 +17,12 @@
     {slug: "top-wpm", title: "tWPM - Top Words Per Minute", icon: "speed"},
     {slug: "cm", title: "CM - Concepts Mastered", icon: "cognition"},
   ]
+
+  $: if (browser && !canAutoConnect()) {
+    connectButton?.click()
+  }
+
+  let connectButton: HTMLButtonElement
 </script>
 
 <nav>
@@ -36,29 +47,26 @@
     {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
       <PwaStatus />
     {/await}
-    <a
-      title="Backup & Restore"
-      href="/backup/"
-      class="icon {$syncStatus}"
-      class:active={$page.url.pathname.startsWith("/backup/")}
-    >
-      {#if $syncStatus === "downloading"}
-        backup
-      {:else if $syncStatus === "uploading"}
-        cloud_download
-      {:else}
-        cloud_done
-      {/if}
-    </a>
-    <a
-      href="/config/"
-      title="Device Manager"
+    {#if $serialPort}
+      <button title="Backup & Restore" use:popup={BackupPopup} class="icon {$syncStatus}">
+        {#if $syncStatus === "downloading"}
+          backup
+        {:else if $syncStatus === "uploading"}
+          cloud_download
+        {:else}
+          cloud_done
+        {/if}
+      </button>
+    {/if}
+    <button
+      bind:this={connectButton}
+      title="Devices"
+      use:popup={ConnectionPopup}
       class="icon connect"
-      class:active={$page.url.pathname.startsWith("/config/")}
       class:error={$serialPort === undefined}
     >
       cable
-    </a>
+    </button>
     <a href="/stats/" title="Statistics" class="icon account">person</a>
   </div>
 </nav>

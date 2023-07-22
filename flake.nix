@@ -6,9 +6,7 @@
       overlays = [
         (final: prev: rec {
           nodejs = prev.nodejs-18_x;
-          chrome = prev.google-chrome;
-          firefox = prev.firefox;
-          webkit = prev.epiphany; # Safari-ish browser
+          chrome = prev.chromium;
         })
       ];
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
@@ -27,12 +25,9 @@
       {
         default = pkgs.mkShell {
           packages = with pkgs; [
-            node2nix
             nodejs
             python
-            firefox
             chrome
-            webkit
           ];
         };
       });

@@ -1,16 +1,25 @@
 <dialog open>
   <h1>Warning</h1>
   <p>
-    Your current browser is not supported. Due to this site's unique requirement for serial connections, we
-    require the use of <b>desktop</b> versions of <b>Chromium-based</b> browsers.
+    Your current browser is not supported due to this site's unique requirement for <a
+      class="normal"
+      target="_blank"
+      href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API#browser_compatibility"
+      >serial connections</a
+    >. Though all <b>chromium-based desktop</b> browsers fulfill this requirement, some derivations such as
+    Brave
+    <a href="https://github.com/brave/brave-browser/issues/13902" target="_blank"
+      >have been known to disable the API intentionally</a
+    >.
   </p>
-  <p>Popular options include</p>
   <div>
     <a href="https://www.chromium.org/getting-involved/download-chromium/" target="_blank" class="chrome"
-      >Chromium</a
+      >Download Chromium</a
     >
+  </div>
+  <h5>Other popular options include</h5>
+  <div>
     <a href="https://www.google.com/chrome/" target="_blank" class="chrome">Chrome</a>
-    <a href="https://brave.com/" target="_blank" class="brave">Brave</a>
     <a href="https://www.microsoft.com/en-us/edge/download?form=MA13FJ" target="_blank" class="edge"
       >Microsoft Edge</a
     >
@@ -45,11 +54,13 @@
   }
 
   a {
+    color: var(--md-sys-color-on-error);
+  }
+
+  div > a {
     display: flex;
     gap: 8px;
     align-items: center;
-
-    color: var(--md-sys-color-on-error);
     list-style: none;
 
     &::before {

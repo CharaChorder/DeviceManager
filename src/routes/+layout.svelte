@@ -3,12 +3,12 @@
   import "$lib/fonts/material-symbols-rounded.scss"
   import "$lib/style/scrollbar.scss"
   import "$lib/style/tippy.scss"
+  import "$lib/style/toggle.scss"
   import {onMount} from "svelte"
   import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
-  import Navigation from "$lib/components/Navigation.svelte"
-  import {hasSerialPermission} from "$lib/serial/device"
+  import Navigation from "./Navigation.svelte"
+  import {canAutoConnect} from "$lib/serial/device"
   import {initSerial} from "$lib/serial/connection"
-  // noinspection TypeScriptCheckImport
   import {pwaInfo} from "virtual:pwa-info"
   import type {LayoutServerData} from "./$types"
   import type {RegisterSWOptions} from "vite-plugin-pwa/types"
@@ -18,6 +18,7 @@
   import "tippy.js/animations/shift-away.css"
   import "tippy.js/dist/tippy.css"
   import tippy from "tippy.js"
+  import {userPreferences} from "$lib/preferences.js"
 
   if (browser) {
     tippy.setDefaultProps({
@@ -50,7 +51,7 @@
       } satisfies RegisterSWOptions)
     }
 
-    if (await hasSerialPermission()) await initSerial()
+    if ($userPreferences.autoSync && (await canAutoConnect())) await initSerial()
   })
 
   $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ""
@@ -69,7 +70,7 @@
   <slot />
 </main>
 
-{#if browser && !/Chrome\/[\d.]+(\s(?!Mobile)|$)/.test(navigator.userAgent)}
+{#if browser && !("serial" in navigator)}
   <BrowserWarning />
 {/if}
 
@@ -83,13 +84,22 @@
     color: var(--md-sys-color-tertiary);
   }
 
+  label:has(input):hover,
   .button:hover:not(:active),
   a:hover:not(:active),
   button:hover:not(:active) {
     filter: brightness(70%);
+    transition: filter 250ms ease;
 
+    &:has(:checked),
     &.active {
       filter: brightness(120%);
+    }
+
+    &:disabled,
+    &.disabled {
+      opacity: 0.5;
+      filter: none;
     }
   }
 
