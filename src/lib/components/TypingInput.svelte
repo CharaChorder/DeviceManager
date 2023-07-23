@@ -1,6 +1,5 @@
 <script lang="ts">
-  import {tick} from "svelte"
-  import LayoutCC1 from "$lib/components/LayoutCC1.svelte"
+  import LayoutCC1 from "$lib/components/layout/LayoutCC1.svelte"
   import {chords, highlightActions} from "$lib/serial/connection"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes.js"
 

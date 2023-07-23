@@ -1,6 +1,8 @@
 <script lang="ts">
   import {layout} from "$lib/serial/connection"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
+  import ActionSelector from "$lib/components/layout/ActionSelector.svelte"
+  import {popup} from "$lib/popup"
 
   export let id: number = 0
 </script>
@@ -10,7 +12,11 @@
     {@const action = KEYMAP_CODES[layer[id]]}
     <tr>
       <th class="icon">counter_{i + 1}</th>
-      <td><button>{action?.title || action?.id} <span class="icon">edit</span></button></td>
+      <td
+        ><button use:popup={ActionSelector}
+          >{action?.title || action?.id} <span class="icon">edit</span></button
+        ></td
+      >
     </tr>
   {/each}
 </table>

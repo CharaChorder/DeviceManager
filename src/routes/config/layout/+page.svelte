@@ -1,5 +1,5 @@
 <script lang="ts">
-  import LayoutCC1 from "$lib/components/LayoutCC1.svelte"
+  import LayoutCC1 from "$lib/components/layout/LayoutCC1.svelte"
   import {share} from "$lib/share"
   import {layout} from "$lib/serial/connection"
   import tippy from "tippy.js"

@@ -1,5 +1,5 @@
 import tippy from "tippy.js"
-import InputEdit from "$lib/components/InputEdit.svelte"
+import InputEdit from "$lib/components/layout/InputEdit.svelte"
 import type {Action} from "svelte/action"
 
 export const editableLayout: Action<HTMLButtonElement, {id: number; quadrant: number}> = (

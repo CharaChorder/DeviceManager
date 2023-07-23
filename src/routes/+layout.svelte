@@ -26,6 +26,7 @@
       theme: "surface-variant",
       allowHTML: true,
       duration: 250,
+      maxWidth: "none",
       arrow: true,
     })
   }
