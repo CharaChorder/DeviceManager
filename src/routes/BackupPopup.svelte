@@ -31,15 +31,10 @@
       $layout = backup.layout
     }
   }
-
-  async function createShareUrl() {
-    console.log(await getSharableUrl("chords", $chords))
-  }
 </script>
 
 <section>
-  <h2>Backup & Restore</h2>
-  <label><input type="checkbox" use:preference={"backup"} />Local backups</label>
+  <h2><label><input type="checkbox" use:preference={"backup"} />Local Backup</label></h2>
   <p class="disclaimer">
     <i>Backups remain on your computer and are never shared or uploaded to our servers.</i>
   </p>
@@ -52,6 +47,19 @@
 </section>
 
 <style lang="scss">
+  h2 {
+    margin-block-end: 0;
+
+    > label {
+      gap: 10px;
+      font-size: 24px;
+
+      > input {
+        font-size: 12px;
+      }
+    }
+  }
+
   section {
     display: flex;
     flex-direction: column;

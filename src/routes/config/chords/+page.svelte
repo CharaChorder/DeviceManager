@@ -43,7 +43,7 @@
   <input on:input={search} type="search" placeholder="Search {$chords.length} chords" />
 {/if}
 <button class="icon" on:click={sort}>sort</button>
-<button class="icon">filter</button>
+<button class="icon">filter_list</button>
 
 <section>
   <table>

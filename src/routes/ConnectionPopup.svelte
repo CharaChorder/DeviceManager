@@ -1,16 +1,19 @@
 <script lang="ts">
   import {initSerial, serialPort} from "$lib/serial/connection"
   import {browser} from "$app/environment"
-  import {getViablePorts} from "$lib/serial/device"
-  import {slide, fade} from "svelte/transition"
+  import {slide, fade, fly} from "svelte/transition"
   import {preference} from "$lib/preferences"
+  import Terminal from "$lib/components/Terminal.svelte"
 
-  let connectDialog = false
+  let terminal = false
   let powerDialog = false
 </script>
 
 <section>
-  <h2>Device</h2>
+  <div class="row">
+    <h2>Device</h2>
+    <label>Auto-Connect<input type="checkbox" use:preference={"autoConnect"} /></label>
+  </div>
 
   {#if $serialPort}
     <p transition:slide>
@@ -22,62 +25,39 @@
 
   {#if browser}
     <div class="row">
-      <button
-        class:secondary={$serialPort}
-        class:error={!$serialPort}
-        on:click={() => (connectDialog = !connectDialog)}
-      >
-        {#if $serialPort}
-          <span class="icon">usb</span>
-        {:else}
-          <span class="icon">error</span>
-        {/if}
-        Connection
-        <span class="icon">chevron_right</span>
-      </button>
-      <button class="icon" disabled={$serialPort === undefined} on:click={() => (powerDialog = !powerDialog)}
-        >settings_power</button
-      >
-    </div>
-    {#await ($serialPort, getViablePorts()) then ports}
-      {#if connectDialog}
-        <div
-          class="backdrop"
-          transition:fade={{duration: 250}}
-          on:click={() => (connectDialog = !connectDialog)}
-        />
-        <dialog open transition:slide={{duration: 250}}>
-          <label><input type="checkbox" use:preference={"autoConnect"} />Auto Connect</label>
-          {#if $serialPort}
-            <button
-              on:click={() => {
-                $serialPort.disconnect()
-                $serialPort = undefined
-              }}><span class="icon">usb_off</span>Disconnect</button
-            >
-          {:else}
-            {#if ports.length > 0}
-              <button on:click={() => initSerial()}><span class="icon">usb</span>Connect</button>
-            {/if}
-            <button on:click={() => initSerial(true)}><span class="icon">link</span>Pair Device</button>
-          {/if}
-          {#if $serialPort}
-            <button
-              on:click={() => {
-                $serialPort.forget()
-                $serialPort = undefined
-              }}><span class="icon">link_off</span>Unpair Device</button
-            >
-          {/if}
-        </dialog>
+      {#if $serialPort}
+        <button
+          class="secondary"
+          on:click={() => {
+            $serialPort.forget()
+            $serialPort = undefined
+          }}><span class="icon">usb_off</span>Disconnect</button
+        >
+      {:else}
+        <button class="error" on:click={() => initSerial(true)}><span class="icon">usb</span>Connect</button>
       {/if}
-    {/await}
+      <div class="row" style="justify-content: flex-end">
+        <a
+          href="/terminal"
+          title="Terminal"
+          class="icon"
+          disabled={$serialPort === undefined}
+          on:click={() => (terminal = !terminal)}>terminal</a
+        >
+        <button
+          class="icon"
+          title="Boot Menu"
+          disabled={$serialPort === undefined}
+          on:click={() => (powerDialog = !powerDialog)}>settings_power</button
+        >
+      </div>
+    </div>
     {#if powerDialog}
       <div class="backdrop" transition:fade={{duration: 250}} on:click={() => (powerDialog = !powerDialog)} />
       <dialog open transition:slide={{duration: 250}}>
         <h3>Boot Menu</h3>
-        <button><span class="icon">restart_alt</span>Reboot</button>
-        <button><span class="icon">rule_settings</span>Bootloader</button>
+        <button><span class="icon">restart_alt</span>Reboot WIP</button>
+        <button><span class="icon">rule_settings</span>Bootloader WIP</button>
       </dialog>
     {/if}
   {/if}
@@ -97,6 +77,8 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+
+    min-width: 260px;
   }
 
   .backdrop {
@@ -132,7 +114,10 @@
 
   .row {
     display: flex;
-    gap: 8px;
+    gap: 0;
+    justify-content: space-between;
+
+    width: 100%;
     height: fit-content;
   }
 
@@ -154,6 +139,7 @@
     background: var(--md-sys-color-secondary);
   }
 
+  a,
   button {
     cursor: pointer;
 
@@ -168,6 +154,7 @@
 
     font-size: 1rem;
     color: var(--md-sys-color-on-background);
+    text-decoration: none;
 
     background: transparent;
     border: none;
@@ -201,14 +188,5 @@
       color: var(--md-sys-color-on-surface-variant);
       background: var(--md-sys-color-surface-variant);
     }
-  }
-
-  .device-grid {
-    contain: size;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    gap: 16px;
   }
 </style>
