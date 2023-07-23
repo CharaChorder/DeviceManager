@@ -3,12 +3,12 @@ import type {Action} from "svelte/action"
 
 export interface UserPreferences {
   backup: boolean
-  autoSync: boolean
+  autoConnect: boolean
 }
 
 export const userPreferences = writable<UserPreferences>({
   backup: false,
-  autoSync: true,
+  autoConnect: true,
 })
 
 export const preference: Action<HTMLInputElement, keyof UserPreferences> = (node, key) => {

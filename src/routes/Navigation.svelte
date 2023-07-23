@@ -8,6 +8,7 @@
   import ConnectionPopup from "./ConnectionPopup.svelte"
   import {canAutoConnect} from "$lib/serial/device"
   import {browser} from "$app/environment"
+  import {userPreferences} from "$lib/preferences"
 
   const training = [
     {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
@@ -53,8 +54,10 @@
           backup
         {:else if $syncStatus === "uploading"}
           cloud_download
-        {:else}
+        {:else if $userPreferences.backup}
           cloud_done
+        {:else}
+          cloud_off
         {/if}
       </button>
     {/if}

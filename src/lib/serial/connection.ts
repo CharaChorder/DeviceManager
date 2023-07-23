@@ -25,9 +25,9 @@ export const syncStatus: Writable<"done" | "error" | "downloading" | "uploading"
 
 let device: CharaDevice // @hmr:keep
 
-export async function initSerial() {
+export async function initSerial(manual = false) {
   const device = get(serialPort) ?? new CharaDevice()
-  await device.ready()
+  await device.init(manual)
   serialPort.set(device)
 
   syncStatus.set("downloading")

@@ -14,74 +14,71 @@ export async function canAutoConnect() {
 }
 
 export class CharaDevice {
-  private readonly port: Promise<SerialPort>
-  private readonly reader: Promise<ReadableStreamDefaultReader<string>>
+  private port!: SerialPort
+  private reader!: ReadableStreamDefaultReader<string>
 
   private readonly abortController1 = new AbortController()
   private readonly abortController2 = new AbortController()
 
+  private streamClosed!: Promise<void>
+
   private lock?: Promise<true>
 
-  version: Promise<string>
-  deviceId: Promise<string>
+  version!: string
+  deviceId!: string
 
-  constructor(baudRate = 115200) {
-    this.port = getViablePorts().then(async ports => {
-      const port =
-        ports.length === 1
-          ? ports[0]
-          : await navigator.serial.requestPort({filters: [{usbVendorId: VENDOR_ID}]})
-      await port.open({baudRate})
-      const info = port.getInfo()
-      serialLog.update(it => {
-        it.push({
-          type: "system",
-          value: `Connected; ID: 0x${info.usbProductId?.toString(16)}; Vendor: 0x${info.usbVendorId?.toString(
-            16,
-          )}`,
-        })
-        return it
+  constructor(private readonly baudRate = 115200) {}
+
+  async init(manual = false) {
+    const ports = await getViablePorts()
+    this.port =
+      !manual && ports.length === 1
+        ? ports[0]
+        : await navigator.serial.requestPort({filters: [{usbVendorId: VENDOR_ID}]})
+    await this.port.open({baudRate: this.baudRate})
+    const info = this.port.getInfo()
+    serialLog.update(it => {
+      it.push({
+        type: "system",
+        value: `Connected; ID: 0x${info.usbProductId?.toString(16)}; Vendor: 0x${info.usbVendorId?.toString(
+          16,
+        )}`,
       })
-      return port
+      return it
     })
-    this.reader = this.port.then(async port => {
-      const decoderStream = new TextDecoderStream()
-      void port.readable!.pipeTo(decoderStream.writable, {signal: this.abortController1.signal})
 
-      return decoderStream
-        .readable!.pipeThrough(new TransformStream(new LineBreakTransformer()), {
-          signal: this.abortController2.signal,
-        })
-        .getReader()
+    const decoderStream = new TextDecoderStream()
+    this.streamClosed = this.port.readable!.pipeTo(decoderStream.writable, {
+      signal: this.abortController1.signal,
     })
-    this.lock = this.reader.then(() => {
-      delete this.lock
-      return true
-    })
-    this.version = this.send("VERSION")
-    this.deviceId = this.send("ID")
+
+    this.reader = decoderStream
+      .readable!.pipeThrough(new TransformStream(new LineBreakTransformer()), {
+        signal: this.abortController2.signal,
+      })
+      .getReader()
+
+    this.version = await this.send("VERSION")
+    this.deviceId = await this.send("ID")
   }
 
   private async internalRead() {
-    return this.reader.then(async it => {
-      const result: string = await it.read().then(({value}) => value!)
-      serialLog.update(it => {
-        it.push({
-          type: "output",
-          value: result,
-        })
-        return it
+    const {value} = await this.reader.read()
+    serialLog.update(it => {
+      it.push({
+        type: "output",
+        value: value!,
       })
-      return result
+      return it
     })
+    return value!
   }
 
   /**
    * Send a command to the device
    */
   private async internalSend(...command: string[]) {
-    const port = await this.port
-    const writer = port.writable!.getWriter()
+    const writer = this.port.writable!.getWriter()
     try {
       serialLog.update(it => {
         it.push({
@@ -96,19 +93,18 @@ export class CharaDevice {
     }
   }
 
-  async ready() {
-    await this.port
-  }
-
   async forget() {
-    await (await this.port).forget()
+    await this.disconnect()
+    await this.port.forget()
   }
 
   async disconnect() {
-    this.abortController1.abort()
-    this.abortController2.abort()
-    ;(await this.reader).releaseLock()
-    await (await this.port).close()
+    await this.reader.cancel()
+    await this.streamClosed.catch(() => {
+      /** noop */
+    })
+    this.reader.releaseLock()
+    await this.port.close()
   }
 
   /**

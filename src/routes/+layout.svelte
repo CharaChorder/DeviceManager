@@ -51,7 +51,7 @@
       } satisfies RegisterSWOptions)
     }
 
-    if ($userPreferences.autoSync && (await canAutoConnect())) await initSerial()
+    if ($userPreferences.autoConnect && (await canAutoConnect())) await initSerial()
   })
 
   $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ""
