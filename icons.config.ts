@@ -52,6 +52,10 @@ const config: IconsConfig = {
     "check_circle",
     "error",
     "auto_delete",
+    "format_paint",
+    "dark_mode",
+    "light_mode",
+    "palette",
   ],
   codePoints: {
     speed: "e9e4",
@@ -62,6 +66,7 @@ const config: IconsConfig = {
     counter_2: "f783",
     counter_3: "f782",
     ios_share: "e6b8",
+    light_mode: "e518",
   },
 }
 

@@ -9,6 +9,7 @@
   import {canAutoConnect} from "$lib/serial/device"
   import {browser} from "$app/environment"
   import {userPreferences} from "$lib/preferences"
+  import Theme from "./Theme.svelte"
 
   const training = [
     {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
@@ -70,6 +71,7 @@
     >
       cable
     </button>
+    <button title="Theme" use:popup={Theme} class="icon">format_paint</button>
     <a href="/stats/" title="Statistics" class="icon account">person</a>
   </div>
 </nav>

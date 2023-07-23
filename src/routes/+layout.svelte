@@ -18,7 +18,7 @@
   import "tippy.js/animations/shift-away.css"
   import "tippy.js/dist/tippy.css"
   import tippy from "tippy.js"
-  import {userPreferences} from "$lib/preferences.js"
+  import {theme, userPreferences} from "$lib/preferences.js"
 
   if (browser) {
     tippy.setDefaultProps({
@@ -33,11 +33,11 @@
   export let data: LayoutServerData
 
   onMount(async () => {
-    const theme = themeFromSourceColor(argbFromHex("#6D81C7"), [
-      {name: "success", value: argbFromHex("#00ff00"), blend: true},
-    ])
-    const dark = true // window.matchMedia("(prefers-color-scheme: dark)").matches
-    applyTheme(theme, {target: document.body, dark})
+    theme.subscribe(it => {
+      const theme = themeFromSourceColor(argbFromHex(it.color))
+      const dark = it.mode === "dark" // window.matchMedia("(prefers-color-scheme: dark)").matches
+      applyTheme(theme, {target: document.body, dark})
+    })
     initLocalStorage()
 
     if (pwaInfo) {

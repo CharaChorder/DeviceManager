@@ -6,6 +6,11 @@ export interface UserPreferences {
   autoConnect: boolean
 }
 
+export const theme = writable({
+  color: "#6D81C7",
+  mode: "dark" as "light" | "dark" | "auto",
+})
+
 export const userPreferences = writable<UserPreferences>({
   backup: false,
   autoConnect: true,
