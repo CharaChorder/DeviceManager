@@ -1,7 +1,7 @@
 import {LineBreakTransformer} from "$lib/serial/line-break-transformer"
 import {serialLog} from "$lib/serial/connection"
 import type {Chord} from "$lib/serial/chord"
-import {chordFromCommandCompatible} from "$lib/serial/chord"
+import {parseChordActions, parsePhrase, stringifyChordActions, stringifyPhrase} from "$lib/serial/chord"
 
 export const VENDOR_ID = 0x239a
 
@@ -58,8 +58,8 @@ export class CharaDevice {
       })
       .getReader()
 
-    this.version = await this.send("VERSION")
-    this.deviceId = await this.send("ID")
+    this.version = await this.send("VERSION").then(it => it[0])
+    this.deviceId = await this.send("ID").then(it => it[0])
   }
 
   private async internalRead() {
@@ -138,21 +138,128 @@ export class CharaDevice {
     return this.runWith(async (send, read) => {
       await send(...command)
       const commandString = command.join(" ").replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
-      return read().then(it => it.replace(new RegExp(`^${commandString} `), ""))
+      return read().then(it => it.replace(new RegExp(`^${commandString} `), "").split(" "))
     })
   }
 
   async getChordCount(): Promise<number> {
-    return Number.parseInt(await this.send("CML C0"))
+    const [count] = await this.send("CML C0")
+    return Number.parseInt(count)
   }
 
-  async getChord(index: number): Promise<Chord> {
-    return chordFromCommandCompatible(await this.send(`CML C1 ${index}`))
+  /**
+   * Retrieves a chord by index
+   */
+  async getChord(index: number | number[]): Promise<Chord> {
+    const [actions, phrase] = await this.send(`CML C1 ${index}`)
+    return {
+      actions: parseChordActions(actions),
+      phrase: parsePhrase(phrase),
+    }
   }
 
+  /**
+   * Retrieves the phrase for a set of actions
+   */
+  async getChordPhrase(actions: number[]): Promise<number[] | undefined> {
+    const [phrase] = await this.send(`CML C2 ${stringifyChordActions(actions)}`)
+    return phrase === "0" ? undefined : parsePhrase(phrase)
+  }
+
+  async setChord(chord: Chord) {
+    const [status] = await this.send(
+      "CML",
+      "C3",
+      stringifyChordActions(chord.actions),
+      stringifyPhrase(chord.phrase),
+    )
+    if (status !== "0") throw new Error(`Failed with status ${status}`)
+  }
+
+  async deleteChord(chord: Chord) {
+    const status = await this.send(`CML C4 ${stringifyChordActions(chord.actions)}`)
+    if (status.at(-1) !== "0") throw new Error(`Failed with status ${status}`)
+  }
+
+  /**
+   * Sets an action to the layout
+   * @param layer the layer (usually 1-3)
+   * @param id id of the key, refer to the individual device for where each key is
+   * @param action the assigned action id
+   */
+  async setLayoutKey(layer: number, id: number, action: number) {
+    const [status] = await this.send(`VAR B3 A${layer} ${id} ${action}`)
+    if (status !== "0") throw new Error(`Failed with status ${status}`)
+  }
+
+  /**
+   * Gets the assigned action from the layout
+   * @param layer the layer (usually 1-3)
+   * @param id id of the key, refer to the individual device for where each key is
+   * @returns the assigned action id
+   */
   async getLayoutKey(layer: number, id: number) {
-    const layout = await this.send(`VAR B3 A${layer} ${id}`)
-    const [position] = layout.split(" ").map(Number)
-    return position
+    const [position, status] = await this.send(`VAR B3 A${layer} ${id}`)
+    if (status !== "0") throw new Error(`Failed with status ${status}`)
+    return Number(position)
+  }
+
+  /**
+   * Permanently stores settings and layout to the device.
+   *
+   * CAUTION: Device may degrade prematurely above 10,000-25,000 commits.
+   *
+   * **This does not need to be called for chords**
+   */
+  async commit() {
+    const [status] = await this.send("VAR B0")
+    if (status !== "0") throw new Error(`Failed with status ${status}`)
+  }
+
+  /**
+   * Sets a setting on the device.
+   *
+   * Settings are applied until the next reboot or loss of power.
+   * To permanently store the settings, you *must* call commit.
+   */
+  async setSetting(id: number, value: number) {
+    const [status] = await this.send(`VAR B2 ${id.toString(16).padStart(2, "0").toUpperCase()} ${value}`)
+    if (status !== "0") throw new Error(`Failed with status ${status}`)
+  }
+
+  /**
+   * Retrieves a setting from the device
+   */
+  async getSetting(id: number): Promise<number> {
+    const [value, status] = await this.send(`VAR B1 ${id.toString(16).padStart(2, "0").toUpperCase()}`)
+    if (status !== "0") throw new Error(`Setting "${id}" doesn't exist (Status code ${status})`)
+    return Number(value)
+  }
+
+  /**
+   * Reboots the device
+   */
+  async reboot() {
+    await this.send("RST")
+    await this.disconnect()
+    // TODO: reconnect
+  }
+
+  /**
+   * Reboots the device to the bootloader
+   */
+  async bootloader() {
+    await this.send("RST BOOTLOADER")
+    await this.disconnect()
+    // TODO: more...
+  }
+
+  /**
+   * Returns the current number of bytes available in SRAM.
+   *
+   * This is useful for debugging when there is a suspected heap or stack issue.
+   */
+  async getRamBytesAvailable(): Promise<number> {
+    return Number(await this.send("RAM"))
   }
 }

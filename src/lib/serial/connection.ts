@@ -17,13 +17,13 @@ export const chords = writable<Chord[]>([])
 
 export const layout = writable<CharaLayout>([[], [], []])
 
+export const settings = writable({})
+
 export const unsavedChanges = writable(0)
 
 export const highlightActions: Writable<number[]> = writable([])
 
 export const syncStatus: Writable<"done" | "error" | "downloading" | "uploading"> = writable("done")
-
-let device: CharaDevice // @hmr:keep
 
 export async function initSerial(manual = false) {
   const device = get(serialPort) ?? new CharaDevice()

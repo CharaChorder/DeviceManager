@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {chords} from "$lib/serial/connection"
+  import {chords, serialPort} from "$lib/serial/connection"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import FlexSearch from "flexsearch"
   import type {Index} from "flexsearch"
@@ -7,6 +7,7 @@
   import type {Chord} from "$lib/serial/chord"
   import tippy from "tippy.js"
   import {calculateChordCoverage} from "$lib/chords/coverage"
+  import {SETTING_IDS} from "$lib/serial/settings"
 
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
 
@@ -44,6 +45,11 @@
 {/if}
 <button class="icon" on:click={sort}>sort</button>
 <button class="icon">filter_list</button>
+{#if $serialPort}
+  {#await $serialPort.getSetting(SETTING_IDS.enableChording) then enableChording}
+    <label><input type="checkbox" checked={enableChording !== 0} /> Enable Chording</label>
+  {/await}
+{/if}
 
 <section>
   <table>

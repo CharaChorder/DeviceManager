@@ -56,8 +56,18 @@
       <div class="backdrop" transition:fade={{duration: 250}} on:click={() => (powerDialog = !powerDialog)} />
       <dialog open transition:slide={{duration: 250}}>
         <h3>Boot Menu</h3>
-        <button><span class="icon">restart_alt</span>Reboot WIP</button>
-        <button><span class="icon">rule_settings</span>Bootloader WIP</button>
+        <button
+          on:click={() => {
+            $serialPort.reboot()
+            $serialPort = undefined
+          }}><span class="icon">restart_alt</span>Reboot</button
+        >
+        <button
+          on:click={() => {
+            $serialPort.bootloader()
+            $serialPort = undefined
+          }}><span class="icon">rule_settings</span>Bootloader</button
+        >
       </dialog>
     {/if}
   {/if}

@@ -3,30 +3,25 @@ export interface Chord {
   phrase: number[]
 }
 
-/**
- * Turns a chord into a serial-command-compatible string
- *
- * @example "000CC200000000000000000000000000 7468726565"
- */
-export function chordAsCommandCompatible(chord: Chord): string {
-  return `${serializeActions(chord.actions).toString(16).padStart(32, "0")} ${chord.phrase
-    .map(it => it.toString(16).padStart(2, "0"))
-    .join("")}`.toUpperCase()
+export function parsePhrase(phrase: string): number[] {
+  return Array.from({length: phrase.length / 2}).map((_, i) =>
+    Number.parseInt(phrase.slice(i * 2, i * 2 + 2), 16),
+  )
 }
 
-/**
- * Turns a command response into a chord
- *
- * @see {chordAsCommandCompatible}
- */
-export function chordFromCommandCompatible(command: string): Chord {
-  const [actions, phrase] = command.split(" ")
-  return {
-    actions: deserializeActions(BigInt(`0x${actions}`)),
-    phrase: Array.from({length: phrase.length / 2}).map((_, i) =>
-      Number.parseInt(phrase.slice(i * 2, i * 2 + 2), 16),
-    ),
-  }
+export function stringifyPhrase(phrase: number[]): string {
+  return phrase
+    .map(it => it.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase()
+}
+
+export function parseChordActions(actions: string): number[] {
+  return deserializeActions(BigInt(`0x${actions}`))
+}
+
+export function stringifyChordActions(actions: number[]): string {
+  return serializeActions(actions).toString(16).padStart(32, "0").toUpperCase()
 }
 
 /**

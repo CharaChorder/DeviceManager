@@ -1,9 +1,11 @@
 import {describe, it, expect} from "vitest"
 import {
-  chordAsCommandCompatible,
-  chordFromCommandCompatible,
   deserializeActions,
+  parseChordActions,
+  parsePhrase,
   serializeActions,
+  stringifyChordActions,
+  stringifyPhrase,
 } from "./chord"
 
 describe("chords", function () {
@@ -24,18 +26,23 @@ describe("chords", function () {
     }
   })
 
-  describe("commands", function () {
-    it("should convert to a command", function () {
-      expect(chordAsCommandCompatible({actions: [32, 51], phrase: [0x01, 0x68, 0x72, 0xd4, 0x65]})).toEqual(
-        "000CC200000000000000000000000000 016872D465",
-      )
+  describe("phrase", function () {
+    it("should stringify", function () {
+      expect(stringifyPhrase([0x01, 0x68, 0x72, 0xd4, 0x65])).toEqual("016872D465")
     })
 
-    it("should parse a command", function () {
-      expect(chordFromCommandCompatible("000CC200000000000000000000000000 016872D465")).toEqual({
-        actions: [32, 51],
-        phrase: [0x01, 0x68, 0x72, 0xd4, 0x65],
-      })
+    it("should parse", function () {
+      expect(parsePhrase("016872D465")).toEqual([0x01, 0x68, 0x72, 0xd4, 0x65])
+    })
+  })
+
+  describe("chord actions", function () {
+    it("should stringify", function () {
+      expect(stringifyChordActions([32, 51])).toEqual("000CC200000000000000000000000000")
+    })
+
+    it("should parse", function () {
+      expect(parseChordActions("000CC200000000000000000000000000")).toEqual([32, 51])
     })
   })
 })
