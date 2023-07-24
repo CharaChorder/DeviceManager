@@ -1,9 +1,8 @@
 <script lang="ts">
   import {initSerial, serialPort} from "$lib/serial/connection"
   import {browser} from "$app/environment"
-  import {slide, fade, fly} from "svelte/transition"
+  import {slide, fade} from "svelte/transition"
   import {preference} from "$lib/preferences"
-  import Terminal from "$lib/components/Terminal.svelte"
 
   let terminal = false
   let powerDialog = false
@@ -17,9 +16,11 @@
 
   {#if $serialPort}
     <p transition:slide>
-      {$serialPort.deviceId}
+      {$serialPort.company}
+      {$serialPort.device}
+      {$serialPort.chipset}
       <br />
-      Version {$serialPort.version}
+      Version {$serialPort.version.map(it => it.toString()).join(".")}
     </p>
   {/if}
 

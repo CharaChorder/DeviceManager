@@ -2,6 +2,7 @@ import {LineBreakTransformer} from "$lib/serial/line-break-transformer"
 import {serialLog} from "$lib/serial/connection"
 import type {Chord} from "$lib/serial/chord"
 import {parseChordActions, parsePhrase, stringifyChordActions, stringifyPhrase} from "$lib/serial/chord"
+import {dev} from "$app/environment"
 
 export const VENDOR_ID = 0x239a
 
@@ -24,8 +25,10 @@ export class CharaDevice {
 
   private lock?: Promise<true>
 
-  version!: string
-  deviceId!: string
+  version!: [number, number, number]
+  company!: "CHARACHORDER"
+  device!: "ONE" | "LITE"
+  chipset!: "M0" | "S2"
 
   constructor(private readonly baudRate = 115200) {}
 
@@ -58,8 +61,12 @@ export class CharaDevice {
       })
       .getReader()
 
-    this.version = await this.send("VERSION").then(it => it[0])
-    this.deviceId = await this.send("ID").then(it => it[0])
+    const [version] = await this.send("VERSION")
+    this.version = version.split(".").map(Number) as [number, number, number]
+    const [company, device, chipset] = await this.send("ID")
+    this.company = company as "CHARACHORDER"
+    this.device = device as "ONE" | "LITE"
+    this.chipset = chipset as "M0" | "S2"
   }
 
   private async internalRead() {

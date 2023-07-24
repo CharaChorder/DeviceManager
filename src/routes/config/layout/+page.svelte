@@ -1,10 +1,10 @@
 <script lang="ts">
-  import LayoutCC1 from "$lib/components/layout/LayoutCC1.svelte"
   import {share} from "$lib/share"
   import {layout} from "$lib/serial/connection"
   import tippy from "tippy.js"
   import {onMount} from "svelte"
   import {layoutAsUrlComponent, layoutFromUrlComponent} from "$lib/serialization/layout"
+  import Layout from "$lib/components/layout/Layout.svelte"
 
   onMount(async () => {
     const url = new URL(window.location.href)
@@ -30,7 +30,7 @@
 <svelte:window use:share={shareLayout} />
 
 <section>
-  <LayoutCC1 />
+  <Layout />
 </section>
 
 <style lang="scss">
