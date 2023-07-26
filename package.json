@@ -18,6 +18,7 @@
     "@theaninova/prettier-config": "^1.0.0",
     "@types/w3c-web-serial": "^1.0.3",
     "@vite-pwa/sveltekit": "^0.2.5",
+    "@inlang/sdk-js": "^0.10.1",
     "@fontsource-variable/noto-sans-mono": "^5.0.4",
     "@fontsource-variable/material-symbols-rounded": "^5.0.4",
     "stylelint": "^15.9.0",

@@ -10,6 +10,7 @@
   import {browser} from "$app/environment"
   import {userPreferences} from "$lib/preferences"
   import Theme from "./Theme.svelte"
+  import {i} from "@inlang/sdk-js"
 
   const training = [
     {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
@@ -28,7 +29,7 @@
 </script>
 
 <nav>
-  <a href="/" class="title">amaCC1ng</a>
+  <a href="/" class="title">{i("title")}</a>
 
   <div class="steps">
     {#each training as { slug, title, icon }}
