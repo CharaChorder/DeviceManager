@@ -1,10 +1,11 @@
 <script>
   import {page} from "$app/stores"
+  import LL from "../../i18n/i18n-svelte"
 
   const paths = [
-    {href: "/config/chords/", title: "Chords", icon: "piano"},
-    {href: "/config/layout/", title: "Layout", icon: "keyboard"},
-    {href: "/config/settings/", title: "Settings", icon: "settings"},
+    {href: "/config/chords/", title: $LL.configure.chords.TITLE(), icon: "piano"},
+    {href: "/config/layout/", title: $LL.configure.layout.TITLE(), icon: "keyboard"},
+    {href: "/config/settings/", title: $LL.configure.settings.TITLE(), icon: "settings"},
   ]
 </script>
 

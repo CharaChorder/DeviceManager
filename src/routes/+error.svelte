@@ -3,4 +3,4 @@
 </script>
 
 <h1>{$page.status}</h1>
-<pre>{$page.error.message}</pre>
+<pre>{$page.error?.message}</pre>

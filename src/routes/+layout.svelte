@@ -19,6 +19,14 @@
   import "tippy.js/dist/tippy.css"
   import tippy from "tippy.js"
   import {theme, userPreferences} from "$lib/preferences.js"
+  import {setLocale} from "../i18n/i18n-svelte"
+  import {loadLocale} from "../i18n/i18n-util.sync"
+  import {detectLocale} from "../i18n/i18n-util"
+  import type {Locales} from "../i18n/i18n-types"
+
+  const locale = ((browser && localStorage.getItem("locale")) as Locales) || detectLocale()
+  loadLocale(locale)
+  setLocale(locale)
 
   if (browser) {
     tippy.setDefaultProps({

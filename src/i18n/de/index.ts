@@ -1,0 +1,53 @@
+import type {Translation} from "../i18n-types"
+
+const de = {
+  TITLE: "amaCC1ng",
+  backup: {
+    TITLE: "Sicherungskopie",
+    DISCLAIMER:
+      "Sicherungskopien verlassen unter keinen Umständen diesen Computer und werden nie mit uns geteilt oder auf Server hochgeladen.",
+    DOWNLOAD: "Kopie Speichern",
+    RESTORE: "Wiederherstellen",
+  },
+  deviceManager: {
+    TITLE: "Gerät",
+    AUTO_CONNECT: "Automatisch Verbinden",
+    CONNECT: "Verbinden",
+    DISCONNECT: "Entfernen",
+    TERMINAL: "Konsole",
+    bootMenu: {
+      TITLE: "Bootmenü",
+      REBOOT: "Neustarten",
+      BOOTLOADER: "Bootloader",
+    },
+  },
+  browserWarning: {
+    TITLE: "Warnung",
+    INFO_SERIAL_PREFIX:
+      "Der aktuell genutzte Browser wird aufgrund der speziellen Voraussetzung für Kommunikation über die ",
+    INFO_SERIAL_INFIX: "serielle Schnittstelle",
+    INFO_SERIAL_SUFFIX: " nicht unterstützt.",
+    INFO_BROWSER_PREFIX:
+      "Auch wenn alle Chromium-basieren Desktop Browser diese Voraussetzung grundsätzlich erfüllen, haben einige Browser ",
+    INFO_BROWSER_INFIX: "wie zum Beispiel Brave",
+    INFO_BROWSER_SUFFIX: " sich bewusst dazu entschieden die API zu deaktivieren.",
+    DOWNLOAD_CHROMIUM: "Chromium herunterladen",
+    OTHER_OPTIONS: "Andere häufig genutzte Alternativen",
+  },
+  configure: {
+    chords: {
+      TITLE: "Akkorde",
+      search: {
+        PLACEHOLDER: "{0} Akkord{{|e}} durchsuchen",
+      },
+    },
+    layout: {
+      TITLE: "Layout",
+    },
+    settings: {
+      TITLE: "Einstellungen",
+    },
+  },
+} satisfies Translation
+
+export default de

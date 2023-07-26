@@ -10,7 +10,8 @@
   import {browser} from "$app/environment"
   import {userPreferences} from "$lib/preferences"
   import Theme from "./Theme.svelte"
-  import {i} from "@inlang/sdk-js"
+  import Languages from "./Languages.svelte"
+  import LL from "../i18n/i18n-svelte"
 
   const training = [
     {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
@@ -29,7 +30,7 @@
 </script>
 
 <nav>
-  <a href="/" class="title">{i("title")}</a>
+  <a href="/" class="title">{$LL.TITLE()}</a>
 
   <div class="steps">
     {#each training as { slug, title, icon }}
@@ -51,7 +52,7 @@
       <PwaStatus />
     {/await}
     {#if $serialPort}
-      <button title="Backup & Restore" use:popup={BackupPopup} class="icon {$syncStatus}">
+      <button title={$LL.backup.TITLE()} use:popup={BackupPopup} class="icon {$syncStatus}">
         {#if $syncStatus === "downloading"}
           backup
         {:else if $syncStatus === "uploading"}
@@ -63,6 +64,7 @@
         {/if}
       </button>
     {/if}
+    <button class="icon" use:popup={Languages}>translate</button>
     <button
       bind:this={connectButton}
       title="Devices"

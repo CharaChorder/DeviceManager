@@ -3,6 +3,7 @@
   import {browser} from "$app/environment"
   import {slide, fade} from "svelte/transition"
   import {preference} from "$lib/preferences"
+  import LL from "../i18n/i18n-svelte"
 
   let terminal = false
   let powerDialog = false
@@ -10,8 +11,8 @@
 
 <section>
   <div class="row">
-    <h2>Device</h2>
-    <label>Auto-Connect<input type="checkbox" use:preference={"autoConnect"} /></label>
+    <h2>{$LL.deviceManager.TITLE()}</h2>
+    <label>{$LL.deviceManager.AUTO_CONNECT()}<input type="checkbox" use:preference={"autoConnect"} /></label>
   </div>
 
   {#if $serialPort}
@@ -32,22 +33,24 @@
           on:click={() => {
             $serialPort.forget()
             $serialPort = undefined
-          }}><span class="icon">usb_off</span>Disconnect</button
+          }}><span class="icon">usb_off</span>{$LL.deviceManager.DISCONNECT()}</button
         >
       {:else}
-        <button class="error" on:click={() => initSerial(true)}><span class="icon">usb</span>Connect</button>
+        <button class="error" on:click={() => initSerial(true)}
+          ><span class="icon">usb</span>{$LL.deviceManager.CONNECT()}</button
+        >
       {/if}
       <div class="row" style="justify-content: flex-end">
         <a
           href="/terminal"
-          title="Terminal"
+          title={$LL.deviceManager.TERMINAL()}
           class="icon"
           disabled={$serialPort === undefined}
           on:click={() => (terminal = !terminal)}>terminal</a
         >
         <button
           class="icon"
-          title="Boot Menu"
+          title={$LL.deviceManager.bootMenu.TITLE()}
           disabled={$serialPort === undefined}
           on:click={() => (powerDialog = !powerDialog)}>settings_power</button
         >
@@ -56,18 +59,18 @@
     {#if powerDialog}
       <div class="backdrop" transition:fade={{duration: 250}} on:click={() => (powerDialog = !powerDialog)} />
       <dialog open transition:slide={{duration: 250}}>
-        <h3>Boot Menu</h3>
+        <h3>{$LL.deviceManager.bootMenu.TITLE()}</h3>
         <button
           on:click={() => {
             $serialPort.reboot()
             $serialPort = undefined
-          }}><span class="icon">restart_alt</span>Reboot</button
+          }}><span class="icon">restart_alt</span>{$LL.deviceManager.bootMenu.REBOOT()}</button
         >
         <button
           on:click={() => {
             $serialPort.bootloader()
             $serialPort = undefined
-          }}><span class="icon">rule_settings</span>Bootloader</button
+          }}><span class="icon">rule_settings</span>{$LL.deviceManager.bootMenu.BOOTLOADER()}</button
         >
       </dialog>
     {/if}

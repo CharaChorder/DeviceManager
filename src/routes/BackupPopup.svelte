@@ -1,7 +1,16 @@
 <script lang="ts">
-  import {getSharableUrl, parseCompressed, stringifyCompressed} from "$lib/serial/serialization"
+  import {parseCompressed, stringifyCompressed} from "$lib/serial/serialization"
   import {chords, layout} from "$lib/serial/connection"
   import {preference} from "$lib/preferences"
+  import type {Chord} from "$lib/serial/chord"
+  import type {CharaLayout} from "$lib/serialization/layout"
+  import LL from "../i18n/i18n-svelte"
+
+  interface Backup {
+    isCharaBackup: string
+    chords: Chord[]
+    layout: CharaLayout
+  }
 
   async function downloadBackup() {
     const downloadUrl = URL.createObjectURL(
@@ -22,7 +31,7 @@
   async function restoreBackup(event: InputEvent) {
     const input = (event.target as HTMLInputElement).files![0]
     if (!input) return
-    const backup = await parseCompressed(input)
+    const backup = await parseCompressed<Backup>(input)
     if (backup.isCharaBackup !== "v1.0") throw new Error("Invalid Backup")
     if (backup.chords) {
       $chords = backup.chords
@@ -34,14 +43,17 @@
 </script>
 
 <section>
-  <h2><label><input type="checkbox" use:preference={"backup"} />Local Backup</label></h2>
+  <h2><label><input type="checkbox" use:preference={"backup"} />{$LL.backup.TITLE()}</label></h2>
   <p class="disclaimer">
-    <i>Backups remain on your computer and are never shared or uploaded to our servers.</i>
+    <i>{$LL.backup.DISCLAIMER()}</i>
   </p>
   <div class="save">
-    <button class="primary" on:click={downloadBackup}><span class="icon">save</span> Download Backup</button>
+    <button class="primary" on:click={downloadBackup}
+      ><span class="icon">save</span>{$LL.backup.DOWNLOAD()}</button
+    >
     <label class="button"
-      ><input on:input={restoreBackup} type="file" /><span class="icon">settings_backup_restore</span> Restore</label
+      ><input on:input={restoreBackup} type="file" /><span class="icon">settings_backup_restore</span
+      >{$LL.backup.RESTORE()}</label
     >
   </div>
 </section>

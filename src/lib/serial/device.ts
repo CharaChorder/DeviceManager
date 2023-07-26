@@ -2,7 +2,6 @@ import {LineBreakTransformer} from "$lib/serial/line-break-transformer"
 import {serialLog} from "$lib/serial/connection"
 import type {Chord} from "$lib/serial/chord"
 import {parseChordActions, parsePhrase, stringifyChordActions, stringifyPhrase} from "$lib/serial/chord"
-import {dev} from "$app/environment"
 
 export const VENDOR_ID = 0x239a
 

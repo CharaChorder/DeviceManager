@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {chords, serialPort} from "$lib/serial/connection"
+  import {chords} from "$lib/serial/connection"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import FlexSearch from "flexsearch"
   import type {Index} from "flexsearch"
@@ -7,6 +7,8 @@
   import type {Chord} from "$lib/serial/chord"
   import tippy from "tippy.js"
   import {calculateChordCoverage} from "$lib/chords/coverage"
+  import type {MouseEventHandler} from "svelte/elements"
+  import LL from "../../../i18n/i18n-svelte"
 
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
 
@@ -28,11 +30,11 @@
     })
   }
 
-  function sort(event: InputEvent) {
+  const sort: MouseEventHandler<HTMLButtonElement> = function (event) {
     tippy(event.target, {})
   }
 
-  $: items = searchFilter?.map(it => [$chords[it], it]) ?? $chords.map((it, i) => [it, i])
+  $: items = searchFilter?.map(it => [$chords[it], it] as const) ?? $chords.map((it, i) => [it, i] as const)
 </script>
 
 <svelte:head>
@@ -40,7 +42,11 @@
 </svelte:head>
 
 {#if searchIndex}
-  <input on:input={search} type="search" placeholder="Search {$chords.length} chords" />
+  <input
+    on:input={search}
+    type="search"
+    placeholder={$LL.configure.chords.search.PLACEHOLDER($chords.length)}
+  />
 {/if}
 <button class="icon" on:click={sort}>sort</button>
 <button class="icon">filter_list</button>

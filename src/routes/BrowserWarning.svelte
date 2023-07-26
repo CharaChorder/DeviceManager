@@ -1,23 +1,27 @@
+<script>
+  import LL from "../i18n/i18n-svelte"
+</script>
+
 <dialog open>
-  <h1>Warning</h1>
+  <h1>{$LL.browserWarning.TITLE()}</h1>
   <p>
-    Your current browser is not supported due to this site's unique requirement for <a
+    {$LL.browserWarning.INFO_SERIAL_PREFIX()}<a
       class="normal"
       target="_blank"
       href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API#browser_compatibility"
-      >serial connections</a
-    >. Though all <b>chromium-based desktop</b> browsers fulfill this requirement, some derivations such as
-    Brave
+      >{$LL.browserWarning.INFO_SERIAL_INFIX()}</a
+    >{$LL.browserWarning.INFO_SERIAL_SUFFIX()}
+    {$LL.browserWarning.INFO_BROWSER_PREFIX()}
     <a href="https://github.com/brave/brave-browser/issues/13902" target="_blank"
-      >have been known to disable the API intentionally</a
-    >.
+      >{$LL.browserWarning.INFO_BROWSER_INFIX()}</a
+    >{$LL.browserWarning.INFO_BROWSER_SUFFIX()}
   </p>
   <div>
     <a href="https://www.chromium.org/getting-involved/download-chromium/" target="_blank" class="chrome"
-      >Download Chromium</a
+      >{$LL.browserWarning.DOWNLOAD_CHROMIUM()}</a
     >
   </div>
-  <h5>Other popular options include</h5>
+  <h5>{$LL.browserWarning.OTHER_OPTIONS()}</h5>
   <div>
     <a href="https://www.google.com/chrome/" target="_blank" class="chrome">Chrome</a>
     <a href="https://www.microsoft.com/en-us/edge/download?form=MA13FJ" target="_blank" class="edge"

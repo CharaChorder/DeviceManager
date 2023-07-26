@@ -1,0 +1,51 @@
+import type {BaseTranslation} from "../i18n-types"
+
+const en = {
+  TITLE: "amaCC1ng",
+  backup: {
+    TITLE: "Local Backup",
+    DISCLAIMER: "Backups remain on your computer and are never shared with us or uploaded to our servers.",
+    DOWNLOAD: "Download Backup",
+    RESTORE: "Restore",
+  },
+  deviceManager: {
+    TITLE: "Device",
+    AUTO_CONNECT: "Auto-connect",
+    CONNECT: "Connect",
+    DISCONNECT: "Disconnect",
+    TERMINAL: "Terminal",
+    bootMenu: {
+      TITLE: "Boot Menu",
+      REBOOT: "Reboot",
+      BOOTLOADER: "Bootloader",
+    },
+  },
+  browserWarning: {
+    TITLE: "Warning",
+    INFO_SERIAL_PREFIX: "Your current browser is not supported due to this site's unique requirement for ",
+    INFO_SERIAL_INFIX: "serial connections",
+    INFO_SERIAL_SUFFIX: ".",
+    INFO_BROWSER_PREFIX:
+      "Though all chromium-based desktop browsers fulfill this requirement, some derivations such as Brave ",
+    INFO_BROWSER_INFIX: "have been known to disable the API intentionally",
+    INFO_BROWSER_SUFFIX: ".",
+    DOWNLOAD_CHROMIUM: "Download Chromium",
+    OTHER_OPTIONS: "Other popular options include",
+  },
+  configure: {
+    chords: {
+      TITLE: "Chords",
+      search: {
+        PLACEHOLDER: "Search {0} chord{{|s}}",
+      },
+    },
+    layout: {
+      TITLE: "Layout",
+    },
+    settings: {
+      TITLE: "Settings",
+    },
+  },
+} satisfies BaseTranslation
+
+export default en

@@ -4,7 +4,6 @@ import {sveltekit} from "@sveltejs/kit/vite"
 import {defineConfig} from "vite"
 import {SvelteKitPWA} from "@vite-pwa/sveltekit"
 import ViteYaml from "@modyfi/vite-plugin-yaml"
-import inlangPlugin from "@inlang/sdk-js/adapter-sveltekit"
 
 export default defineConfig({
   build: {
@@ -13,7 +12,6 @@ export default defineConfig({
   },
   plugins: [
     ViteYaml(),
-    inlangPlugin(),
     sveltekit(),
     SvelteKitPWA({
       kit: {

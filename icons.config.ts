@@ -56,6 +56,7 @@ const config: IconsConfig = {
     "dark_mode",
     "light_mode",
     "palette",
+    "translate",
   ],
   codePoints: {
     speed: "e9e4",
