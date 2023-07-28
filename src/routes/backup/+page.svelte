@@ -1,10 +1,18 @@
 <script lang="ts">
   import {getSharableUrl, parseCompressed, stringifyCompressed} from "$lib/serial/serialization"
   import {chords, layout} from "$lib/serial/connection"
+  import type {Chord} from "$lib/serial/chord"
+  import type {CharaLayout} from "$lib/serialization/layout"
+
+  interface CharaBackup {
+    isCharaBackup: "v1.0"
+    chords: Chord[]
+    layout: CharaLayout
+  }
 
   async function downloadBackup() {
     const downloadUrl = URL.createObjectURL(
-      await stringifyCompressed({
+      await stringifyCompressed<CharaBackup>({
         isCharaBackup: "v1.0",
         chords: $chords,
         layout: $layout,
@@ -18,10 +26,10 @@
     URL.revokeObjectURL(downloadUrl)
   }
 
-  async function restoreBackup(event: InputEvent) {
+  async function restoreBackup(event: Event) {
     const input = (event.target as HTMLInputElement).files![0]
     if (!input) return
-    const backup = await parseCompressed(input)
+    const backup = await parseCompressed<CharaBackup>(input)
     if (backup.isCharaBackup !== "v1.0") throw new Error("Invalid Backup")
     if (backup.chords) {
       $chords = backup.chords
@@ -91,10 +99,10 @@
     border-radius: 32px;
 
     transition: all 250ms ease;
+  }
 
-    &.primary {
-      color: var(--md-sys-color-on-primary);
-      background: var(--md-sys-color-primary);
-    }
+  button.primary {
+    color: var(--md-sys-color-on-primary);
+    background: var(--md-sys-color-primary);
   }
 </style>

@@ -1,7 +1,7 @@
 /**
  * Compress JSON.stringify with gzip
  */
-export async function stringifyCompressed(chords: any): Promise<Blob> {
+export async function stringifyCompressed<T>(chords: T): Promise<Blob> {
   const stream = new Blob([JSON.stringify(chords)]).stream().pipeThrough(new CompressionStream("gzip"))
   return await new Response(stream).blob()
 }

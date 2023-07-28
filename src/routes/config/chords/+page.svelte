@@ -21,16 +21,16 @@
 
   let searchFilter: number[] | undefined
 
-  function search(event) {
+  function search(event: Event) {
     document.startViewTransition(async () => {
-      const query = event.target.value
+      const query = (event.target as HTMLInputElement).value
       searchFilter = query && searchIndex ? searchIndex.search(query) : undefined
       await tick()
     })
   }
 
-  const sort: MouseEventHandler<HTMLButtonElement> = function (event) {
-    tippy(event.target, {})
+  function sort(event: Event) {
+    tippy(event.target as HTMLInputElement, {})
   }
 
   $: items = searchFilter?.map(it => [$chords[it], it] as const) ?? $chords.map((it, i) => [it, i] as const)
