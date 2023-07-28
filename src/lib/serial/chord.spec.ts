@@ -28,11 +28,11 @@ describe("chords", function () {
 
   describe("phrase", function () {
     it("should stringify", function () {
-      expect(stringifyPhrase([0x01, 0x68, 0x72, 0xd4, 0x65])).toEqual("016872D465")
+      expect(stringifyPhrase([0x20, 0x68, 0x72, 0xd4, 0x65, 0x1fff])).toEqual("206872D4651FFF")
     })
 
     it("should parse", function () {
-      expect(parsePhrase("016872D465")).toEqual([0x01, 0x68, 0x72, 0xd4, 0x65])
+      expect(parsePhrase("206872D4651FFF")).toEqual([0x20, 0x68, 0x72, 0xd4, 0x65, 0x1fff])
     })
   })
 

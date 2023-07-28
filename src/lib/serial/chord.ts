@@ -1,16 +1,20 @@
+import {compressActions, decompressActions} from "../serialization/actions"
+
 export interface Chord {
   actions: number[]
   phrase: number[]
 }
 
 export function parsePhrase(phrase: string): number[] {
-  return Array.from({length: phrase.length / 2}).map((_, i) =>
-    Number.parseInt(phrase.slice(i * 2, i * 2 + 2), 16),
+  return decompressActions(
+    Uint8Array.from({length: phrase.length / 2}).map((_, i) =>
+      Number.parseInt(phrase.slice(i * 2, i * 2 + 2), 16),
+    ),
   )
 }
 
 export function stringifyPhrase(phrase: number[]): string {
-  return phrase
+  return [...compressActions(phrase)]
     .map(it => it.toString(16).padStart(2, "0"))
     .join("")
     .toUpperCase()

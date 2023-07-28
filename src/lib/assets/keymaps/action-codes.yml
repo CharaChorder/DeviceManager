@@ -1,5 +1,5 @@
 name: Action Codes
-description: 10-bit action codes 0x00-0x1F
+description: Invalid action codes
 actions:
   0x00:
     id: "0x00"
