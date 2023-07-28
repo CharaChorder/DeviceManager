@@ -1,8 +1,7 @@
 <script lang="ts">
   import {chords} from "$lib/serial/connection"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
-  import FlexSearch from "flexsearch"
-  import type {Index} from "flexsearch"
+  import Index from "flexsearch"
   import {tick} from "svelte"
   import type {Chord} from "$lib/serial/chord"
   import tippy from "tippy.js"
@@ -13,7 +12,7 @@
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
 
   function buildIndex(chords: Chord[]): Index {
-    const index = new FlexSearch({tokenize: "full"})
+    const index = new Index({tokenize: "full"})
     chords.forEach((chord, i) => {
       index.add(i, chord.phrase.map(it => KEYMAP_CODES[it].id).join(""))
     })

@@ -1,0 +1,13 @@
+diff --git a/node_modules/@types/flexsearch/index.d.ts b/node_modules/@types/flexsearch/index.d.ts
+index ecde8e7..4173464 100755
+--- a/node_modules/@types/flexsearch/index.d.ts
++++ b/node_modules/@types/flexsearch/index.d.ts
+@@ -165,7 +165,7 @@ export type IndexSearchResult = Id[];
+  * * Usage: https://github.com/nextapps-de/flexsearch#usage
+  */
+ 
+-export class Index {
++export default class Index {
+    constructor(x?: Preset | IndexOptions<string>);
+    add(id: Id, item: string): this;
+    append(id: Id, item: string): this;

@@ -1,5 +1,6 @@
 <script>
   import {theme} from "$lib/preferences"
+  import {tick} from "svelte"
 </script>
 
 <section>
@@ -7,7 +8,10 @@
   <button
     class="icon"
     on:click={() => {
-      $theme.mode = $theme.mode === "light" ? "dark" : "light"
+      document.startViewTransition(async () => {
+        $theme.mode = $theme.mode === "light" ? "dark" : "light"
+        await tick()
+      })
     }}
   >
     {#if $theme.mode === "light"}
