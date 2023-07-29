@@ -1,9 +1,15 @@
-<script>
+<script lang="ts">
   import {serialPort} from "$lib/serial/connection"
   import LayoutCC1 from "$lib/components/layout/LayoutCC1.svelte"
 
   $: device = $serialPort?.device ?? "ONE"
   let activeLayer = 0
+
+  const layers = [
+    ["Numeric Layer", "123", 1],
+    ["Primary Layer", "abc", 0],
+    ["Function Layer", "function", 2],
+  ] as const
 </script>
 
 <div>
@@ -13,7 +19,7 @@
   </select>
 
   <fieldset>
-    {#each [["Numeric Layer", "123", 1], ["Primary Layer", "abc", 0], ["Function Layer", "function", 2]] as [title, icon, value]}
+    {#each layers as [title, icon, value]}
       <button
         {title}
         class="icon"

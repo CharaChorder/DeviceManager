@@ -13,11 +13,11 @@
     }
   })
 
-  async function shareLayout(event) {
+  async function shareLayout(event: Event) {
     const url = new URL(window.location.href)
     url.searchParams.set("layout", await layoutAsUrlComponent($layout))
     await navigator.clipboard.writeText(url.toString())
-    tippy(event.target, {
+    tippy(event.target as HTMLElement, {
       content: "Share url copied!",
       delay: [0, 1000000],
       onHidden(instance) {

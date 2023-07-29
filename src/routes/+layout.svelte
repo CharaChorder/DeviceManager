@@ -50,7 +50,6 @@
     initLocalStorage()
 
     if (pwaInfo) {
-      // noinspection TypeScriptCheckImport
       const {registerSW} = await import("virtual:pwa-register")
       registerSW({
         immediate: true,

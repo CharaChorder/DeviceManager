@@ -29,7 +29,7 @@
 </script>
 
 <div class="radial {type}">
-  {#each [keys.n, keys.e, keys.s, keys.w] as id, quadrant}
+  {#each [keys.n, keys.e, keys.s, keys.w, keys.d] as id, quadrant}
     {@const actions = getActions(id, $layout)}
     <button
       use:editableLayout={{id, quadrant}}
@@ -153,6 +153,21 @@
 
     &:nth-child(4) {
       clip-path: polygon(50% 50%, 0 0, 0 100%);
+    }
+
+    &:last-child {
+      top: 50%;
+      left: 50%;
+      translate: -50% -50%;
+
+      overflow: hidden;
+
+      width: 25cqw;
+      height: 25cqh;
+
+      border-radius: 50%;
+
+      mask-image: none;
     }
   }
 

@@ -4,10 +4,8 @@
   import Index from "flexsearch"
   import {tick} from "svelte"
   import type {Chord} from "$lib/serial/chord"
-  import tippy from "tippy.js"
-  import {calculateChordCoverage} from "$lib/chords/coverage"
-  import type {MouseEventHandler} from "svelte/elements"
   import LL from "../../../i18n/i18n-svelte"
+  import {actionAutocomplete} from "$lib/action-autocomplete"
 
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
 
@@ -29,10 +27,6 @@
     })
   }
 
-  function sort(event: Event) {
-    tippy(event.target as HTMLInputElement, {})
-  }
-
   $: items = searchFilter?.map(it => [$chords[it], it] as const) ?? $chords.map((it, i) => [it, i] as const)
 </script>
 
@@ -40,15 +34,22 @@
   <title>Chord Manager</title>
 </svelte:head>
 
+<div>
+  <input
+    type="search"
+    placeholder={$LL.configure.chords.search.PLACEHOLDER($chords.length)}
+    use:actionAutocomplete
+  />
+</div>
+
+<!--
 {#if searchIndex}
   <input
     on:input={search}
     type="search"
-    placeholder={$LL.configure.chords.search.PLACEHOLDER($chords.length)}
+
   />
-{/if}
-<button class="icon" on:click={sort}>sort</button>
-<button class="icon">filter_list</button>
+{/if}-->
 
 <section>
   <table>
@@ -72,29 +73,21 @@
       </tr>
     {/each}
   </table>
-  <div>
-    <p>15 Duplicate Chords</p>
-    <p>12 Chords use</p>
-    {#await calculateChordCoverage($chords) then { missing, coverage }}
-      <p>{(coverage * 100).toFixed(1)}% of English 200</p>
-    {/await}
-  </div>
 </section>
 
 <style lang="scss">
   input[type="search"] {
-    width: 300px;
+    width: 512px;
+    margin-block-start: 16px;
     padding-block: 8px;
-    padding-inline: 32px;
+    padding-inline: 16px;
 
     font-size: 16px;
-    color: var(--md-sys-color-on-surface-variant);
-    text-align: center;
+    color: inherit;
 
-    background: var(--md-sys-color-surface-variant);
-    clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
-    filter: brightness(80%);
-    border: none;
+    background: none;
+    border: 0 solid var(--md-sys-color-surface-variant);
+    border-bottom-width: 1px;
 
     transition: all 250ms ease;
 
@@ -104,7 +97,7 @@
     }
 
     &:focus {
-      filter: brightness(90%);
+      border-color: var(--md-sys-color-primary);
       outline: none;
     }
   }
