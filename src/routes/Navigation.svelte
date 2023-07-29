@@ -9,9 +9,8 @@
   import {canAutoConnect} from "$lib/serial/device"
   import {browser} from "$app/environment"
   import {userPreferences} from "$lib/preferences"
-  import Theme from "./Theme.svelte"
-  import Languages from "./Languages.svelte"
   import LL from "../i18n/i18n-svelte"
+  import Profile from "./Profile.svelte"
 
   const training = [
     {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
@@ -45,7 +44,7 @@
 
   <div class="actions">
     {#if $canShare}
-      <a transition:fly={{x: -8}} class="icon" on:click={triggerShare}>share</a>
+      <button transition:fly={{x: -8}} class="icon" on:click={triggerShare}>share</button>
       <div transition:slide class="separator" />
     {/if}
     {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
@@ -64,7 +63,6 @@
         {/if}
       </button>
     {/if}
-    <button class="icon" use:popup={Languages}>translate</button>
     <button
       bind:this={connectButton}
       title="Devices"
@@ -74,8 +72,7 @@
     >
       cable
     </button>
-    <button title="Theme" use:popup={Theme} class="icon">format_paint</button>
-    <a href="/stats/" title="Statistics" class="icon account">person</a>
+    <button title={$LL.profile.TITLE()} use:popup={Profile} class="icon account">person</button>
   </div>
 </nav>
 

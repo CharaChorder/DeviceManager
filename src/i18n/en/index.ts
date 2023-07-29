@@ -8,6 +8,16 @@ const en = {
     DOWNLOAD: "Download Backup",
     RESTORE: "Restore",
   },
+  profile: {
+    TITLE: "Profile",
+    LANGUAGE: "Language",
+    theme: {
+      TITLE: "Theme",
+      COLOR_SCHEME: "Color scheme",
+      DARK_MODE: "Dark",
+      LIGHT_MODE: "Light",
+    },
+  },
   deviceManager: {
     TITLE: "Device",
     AUTO_CONNECT: "Auto-connect",

@@ -9,6 +9,16 @@ const de = {
     DOWNLOAD: "Kopie Speichern",
     RESTORE: "Wiederherstellen",
   },
+  profile: {
+    TITLE: "Profil",
+    LANGUAGE: "Sprache",
+    theme: {
+      TITLE: "Darstellung",
+      COLOR_SCHEME: "Farbschema",
+      DARK_MODE: "Dunkel",
+      LIGHT_MODE: "Hell",
+    },
+  },
   deviceManager: {
     TITLE: "Gerät",
     AUTO_CONNECT: "Automatisch Verbinden",

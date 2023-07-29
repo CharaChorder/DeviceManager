@@ -1,17 +1,17 @@
-import {writable} from "svelte/store"
 import type {Action} from "svelte/action"
+import {persistentWritable} from "$lib/storage"
 
 export interface UserPreferences {
   backup: boolean
   autoConnect: boolean
 }
 
-export const theme = writable({
+export const theme = persistentWritable("user-theme", {
   color: "#6D81C7",
   mode: "dark" as "light" | "dark" | "auto",
 })
 
-export const userPreferences = writable<UserPreferences>({
+export const userPreferences = persistentWritable<UserPreferences>("user-preferences", {
   backup: false,
   autoConnect: true,
 })

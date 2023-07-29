@@ -3,6 +3,8 @@ import {CharaDevice} from "$lib/serial/device"
 import type {Chord} from "$lib/serial/chord"
 import type {Writable} from "svelte/store"
 import type {CharaLayout} from "$lib/serialization/layout"
+import {persistentWritable} from "$lib/storage"
+import {userPreferences} from "$lib/preferences"
 
 export const serialPort = writable<CharaDevice>()
 
@@ -13,9 +15,13 @@ export interface SerialLogEntry {
 
 export const serialLog = writable<SerialLogEntry[]>([])
 
-export const chords = writable<Chord[]>([])
+export const chords = persistentWritable<Chord[]>("chord-library", [], () => get(userPreferences).backup)
 
-export const layout = writable<CharaLayout>([[], [], []])
+export const layout = persistentWritable<CharaLayout>(
+  "layout",
+  [[], [], []],
+  () => get(userPreferences).backup,
+)
 
 export const settings = writable({})
 

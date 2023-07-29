@@ -28,7 +28,7 @@
     URL.revokeObjectURL(downloadUrl)
   }
 
-  async function restoreBackup(event: InputEvent) {
+  async function restoreBackup(event: Event) {
     const input = (event.target as HTMLInputElement).files![0]
     if (!input) return
     const backup = await parseCompressed<Backup>(input)
@@ -119,10 +119,10 @@
     border-radius: 32px;
 
     transition: all 250ms ease;
+  }
 
-    &.primary {
-      color: var(--md-sys-color-on-primary);
-      background: var(--md-sys-color-primary);
-    }
+  button.primary {
+    color: var(--md-sys-color-on-primary);
+    background: var(--md-sys-color-primary);
   }
 </style>

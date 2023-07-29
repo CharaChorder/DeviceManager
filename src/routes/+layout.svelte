@@ -12,7 +12,6 @@
   import {pwaInfo} from "virtual:pwa-info"
   import type {LayoutServerData} from "./$types"
   import type {RegisterSWOptions} from "vite-plugin-pwa/types"
-  import {initLocalStorage} from "$lib/serial/storage"
   import {browser} from "$app/environment"
   import BrowserWarning from "./BrowserWarning.svelte"
   import "tippy.js/animations/shift-away.css"
@@ -47,7 +46,6 @@
       const dark = it.mode === "dark" // window.matchMedia("(prefers-color-scheme: dark)").matches
       applyTheme(theme, {target: document.body, dark})
     })
-    initLocalStorage()
 
     if (pwaInfo) {
       const {registerSW} = await import("virtual:pwa-register")

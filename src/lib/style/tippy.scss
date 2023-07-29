@@ -25,9 +25,9 @@ $padding: 16px;
 }
 
 .tippy-box[data-theme~="search-completion"] {
+  overflow: hidden;
   filter: none;
   border-radius: 0 0 16px 16px;
-  overflow: hidden;
 
   .tippy-content {
     padding: 0;

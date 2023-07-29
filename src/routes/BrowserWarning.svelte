@@ -82,10 +82,6 @@
       mask: url("/browsers/googlechrome.svg");
     }
 
-    &.brave::before {
-      mask: url("/browsers/brave.svg");
-    }
-
     &.edge::before {
       mask: url("/browsers/microsoftedge.svg");
     }
