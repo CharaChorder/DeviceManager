@@ -56,6 +56,11 @@ const en = {
       TITLE: "Settings",
     },
   },
+  plugin: {
+    editor: {
+      RUN: "Run",
+    },
+  },
 } satisfies BaseTranslation
 
 export default en

@@ -58,6 +58,11 @@ const de = {
       TITLE: "Einstellungen",
     },
   },
+  plugin: {
+    editor: {
+      RUN: "Ausführen",
+    },
+  },
 } satisfies Translation
 
 export default de
