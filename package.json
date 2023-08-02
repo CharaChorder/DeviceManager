@@ -9,6 +9,7 @@
     "vite": "vite dev",
     "build": "typesafe-i18n --no-watch && vite build",
     "build:tauri": "tauri build",
+    "tauri": "tauri",
     "test": "vitest run --coverage",
     "preview": "vite preview",
     "postinstall": "patch-package",
