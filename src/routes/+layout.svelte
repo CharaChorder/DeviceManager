@@ -57,7 +57,7 @@
       } satisfies RegisterSWOptions)
     }
 
-    if ($userPreferences.autoConnect && (await canAutoConnect())) await initSerial()
+    if (browser && $userPreferences.autoConnect && (await canAutoConnect())) await initSerial()
   })
 
   $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ""
@@ -76,7 +76,7 @@
   <slot />
 </main>
 
-{#if browser && !("serial" in navigator)}
+{#if !import.meta.env.TAURI_FAMILY && browser && !("serial" in navigator)}
   <BrowserWarning />
 {/if}
 

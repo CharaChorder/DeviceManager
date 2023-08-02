@@ -39,6 +39,8 @@
           libsoup
           webkitgtk
           librsvg
+	  # serial plugin
+	  udev
         ]);
       in
       {

@@ -41,8 +41,7 @@ const de = {
       "Auch wenn alle Chromium-basieren Desktop Browser diese Voraussetzung grundsätzlich erfüllen, haben einige Browser ",
     INFO_BROWSER_INFIX: "wie zum Beispiel Brave",
     INFO_BROWSER_SUFFIX: " sich bewusst dazu entschieden die API zu deaktivieren.",
-    DOWNLOAD_CHROMIUM: "Chromium herunterladen",
-    OTHER_OPTIONS: "Andere häufig genutzte Alternativen",
+    DOWNLOAD_APP: "Desktop-app herunterladen",
   },
   configure: {
     chords: {

@@ -12,6 +12,18 @@
     await loadLocaleAsync(locale)
     setLocale(locale)
   })()
+
+  function switchTheme() {
+    const mode = $theme.mode === "light" ? "dark" : "light"
+    if (document.startViewTransition) {
+      document.startViewTransition(async () => {
+        $theme.mode = mode
+        await tick()
+      })
+    } else {
+      $theme.mode = mode
+    }
+  }
 </script>
 
 <section>
@@ -26,12 +38,7 @@
     <button
       title={$theme.mode === "light" ? $LL.profile.theme.LIGHT_MODE() : $LL.profile.theme.DARK_MODE()}
       class="icon"
-      on:click={() => {
-        document.startViewTransition(async () => {
-          $theme.mode = $theme.mode === "light" ? "dark" : "light"
-          await tick()
-        })
-      }}
+      on:click={switchTheme}
     >
       {#if $theme.mode === "light"}
         light_mode

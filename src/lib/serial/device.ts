@@ -2,10 +2,16 @@ import {LineBreakTransformer} from "$lib/serial/line-break-transformer"
 import {serialLog} from "$lib/serial/connection"
 import type {Chord} from "$lib/serial/chord"
 import {parseChordActions, parsePhrase, stringifyChordActions, stringifyPhrase} from "$lib/serial/chord"
+import {browser} from "$app/environment"
 
 export const VENDOR_ID = 0x239a
 
+if (browser && import.meta.env.TAURI_FAMILY !== undefined) {
+  await import("./tauri-serial")
+}
+
 export async function getViablePorts(): Promise<SerialPort[]> {
+  console.log(await navigator.serial.getPorts().then(it => it.map(it => it.getInfo())))
   return navigator.serial.getPorts().then(ports => ports.filter(it => it.getInfo().usbVendorId === VENDOR_ID))
 }
 

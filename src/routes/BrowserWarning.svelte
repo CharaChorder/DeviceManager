@@ -17,18 +17,9 @@
     >{$LL.browserWarning.INFO_BROWSER_SUFFIX()}
   </p>
   <div>
-    <a href="https://www.chromium.org/getting-involved/download-chromium/" target="_blank" class="chrome"
-      >{$LL.browserWarning.DOWNLOAD_CHROMIUM()}</a
+    <a href="https://github.com/Theaninova/dotio/releases" target="_blank"
+      >{$LL.browserWarning.DOWNLOAD_APP()}</a
     >
-  </div>
-  <h5>{$LL.browserWarning.OTHER_OPTIONS()}</h5>
-  <div>
-    <a href="https://www.google.com/chrome/" target="_blank" class="chrome">Chrome</a>
-    <a href="https://www.microsoft.com/en-us/edge/download?form=MA13FJ" target="_blank" class="edge"
-      >Microsoft Edge</a
-    >
-    <a href="https://www.opera.com/" target="_blank" class="opera">Opera</a>
-    <a href="https://vivaldi.com/download/" class="vivaldi">Vivaldi</a>
   </div>
 </dialog>
 
@@ -76,22 +67,6 @@
       height: 24px;
 
       background: var(--md-sys-color-on-error);
-    }
-
-    &.chrome::before {
-      mask: url("/browsers/googlechrome.svg");
-    }
-
-    &.edge::before {
-      mask: url("/browsers/microsoftedge.svg");
-    }
-
-    &.opera::before {
-      mask: url("/browsers/opera.svg");
-    }
-
-    &.vivaldi::before {
-      mask: url("/browsers/vivaldi.svg");
     }
   }
 

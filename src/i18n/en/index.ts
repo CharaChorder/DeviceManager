@@ -39,8 +39,7 @@ const en = {
       "Though all chromium-based desktop browsers fulfill this requirement, some derivations such as Brave ",
     INFO_BROWSER_INFIX: "have been known to disable the API intentionally",
     INFO_BROWSER_SUFFIX: ".",
-    DOWNLOAD_CHROMIUM: "Download Chromium",
-    OTHER_OPTIONS: "Other popular options include",
+    DOWNLOAD_APP: "Download the desktop app",
   },
   configure: {
     chords: {

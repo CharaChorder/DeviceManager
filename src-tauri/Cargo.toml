@@ -2,9 +2,9 @@
 name = "app"
 version = "0.3.0"
 description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+authors = ["Thea Schöbl <dev@theaninova.de>"]
+license = "AGPL-3"
+repository = "https://github.com/Theaninova/dotio"
 default-run = "app"
 edition = "2021"
 rust-version = "1.60"
@@ -16,6 +16,7 @@ tauri-build = { version = "1.4.0", features = [] }
 
 [dependencies]
 serde_json = "1.0"
+serialport = "4.2.1"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.4.0", features = [] }
 
