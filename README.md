@@ -19,6 +19,8 @@ and more complete way to configure and learn CharaChorder devices.
 nix develop
 ```
 
+You may need to run through some additional setup to get Rust running inside IntelliJ.
+
 ### Other platforms
 
 - NodeJS >=18.16
