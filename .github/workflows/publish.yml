@@ -16,21 +16,33 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
-      - name: setup node
+      - name: 🚚 Checkout
+        uses: actions/checkout@v3
+      - name: 🐍 Use Python 3.x
+        uses: actions/setup-python@v3.1.4
+        with:
+          python-version: 3.x
+          cache: pip
+      - name: ⏬ Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: 🐉 Use Node.js 18.16.x
         uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - name: install Rust stable
+          node-version: 18.16.x
+          cache: "npm"
+      - name: 🦀 Use Rust Stable
         uses: dtolnay/rust-toolchain@stable
-      - name: install dependencies (ubuntu only)
+      - name: 🐧 Install Linux Dependencies
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
-      - name: install frontend dependencies
-        run: yarn install # change this to npm or pnpm depending on which one you use
-      - uses: tauri-apps/tauri-action@v0
+      - name: ⏬ Install Node dependencies
+        run: npm ci
+      - name: 🔥 Optimize icon font
+        run: npm run minify-icons
+      - name: 📦 Build, Package & Release
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
