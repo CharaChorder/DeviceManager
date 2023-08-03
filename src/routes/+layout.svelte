@@ -9,9 +9,7 @@
   import Navigation from "./Navigation.svelte"
   import {canAutoConnect} from "$lib/serial/device"
   import {initSerial} from "$lib/serial/connection"
-  import {pwaInfo} from "virtual:pwa-info"
   import type {LayoutServerData} from "./$types"
-  import type {RegisterSWOptions} from "vite-plugin-pwa/types"
   import {browser} from "$app/environment"
   import BrowserWarning from "./BrowserWarning.svelte"
   import "tippy.js/animations/shift-away.css"
@@ -46,21 +44,15 @@
       const dark = it.mode === "dark" // window.matchMedia("(prefers-color-scheme: dark)").matches
       applyTheme(theme, {target: document.body, dark})
     })
-
-    if (pwaInfo) {
-      const {registerSW} = await import("virtual:pwa-register")
-      registerSW({
-        immediate: true,
-        onRegisterError(error) {
-          console.log("ServiceWorker Registration Error", error)
-        },
-      } satisfies RegisterSWOptions)
+    if (import.meta.env.TAURI_FAMILY === undefined) {
+      const {initPwa} = await import("./pwa-setup")
+      await initPwa()
     }
 
     if (browser && $userPreferences.autoConnect && (await canAutoConnect())) await initSerial()
   })
 
-  $: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : ""
+  let webManifestLink = ""
 </script>
 
 <svelte:head>
@@ -76,7 +68,7 @@
   <slot />
 </main>
 
-{#if !import.meta.env.TAURI_FAMILY && browser && !("serial" in navigator)}
+{#if import.meta.env.TAURI_FAMILY === undefined && browser && !("serial" in navigator)}
   <BrowserWarning />
 {/if}
 

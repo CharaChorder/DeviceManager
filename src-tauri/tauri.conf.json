@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "amacc1ng",
-    "version": "0.1.0"
+    "version": "0.4.0"
   },
   "tauri": {
     "allowlist": {
@@ -51,7 +51,12 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "http://v2202207178592194230.supersrv.de:9216/update?current_version={{current_version}}&target={{target}}&arch={{arch}}"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU5QjEwMEY5RjNBRjM4MEIKUldRTE9LL3orUUN4V2FMWDZkc2l2VUdOL3FSdUMwTk1ualNac095RVZXVEpqUEtORkFsWGZaTmsK"
     },
     "windows": [
       {

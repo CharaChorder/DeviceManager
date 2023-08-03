@@ -47,9 +47,11 @@
       <button transition:fly={{x: -8}} class="icon" on:click={triggerShare}>share</button>
       <div transition:slide class="separator" />
     {/if}
-    {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
-      <PwaStatus />
-    {/await}
+    {#if import.meta.env.TAURI_FAMILY === undefined}
+      {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
+        <PwaStatus />
+      {/await}
+    {/if}
     {#if $serialPort}
       <button title={$LL.backup.TITLE()} use:popup={BackupPopup} class="icon {$syncStatus}">
         {#if $syncStatus === "downloading"}

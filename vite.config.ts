@@ -6,6 +6,7 @@ import {SvelteKitPWA} from "@vite-pwa/sveltekit"
 import ViteYaml from "@modyfi/vite-plugin-yaml"
 
 const isTauri = "TAURI_FAMILY" in process.env
+console.info(isTauri ? "Building for Tauri" : "Building for PWA")
 
 export default defineConfig({
   build: {
@@ -17,7 +18,8 @@ export default defineConfig({
     ViteYaml(),
     sveltekit(),
     ...(isTauri
-      ? [
+      ? []
+      : [
           SvelteKitPWA({
             kit: {
               trailingSlash: "always",
@@ -41,7 +43,6 @@ export default defineConfig({
               ],
             },
           }),
-        ]
-      : []),
+        ]),
   ],
 })

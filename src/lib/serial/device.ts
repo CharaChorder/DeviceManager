@@ -11,7 +11,6 @@ if (browser && import.meta.env.TAURI_FAMILY !== undefined) {
 }
 
 export async function getViablePorts(): Promise<SerialPort[]> {
-  console.log(await navigator.serial.getPorts().then(it => it.map(it => it.getInfo())))
   return navigator.serial.getPorts().then(ports => ports.filter(it => it.getInfo().usbVendorId === VENDOR_ID))
 }
 

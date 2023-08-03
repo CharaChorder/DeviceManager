@@ -7,8 +7,6 @@
   export let results: number[] = []
 
   export let width: number
-
-  console.log(width)
 </script>
 
 <div class="list" style="width: {width}px">

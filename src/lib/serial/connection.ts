@@ -6,7 +6,7 @@ import type {CharaLayout} from "$lib/serialization/layout"
 import {persistentWritable} from "$lib/storage"
 import {userPreferences} from "$lib/preferences"
 
-export const serialPort = writable<CharaDevice>()
+export const serialPort = writable<CharaDevice | undefined>()
 
 export interface SerialLogEntry {
   type: "input" | "output" | "system"

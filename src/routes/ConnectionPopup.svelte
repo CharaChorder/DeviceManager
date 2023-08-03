@@ -31,7 +31,7 @@
         <button
           class="secondary"
           on:click={() => {
-            $serialPort.forget()
+            $serialPort?.forget()
             $serialPort = undefined
           }}><span class="icon">usb_off</span>{$LL.deviceManager.DISCONNECT()}</button
         >
@@ -45,7 +45,7 @@
           href="/terminal"
           title={$LL.deviceManager.TERMINAL()}
           class="icon"
-          disabled={$serialPort === undefined}
+          class:disabled={$serialPort === undefined}
           on:click={() => (terminal = !terminal)}>terminal</a
         >
         <button
@@ -62,13 +62,13 @@
         <h3>{$LL.deviceManager.bootMenu.TITLE()}</h3>
         <button
           on:click={() => {
-            $serialPort.reboot()
+            $serialPort?.reboot()
             $serialPort = undefined
           }}><span class="icon">restart_alt</span>{$LL.deviceManager.bootMenu.REBOOT()}</button
         >
         <button
           on:click={() => {
-            $serialPort.bootloader()
+            $serialPort?.bootloader()
             $serialPort = undefined
           }}><span class="icon">rule_settings</span>{$LL.deviceManager.bootMenu.BOOTLOADER()}</button
         >
@@ -176,31 +176,22 @@
 
     transition: all 250ms ease;
 
-    &:disabled {
-      cursor: default;
-      opacity: 0.5;
-    }
-
     &.icon {
       aspect-ratio: 1;
       padding-inline-end: 8px;
       font-size: 24px;
       border-radius: 50%;
     }
+  }
 
-    &.secondary {
-      color: var(--md-sys-color-on-secondary);
-      background: var(--md-sys-color-secondary);
-    }
+  a.disabled,
+  button:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
 
-    &.error {
-      color: var(--md-sys-color-on-error);
-      background: var(--md-sys-color-error);
-    }
-
-    &:active:not(:disabled) {
-      color: var(--md-sys-color-on-surface-variant);
-      background: var(--md-sys-color-surface-variant);
-    }
+  button:active:not(:disabled) {
+    color: var(--md-sys-color-on-surface-variant);
+    background: var(--md-sys-color-surface-variant);
   }
 </style>
