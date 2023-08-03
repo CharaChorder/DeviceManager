@@ -12,6 +12,9 @@ export default defineConfig({
   build: {
     // we rely on the serial api, so just chrome is fine
     target: ["chrome114", "safari16"],
+    rollupOptions: {
+      external: isTauri ? [/virtual:pwa.*/] : [],
+    },
   },
   envPrefix: "TAURI_",
   plugins: [
