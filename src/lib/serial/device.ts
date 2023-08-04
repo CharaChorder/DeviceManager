@@ -6,7 +6,7 @@ import {browser} from "$app/environment"
 
 export const VENDOR_ID = 0x239a
 
-if (browser && import.meta.env.TAURI_FAMILY !== undefined) {
+if (browser && navigator.serial === undefined && import.meta.env.TAURI_FAMILY !== undefined) {
   await import("./tauri-serial")
 }
 
