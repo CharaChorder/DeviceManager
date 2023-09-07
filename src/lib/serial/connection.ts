@@ -25,7 +25,7 @@ export const layout = persistentWritable<CharaLayout>(
 
 export const settings = writable({})
 
-export const unsavedChanges = writable(0)
+export const unsavedChanges = writable(new Map<number, number>())
 
 export const highlightActions: Writable<number[]> = writable([])
 

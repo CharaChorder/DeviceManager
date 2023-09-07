@@ -25,6 +25,7 @@ const de = {
     CONNECT: "Verbinden",
     DISCONNECT: "Entfernen",
     TERMINAL: "Konsole",
+    APPLY_SETTINGS: "Änderungen auf das Gerät brennen",
     bootMenu: {
       TITLE: "Bootmenü",
       REBOOT: "Neustarten",

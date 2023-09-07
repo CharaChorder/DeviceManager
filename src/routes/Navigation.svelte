@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {serialPort, syncStatus} from "$lib/serial/connection"
+  import {serialPort, syncStatus, unsavedChanges} from "$lib/serial/connection"
   import {page} from "$app/stores"
   import {slide, fly} from "svelte/transition"
   import {canShare, triggerShare} from "$lib/share"
@@ -21,6 +21,26 @@
     {slug: "cm", title: "CM - Concepts Mastered", icon: "cognition"},
   ]
 
+  let placeboProgress = false
+
+  async function flashChanges() {
+    $syncStatus = "uploading"
+    // Yes, this is a completely arbitrary and unnecessary delay.
+    // The only purpose of it is to create a sense of weight,
+    // aka make it more "energy intensive" to click.
+    // The only conceivable way users could reach the commit limit in this case
+    // would be if they click it every time they change a setting.
+    // Because of that, we don't need to show a fearmongering message such as
+    // "Your device will break after you click this 10,000 times!"
+    await new Promise(resolve => setTimeout(resolve, 6000))
+    $serialPort.commit()
+    unsavedChanges.update(it => {
+      it.clear()
+      return it
+    })
+    $syncStatus = "done"
+  }
+
   $: if (browser && !canAutoConnect()) {
     connectButton?.click()
   }
@@ -32,12 +52,12 @@
   <a href="/" class="title">{$LL.TITLE()}</a>
 
   <div class="steps">
-    {#each training as { slug, title, icon }}
+    {#each training as {slug, title, icon}}
       <a
-        href="/train/{slug}/"
-        {title}
-        class="icon train {slug}"
-        class:active={$page.url.pathname === `/train/${slug}/`}>{icon}</a
+              href="/train/{slug}/"
+              {title}
+              class="icon train {slug}"
+              class:active={$page.url.pathname === `/train/${slug}/`}>{icon}</a
       >
     {/each}
   </div>
@@ -45,12 +65,18 @@
   <div class="actions">
     {#if $canShare}
       <button transition:fly={{x: -8}} class="icon" on:click={triggerShare}>share</button>
-      <div transition:slide class="separator" />
+      <div transition:slide class="separator"/>
     {/if}
     {#if import.meta.env.TAURI_FAMILY === undefined}
-      {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
-        <PwaStatus />
+      {#await import("$lib/components/PwaStatus.svelte") then {default: PwaStatus}}
+        <PwaStatus/>
       {/await}
+    {/if}
+    {#if $unsavedChanges.size > 0}
+      <button disabled={$syncStatus === 'uploading'} on:click={flashChanges} transition:fly={{x: -8}}
+              title={$LL.deviceManager.APPLY_SETTINGS()} class="icon">save
+      </button>
+      <div transition:slide class="separator"/>
     {/if}
     {#if $serialPort}
       <button title={$LL.backup.TITLE()} use:popup={BackupPopup} class="icon {$syncStatus}">
@@ -66,11 +92,11 @@
       </button>
     {/if}
     <button
-      bind:this={connectButton}
-      title="Devices"
-      use:popup={ConnectionPopup}
-      class="icon connect"
-      class:error={$serialPort === undefined}
+            bind:this={connectButton}
+            title="Devices"
+            use:popup={ConnectionPopup}
+            class="icon connect"
+            class:error={$serialPort === undefined}
     >
       cable
     </button>
@@ -117,6 +143,10 @@
     background: var(--md-sys-color-background);
 
     animation: sync 1s linear infinite;
+  }
+
+  .uploading::after {
+    transform-origin: bottom;
   }
 
   .downloading.active::after,
@@ -229,5 +259,10 @@
     font-size: 32px;
     color: var(--md-sys-color-on-secondary-container);
     background: var(--md-sys-color-secondary-container);
+  }
+  
+  :disabled {
+    pointer-events: none;
+    opacity: 0.5;
   }
 </style>

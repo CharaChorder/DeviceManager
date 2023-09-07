@@ -57,3 +57,11 @@ To double-check, make sure your private key starts with
 
 After that, add the `SSH_SERVER`, `SSH_PORT`, `SSH_PRIVATE_KEY` and `SSH_USER`
 environment secrets to your environment in GitHub.
+
+## Releases
+
+Change the version in
+
+- [package.json](package.json)
+- [tauri.conf.json](src-tauri/tauri.conf.json)
+- [Cargo.toml](src-tauri/Cargo.toml)

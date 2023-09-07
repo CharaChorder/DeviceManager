@@ -24,6 +24,7 @@ const en = {
     CONNECT: "Connect",
     DISCONNECT: "Disconnect",
     TERMINAL: "Terminal",
+    APPLY_SETTINGS: "Flash changes to device",
     bootMenu: {
       TITLE: "Boot Menu",
       REBOOT: "Reboot",
