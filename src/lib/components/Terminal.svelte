@@ -2,7 +2,7 @@
   import {serialLog, serialPort} from "$lib/serial/connection"
   import {slide} from "svelte/transition"
 
-  function submit(event: InputEvent) {
+  function submit(event: Event) {
     event.preventDefault()
     $serialPort.send(value.trim())
     value = ""

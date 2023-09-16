@@ -9,6 +9,10 @@ const de = {
     DOWNLOAD: "Kopie Speichern",
     RESTORE: "Wiederherstellen",
   },
+  share: {
+    URL_COPIED: "Teilbare URL kopiert!",
+    EXTRA_DOWNLOAD: "Als Datei herunterladen",
+  },
   profile: {
     TITLE: "Profil",
     LANGUAGE: "Sprache",

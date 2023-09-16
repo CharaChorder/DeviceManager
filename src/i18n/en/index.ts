@@ -8,6 +8,10 @@ const en = {
     DOWNLOAD: "Download Backup",
     RESTORE: "Restore",
   },
+  share: {
+    URL_COPIED: "Sharable URL copied!",
+    EXTRA_DOWNLOAD: "Download as file",
+  },
   profile: {
     TITLE: "Profile",
     LANGUAGE: "Language",

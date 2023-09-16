@@ -13,7 +13,7 @@ export async function toBase64(blob: Blob): Promise<string> {
           .replace(/^data:application\/octet-stream;base64,/, "")
           .replaceAll("+", ".")
           .replaceAll("/", "_")
-          .replaceAll("=", "-")}-`,
+          .replaceAll("=", "-")}`,
       )
     }
     reader.readAsDataURL(blob)
@@ -23,7 +23,6 @@ export async function toBase64(blob: Blob): Promise<string> {
 export async function fromBase64(base64: string): Promise<Blob> {
   return fetch(
     `data:application/octet-stream;base64,${base64
-      .replace(/-$/, "")
       .replaceAll(".", "+")
       .replaceAll("_", "/")
       .replaceAll("-", "=")}`,

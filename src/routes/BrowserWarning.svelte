@@ -57,17 +57,6 @@
     gap: 8px;
     align-items: center;
     list-style: none;
-
-    &::before {
-      content: "";
-
-      display: inline-block;
-
-      width: 24px;
-      height: 24px;
-
-      background: var(--md-sys-color-on-error);
-    }
   }
 
   dialog::backdrop {

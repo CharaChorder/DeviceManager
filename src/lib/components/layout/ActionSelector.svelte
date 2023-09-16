@@ -23,7 +23,7 @@
     results = query ? index.search(searchInput.value) : defaultActions
   }
 
-  let customValue = undefined
+  let customValue: number | undefined = undefined
   const defaultActions: string[] = [
     charaActions,
     mouseActions,

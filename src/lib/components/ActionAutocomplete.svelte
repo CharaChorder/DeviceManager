@@ -1,5 +1,4 @@
 <script lang="ts">
-  import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import ActionListItem from "$lib/components/ActionListItem.svelte"
 
   export let exact: number | undefined = undefined

@@ -1,6 +1,15 @@
 import {compressActions, decompressActions} from "./actions"
 import {fromBase64, toBase64} from "$lib/serialization/base64"
 
+export interface NewCharaLayout {
+  charaLayoutVersion: 1
+  device: "one" | "lite" | string
+  /**
+   * Layers A1-A3, with numeric action codes on each
+   */
+  layers: [number[], number[], number[]]
+}
+
 export type CharaLayout = [number[], number[], number[]]
 
 /**

@@ -59,6 +59,7 @@ const config: IconsConfig = {
     "translate",
     "play_arrow",
     "extension",
+    "upload_file",
   ],
   codePoints: {
     speed: "e9e4",
@@ -70,6 +71,8 @@ const config: IconsConfig = {
     counter_3: "f782",
     ios_share: "e6b8",
     light_mode: "e518",
+    upload_file: "e9fc",
+    no_sound: "e710",
   },
 }
 
