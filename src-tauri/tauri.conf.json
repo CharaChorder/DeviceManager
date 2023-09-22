@@ -6,7 +6,7 @@
     "devPath": "http://localhost:5173",
     "distDir": "../build"
   },
-  "package": { "productName": "amacc1ng", "version": "0.6.4" },
+  "package": { "productName": "amacc1ng", "version": "0.6.5" },
   "tauri": {
     "allowlist": { "all": false },
     "bundle": {
