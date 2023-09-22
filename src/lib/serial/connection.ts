@@ -23,6 +23,14 @@ export const layout = persistentWritable<CharaLayout>(
   () => get(userPreferences).backup,
 )
 
+export interface Change {
+  layout?: Record<number, Record<number, number>>
+  chords?: never
+  settings?: Record<number, number>
+}
+
+export const changes = persistentWritable<Change[]>("changes", [])
+
 export const settings = writable({})
 
 export const unsavedChanges = writable(new Map<number, number>())

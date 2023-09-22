@@ -2,12 +2,26 @@ import type {Translation} from "../i18n-types"
 
 const de = {
   TITLE: "amaCC1ng",
+  saveActions: {
+    UNDO: "Rückgängig",
+    REDO: "Wiederholen",
+    APPLY: "Anwenden",
+    SAVE: "Änderungen auf das Gerät schreiben",
+  },
   backup: {
     TITLE: "Sicherungskopie",
     DISCLAIMER:
       "Sicherungskopien verlassen unter keinen Umständen diesen Computer und werden nie mit uns geteilt oder auf Server hochgeladen.",
     DOWNLOAD: "Kopie Speichern",
     RESTORE: "Wiederherstellen",
+  },
+  modal: {
+    CLOSE: "Schließen",
+  },
+  actionSearch: {
+    PLACEHOLDER: "Nach Aktionen suchen",
+    CURRENT_ACTION: "Aktuelle Aktion",
+    DELETE: "Entfernen",
   },
   share: {
     URL_COPIED: "Teilbare URL kopiert!",

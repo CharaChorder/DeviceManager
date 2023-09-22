@@ -13,11 +13,6 @@
 </script>
 
 <div>
-  <select bind:value={device}>
-    <option value="ONE">CC1</option>
-    <option value="LITE">Lite</option>
-  </select>
-
   <fieldset>
     {#each layers as [title, icon, value]}
       <button

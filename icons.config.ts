@@ -62,6 +62,11 @@ const config: IconsConfig = {
     "upload_file",
     "commit",
     "bug_report",
+    "delete",
+    "remove_selection",
+    "bolt",
+    "undo",
+    "redo",
   ],
   codePoints: {
     speed: "e9e4",

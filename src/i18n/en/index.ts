@@ -2,11 +2,25 @@ import type {BaseTranslation} from "../i18n-types"
 
 const en = {
   TITLE: "amaCC1ng",
+  saveActions: {
+    UNDO: "Undo",
+    REDO: "Redo",
+    APPLY: "Apply",
+    SAVE: "Write changes to your device",
+  },
   backup: {
     TITLE: "Local Backup",
     DISCLAIMER: "Backups remain on your computer and are never shared with us or uploaded to our servers.",
     DOWNLOAD: "Download Backup",
     RESTORE: "Restore",
+  },
+  modal: {
+    CLOSE: "Close",
+  },
+  actionSearch: {
+    PLACEHOLDER: "Search for actions",
+    CURRENT_ACTION: "Current action",
+    DELETE: "Remove",
   },
   share: {
     URL_COPIED: "Sharable URL copied!",

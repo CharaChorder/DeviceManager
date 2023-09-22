@@ -1,6 +1,5 @@
 <script lang="ts">
   import {serialPort, syncStatus, unsavedChanges} from "$lib/serial/connection"
-  import {page} from "$app/stores"
   import {slide, fly} from "svelte/transition"
   import {canShare, triggerShare} from "$lib/share"
   import {popup} from "$lib/popup"
@@ -11,17 +10,8 @@
   import {userPreferences} from "$lib/preferences"
   import LL from "../i18n/i18n-svelte"
   import Profile from "./Profile.svelte"
-
-  const training = [
-    {slug: "cpm", title: "CPM - Characters Per Minute", icon: "music_note"},
-    {slug: "chords", title: "ChM - Chords Mastered", icon: "piano"},
-    {slug: "avg-wpm", title: "aWPM - Average Words Per Minute", icon: "avg_pace"},
-    {slug: "sentences", title: "StM - Sentences Mastered", icon: "lyrics"},
-    {slug: "top-wpm", title: "tWPM - Top Words Per Minute", icon: "speed"},
-    {slug: "cm", title: "CM - Concepts Mastered", icon: "cognition"},
-  ]
-
-  let placeboProgress = false
+  import ConfigTabs from "./ConfigTabs.svelte"
+  import EditActions from "./EditActions.svelte"
 
   async function flashChanges() {
     $syncStatus = "uploading"
@@ -49,34 +39,32 @@
 </script>
 
 <nav>
-  <a href="/" class="title">{$LL.TITLE()}</a>
-
-  <div class="steps">
-    {#each training as {slug, title, icon}}
-      <a
-              href="/train/{slug}/"
-              {title}
-              class="icon train {slug}"
-              class:active={$page.url.pathname === `/train/${slug}/`}>{icon}</a
-      >
-    {/each}
+  <div class="actions">
+    <EditActions />
   </div>
+
+  <ConfigTabs />
 
   <div class="actions">
     {#if $canShare}
       <button transition:fly={{x: -8}} class="icon" on:click={triggerShare}>share</button>
-      <div transition:slide class="separator"/>
+      <div transition:slide class="separator" />
     {/if}
     {#if import.meta.env.TAURI_FAMILY === undefined}
-      {#await import("$lib/components/PwaStatus.svelte") then {default: PwaStatus}}
-        <PwaStatus/>
+      {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
+        <PwaStatus />
       {/await}
     {/if}
     {#if $unsavedChanges.size > 0}
-      <button disabled={$syncStatus === 'uploading'} on:click={flashChanges} transition:fly={{x: -8}}
-              title={$LL.deviceManager.APPLY_SETTINGS()} class="icon">save
+      <button
+        disabled={$syncStatus === "uploading"}
+        on:click={flashChanges}
+        transition:fly={{x: -8}}
+        title={$LL.deviceManager.APPLY_SETTINGS()}
+        class="icon"
+        >save
       </button>
-      <div transition:slide class="separator"/>
+      <div transition:slide class="separator" />
     {/if}
     {#if $serialPort}
       <button title={$LL.backup.TITLE()} use:popup={BackupPopup} class="icon {$syncStatus}">
@@ -92,11 +80,11 @@
       </button>
     {/if}
     <button
-            bind:this={connectButton}
-            title="Devices"
-            use:popup={ConnectionPopup}
-            class="icon connect"
-            class:error={$serialPort === undefined}
+      bind:this={connectButton}
+      title="Devices"
+      use:popup={ConnectionPopup}
+      class="icon connect"
+      class:error={$serialPort === undefined}
     >
       cable
     </button>
@@ -167,16 +155,20 @@
   }
 
   nav {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     gap: 4px;
-    align-items: center;
-    justify-content: space-between;
 
+    width: calc(min(100%, 28cm));
     margin-block: 8px;
-    margin-inline: 16px;
+    margin-inline: auto;
+    padding-inline: 16px;
   }
 
   .title {
+    display: flex;
+    align-items: center;
+
     margin-block: 0;
 
     font-size: 1.5rem;
@@ -195,7 +187,7 @@
     justify-content: center;
 
     aspect-ratio: 1;
-    padding: 4px;
+    padding: 2px;
 
     color: inherit;
     text-decoration: none;
@@ -210,49 +202,16 @@
       color: var(--md-sys-color-on-error);
       background: var(--md-sys-color-error);
     }
-
-    &.active,
-    &:active {
-      color: var(--md-sys-color-on-primary);
-      background: var(--md-sys-color-primary);
-    }
-  }
-
-  .steps {
-    position: absolute;
-    left: 50%;
-    translate: -50% 0;
-    display: flex;
-
-    > a.icon {
-      aspect-ratio: unset;
-      margin-inline: -4px;
-      padding-inline: 16px;
-
-      font-size: 24px;
-      color: var(--md-sys-on-surface-variant);
-
-      background: var(--md-sys-color-surface-variant);
-      clip-path: polygon(25% 50%, 0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
-      border-radius: 0;
-
-      &.active,
-      &:active {
-        color: var(--md-sys-color-on-tertiary);
-        background: var(--md-sys-color-tertiary);
-
-        &,
-        ~ * {
-          translate: 8px 0;
-        }
-      }
-    }
   }
 
   .actions {
     display: flex;
     gap: 8px;
     align-items: center;
+
+    &:last-child {
+      justify-content: flex-end;
+    }
   }
 
   .icon.account {
@@ -260,7 +219,7 @@
     color: var(--md-sys-color-on-secondary-container);
     background: var(--md-sys-color-secondary-container);
   }
-  
+
   :disabled {
     pointer-events: none;
     opacity: 0.5;

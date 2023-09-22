@@ -7,7 +7,7 @@
   $: key = (typeof id === "number" ? KEYMAP_CODES[id] ?? id : id) as number | KeyInfo
 </script>
 
-<button>
+<button on:click>
   {#if typeof key === "object"}
     <div class="title">
       <b>
@@ -43,6 +43,13 @@
 
     background: transparent;
     border: none;
+    border-radius: 8px;
+
+    &:focus-visible {
+      color: var(--md-sys-color-on-surface-variant);
+      background: var(--md-sys-color-surface-variant);
+      outline: none;
+    }
   }
 
   .title {

@@ -2,10 +2,8 @@
   import {chords} from "$lib/serial/connection"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import Index from "flexsearch"
-  import {tick} from "svelte"
   import type {Chord} from "$lib/serial/chord"
   import LL from "../../../i18n/i18n-svelte"
-  import {actionAutocomplete} from "$lib/action-autocomplete"
 
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
 
@@ -20,11 +18,8 @@
   let searchFilter: number[] | undefined
 
   function search(event: Event) {
-    document.startViewTransition(async () => {
-      const query = (event.target as HTMLInputElement).value
-      searchFilter = query && searchIndex ? searchIndex.search(query) : undefined
-      await tick()
-    })
+    const query = (event.target as HTMLInputElement).value
+    searchFilter = query && searchIndex ? searchIndex.search(query) : undefined
   }
 
   $: items = searchFilter?.map(it => [$chords[it], it] as const) ?? $chords.map((it, i) => [it, i] as const)
@@ -38,7 +33,7 @@
   <input
     type="search"
     placeholder={$LL.configure.chords.search.PLACEHOLDER($chords.length)}
-    use:actionAutocomplete
+    on:input={search}
   />
 </div>
 

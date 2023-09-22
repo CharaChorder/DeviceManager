@@ -1,5 +1,6 @@
 <script lang="ts">
-  import {highlightActions, layout} from "$lib/serial/connection"
+  import {changes, highlightActions, layout} from "$lib/serial/connection"
+  import type {Change} from "$lib/serial/connection"
   import type {CharaLayout} from "$lib/serialization/layout"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import type {KeyInfo} from "$lib/serial/keymap-codes"
@@ -7,9 +8,6 @@
 
   export let activeLayer = 0
   export let keys: Record<"d" | "s" | "n" | "w" | "e", number>
-  export let type: "primary" | "secondary" | "tertiary" = "primary"
-
-  const layerNames = ["Primary Layer", "Number Layer", "Function Layer"]
 
   const virtualLayerMap = [1, 0, 2]
   const characterOffset = 8
@@ -20,26 +18,32 @@
     return 25 * quadrant + layerOffsetIndex * layerOffset
   }
 
-  function getActions(id: number, layout: CharaLayout): KeyInfo[] {
+  function getActions(id: number, layout: CharaLayout, changes: Change[]): [KeyInfo, KeyInfo | undefined][] {
     return Array.from({length: 3}).map((_, i) => {
       const actionId = layout?.[i][id]
-      return KEYMAP_CODES[actionId]
+      const changedId = changes.findLast(it => it?.layout?.[i]?.[id] !== undefined)?.layout![i]![id]
+      if (changedId !== undefined) {
+        return [KEYMAP_CODES[changedId], KEYMAP_CODES[actionId]]
+      } else {
+        return [KEYMAP_CODES[actionId], undefined]
+      }
     })
   }
 </script>
 
-<div class="radial {type}">
+<div class="radial">
   {#each [keys.n, keys.e, keys.s, keys.w, keys.d] as id, quadrant}
-    {@const actions = getActions(id, $layout)}
+    {@const actions = getActions(id, $layout, $changes)}
     <button
-      use:editableLayout={{id, quadrant}}
-      class:active={actions.some(it => it && $highlightActions?.includes(it.code))}
+      use:editableLayout={{activeLayer, id}}
+      class:active={actions.some(([it]) => it && $highlightActions?.includes(it.code))}
     >
-      {#each actions as keyInfo, layer}
+      {#each actions as [keyInfo, old], layer}
         {#if keyInfo}
           <span
             class:active={virtualLayerMap[activeLayer] === virtualLayerMap[layer]}
             class:icon={!!keyInfo.icon}
+            class:changed={!!old}
             style="offset-distance: {offsetDistance(quadrant, layer, activeLayer)}%"
             >{keyInfo.icon || keyInfo.id || keyInfo.code}</span
           >
@@ -95,7 +99,9 @@
 
     opacity: 0.2;
 
-    transition: scale $transition-time ease, opacity $transition-time ease,
+    transition:
+      scale $transition-time ease,
+      opacity $transition-time ease,
       offset-distance $transition-time ease;
 
     &.active {
@@ -106,6 +112,11 @@
     &.icon {
       font-size: 20px;
       font-weight: 800;
+    }
+
+    &.changed {
+      color: var(--md-sys-color-on-secondary-container);
+      background: var(--md-sys-color-secondary-container);
     }
   }
 
@@ -169,13 +180,5 @@
 
       mask-image: none;
     }
-  }
-
-  .secondary > button {
-    filter: brightness(80%) contrast(120%);
-  }
-
-  .tertiary > button {
-    filter: brightness(80%) contrast(110%);
   }
 </style>

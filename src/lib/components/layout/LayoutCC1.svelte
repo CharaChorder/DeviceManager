@@ -7,14 +7,14 @@
 <div class="col layout" style="gap: 0">
   <div class="row" style="gap: 156px">
     <div class="row">
-      <RingInput {activeLayer} keys={{d: 30, e: 31, n: 32, w: 33, s: 34}} type="tertiary" />
+      <RingInput {activeLayer} keys={{d: 30, e: 31, n: 32, w: 33, s: 34}} />
       <div class="col">
         <RingInput {activeLayer} keys={{d: 25, e: 26, n: 27, w: 28, s: 29}} />
-        <RingInput {activeLayer} keys={{d: 40, e: 41, n: 42, w: 43, s: 44}} type="secondary" />
+        <RingInput {activeLayer} keys={{d: 40, e: 41, n: 42, w: 43, s: 44}} />
       </div>
       <div class="col">
         <RingInput {activeLayer} keys={{d: 20, e: 21, n: 22, w: 23, s: 24}} />
-        <RingInput {activeLayer} keys={{d: 35, e: 36, n: 37, w: 38, s: 39}} type="secondary" />
+        <RingInput {activeLayer} keys={{d: 35, e: 36, n: 37, w: 38, s: 39}} />
       </div>
       <RingInput {activeLayer} keys={{d: 15, e: 16, n: 17, w: 18, s: 19}} />
     </div>
@@ -41,8 +41,8 @@
     <RingInput {activeLayer} keys={{d: 50, w: 51, n: 52, e: 53, s: 54}} />
   </div>
   <div class="row" style="gap: 320px; margin-top: -12px">
-    <RingInput {activeLayer} keys={{d: 0, e: 1, n: 2, w: 3, s: 4}} type="secondary" />
-    <RingInput {activeLayer} keys={{d: 45, w: 46, n: 47, e: 48, s: 49}} type="secondary" />
+    <RingInput {activeLayer} keys={{d: 0, e: 1, n: 2, w: 3, s: 4}} />
+    <RingInput {activeLayer} keys={{d: 45, w: 46, n: 47, e: 48, s: 49}} />
   </div>
 </div>
 

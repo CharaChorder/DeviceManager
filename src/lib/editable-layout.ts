@@ -1,32 +1,35 @@
-import tippy from "tippy.js"
-import InputEdit from "$lib/components/layout/InputEdit.svelte"
 import type {Action} from "svelte/action"
+import ActionSelector from "$lib/components/layout/ActionSelector.svelte"
+import {changes, layout} from "$lib/serial/connection"
+import {get} from "svelte/store"
 
-export const editableLayout: Action<HTMLButtonElement, {id: number; quadrant: number}> = (
+export const editableLayout: Action<HTMLButtonElement, {activeLayer: number; id: number}> = (
   node,
-  {id, quadrant},
+  {id, activeLayer},
 ) => {
-  let component: InputEdit | undefined
-  const edit = tippy(node, {
-    interactive: true,
-    appendTo: document.body,
-    trigger: "click",
-    placement: (["top", "right", "bottom", "left"] as const)[quadrant],
-    onShow(instance) {
-      component ??= new InputEdit({
-        target: instance.popper.querySelector(".tippy-content")!,
-        props: {id},
+  let component: ActionSelector | undefined
+  function present() {
+    component?.$destroy()
+    component = new ActionSelector({
+      target: document.body,
+      props: {currentAction: get(layout)[activeLayer][id]},
+    })
+    component.$on("close", () => {
+      component!.$destroy()
+    })
+    component.$on("select", ({detail}) => {
+      changes.update(changes => {
+        changes.push({layout: {[activeLayer]: {[id]: detail}}})
+        return changes
       })
-    },
-    onHidden() {
-      component?.$destroy()
-      component = undefined
-    },
-  })
+      component!.$destroy()
+    })
+  }
 
+  node.addEventListener("click", present)
   return {
     destroy() {
-      edit.destroy()
+      node.removeEventListener("click", present)
     },
   }
 }

@@ -20,6 +20,7 @@
     position: absolute;
     bottom: 0;
     left: 0;
+    opacity: 0.4;
   }
 
   ul {
