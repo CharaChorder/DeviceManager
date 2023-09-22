@@ -60,6 +60,8 @@ const config: IconsConfig = {
     "play_arrow",
     "extension",
     "upload_file",
+    "commit",
+    "bug_report",
   ],
   codePoints: {
     speed: "e9e4",

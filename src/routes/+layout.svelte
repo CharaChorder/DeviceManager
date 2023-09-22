@@ -20,6 +20,7 @@
   import {loadLocale} from "../i18n/i18n-util.sync"
   import {detectLocale} from "../i18n/i18n-util"
   import type {Locales} from "../i18n/i18n-types"
+  import Footer from "./Footer.svelte"
 
   const locale = ((browser && localStorage.getItem("locale")) as Locales) || detectLocale()
   loadLocale(locale)
@@ -67,6 +68,8 @@
 <main>
   <slot />
 </main>
+
+<Footer />
 
 {#if import.meta.env.TAURI_FAMILY === undefined && browser && !("serial" in navigator)}
   <BrowserWarning />

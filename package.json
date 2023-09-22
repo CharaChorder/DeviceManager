@@ -3,6 +3,14 @@
   "version": "0.5.0",
   "license": "AGPL-3.0-or-later",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Theaninova/amacc1ng.git"
+  },
+  "homepage": "https://github.com/Theaninova/amacc1ng",
+  "bugs": {
+    "url": "https://github.com/Theaninova/amacc1ng/issues"
+  },
   "scripts": {
     "dev": "npm-run-all --parallel vite typesafe-i18n",
     "dev:tauri": "tauri dev",

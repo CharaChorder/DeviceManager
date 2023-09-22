@@ -4,9 +4,14 @@ import {sveltekit} from "@sveltejs/kit/vite"
 import {defineConfig} from "vite"
 import {SvelteKitPWA} from "@vite-pwa/sveltekit"
 import ViteYaml from "@modyfi/vite-plugin-yaml"
+import {readFile} from "fs/promises"
+import {fileURLToPath} from "url"
 
 const isTauri = "TAURI_FAMILY" in process.env
 console.info(isTauri ? "Building for Tauri" : "Building for PWA")
+const {homepage, bugs} = JSON.parse(
+  await readFile(fileURLToPath(new URL("package.json", import.meta.url)), "utf8"),
+)
 
 export default defineConfig({
   build: {
@@ -15,6 +20,10 @@ export default defineConfig({
     rollupOptions: {
       external: isTauri ? [/virtual:pwa.*/] : [],
     },
+  },
+  define: {
+    HOMEPAGE_URL: `"${homepage}"`,
+    BUGS_URL: `"${bugs.url}"`,
   },
   envPrefix: "TAURI_",
   plugins: [
