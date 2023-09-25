@@ -95,34 +95,4 @@
     display: flex;
     gap: 4px;
   }
-
-  .button,
-  button {
-    cursor: pointer;
-
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    justify-content: center;
-
-    width: max-content;
-    height: 48px;
-    padding-block: 8px;
-    padding-inline: 16px;
-
-    font-family: "Noto Sans Mono", monospace;
-    font-weight: 600;
-    color: var(--md-sys-color-on-background);
-
-    background: transparent;
-    border: none;
-    border-radius: 32px;
-
-    transition: all 250ms ease;
-  }
-
-  button.primary {
-    color: var(--md-sys-color-on-primary);
-    background: var(--md-sys-color-primary);
-  }
 </style>

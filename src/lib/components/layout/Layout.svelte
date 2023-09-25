@@ -1,6 +1,7 @@
 <script lang="ts">
   import {serialPort} from "$lib/serial/connection"
   import LayoutCC1 from "$lib/components/layout/LayoutCC1.svelte"
+  import {action} from "$lib/title"
 
   $: device = $serialPort?.device ?? "ONE"
   let activeLayer = 0
@@ -16,8 +17,8 @@
   <fieldset>
     {#each layers as [title, icon, value]}
       <button
-        {title}
         class="icon"
+        use:action={{title, shortcut: `alt+${value + 1}`}}
         on:click={() => (activeLayer = value)}
         class:active={activeLayer === value}
       >
@@ -71,13 +72,19 @@
       outline: 8px solid var(--md-sys-color-background);
     }
 
+    &:first-child,
+    &:last-child {
+      aspect-ratio: unset;
+      height: unset;
+    }
+
     &:first-child {
-      padding-inline-end: 16px;
+      padding-inline: 4px 16px;
       border-radius: 16px 0 0 16px;
     }
 
     &:last-child {
-      padding-inline-start: 16px;
+      padding-inline: 16px 4px;
       border-radius: 0 16px 16px 0;
     }
 

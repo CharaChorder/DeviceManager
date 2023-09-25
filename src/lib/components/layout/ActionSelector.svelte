@@ -5,6 +5,7 @@
   import {createEventDispatcher} from "svelte"
   import ActionListItem from "$lib/components/ActionListItem.svelte"
   import LL from "../../../i18n/i18n-svelte"
+  import {action} from "$lib/title"
 
   export let currentAction: number
 
@@ -38,10 +39,6 @@
   function keyboardNavigation(event: KeyboardEvent) {
     if (event.shiftKey && event.key === "Enter") {
       dispatch("select", exact)
-    } else if (event.shiftKey && event.key === "Escape") {
-      dispatch("select", 0)
-    } else if (event.key === "Escape") {
-      dispatch("close")
     } else if (event.key === "ArrowDown") {
       const element =
         resultList.querySelector("li:focus-within")?.nextSibling ?? resultList.querySelector("li:not(.exact)")
@@ -88,11 +85,14 @@
         }}
         placeholder={$LL.actionSearch.PLACEHOLDER()}
       />
-      <button on:click={() => select(0)}
-        ><div><span class="icon key-hint">shift</span>+<span class="key-hint">ESC</span></div>
-        {$LL.actionSearch.DELETE()}</button
+      <button on:click={() => select(0)} use:action={{shortcut: "shift+esc"}}
+        >{$LL.actionSearch.DELETE()}</button
       >
-      <button title={$LL.modal.CLOSE()} class="icon" on:click={() => dispatch("close")}>close</button>
+      <button
+        use:action={{title: $LL.modal.CLOSE(), shortcut: "esc"}}
+        class="icon"
+        on:click={() => dispatch("close")}>close</button
+      >
     </div>
     <aside>
       <h3>{$LL.actionSearch.CURRENT_ACTION()}</h3>
@@ -101,11 +101,7 @@
     <ul bind:this={resultList}>
       {#if exact !== undefined}
         <li class="exact">
-          <i
-            >Exact match&nbsp;<span class="icon key-hint">shift</span>+<span class="icon key-hint"
-              >keyboard_return</span
-            ></i
-          >
+          <i>Exact match</i>
           <ActionListItem id={exact} on:click={() => select(exact)} />
         </li>
       {/if}
@@ -165,38 +161,6 @@
     gap: 4px;
     align-items: center;
     margin-inline: 16px;
-
-    > button {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      height: fit-content;
-
-      color: currentcolor;
-
-      background: none;
-      border: none;
-      border-radius: 100%;
-
-      &:not(.icon) {
-        font-family: inherit;
-        font-weight: bold;
-      }
-
-      & > div {
-        display: flex;
-        gap: 2px;
-        align-items: center;
-      }
-
-      &:last-child {
-        aspect-ratio: 1;
-        color: var(--md-sys-color-on-surface-variant);
-        background: var(--md-sys-color-surface-variant);
-      }
-    }
   }
 
   .content {
@@ -279,28 +243,6 @@
 
       background: var(--md-sys-color-primary);
       border-radius: 0 0 8px 8px;
-    }
-  }
-
-  .key-hint {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    height: 20px;
-    margin-block: 6px;
-    padding: 2px;
-
-    font-size: 14px;
-    font-weight: normal;
-    color: currentcolor;
-
-    border: 1px solid currentcolor;
-    border-radius: 4px;
-
-    &.icon {
-      padding: 0;
-      font-size: 18px;
     }
   }
 </style>

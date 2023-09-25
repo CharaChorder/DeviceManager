@@ -24,6 +24,13 @@ $padding: 16px;
   }
 }
 
+.tippy-box[data-theme~="tooltip"] {
+  color: var(--md-sys-color-on-background);
+  background-color: var(--md-sys-color-background);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 8px;
+}
+
 .tippy-box[data-theme~="search-completion"] {
   overflow: hidden;
   filter: none;

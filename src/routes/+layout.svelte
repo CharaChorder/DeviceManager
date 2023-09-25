@@ -3,7 +3,7 @@
   import "$lib/fonts/material-symbols-rounded.scss"
   import "$lib/style/scrollbar.scss"
   import "$lib/style/tippy.scss"
-  import "$lib/style/toggle.scss"
+  import "$lib/style/theme.scss"
   import {onMount} from "svelte"
   import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
   import Navigation from "./Navigation.svelte"
@@ -76,34 +76,6 @@
 {/if}
 
 <style lang="scss" global>
-  * {
-    box-sizing: border-box;
-    appearance: none;
-  }
-
-  a {
-    color: var(--md-sys-color-tertiary);
-  }
-
-  label:has(input):hover,
-  .button:hover:not(:active),
-  a:hover:not(:active),
-  button:hover:not(:active) {
-    filter: brightness(70%);
-    transition: filter 250ms ease;
-
-    &:has(:checked),
-    &.active {
-      filter: brightness(120%);
-    }
-
-    &:disabled,
-    &.disabled {
-      opacity: 0.5;
-      filter: none;
-    }
-  }
-
   body {
     overflow: hidden;
     display: flex;

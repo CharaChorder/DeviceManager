@@ -153,43 +153,6 @@
     background: var(--md-sys-color-secondary);
   }
 
-  a,
-  button {
-    cursor: pointer;
-
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    justify-content: center;
-
-    height: 48px;
-    padding: 8px;
-    padding-inline-end: 16px;
-
-    font-size: 1rem;
-    color: var(--md-sys-color-on-background);
-    text-decoration: none;
-
-    background: transparent;
-    border: none;
-    border-radius: 32px;
-
-    transition: all 250ms ease;
-
-    &.icon {
-      aspect-ratio: 1;
-      padding-inline-end: 8px;
-      font-size: 24px;
-      border-radius: 50%;
-    }
-  }
-
-  a.disabled,
-  button:disabled {
-    cursor: default;
-    opacity: 0.5;
-  }
-
   button:active:not(:disabled) {
     color: var(--md-sys-color-on-surface-variant);
     background: var(--md-sys-color-surface-variant);

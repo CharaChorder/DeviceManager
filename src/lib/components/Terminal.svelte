@@ -16,7 +16,13 @@
 <form on:submit={submit}>
   <div bind:this={io} class="io">
     {#each $serialLog as { type, value }}
-      <p class={type} transition:slide>{value}</p>
+      {#if type === "input"}
+        <code transition:slide>{value}</code>
+      {:else if type === "output"}
+        <samp transition:slide>{value}</samp>
+      {:else}
+        <p transition:slide>{value}</p>
+      {/if}
     {/each}
     <div class="anchor" />
   </div>
@@ -111,17 +117,15 @@
     height: 1px;
   }
 
+  code,
+  samp,
   p {
+    display: block;
     overflow-anchor: none;
     margin-block: 0.15rem;
   }
 
-  p.input {
-    margin-block-end: 0.25rem;
-    font-weight: bold;
-  }
-
-  p.system {
+  p {
     display: flex;
     justify-content: center;
 
@@ -134,8 +138,9 @@
     border-radius: 8px;
   }
 
-  p.input::before {
+  code::before {
     content: "> ";
+    margin-block-end: 0.25rem;
     font-weight: 900;
     color: var(--md-sys-color-primary);
   }

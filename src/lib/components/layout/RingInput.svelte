@@ -121,6 +121,8 @@
   }
 
   button {
+    all: unset;
+
     cursor: pointer;
 
     position: absolute;
@@ -131,7 +133,7 @@
     height: 100cqh;
     padding: 0;
 
-    font-family: "Noto Sans Mono", monospace;
+    font-family: inherit;
     font-size: 16px;
     font-weight: 900;
     color: var(--md-sys-color-on-surface-variant);

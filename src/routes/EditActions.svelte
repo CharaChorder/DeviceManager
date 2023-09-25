@@ -3,6 +3,7 @@
   import {changes} from "$lib/serial/connection"
   import type {Change} from "$lib/serial/connection"
   import {fly} from "svelte/transition"
+  import {action} from "$lib/title"
 
   function undo() {
     redoQueue = [$changes.pop()!, ...redoQueue]
@@ -24,39 +25,27 @@
   }
 </script>
 
-<button title={$LL.saveActions.UNDO()} class="icon" disabled={$changes.length === 0} on:click={undo}
-  >undo</button
+<button
+  use:action={{title: $LL.saveActions.UNDO(), shortcut: "ctrl+z"}}
+  class="icon"
+  disabled={$changes.length === 0}
+  on:click={undo}>undo</button
 >
-<button title={$LL.saveActions.REDO()} class="icon" disabled={redoQueue.length === 0} on:click={redo}
-  >redo</button
+<button
+  use:action={{title: $LL.saveActions.REDO(), shortcut: "ctrl+y"}}
+  class="icon"
+  disabled={redoQueue.length === 0}
+  on:click={redo}>redo</button
 >
 <div class="separator" />
-<button title={$LL.saveActions.SAVE()} class="icon">save</button>
+<button use:action={{title: $LL.saveActions.SAVE(), shortcut: "ctrl+shift+s"}} class="icon">save</button>
 {#if $changes.length !== 0}
-  <button class="click-me" transition:fly={{x: 8}}
+  <button class="click-me" transition:fly={{x: 8}} use:action={{shortcut: "ctrl+s"}}
     ><span class="icon">bolt</span>{$LL.saveActions.APPLY()}</button
   >
 {/if}
 
 <style lang="scss">
-  button {
-    cursor: pointer;
-
-    padding: 0;
-
-    color: currentcolor;
-
-    background: none;
-    border: none;
-
-    transition: all 250ms ease;
-  }
-
-  :disabled {
-    pointer-events: none;
-    opacity: 0.5;
-  }
-
   .click-me {
     display: flex;
     align-items: center;

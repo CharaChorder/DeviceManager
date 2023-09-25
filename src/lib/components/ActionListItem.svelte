@@ -22,7 +22,7 @@
         <i>{key.description}</i>
       {/if}
     </div>
-    <span class:icon={!!key.icon} class="key">{key.icon || key.id || `0x${key.code.toString(16)}`}</span>
+    <kbd class:icon={!!key.icon}>{key.icon || key.id || `0x${key.code.toString(16)}`}</kbd>
   {:else}
     <span class="key">0x{key.toString(16)}</span>
   {/if}
@@ -60,19 +60,5 @@
     justify-content: flex-start;
 
     text-align: start;
-  }
-
-  .key {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    min-width: 32px;
-    padding: 4px;
-
-    font-weight: 600;
-
-    border: 1px solid currentcolor;
-    border-radius: 4px;
   }
 </style>
