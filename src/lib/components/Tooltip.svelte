@@ -4,7 +4,7 @@
 </script>
 
 {#if title}
-  <p>{title}</p>
+  <p>{@html title}</p>
 {/if}
 
 {#if shortcut}

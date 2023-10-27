@@ -62,6 +62,14 @@ const de = {
     INFO_BROWSER_SUFFIX: " sich bewusst dazu entschieden die API zu deaktivieren.",
     DOWNLOAD_APP: "Desktop-app herunterladen",
   },
+  changes: {
+    TITLE: "Änderungen anwenden",
+    CHORD_ADD: "{0} Akkord{{|e}} hinzugefügt",
+    CHORD_EDIT: "{0} Akkord{{|e}} bearbeitet",
+    CHORD_DELETE: "{0} Akkord{{|e}} entfernt",
+    SETTING_CHANGE: "{0} Einstellung{{|en}} geändert",
+    LAYOUT_CHANGE: "{0} Layout-belegung{{|en}} geändert",
+  },
   configure: {
     chords: {
       TITLE: "Akkorde",

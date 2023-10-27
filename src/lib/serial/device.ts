@@ -42,6 +42,7 @@ export class CharaDevice {
       !manual && ports.length === 1
         ? ports[0]
         : await navigator.serial.requestPort({filters: [{usbVendorId: VENDOR_ID}]})
+
     await this.port.open({baudRate: this.baudRate})
     const info = this.port.getInfo()
     serialLog.update(it => {
@@ -53,7 +54,27 @@ export class CharaDevice {
       })
       return it
     })
+    await this.port.close()
 
+    const [version] = await this.send("VERSION")
+    this.version = version.split(".").map(Number) as [number, number, number]
+    const [company, device, chipset] = await this.send("ID")
+    this.company = company as "CHARACHORDER"
+    this.device = device as "ONE" | "LITE"
+    this.chipset = chipset as "M0" | "S2"
+  }
+
+  private async suspend() {
+    await this.reader.cancel()
+    await this.streamClosed.catch(() => {
+      /** noop */
+    })
+    this.reader.releaseLock()
+    await this.port.close()
+  }
+
+  private async wake() {
+    await this.port.open({baudRate: this.baudRate})
     const decoderStream = new TextDecoderStream()
     this.streamClosed = this.port.readable!.pipeTo(decoderStream.writable, {
       signal: this.abortController1.signal,
@@ -64,13 +85,6 @@ export class CharaDevice {
         signal: this.abortController2.signal,
       })
       .getReader()
-
-    const [version] = await this.send("VERSION")
-    this.version = version.split(".").map(Number) as [number, number, number]
-    const [company, device, chipset] = await this.send("ID")
-    this.company = company as "CHARACHORDER"
-    this.device = device as "ONE" | "LITE"
-    this.chipset = chipset as "M0" | "S2"
   }
 
   private async internalRead() {
@@ -105,17 +119,7 @@ export class CharaDevice {
   }
 
   async forget() {
-    await this.disconnect()
     await this.port.forget()
-  }
-
-  async disconnect() {
-    await this.reader.cancel()
-    await this.streamClosed.catch(() => {
-      /** noop */
-    })
-    this.reader.releaseLock()
-    await this.port.close()
   }
 
   /**
@@ -132,8 +136,10 @@ export class CharaDevice {
     const exec = new Promise<T>(async resolve => {
       let result!: T
       try {
+        await this.wake()
         result = await callback(send, read)
       } finally {
+        await this.suspend()
         this.lock = undefined
         resolve(result)
       }
@@ -252,7 +258,6 @@ export class CharaDevice {
    */
   async reboot() {
     await this.send("RST")
-    await this.disconnect()
     // TODO: reconnect
   }
 
@@ -261,7 +266,6 @@ export class CharaDevice {
    */
   async bootloader() {
     await this.send("RST BOOTLOADER")
-    await this.disconnect()
     // TODO: more...
   }
 

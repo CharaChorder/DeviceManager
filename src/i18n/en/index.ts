@@ -60,6 +60,14 @@ const en = {
     INFO_BROWSER_SUFFIX: ".",
     DOWNLOAD_APP: "Download the desktop app",
   },
+  changes: {
+    TITLE: "Apply changes",
+    CHORD_ADD: "{0} chord{{|s}} added",
+    CHORD_EDIT: "{0} chord{{|s}} edited",
+    CHORD_DELETE: "{0} chord{{|s}} deleted",
+    SETTING_CHANGE: "{0} setting{{|s}} changed",
+    LAYOUT_CHANGE: "{0} layout key{{|s}} changed",
+  },
   configure: {
     chords: {
       TITLE: "Chords",

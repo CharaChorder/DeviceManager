@@ -40,8 +40,14 @@
 <div class="separator" />
 <button use:action={{title: $LL.saveActions.SAVE(), shortcut: "ctrl+shift+s"}} class="icon">save</button>
 {#if $changes.length !== 0}
-  <button class="click-me" transition:fly={{x: 8}} use:action={{shortcut: "ctrl+s"}}
-    ><span class="icon">bolt</span>{$LL.saveActions.APPLY()}</button
+  <button
+    class="click-me"
+    transition:fly={{x: 8}}
+    on:click={apply}
+    use:action={{
+      title: $LL.changes.TITLE(),
+      shortcut: "ctrl+s",
+    }}><span class="icon">bolt</span>{$LL.saveActions.APPLY()}</button
   >
 {/if}
 

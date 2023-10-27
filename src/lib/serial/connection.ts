@@ -25,7 +25,7 @@ export const layout = persistentWritable<CharaLayout>(
 
 export interface Change {
   layout?: Record<number, Record<number, number>>
-  chords?: never
+  chords?: Array<Record<"delete" | "edit" | "add", Chord>>
   settings?: Record<number, number>
 }
 

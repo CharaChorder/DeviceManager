@@ -67,6 +67,8 @@ const config: IconsConfig = {
     "bolt",
     "undo",
     "redo",
+    "navigate_before",
+    "navigate_next",
   ],
   codePoints: {
     speed: "e9e4",

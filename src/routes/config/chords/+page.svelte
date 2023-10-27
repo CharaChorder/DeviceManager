@@ -1,9 +1,29 @@
 <script lang="ts">
-  import {chords} from "$lib/serial/connection"
+  import {changes, chords} from "$lib/serial/connection"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import Index from "flexsearch"
   import type {Chord} from "$lib/serial/chord"
   import LL from "../../../i18n/i18n-svelte"
+  import {action} from "$lib/title"
+  import {onDestroy, onMount} from "svelte"
+  import ActionStringEdit from "$lib/components/ActionStringEdit.svelte"
+
+  const resultSize = 38
+  let results: HTMLElement
+  let pageSize: number
+  let resizeObserver: ResizeObserver
+
+  onMount(() => {
+    resizeObserver = new ResizeObserver(() => {
+      pageSize = Math.floor(results.clientHeight / resultSize)
+    })
+    pageSize = Math.floor(results.clientHeight / resultSize)
+    resizeObserver.observe(results)
+  })
+
+  onDestroy(() => {
+    resizeObserver?.disconnect()
+  })
 
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
 
@@ -23,6 +43,9 @@
   }
 
   $: items = searchFilter?.map(it => [$chords[it], it] as const) ?? $chords.map((it, i) => [it, i] as const)
+  $: lastPage = Math.ceil(items.length / pageSize) - 1
+
+  let page = 0
 </script>
 
 <svelte:head>
@@ -35,35 +58,32 @@
     placeholder={$LL.configure.chords.search.PLACEHOLDER($chords.length)}
     on:input={search}
   />
+  <span>{page + 1} / {lastPage + 1}</span>
+  <button class="icon" on:click={() => (page = Math.max(page - 1, 0))} use:action={{shortcut: "ctrl+left"}}
+    >navigate_before</button
+  >
+  <button
+    class="icon"
+    on:click={() => (page = Math.min(page + 1, lastPage))}
+    use:action={{shortcut: "ctrl+right"}}>navigate_next</button
+  >
 </div>
 
-<!--
-{#if searchIndex}
-  <input
-    on:input={search}
-    type="search"
-
-  />
-{/if}-->
-
-<section>
+<section bind:this={results}>
   <table>
-    {#each items.slice(0, 50) as [{ phrase, actions }, i]}
-      <tr style="view-transition-name: chord-{i}">
+    {#each items.slice(page * pageSize, (page + 1) * pageSize) as [chord]}
+      <tr>
         <th>
-          {#each phrase as char}
-            {KEYMAP_CODES[char].id}
-          {/each}
+          <ActionStringEdit actions={chord.phrase} />
         </th>
         <td>
-          {#each actions as action}
-            {@const keyInfo = KEYMAP_CODES[action]}
-            {#if keyInfo}
-              <abbr title={keyInfo.title} class:icon={!!keyInfo.icon}>{keyInfo.icon || keyInfo.id}</abbr>
-            {:else}
-              <pre>{action}</pre>
-            {/if}
-          {/each}
+          <ActionStringEdit actions={chord.actions} />
+        </td>
+        <td class="table-buttons">
+          <button class="icon compact">share</button>
+          <button class="icon compact" on:click={() => $changes.push({chords: [{delete: chord}]})}
+            >delete</button
+          >
         </td>
       </tr>
     {/each}
@@ -98,16 +118,11 @@
   }
 
   section {
-    --scrollbar-color: var(--md-sys-color-surface-variant);
-
-    scrollbar-gutter: stable;
-
     position: relative;
 
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: flex;
+    overflow: hidden;
 
+    height: 100%;
     padding-inline: 8px;
 
     border-radius: 16px;
@@ -143,10 +158,12 @@
     text-align: start;
   }
 
-  td {
-    display: flex;
-    gap: 4px;
-    align-items: stretch;
-    justify-content: flex-end;
+  .table-buttons {
+    opacity: 0;
+    transition: opacity 75ms ease;
+  }
+
+  tr:hover > .table-buttons {
+    opacity: 1;
   }
 </style>

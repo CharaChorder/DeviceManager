@@ -9,7 +9,11 @@ export interface CharaLayoutFile extends CharaFile<"layout"> {
 }
 
 export interface CharaChordFile extends CharaFile<"chords"> {
-  chords: [number[], number[]]
+  chords: [number[], number[]][]
+}
+
+export interface CharaChordSettings extends CharaFile<"settings"> {
+  settings: number[]
 }
 
 export type CharaFiles = CharaLayoutFile | CharaChordFile
