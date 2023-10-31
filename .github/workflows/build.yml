@@ -44,8 +44,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - run : git config user.name github-actions
-    - run : git config user.email github-actions@github.com
-    - run : git --work-tree build add --all
-    - run : git commit -m "Automatic Deploy action run by github-actions"
-    - run : git push origin HEAD:gh-pages --force
+      - name: 🚚 Checkout
+        uses: actions/checkout@v3
+      - run : git config user.name github-actions
+      - run : git config user.email github-actions@github.com
+      - run : git --work-tree build add --all
+      - run : git commit -m "Automatic Deploy action run by github-actions"
+      - run : git push origin HEAD:gh-pages --force
