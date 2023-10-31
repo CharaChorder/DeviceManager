@@ -44,6 +44,7 @@
     {@const multiplier = 1.4}
     <g style:transform="rotateZ({key.rotate}rad) translate({innerMargin}px, {innerMargin}px)">
       <path
+        opacity="0.4"
         d="M{posX + p1},{posY} a{r1},{r1} 0 0,1 {-p1},{p1} l0,{-(p1 - p2)} a{r2},{r2} 0 0,0 {p2},{-p2}z"
       />
       <KeyText
@@ -81,6 +82,12 @@
     fill: var(--md-sys-color-background);
     fill-opacity: 0;
     stroke: currentcolor;
+  }
+
+  path {
+    fill: currentcolor;
+    fill-opacity: 0.2;
+    stroke-opacity: 0.6;
   }
 
   g:hover {

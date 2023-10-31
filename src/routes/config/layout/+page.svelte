@@ -68,11 +68,17 @@
   setContext("active-layer", writable(0))
 
   let fileInput: HTMLInputElement
+  let layoutOverride: "ONE" | "LITE" | undefined = undefined
 </script>
 
 <svelte:window use:share={shareLayout} />
 
 <section>
+  <select bind:value={layoutOverride}>
+    <option value={undefined}>Auto</option>
+    <option value="ONE">CC1</option>
+    <option value="LITE">Lite</option>
+  </select>
   <!-- <label class="icon"
     >upload_file<input
       bind:this={fileInput}
@@ -81,7 +87,7 @@
       accept="text/csv, application/json"
     /></label
   > -->
-  <Layout />
+  <Layout {layoutOverride} />
 </section>
 
 <style lang="scss">

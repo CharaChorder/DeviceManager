@@ -1,10 +1,11 @@
 <script lang="ts">
   import {serialPort} from "$lib/serial/connection"
-  import LayoutCC1 from "$lib/components/layout/LayoutCC1.svelte"
   import {action} from "$lib/title"
   import GenericLayout from "$lib/components/layout/GenericLayout.svelte"
   import {getContext} from "svelte"
   import type {Writable} from "svelte/store"
+
+  export let layoutOverride: "ONE" | "LITE" | undefined
 
   $: device = $serialPort?.device ?? "ONE"
   const activeLayer = getContext<Writable<number>>("active-layer")
@@ -14,6 +15,11 @@
     ["Primary Layer", "abc", 0],
     ["Function Layer", "function", 2],
   ] as const
+
+  const layouts = {
+    ONE: () => import("$lib/assets/layouts/one.yml"),
+    LITE: () => import("$lib/assets/layouts/lite.yml"),
+  }
 </script>
 
 <div class="container">
@@ -30,12 +36,9 @@
     {/each}
   </fieldset>
 
-  {#if device === "ONE"}
-    <GenericLayout />
-    <!-- <LayoutCC1 bind:activeLayer /> -->
-  {:else}
-    <p>Unsupported device ({$serialPort?.device})</p>
-  {/if}
+  {#await layouts[layoutOverride || device]() then { default: visualLayout }}
+    <GenericLayout {visualLayout} />
+  {/await}
 </div>
 
 <style lang="scss">

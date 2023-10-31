@@ -1,5 +1,4 @@
 <script lang="ts">
-  import rawLayout from "$lib/assets/layouts/cc1.yml"
   import {compileLayout} from "$lib/serialization/visual-layout"
   import type {VisualLayout, CompiledLayoutKey} from "$lib/serialization/visual-layout"
   import {changes, layout} from "$lib/serial/connection"
@@ -25,7 +24,8 @@
     console.assert(iconFontSize % 1 === 0, "Icon font size must be an integer")
   }
 
-  const layoutInfo = compileLayout(rawLayout as VisualLayout)
+  export let visualLayout: VisualLayout
+  $: layoutInfo = compileLayout(visualLayout)
 
   function getCenter(key: CompiledLayoutKey): [x: number, y: number] {
     return [key.pos[0] + key.size[0] / 2, key.pos[1] + key.size[1] / 2]
