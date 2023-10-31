@@ -1,87 +1,87 @@
 name: Lite
-row:
-  - col:
-      - id: 53
-      - id: 54
-      - id: 55
-      - id: 56
-      - id: 57
-      - id: 58
-      - id: 59
-      - id: 60
-      - id: 61
-      - id: 62
-      - id: 63
-      - id: 64
-      - id: 65
-      - id: 66
+col:
+  - row:
+      - key: 53
+      - key: 54
+      - key: 55
+      - key: 56
+      - key: 57
+      - key: 58
+      - key: 59
+      - key: 60
+      - key: 61
+      - key: 62
+      - key: 63
+      - key: 64
+      - key: 65
+      - key: 66
         size: [ 2, 1 ]
-  - col:
-      - id: 39
+  - row:
+      - key: 39
         size: [ 1.5, 1 ]
-      - id: 40
-      - id: 41
-      - id: 42
-      - id: 43
-      - id: 44
-      - id: 45
-      - id: 46
-      - id: 47
-      - id: 48
-      - id: 49
-      - id: 50
-      - id: 51
-      - id: 52
+      - key: 40
+      - key: 41
+      - key: 42
+      - key: 43
+      - key: 44
+      - key: 45
+      - key: 46
+      - key: 47
+      - key: 48
+      - key: 49
+      - key: 50
+      - key: 51
+      - key: 52
         size: [ 1.5, 1 ]
-  - col:
-      - id: 26
+  - row:
+      - key: 26
         size: [ 1.75, 1 ]
-      - id: 27
-      - id: 28
-      - id: 29
-      - id: 30
-      - id: 31
-      - id: 32
-      - id: 33
-      - id: 34
-      - id: 35
-      - id: 36
-      - id: 37
-      - id: 38
+      - key: 27
+      - key: 28
+      - key: 29
+      - key: 30
+      - key: 31
+      - key: 32
+      - key: 33
+      - key: 34
+      - key: 35
+      - key: 36
+      - key: 37
+      - key: 38
         size: [ 2.25, 1 ]
-  - col:
-      - id: 12
+  - row:
+      - key: 12
         size: [ 2, 1 ]
-      - id: 13
-      - id: 14
-      - id: 15
-      - id: 16
-      - id: 17
-      - id: 18
-      - id: 19
-      - id: 20
-      - id: 21
-      - id: 22
-      - id: 23
-      - id: 24
-      - id: 25
-  - col:
-      - id: 0
-      - id: 1
+      - key: 13
+      - key: 14
+      - key: 15
+      - key: 16
+      - key: 17
+      - key: 18
+      - key: 19
+      - key: 20
+      - key: 21
+      - key: 22
+      - key: 23
+      - key: 24
+      - key: 25
+  - row:
+      - key: 0
+      - key: 1
         size: [ 1.25, 1 ]
-      - id: 2
+      - key: 2
         size: [ 1.25, 1 ]
-      - id: 3
+      - key: 3
         size: [ 2, 1 ]
-      - id: 4
-      - id: 5
-      - id: 6
+      - key: 4
+      - key: 5
+      - key: 6
         size: [ 2, 1 ]
-      - id: 7
+      - key: 7
         size: [ 1.25, 1 ]
-      - id: 8
+      - key: 8
         size: [ 1.25, 1 ]
-      - id: 9
-      - id: 10
-      - id: 11
+      - key: 9
+      - key: 10
+      - key: 11
 

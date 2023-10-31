@@ -3,9 +3,11 @@
   import LayoutCC1 from "$lib/components/layout/LayoutCC1.svelte"
   import {action} from "$lib/title"
   import GenericLayout from "$lib/components/layout/GenericLayout.svelte"
+  import {getContext} from "svelte"
+  import type {Writable} from "svelte/store"
 
   $: device = $serialPort?.device ?? "ONE"
-  let activeLayer = 0
+  const activeLayer = getContext<Writable<number>>("active-layer")
 
   const layers = [
     ["Numeric Layer", "123", 1],
@@ -20,8 +22,8 @@
       <button
         class="icon"
         use:action={{title, shortcut: `alt+${value + 1}`}}
-        on:click={() => (activeLayer = value)}
-        class:active={activeLayer === value}
+        on:click={() => ($activeLayer = value)}
+        class:active={$activeLayer === value}
       >
         {icon}
       </button>
@@ -29,7 +31,7 @@
   </fieldset>
 
   {#if device === "ONE"}
-    <GenericLayout bind:activeLayer />
+    <GenericLayout />
     <!-- <LayoutCC1 bind:activeLayer /> -->
   {:else}
     <p>Unsupported device ({$serialPort?.device})</p>

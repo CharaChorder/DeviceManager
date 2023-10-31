@@ -2,12 +2,14 @@
   import {share} from "$lib/share"
   import {layout} from "$lib/serial/connection"
   import tippy from "tippy.js"
-  import {onMount} from "svelte"
+  import {onMount, setContext} from "svelte"
   import Layout from "$lib/components/layout/Layout.svelte"
   import {csvLayoutToJson, isCsvLayout} from "$lib/compat/legacy-layout"
   import {charaFileFromUriComponent, charaFileToUriComponent} from "$lib/share/share-url"
   import type {CharaLayoutFile} from "$lib/share/chara-file"
   import SharePopup from "../SharePopup.svelte"
+  import type {VisualLayoutConfig} from "$lib/components/layout/visual-layout"
+  import {writable} from "svelte/store"
 
   onMount(async () => {
     const url = new URL(window.location.href)
@@ -52,6 +54,18 @@
     const importedLayout = isCsvLayout(file) ? csvLayoutToJson(file) : (JSON.parse(file) as CharaLayoutFile)
     if (importedLayout.type === "layout" && importedLayout.charaVersion === 1) $layout = importedLayout.layout
   }
+
+  setContext<VisualLayoutConfig>("visual-layout-config", {
+    scale: 50,
+    inactiveScale: 0.6,
+    inactiveOpacity: 0.4,
+    strokeWidth: 1,
+    margin: 5,
+    fontSize: 9,
+    iconFontSize: 14,
+  })
+
+  setContext("active-layer", writable(0))
 
   let fileInput: HTMLInputElement
 </script>

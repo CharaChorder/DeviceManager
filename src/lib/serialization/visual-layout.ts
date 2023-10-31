@@ -1,15 +1,30 @@
 export interface VisualLayout {
   name: string
-  row: VisualLayoutRow[]
+  col: VisualLayoutRow[]
 }
 
-export interface VisualLayoutRow {
-  col: VisualLayoutKey[]
+interface Positionable {
+  offset: [number, number]
+  rotate: number
 }
 
-export interface VisualLayoutKey {
-  id: number
+export interface VisualLayoutRow extends Positionable {
+  row: Array<VisualLayoutKey | VisualLayoutSwitch>
+}
+
+export interface VisualLayoutKey extends Positionable {
+  key: number
   size?: [number, number]
+}
+
+export interface VisualLayoutSwitch extends Positionable {
+  switch: {
+    n: number
+    e: number
+    w: number
+    s: number
+    d: number
+  }
 }
 
 export interface CompiledLayout {
@@ -20,9 +35,11 @@ export interface CompiledLayout {
 
 export interface CompiledLayoutKey {
   id: number
-  type: "key" | "dpad"
+  shape: "quarter-circle" | "square"
+  cornerRadius: number
   size: [number, number]
   pos: [number, number]
+  rotate: number
 }
 
 export function compileLayout(layout: VisualLayout): CompiledLayout {
@@ -33,21 +50,52 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
   }
 
   let y = 0
-  for (const {col} of layout.row) {
-    let x = 0
+  for (const {row, offset} of layout.col) {
+    let x = offset?.[0] ?? 0
+    y += offset?.[1] ?? 0
     let maxHeight = 0
-    for (const {id, size} of col) {
-      const [width, height] = size ?? [1, 1]
+    for (const info of row) {
+      const [ox, oy] = info.offset || [0, 0]
+      const rotate = info.rotate || 0
+      if ("key" in info) {
+        const [width, height] = info.size ?? [1, 1]
 
-      compiled.keys.push({
-        id,
-        type: "key",
-        size: [width, height],
-        pos: [x, y],
-      })
+        compiled.keys.push({
+          id: info.key,
+          shape: "square",
+          size: [width, height],
+          pos: [x + ox, y + oy],
+          cornerRadius: 0.1,
+          rotate,
+        })
 
-      x += width
-      maxHeight = Math.max(maxHeight, height)
+        x += width + ox
+        maxHeight = Math.max(maxHeight, height + oy)
+      } else if ("switch" in info) {
+        const cx = x + ox + 1
+        const cy = y + oy + 1
+        for (const [id, i] of [info.switch.n, info.switch.e, info.switch.s, info.switch.w].entries()) {
+          compiled.keys.push({
+            id,
+            shape: "quarter-circle",
+            cornerRadius: 0,
+            size: [2, 0.6],
+            pos: [cx, cy],
+            rotate: (Math.PI / 2) * i + Math.PI / 4,
+          })
+        }
+        compiled.keys.push({
+          id: info.switch.d,
+          shape: "square",
+          cornerRadius: 0.5,
+          size: [0.8, 0.8],
+          pos: [x + 0.6 + ox, y + 0.6 + oy],
+          rotate: 0,
+        })
+
+        x += 2 + ox
+        maxHeight = Math.max(maxHeight, 2 + oy)
+      }
     }
     y += maxHeight
     compiled.size[0] = Math.max(compiled.size[0], x)

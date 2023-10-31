@@ -1,24 +1,19 @@
 <script lang="ts">
-  import rawLayout from "$lib/assets/layouts/lite.yml"
+  import rawLayout from "$lib/assets/layouts/cc1.yml"
   import {compileLayout} from "$lib/serialization/visual-layout"
   import type {VisualLayout, CompiledLayoutKey} from "$lib/serialization/visual-layout"
   import {changes, layout} from "$lib/serial/connection"
-  import type {Change} from "$lib/serial/connection"
   import {dev} from "$app/environment"
-  import {KEYMAP_CODES} from "$lib/serial/keymap-codes.js"
-  import type {KeyInfo} from "$lib/serial/keymap-codes.js"
   import ActionSelector from "$lib/components/layout/ActionSelector.svelte"
   import {get} from "svelte/store"
-  import type {CharaLayout} from "$lib/serialization/layout"
+  import type {Writable} from "svelte/store"
+  import KeyboardKey from "$lib/components/layout/KeyboardKey.svelte"
+  import {getContext} from "svelte"
+  import type {VisualLayoutConfig} from "./visual-layout.js"
 
-  const scale = 50
-  export let inactiveScale = 0.6
-  export let inactiveOpacity = 0.4
-  export let strokeWidth = 1
-  export let margin = 5
-  export let fontSize = 9
-  export let iconFontSize = 14
-  export let activeLayer: number
+  const {scale, margin, strokeWidth, fontSize, iconFontSize} =
+    getContext<VisualLayoutConfig>("visual-layout-config")
+  const activeLayer = getContext<Writable<number>>("active-layer")
 
   if (dev) {
     // you have absolutely no idea what a difference this makes for performance
@@ -114,22 +109,12 @@
     }
   }
 
-  function getActions(layer: number, id: number, layout: CharaLayout, changes: Change[]): [KeyInfo, boolean] {
-    const actionId = layout?.[layer][id]
-    const changedId = changes.findLast(it => it?.layout?.[layer]?.[id] !== undefined)?.layout?.[layer]?.[id]
-    if (changedId !== undefined) {
-      return [KEYMAP_CODES[changedId], true]
-    } else {
-      return [KEYMAP_CODES[actionId], false]
-    }
-  }
-
   function edit(index: number) {
     const keyInfo = layoutInfo.keys[index]
     const clickedGroup = groupParent.children.item(index) as SVGGElement
     const component = new ActionSelector({
       target: document.body,
-      props: {currentAction: get(layout)[activeLayer][keyInfo.id]},
+      props: {currentAction: get(layout)[get(activeLayer)][keyInfo.id]},
     })
     const dialog = document.querySelector("dialog > div") as HTMLDivElement
     const backdrop = document.querySelector("dialog") as HTMLDialogElement
@@ -167,7 +152,7 @@
     component.$on("close", closed)
     component.$on("select", ({detail}) => {
       changes.update(changes => {
-        changes.push({layout: {[activeLayer]: {[keyInfo.id]: detail}}})
+        changes.push({layout: {[get(activeLayer)]: {[keyInfo.id]: detail}}})
         return changes
       })
       closed()
@@ -183,114 +168,24 @@
 <p>{layoutInfo.name}</p>
 <svg viewBox="0 0 {layoutInfo.size[0] * scale} {layoutInfo.size[1] * scale}" bind:this={groupParent}>
   {#each layoutInfo.keys as key, i}
-    {@const posX = key.pos[0] * scale}
-    {@const posY = key.pos[1] * scale}
-    {@const sizeX = key.size[0] * scale}
-    {@const sizeY = key.size[1] * scale}
-    {@const middleX = sizeX / 2}
-    {@const middleY = sizeY / 2}
-    <g
-      class="key-group"
+    <KeyboardKey
+      {i}
+      {key}
+      on:focusin={() => (focusKey = key)}
       on:click={() => edit(i)}
       on:keypress={({key}) => {
         if (key === "Enter") {
           edit(i)
         }
       }}
-      on:focusin={() => (focusKey = key)}
-      role="button"
-      tabindex={i + 1}
-    >
-      <rect
-        x={posX + margin}
-        y={posY + margin}
-        rx={margin}
-        width={sizeX - margin * 2}
-        height={sizeY - margin * 2}
-        stroke="currentcolor"
-        stroke-width={strokeWidth}
-      />
-      {#each [1, 2, 0] as layer, i}
-        {@const [action, changed] = getActions(layer, key.id, $layout, $changes)}
-        {@const isActive = layer === activeLayer}
-        {@const direction = [
-          (middleX - margin * 3) / (i % 2 === 0 ? -1 : 1),
-          (middleY - margin * 3) / (i < 2 ? -1 : 1),
-        ]}
-        {@const layerFontSize = action?.icon ? iconFontSize : fontSize}
-        <g
-          style="transform: {isActive
-            ? `translate3d(0, 0, 0) scale(1)`
-            : `translate3d(${direction[0]}px, ${direction[1]}px, 0) scale(${inactiveScale})`}"
-        >
-          <text
-            fill={changed ? "var(--md-sys-color-primary)" : "currentcolor"}
-            text-anchor="middle"
-            alignment-baseline="central"
-            x={posX + middleX + (changed ? fontSize / 3 : 0)}
-            y={posY + middleY}
-            font-size={layerFontSize}
-            font-family={action?.icon ? "Material Symbols Rounded" : undefined}
-            opacity={isActive ? 1 : inactiveOpacity}
-          >
-            {action?.icon || action?.id || action?.code || `{${key.id}}`}
-            {#if changed}
-              <tspan font-weight="bold">•</tspan>
-            {/if}
-          </text>
-        </g>
-      {/each}
-    </g>
+    />
   {/each}
 </svg>
 
 <style lang="scss">
-  $focus-transition: 10ms;
-  $transition: 200ms;
-
   svg {
     overflow: visible;
     width: calc(min(100%, 35cm));
     max-height: calc(100% - 170px);
-  }
-
-  text {
-    transition:
-      fill #{$focus-transition} ease,
-      opacity #{$transition} ease;
-  }
-
-  rect {
-    fill: var(--md-sys-color-background);
-    transition:
-      fill #{$focus-transition} ease,
-      stroke #{$focus-transition} ease,
-      fill-opacity #{$focus-transition} ease;
-  }
-
-  g {
-    transform-origin: center;
-    transform-box: fill-box;
-    transition:
-      fill #{$focus-transition} ease,
-      opacity #{$transition} ease,
-      transform #{$transition} ease;
-  }
-
-  .key-group:hover {
-    cursor: default;
-    opacity: 0.6;
-    transition: opacity #{$transition} ease;
-  }
-
-  .key-group:focus-within {
-    color: var(--md-sys-color-primary);
-    outline: none;
-
-    > rect {
-      outline: none;
-      fill: currentcolor;
-      fill-opacity: 0.2;
-    }
   }
 </style>
