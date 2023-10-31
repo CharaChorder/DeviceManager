@@ -165,6 +165,7 @@
 
   .content {
     position: relative;
+    transform-origin: top left;
 
     overflow: hidden;
     display: flex;

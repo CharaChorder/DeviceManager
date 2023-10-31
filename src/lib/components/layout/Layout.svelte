@@ -2,6 +2,7 @@
   import {serialPort} from "$lib/serial/connection"
   import LayoutCC1 from "$lib/components/layout/LayoutCC1.svelte"
   import {action} from "$lib/title"
+  import GenericLayout from "$lib/components/layout/GenericLayout.svelte"
 
   $: device = $serialPort?.device ?? "ONE"
   let activeLayer = 0
@@ -13,7 +14,7 @@
   ] as const
 </script>
 
-<div>
+<div class="container">
   <fieldset>
     {#each layers as [title, icon, value]}
       <button
@@ -28,13 +29,25 @@
   </fieldset>
 
   {#if device === "ONE"}
-    <LayoutCC1 bind:activeLayer />
+    <GenericLayout bind:activeLayer />
+    <!-- <LayoutCC1 bind:activeLayer /> -->
   {:else}
     <p>Unsupported device ({$serialPort?.device})</p>
   {/if}
 </div>
 
 <style lang="scss">
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+    margin-bottom: 96px;
+  }
+
   fieldset {
     position: relative;
 

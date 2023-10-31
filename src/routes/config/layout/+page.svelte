@@ -59,20 +59,24 @@
 <svelte:window use:share={shareLayout} />
 
 <section>
-  <label class="icon"
+  <!-- <label class="icon"
     >upload_file<input
       bind:this={fileInput}
       on:input={importLayout}
       type="file"
       accept="text/csv, application/json"
     /></label
-  >
+  > -->
   <Layout />
 </section>
 
 <style lang="scss">
   section {
-    margin: auto;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
   }
 
   input[type="file"] {

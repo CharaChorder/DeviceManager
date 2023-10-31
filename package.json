@@ -1,15 +1,15 @@
 {
-  "name": "amacc1ng",
+  "name": "charachorder-device-manager",
   "version": "0.6.5",
   "license": "AGPL-3.0-or-later",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/Theaninova/amacc1ng.git"
+    "url": "https://github.com/CharaChorder/DeviceManager.git"
   },
-  "homepage": "https://github.com/Theaninova/amacc1ng",
+  "homepage": "https://github.com/CharaChorder/DeviceManager",
   "bugs": {
-    "url": "https://github.com/Theaninova/amacc1ng/issues"
+    "url": "https://github.com/CharaChorder/DeviceManager/issues"
   },
   "scripts": {
     "dev": "npm-run-all --parallel vite typesafe-i18n",
