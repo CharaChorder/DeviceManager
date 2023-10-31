@@ -39,8 +39,9 @@ jobs:
         with:
           name: build
           path: build
-      - run : git config user.name github-actions
-      - run : git config user.email github-actions@github.com
-      - run : git --work-tree build add --all
-      - run : git commit -m "Automatic Deploy action run by github-actions"
-      - run : git push origin HEAD:gh-pages --force
+      - run: touch build/.nojekyll
+      - run: git config user.name github-actions
+      - run: git config user.email github-actions@github.com
+      - run: git --work-tree build add --all
+      - run: git commit -m "Automatic Deploy action run by github-actions"
+      - run: git push origin HEAD:gh-pages --force
