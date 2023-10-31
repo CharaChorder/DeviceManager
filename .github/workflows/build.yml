@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: 🔨 Build
+  CI:
+    name: 🔨🚀 Build and deploy
     runs-on: ubuntu-latest
     steps:
       - name: 🚚 Checkout
@@ -39,11 +39,6 @@ jobs:
         with:
           name: build
           path: build
-  deploy:
-    name: 🚀 Deploy
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: 🚚 Checkout
         uses: actions/checkout@v3
       - run : git config user.name github-actions
