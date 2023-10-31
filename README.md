@@ -1,15 +1,12 @@
-# amaCC1ng
+# CharaChorder Device Manager
 
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/Theaninova/dotio/build.yml)
-![GitHub](https://img.shields.io/github/license/Theaninova/dotio)
-[![GitHub deployments](https://img.shields.io/github/deployments/Theaninova/dotio/Website?label=delployment)](https://dotio.theaninova.de/)
+The official device manager and configuration tool for CharaChorder devices.
 
-_This project is not affiliated or endorsed with neither the original [dot i/o](https://www.iq-eq.io/) site, nor [CharaChorder](https://www.charachorder.com/)_
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/CharaChorder/DeviceManager/build.yml)
+![GitHub](https://img.shields.io/github/license/CharaChorder/DeviceManager)
+[![GitHub deployments](https://img.shields.io/github/deployments/CharaChorder/DeviceManager/Website?label=delployment)](https://manager.charachorder.com/)
 
-Get the latest desktop release [here](https://github.com/Theaninova/dotio/releases).
-
-I aim to create a new site that offers an easier, visually pleasing
-and more complete way to configure and learn CharaChorder devices.
+Get the latest desktop release [here](https://github.com/CharaChorder/DeviceManager/releases).
 
 ## Deployment
 
