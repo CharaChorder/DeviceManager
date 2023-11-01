@@ -46,19 +46,29 @@
   $: lastPage = Math.ceil(items.length / pageSize) - 1
 
   let page = 0
+  $: {
+    items
+    page = 0
+  }
 </script>
 
 <svelte:head>
   <title>Chord Manager</title>
 </svelte:head>
 
-<div>
+<div class="search-container">
   <input
     type="search"
     placeholder={$LL.configure.chords.search.PLACEHOLDER($chords.length)}
     on:input={search}
   />
-  <span>{page + 1} / {lastPage + 1}</span>
+  <div class="paginator">
+    {#if lastPage !== -1}
+      {page + 1} / {lastPage + 1}
+    {:else}
+      - / -
+    {/if}
+  </div>
   <button class="icon" on:click={() => (page = Math.max(page - 1, 0))} use:action={{shortcut: "ctrl+left"}}
     >navigate_before</button
   >
@@ -71,26 +81,46 @@
 
 <section bind:this={results}>
   <table>
-    {#each items.slice(page * pageSize, (page + 1) * pageSize) as [chord]}
-      <tr>
-        <th>
-          <ActionStringEdit actions={chord.phrase} />
-        </th>
-        <td>
-          <ActionStringEdit actions={chord.actions} />
-        </td>
-        <td class="table-buttons">
-          <button class="icon compact">share</button>
-          <button class="icon compact" on:click={() => $changes.push({chords: [{delete: chord}]})}
-            >delete</button
-          >
-        </td>
-      </tr>
-    {/each}
+    {#if lastPage !== -1}
+      {#each items.slice(page * pageSize, (page + 1) * pageSize) as [chord]}
+        <tr>
+          <th>
+            <ActionStringEdit actions={chord.phrase} />
+          </th>
+          <td>
+            <ActionStringEdit actions={chord.actions} />
+          </td>
+          <td class="table-buttons">
+            <button class="icon compact">share</button>
+            <button class="icon compact" on:click={() => $changes.push({chords: [{delete: chord}]})}
+              >delete</button
+            >
+          </td>
+        </tr>
+      {/each}
+    {:else}
+      <caption> No Results </caption>
+    {/if}
   </table>
 </section>
 
 <style lang="scss">
+  .search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .paginator {
+    display: flex;
+    justify-content: flex-end;
+    min-width: 8ch;
+  }
+
+  caption {
+    margin-top: 156px;
+  }
+
   input[type="search"] {
     width: 512px;
     margin-block-start: 16px;
@@ -132,26 +162,6 @@
     overflow: hidden;
     min-width: min(90vw, 16.5cm);
     transition: all 1s ease;
-  }
-
-  table abbr {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding-block: 4px;
-    padding-inline: 8px;
-
-    font-size: 16px;
-    font-style: normal;
-    text-decoration: none;
-
-    border: 1px solid var(--md-sys-color-outline);
-    border-radius: 8px;
-
-    &.icon {
-      font-size: 20px;
-    }
   }
 
   th {
