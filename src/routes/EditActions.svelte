@@ -1,9 +1,10 @@
 <script lang="ts">
   import LL from "../i18n/i18n-svelte"
-  import {changes} from "$lib/serial/connection"
-  import type {Change} from "$lib/serial/connection"
+  import {changes, ChangeType, chords, layout, settings} from "$lib/undo-redo"
+  import type {Change} from "$lib/undo-redo"
   import {fly} from "svelte/transition"
   import {action} from "$lib/title"
+  import {deviceChords, deviceLayout, deviceSettings, serialPort, syncStatus} from "$lib/serial/connection"
 
   function undo() {
     redoQueue = [$changes.pop()!, ...redoQueue]
@@ -20,8 +21,54 @@
   }
   let redoQueue: Change[] = []
 
-  function apply() {
-    // TODO
+  async function apply() {
+    const port = $serialPort
+    if (!port) return
+
+    $syncStatus = "uploading"
+    for (const change of $changes) {
+      switch (change.type) {
+        case ChangeType.Layout:
+          await port.setLayoutKey(change.layer + 1, change.id, change.action)
+          break
+        case ChangeType.Chord:
+          if (change.phrase) {
+            await port.setChord({actions: change.actions, phrase: change.phrase})
+          } else {
+            await port.deleteChord({actions: change.actions})
+          }
+          break
+        case ChangeType.Setting:
+          await port.setSetting(change.id, change.setting)
+          break
+      }
+    }
+    $deviceLayout = $layout.map(layer => layer.map<number>(({action}) => action)) as [
+      number[],
+      number[],
+      number[],
+    ]
+    $deviceChords = $chords.map(({actions, phrase}) => ({actions, phrase}))
+    $deviceSettings = $settings.map(({value}) => value)
+    $changes = []
+    $syncStatus = "done"
+  }
+
+  async function flashChanges() {
+    $syncStatus = "uploading"
+    // Yes, this is a completely arbitrary and unnecessary delay.
+    // The only purpose of it is to create a sense of weight,
+    // aka make it more "energy intensive" to click.
+    // The only conceivable way users could reach the commit limit in this case
+    // would be if they click it every time they change a setting.
+    // Because of that, we don't need to show a fearmongering message such as
+    // "Your device will break after you click this 10,000 times!"
+    await new Promise(resolve => setTimeout(resolve, 6000))
+    if ($serialPort) {
+      await $serialPort.commit()
+      $changes = []
+    }
+    $syncStatus = "done"
   }
 </script>
 
@@ -107,7 +154,11 @@
   on:click={redo}>redo</button
 >
 <div class="separator" />
-<button use:action={{title: $LL.saveActions.SAVE(), shortcut: "ctrl+shift+s"}} class="icon">save</button>
+<button
+  use:action={{title: $LL.saveActions.SAVE(), shortcut: "ctrl+shift+s"}}
+  on:click={flashChanges}
+  class="icon">save</button
+>
 {#if $changes.length !== 0}
   <button
     class="click-me"
@@ -121,73 +172,6 @@
 {/if}
 
 <style lang="scss">
-  .pacman {
-    position: relative;
-
-    aspect-ratio: 1;
-    height: 32px;
-
-    background: currentcolor;
-    border: 8px solid currentcolor;
-    border-radius: 100%;
-    outline: 6px solid currentcolor;
-    outline-offset: 2px;
-
-    animation: pacman 0.2s linear infinite alternate-reverse;
-
-    &::before {
-      content: "";
-
-      position: absolute;
-      top: 0;
-      left: 25%;
-
-      width: 200%;
-      height: 100%;
-
-      background: var(--md-sys-color-background);
-      animation: squish 0.2s linear infinite alternate-reverse;
-      border-radius: 16px;
-    }
-
-    &::after {
-      content: "c c o s";
-      position: absolute;
-      display: flex;
-      width: 500%;
-      animation: go 1s linear infinite;
-    }
-  }
-
-  @keyframes go {
-    from {
-      translate: 0 0;
-    }
-    to {
-      translate: -100% 0;
-    }
-  }
-
-  @keyframes squish {
-    from {
-      scale: 1;
-    }
-
-    to {
-      scale: 1 0.5;
-    }
-  }
-
-  @keyframes pacman {
-    to {
-      scale: 1;
-    }
-
-    to {
-      scale: 0.9;
-    }
-  }
-
   .click-me {
     display: flex;
     align-items: center;

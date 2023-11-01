@@ -1,6 +1,6 @@
 <script lang="ts">
   import {share} from "$lib/share"
-  import {layout} from "$lib/serial/connection"
+  import {deviceLayout} from "$lib/serial/connection"
   import tippy from "tippy.js"
   import {onMount, setContext} from "svelte"
   import Layout from "$lib/components/layout/Layout.svelte"
@@ -16,7 +16,7 @@
     if (url.searchParams.has("import")) {
       const file = await charaFileFromUriComponent(url.searchParams.get("import")!)
       if (file.type === "layout") {
-        $layout = file.layout
+        $deviceLayout = file.layout
       }
     }
   })
@@ -29,7 +29,7 @@
         charaVersion: 1,
         type: "layout",
         device: "one",
-        layout: $layout,
+        layout: $deviceLayout,
       }),
     )
     await navigator.clipboard.writeText(url.toString())
@@ -52,7 +52,8 @@
     const file = await fileInput.files?.item(0)?.text()
     if (!file) return
     const importedLayout = isCsvLayout(file) ? csvLayoutToJson(file) : (JSON.parse(file) as CharaLayoutFile)
-    if (importedLayout.type === "layout" && importedLayout.charaVersion === 1) $layout = importedLayout.layout
+    if (importedLayout.type === "layout" && importedLayout.charaVersion === 1)
+      $deviceLayout = importedLayout.layout
   }
 
   setContext<VisualLayoutConfig>("visual-layout-config", {

@@ -193,7 +193,7 @@ export class CharaDevice {
     if (status !== "0") throw new Error(`Failed with status ${status}`)
   }
 
-  async deleteChord(chord: Chord) {
+  async deleteChord(chord: Pick<Chord, "actions">) {
     const status = await this.send(`CML C4 ${stringifyChordActions(chord.actions)}`)
     if (status.at(-1) !== "0") throw new Error(`Failed with status ${status}`)
   }
@@ -205,7 +205,8 @@ export class CharaDevice {
    * @param action the assigned action id
    */
   async setLayoutKey(layer: number, id: number, action: number) {
-    const [status] = await this.send(`VAR B3 A${layer} ${id} ${action}`)
+    const [status] = await this.send(`VAR B4 A${layer} ${id} ${action}`)
+    console.log(status)
     if (status !== "0") throw new Error(`Failed with status ${status}`)
   }
 

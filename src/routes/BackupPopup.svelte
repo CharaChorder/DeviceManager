@@ -1,6 +1,6 @@
 <script lang="ts">
   import {parseCompressed, stringifyCompressed} from "$lib/serial/serialization"
-  import {chords, layout} from "$lib/serial/connection"
+  import {deviceChords, deviceLayout} from "$lib/serial/connection"
   import {preference} from "$lib/preferences"
   import type {Chord} from "$lib/serial/chord"
   import type {CharaLayout} from "$lib/serialization/layout"
@@ -16,8 +16,8 @@
     const downloadUrl = URL.createObjectURL(
       await stringifyCompressed({
         isCharaBackup: "v1.0",
-        chords: $chords,
-        layout: $layout,
+        chords: $deviceChords,
+        layout: $deviceLayout,
       }),
     )
     const element = document.createElement("a")
@@ -34,10 +34,10 @@
     const backup = await parseCompressed<Backup>(input)
     if (backup.isCharaBackup !== "v1.0") throw new Error("Invalid Backup")
     if (backup.chords) {
-      $chords = backup.chords
+      $deviceChords = backup.chords
     }
     if (backup.layout) {
-      $layout = backup.layout
+      $deviceLayout = backup.layout
     }
   }
 </script>

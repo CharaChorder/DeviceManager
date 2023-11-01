@@ -1,10 +1,10 @@
 <script lang="ts">
-  import {getActions} from "$lib/components/layout/get-actions.js"
-  import {changes, layout} from "$lib/serial/connection.js"
   import {getContext} from "svelte"
   import type {Writable} from "svelte/store"
   import type {VisualLayoutConfig} from "$lib/components/layout/visual-layout"
   import type {CompiledLayoutKey} from "$lib/serialization/visual-layout"
+  import {layout} from "$lib/undo-redo.js"
+  import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
 
   const {fontSize, margin, inactiveOpacity, inactiveScale, iconFontSize} =
     getContext<VisualLayoutConfig>("visual-layout-config")
@@ -21,27 +21,28 @@
 </script>
 
 {#each positions as position, layer}
-  {@const [action, changed] = getActions(layer, key.id, $layout, $changes)}
+  {@const {action: actionId, isApplied} = $layout[layer][key.id]}
+  {@const {code, icon, id} = KEYMAP_CODES[actionId] ?? {code: actionId}}
   {@const isActive = layer === $activeLayer}
   {@const direction = [(middle[0] - margin * 3) / position[0], (middle[1] - margin * 3) / position[1]]}
   <text
-    fill={changed ? "var(--md-sys-color-primary)" : "currentcolor"}
-    font-weight={changed ? "bold" : ""}
+    fill={isApplied ? "currentcolor" : "var(--md-sys-color-primary)"}
+    font-weight={isApplied ? "" : "bold"}
     text-anchor="middle"
     alignment-baseline="central"
-    x={pos[0] + middle[0] + (changed ? fontSize / 3 : 0)}
+    x={pos[0] + middle[0] + (isApplied ? 0 : fontSize / 3)}
     y={pos[1] + middle[1]}
-    font-size={fontSizeMultiplier * (action.icon ? iconFontSize : fontSize)}
-    font-family={action.icon ? "Material Symbols Rounded" : undefined}
+    font-size={fontSizeMultiplier * (icon ? iconFontSize : fontSize)}
+    font-family={icon ? "Material Symbols Rounded" : undefined}
     opacity={isActive ? 1 : inactiveOpacity}
     style:scale={isActive ? 1 : inactiveScale}
     style:translate={isActive ? "0 0 0" : `${direction[0]}px ${direction[1]}px 0`}
     style:rotate="{rotate}deg"
   >
-    {#if action.code !== 0}
-      {action.icon || action.id || `0x${action.code?.toString(16)}`}
+    {#if code !== 0}
+      {icon || id || `0x${code.toString(16)}`}
     {/if}
-    {#if changed}
+    {#if !isApplied}
       <tspan>•</tspan>
     {/if}
   </text>

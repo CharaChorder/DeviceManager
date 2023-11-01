@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {serialPort, syncStatus, unsavedChanges} from "$lib/serial/connection"
+  import {serialPort, syncStatus} from "$lib/serial/connection"
   import {slide, fly} from "svelte/transition"
   import {canShare, triggerShare} from "$lib/share"
   import {popup} from "$lib/popup"
@@ -12,24 +12,6 @@
   import Profile from "./Profile.svelte"
   import ConfigTabs from "./ConfigTabs.svelte"
   import EditActions from "./EditActions.svelte"
-
-  async function flashChanges() {
-    $syncStatus = "uploading"
-    // Yes, this is a completely arbitrary and unnecessary delay.
-    // The only purpose of it is to create a sense of weight,
-    // aka make it more "energy intensive" to click.
-    // The only conceivable way users could reach the commit limit in this case
-    // would be if they click it every time they change a setting.
-    // Because of that, we don't need to show a fearmongering message such as
-    // "Your device will break after you click this 10,000 times!"
-    await new Promise(resolve => setTimeout(resolve, 6000))
-    $serialPort.commit()
-    unsavedChanges.update(it => {
-      it.clear()
-      return it
-    })
-    $syncStatus = "done"
-  }
 
   $: if (browser && !canAutoConnect()) {
     connectButton?.click()
@@ -54,17 +36,6 @@
       {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
         <PwaStatus />
       {/await}
-    {/if}
-    {#if $unsavedChanges.size > 0}
-      <button
-        disabled={$syncStatus === "uploading"}
-        on:click={flashChanges}
-        transition:fly={{x: -8}}
-        title={$LL.deviceManager.APPLY_SETTINGS()}
-        class="icon"
-        >save
-      </button>
-      <div transition:slide class="separator" />
     {/if}
     {#if $serialPort}
       <button title={$LL.backup.TITLE()} use:popup={BackupPopup} class="icon {$syncStatus}">

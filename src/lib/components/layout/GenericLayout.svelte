@@ -1,7 +1,7 @@
 <script lang="ts">
   import {compileLayout} from "$lib/serialization/visual-layout"
   import type {VisualLayout, CompiledLayoutKey} from "$lib/serialization/visual-layout"
-  import {changes, layout} from "$lib/serial/connection"
+  import {deviceLayout} from "$lib/serial/connection"
   import {dev} from "$app/environment"
   import ActionSelector from "$lib/components/layout/ActionSelector.svelte"
   import {get} from "svelte/store"
@@ -9,6 +9,7 @@
   import KeyboardKey from "$lib/components/layout/KeyboardKey.svelte"
   import {getContext} from "svelte"
   import type {VisualLayoutConfig} from "./visual-layout.js"
+  import {changes, ChangeType} from "$lib/undo-redo"
 
   const {scale, margin, strokeWidth, fontSize, iconFontSize} =
     getContext<VisualLayoutConfig>("visual-layout-config")
@@ -114,7 +115,7 @@
     const clickedGroup = groupParent.children.item(index) as SVGGElement
     const component = new ActionSelector({
       target: document.body,
-      props: {currentAction: get(layout)[get(activeLayer)][keyInfo.id]},
+      props: {currentAction: get(deviceLayout)[get(activeLayer)][keyInfo.id]},
     })
     const dialog = document.querySelector("dialog > div") as HTMLDivElement
     const backdrop = document.querySelector("dialog") as HTMLDialogElement
@@ -152,7 +153,12 @@
     component.$on("close", closed)
     component.$on("select", ({detail}) => {
       changes.update(changes => {
-        changes.push({layout: {[get(activeLayer)]: {[keyInfo.id]: detail}}})
+        changes.push({
+          type: ChangeType.Layout,
+          id: keyInfo.id,
+          layer: get(activeLayer),
+          action: detail,
+        })
         return changes
       })
       closed()

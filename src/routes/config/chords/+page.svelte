@@ -1,23 +1,24 @@
 <script lang="ts">
-  import {changes, chords} from "$lib/serial/connection"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import Index from "flexsearch"
-  import type {Chord} from "$lib/serial/chord"
   import LL from "../../../i18n/i18n-svelte"
   import {action} from "$lib/title"
   import {onDestroy, onMount} from "svelte"
   import ActionStringEdit from "$lib/components/ActionStringEdit.svelte"
+  import {changes, ChangeType, chords} from "$lib/undo-redo"
+  import type {ChordInfo} from "$lib/undo-redo"
+  import {derived, writable} from "svelte/store"
 
   const resultSize = 38
   let results: HTMLElement
-  let pageSize: number
+  const pageSize = writable(0)
   let resizeObserver: ResizeObserver
 
   onMount(() => {
     resizeObserver = new ResizeObserver(() => {
-      pageSize = Math.floor(results.clientHeight / resultSize)
+      pageSize.set(Math.floor(results.clientHeight / resultSize))
     })
-    pageSize = Math.floor(results.clientHeight / resultSize)
+    pageSize.set(Math.floor(results.clientHeight / resultSize))
     resizeObserver.observe(results)
   })
 
@@ -27,27 +28,33 @@
 
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
 
-  function buildIndex(chords: Chord[]): Index {
+  function buildIndex(chords: ChordInfo[]): Index {
     const index = new Index({tokenize: "full"})
     chords.forEach((chord, i) => {
-      index.add(i, chord.phrase.map(it => KEYMAP_CODES[it].id).join(""))
+      if ("phrase" in chord) {
+        index.add(i, chord.phrase.map(it => KEYMAP_CODES[it].id).join(""))
+      }
     })
     return index
   }
 
-  let searchFilter: number[] | undefined
+  const searchFilter = writable<number[] | undefined>(undefined)
 
   function search(event: Event) {
     const query = (event.target as HTMLInputElement).value
-    searchFilter = query && searchIndex ? searchIndex.search(query) : undefined
+    searchFilter.set(query && searchIndex ? searchIndex.search(query) : undefined)
   }
 
-  $: items = searchFilter?.map(it => [$chords[it], it] as const) ?? $chords.map((it, i) => [it, i] as const)
-  $: lastPage = Math.ceil(items.length / pageSize) - 1
+  const items = derived([searchFilter, chords], ([filter, chords]) =>
+    (filter?.map(it => [chords[it], it] as const) ?? chords.map((it, i) => [it, i] as const)).filter(
+      ([{phrase}]) => phrase.length > 0,
+    ),
+  )
+  const lastPage = derived([items, pageSize], ([items, pageSize]) => Math.ceil(items.length / pageSize) - 1)
 
   let page = 0
   $: {
-    items
+    $items
     page = 0
   }
 </script>
@@ -63,8 +70,8 @@
     on:input={search}
   />
   <div class="paginator">
-    {#if lastPage !== -1}
-      {page + 1} / {lastPage + 1}
+    {#if $lastPage !== -1}
+      {page + 1} / {$lastPage + 1}
     {:else}
       - / -
     {/if}
@@ -74,26 +81,31 @@
   >
   <button
     class="icon"
-    on:click={() => (page = Math.min(page + 1, lastPage))}
+    on:click={() => (page = Math.min(page + 1, $lastPage))}
     use:action={{shortcut: "ctrl+right"}}>navigate_next</button
   >
 </div>
 
 <section bind:this={results}>
   <table>
-    {#if lastPage !== -1}
-      {#each items.slice(page * pageSize, (page + 1) * pageSize) as [chord]}
-        <tr>
+    {#if $lastPage !== -1}
+      {#each $items.slice(page * $pageSize, (page + 1) * $pageSize) as [{ actions, phrase, isApplied }]}
+        <tr style:color={isApplied ? "" : "var(--md-sys-color-secondary"}>
           <th>
-            <ActionStringEdit actions={chord.phrase} />
+            <ActionStringEdit {actions} />
           </th>
           <td>
-            <ActionStringEdit actions={chord.actions} />
+            <ActionStringEdit actions={phrase} />
           </td>
           <td class="table-buttons">
             <button class="icon compact">share</button>
-            <button class="icon compact" on:click={() => $changes.push({chords: [{delete: chord}]})}
-              >delete</button
+            <button
+              class="icon compact"
+              on:click={() =>
+                changes.update(changes => {
+                  changes.push({type: ChangeType.Chord, actions, phrase: []})
+                  return changes
+                })}>delete</button
             >
           </td>
         </tr>

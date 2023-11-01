@@ -225,4 +225,8 @@
       font-size: 10px;
     }
   }
+
+  form label:has(:global(.pending-changes)) {
+    color: var(--md-sys-color-tertiary);
+  }
 </style>
