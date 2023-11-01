@@ -35,8 +35,8 @@
     font-family={action.icon ? "Material Symbols Rounded" : undefined}
     opacity={isActive ? 1 : inactiveOpacity}
     style:scale={isActive ? 1 : inactiveScale}
-    style:translate={isActive ? "0 0" : `${direction[0]}px ${direction[1]}px`}
-    style:rotate="{rotate}rad"
+    style:translate={isActive ? "0 0 0" : `${direction[0]}px ${direction[1]}px 0`}
+    style:rotate="{rotate}deg"
   >
     {#if action.code !== 0}
       {action.icon || action.id || `0x${action.code?.toString(16)}`}
@@ -52,6 +52,7 @@
   $transition: 200ms;
 
   text {
+    will-change: translate, scale;
     transform-origin: center;
     transform-box: fill-box;
     transition:

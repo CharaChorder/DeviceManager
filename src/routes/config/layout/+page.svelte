@@ -57,7 +57,7 @@
 
   setContext<VisualLayoutConfig>("visual-layout-config", {
     scale: 50,
-    inactiveScale: 0.6,
+    inactiveScale: 0.5,
     inactiveOpacity: 0.4,
     strokeWidth: 1,
     margin: 5,
