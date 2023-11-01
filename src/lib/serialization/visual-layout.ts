@@ -74,7 +74,7 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
       } else if ("switch" in info) {
         const cx = x + ox + 1
         const cy = y + oy + 1
-        for (const [i, id] of [info.switch.n, info.switch.e, info.switch.s, info.switch.w].entries()) {
+        for (const [i, id] of [info.switch.s, info.switch.w, info.switch.n, info.switch.e].entries()) {
           compiled.keys.push({
             id,
             shape: "quarter-circle",
