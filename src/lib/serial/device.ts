@@ -33,6 +33,7 @@ export class CharaDevice {
   company!: "CHARACHORDER"
   device!: "ONE" | "LITE"
   chipset!: "M0" | "S2"
+  keyCount!: 90 | 67
 
   constructor(private readonly baudRate = 115200) {}
 
@@ -62,6 +63,7 @@ export class CharaDevice {
     this.company = company as "CHARACHORDER"
     this.device = device as "ONE" | "LITE"
     this.chipset = chipset as "M0" | "S2"
+    this.keyCount = this.device === "ONE" ? 90 : 67
   }
 
   private async suspend() {

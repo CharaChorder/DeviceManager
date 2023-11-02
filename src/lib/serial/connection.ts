@@ -61,8 +61,7 @@ export async function initSerial(manual = false) {
 
   const parsedLayout: CharaLayout = [[], [], []]
   for (let layer = 1; layer <= 3; layer++) {
-    // TODO: this will fail for LITE!
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < device.keyCount; i++) {
       parsedLayout[layer - 1][i] = await device.getLayoutKey(layer, i)
     }
   }
