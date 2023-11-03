@@ -32,7 +32,7 @@
           await port.setLayoutKey(change.layer + 1, change.id, change.action)
           break
         case ChangeType.Chord:
-          if (change.phrase) {
+          if (change.phrase.length > 0) {
             await port.setChord({actions: change.actions, phrase: change.phrase})
           } else {
             await port.deleteChord({actions: change.actions})
