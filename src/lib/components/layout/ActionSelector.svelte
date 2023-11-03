@@ -1,11 +1,12 @@
 <script lang="ts">
-  import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
+  import {KEYMAP_CATEGORIES, KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import type {KeyInfo} from "$lib/serial/keymap-codes"
   import Index from "flexsearch"
   import {createEventDispatcher} from "svelte"
   import ActionListItem from "$lib/components/ActionListItem.svelte"
   import LL from "../../../i18n/i18n-svelte"
   import {action} from "$lib/title"
+  import type {KeymapCategory} from "$lib/assets/keymaps/keymap"
 
   export let currentAction: number
 
@@ -59,24 +60,25 @@
     event.preventDefault()
   }
 
-  let results: number[] = []
+  let results: number[] = Object.keys(KEYMAP_CODES).map(Number)
   let exact: number | undefined = undefined
   let code: number = Number.NaN
 
   const dispatch = createEventDispatcher()
   let searchBox: HTMLInputElement
   let resultList: HTMLUListElement
+  let filter: Set<number>
 </script>
 
 <svelte:window on:keydown={keyboardNavigation} />
 
+<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog open on:click|self={() => dispatch("close")}>
   <div class="content">
     <div class="search-row">
       <input
         type="search"
         bind:this={searchBox}
-        autofocus
         on:input={search}
         on:keypress={event => {
           if (event.key === "Enter") {
@@ -94,6 +96,27 @@
         on:click={() => dispatch("close")}>close</button
       >
     </div>
+    <fieldset class="filters">
+      <label
+        >{$LL.actionSearch.filter.ALL()}<input
+          checked
+          name="category"
+          type="radio"
+          value={undefined}
+          bind:group={filter}
+        /></label
+      >
+      {#each KEYMAP_CATEGORIES as category}
+        <label
+          >{category.name}<input
+            name="category"
+            type="radio"
+            value={new Set(Object.keys(category.actions).map(Number))}
+            bind:group={filter}
+          /></label
+        >
+      {/each}
+    </fieldset>
     <aside>
       <h3>{$LL.actionSearch.CURRENT_ACTION()}</h3>
       <ActionListItem id={currentAction} />
@@ -112,7 +135,7 @@
           <li>Action code is out of range</li>
         {/if}
       {/if}
-      {#each results as id (id)}
+      {#each filter ? results.filter(it => filter.has(it)) : results as id (id)}
         <li><ActionListItem {id} on:click={() => select(id)} /></li>
       {/each}
     </ul>
@@ -120,6 +143,32 @@
 </dialog>
 
 <style lang="scss">
+  .filters {
+    display: flex;
+    gap: 4px;
+    border: none;
+
+    label {
+      height: unset;
+      padding-block: 2px;
+      padding-inline: 4px;
+
+      font-size: 14px;
+
+      border: 1px solid currentcolor;
+      border-radius: 6px;
+
+      &:has(:checked) {
+        color: var(--md-sys-color-on-secondary);
+        background: var(--md-sys-color-secondary);
+      }
+
+      input {
+        display: none;
+      }
+    }
+  }
+
   dialog {
     display: flex;
     align-items: center;
@@ -150,10 +199,6 @@
 
       background: var(--md-sys-color-background);
     }
-  }
-
-  h2 {
-    margin-inline: 16px;
   }
 
   .search-row {

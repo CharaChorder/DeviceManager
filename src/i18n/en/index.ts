@@ -21,6 +21,9 @@ const en = {
     PLACEHOLDER: "Search for actions",
     CURRENT_ACTION: "Current action",
     DELETE: "Remove",
+    filter: {
+      ALL: "All",
+    },
   },
   share: {
     URL_COPIED: "Sharable URL copied!",

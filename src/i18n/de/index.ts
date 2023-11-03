@@ -22,6 +22,9 @@ const de = {
     PLACEHOLDER: "Nach Aktionen suchen",
     CURRENT_ACTION: "Aktuelle Aktion",
     DELETE: "Entfernen",
+    filter: {
+      ALL: "Alle",
+    },
   },
   share: {
     URL_COPIED: "Teilbare URL kopiert!",
