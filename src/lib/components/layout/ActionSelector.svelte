@@ -6,9 +6,8 @@
   import ActionListItem from "$lib/components/ActionListItem.svelte"
   import LL from "../../../i18n/i18n-svelte"
   import {action} from "$lib/title"
-  import type {KeymapCategory} from "$lib/assets/keymaps/keymap"
 
-  export let currentAction: number
+  export let currentAction: number | undefined = undefined
 
   const index = new Index({tokenize: "full"})
   for (const action of Object.values(KEYMAP_CODES)) {
@@ -117,10 +116,12 @@
         >
       {/each}
     </fieldset>
-    <aside>
-      <h3>{$LL.actionSearch.CURRENT_ACTION()}</h3>
-      <ActionListItem id={currentAction} />
-    </aside>
+    {#if currentAction !== undefined}
+      <aside>
+        <h3>{$LL.actionSearch.CURRENT_ACTION()}</h3>
+        <ActionListItem id={currentAction} />
+      </aside>
+    {/if}
     <ul bind:this={resultList}>
       {#if exact !== undefined}
         <li class="exact">

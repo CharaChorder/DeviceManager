@@ -48,14 +48,6 @@
     }).show()
   }
 
-  async function importLayout() {
-    const file = await fileInput.files?.item(0)?.text()
-    if (!file) return
-    const importedLayout = isCsvLayout(file) ? csvLayoutToJson(file) : (JSON.parse(file) as CharaLayoutFile)
-    if (importedLayout.type === "layout" && importedLayout.charaVersion === 1)
-      $deviceLayout = importedLayout.layout
-  }
-
   setContext<VisualLayoutConfig>("visual-layout-config", {
     scale: 50,
     inactiveScale: 0.5,
@@ -67,37 +59,22 @@
   })
 
   setContext("active-layer", writable(0))
-
-  let fileInput: HTMLInputElement
-  let layoutOverride: "ONE" | "LITE" | undefined = undefined
 </script>
 
 <svelte:window use:share={shareLayout} />
 
 <section>
-  <select bind:value={layoutOverride}>
-    <option value={undefined}>Auto</option>
-    <option value="ONE">CC1</option>
-    <option value="LITE">Lite</option>
-  </select>
-  <!-- <label class="icon"
-    >upload_file<input
-      bind:this={fileInput}
-      on:input={importLayout}
-      type="file"
-      accept="text/csv, application/json"
-    /></label
-  > -->
-  <Layout {layoutOverride} />
+  <Layout />
 </section>
 
 <style lang="scss">
   section {
     display: flex;
+    align-items: center;
+    justify-content: center;
+
     width: 100%;
     height: 100%;
-    justify-content: center;
-    align-items: center;
   }
 
   input[type="file"] {

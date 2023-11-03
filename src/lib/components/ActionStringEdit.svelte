@@ -1,113 +1,181 @@
 <script lang="ts">
   import {KEYMAP_CODES, KEYMAP_IDS, specialKeycodes} from "$lib/serial/keymap-codes"
-  import {onDestroy, onMount} from "svelte"
-  import type ActionSelector from "$lib/components/layout/ActionSelector.svelte"
+  import {tick} from "svelte"
+  import ActionSelector from "$lib/components/layout/ActionSelector.svelte"
+  import {changes, ChangeType} from "$lib/undo-redo"
 
   export let actions: number[]
 
-  onMount(() => {
-    document.addEventListener("selectionchange", select)
-  })
+  function keypress(event: KeyboardEvent) {
+    if (event.key === "ArrowUp") {
+      selectAction()
+    } else if (event.key === "ArrowLeft") {
+      moveCursor(cursorPosition - 1)
+    } else if (event.key === "ArrowRight") {
+      moveCursor(cursorPosition + 1)
+    } else if (event.key === "Backspace") {
+      deleteAction(cursorPosition - 1)
+      moveCursor(cursorPosition - 1)
+    } else if (event.key === "Delete") {
+      deleteAction(cursorPosition)
+    } else if (KEYMAP_IDS.has(event.key)) {
+      insertAction(cursorPosition, KEYMAP_IDS.get(event.key)!.code)
+      tick().then(() => moveCursor(cursorPosition + 1))
+    } else if (specialKeycodes.has(event.key)) {
+      insertAction(cursorPosition, specialKeycodes.get(event.key)!)
+      tick().then(() => moveCursor(cursorPosition + 1))
+    }
+  }
 
-  onDestroy(() => {
-    document.removeEventListener("selectionchange", select)
-  })
+  function moveCursor(to: number) {
+    cursorPosition = Math.max(0, Math.min(to, actions.length))
+    const item = box.children.item(cursorPosition) as HTMLElement
+    cursorOffset = item.offsetLeft + item.offsetWidth
+  }
 
-  function input(event: KeyboardEvent) {
-    switch (event.key) {
-      case "ArrowLeft":
-      case "ArrowRight":
-      case "Escape":
-      case "Tab": {
+  function deleteAction(at: number, count = 1) {
+    actions = actions.toSpliced(at, count)
+  }
+
+  function insertAction(at: number, action: number) {
+    actions = actions.toSpliced(at, 0, action)
+  }
+
+  function clickCursor(event: unknown) {
+    const distance = (event as {layerX: number}).layerX
+
+    let i = 0
+    for (const child of box.children) {
+      const {offsetLeft, offsetWidth} = child as HTMLElement
+      if (distance < offsetLeft + offsetWidth / 2) {
+        moveCursor(i - 1)
         return
       }
-      case "Backspace": {
-        caretPosition--
-        if (caretPosition >= 0) actions = actions.toSpliced(caretPosition, 1)
-        else caretPosition = 0
-        break
-      }
-      case "Delete": {
-        if (caretPosition < actions.length) actions = actions.toSpliced(caretPosition, 1)
-        break
-      }
-      default: {
-        if (specialKeycodes.has(event.key)) {
-          actions = actions.toSpliced(caretPosition, 0, 32)
-        } else if (KEYMAP_IDS.has(event.key)) {
-          actions = actions.toSpliced(caretPosition, 0, KEYMAP_IDS.get(event.key)!.code)
-        } else {
-          break
-        }
-
-        break
-      }
-    }
-    event.preventDefault()
-    console.log(event.key)
-  }
-
-  function select() {
-    const selection = document.getSelection()
-    if (!selection || !selection.containsNode(field, true)) return
-
-    let node = selection.anchorNode?.parentNode
-    let i = 0
-    while (node) {
       i++
-      node = node.previousSibling
     }
-
-    const range = selection.getRangeAt(0)
-    const clonedRange = range.cloneRange()
-    clonedRange.selectNodeContents(field)
-    clonedRange.setEnd(range.endContainer, range.endOffset)
-
-    caretPosition = (i - 1) / 2 + clonedRange.endOffset
-    console.log(caretPosition)
+    moveCursor(i - 1)
   }
 
-  let editDialog: ActionSelector
-  let caretPosition: number
-  let field: HTMLSpanElement
+  function selectAction() {
+    const component = new ActionSelector({target: document.body})
+    const dialog = document.querySelector("dialog > div") as HTMLDivElement
+    const backdrop = document.querySelector("dialog") as HTMLDialogElement
+    const dialogRect = dialog.getBoundingClientRect()
+    const groupRect = button.getBoundingClientRect()
+
+    const scale = 0.5
+    const dialogScale = `${1 - scale * (1 - groupRect.width / dialogRect.width)} ${
+      1 - scale * (1 - groupRect.height / dialogRect.height)
+    }`
+    const dialogTranslate = `${scale * (groupRect.x - dialogRect.x)}px ${
+      scale * (groupRect.y - dialogRect.y)
+    }px`
+
+    const duration = 150
+    const options = {duration, easing: "ease"}
+    const dialogAnimation = dialog.animate(
+      [
+        {scale: dialogScale, translate: dialogTranslate},
+        {translate: "0 0", scale: "1"},
+      ],
+      options,
+    )
+    const backdropAnimation = backdrop.animate([{opacity: 0}, {opacity: 1}], options)
+
+    async function closed() {
+      dialogAnimation.reverse()
+      backdropAnimation.reverse()
+
+      await dialogAnimation.finished
+
+      component.$destroy()
+      await tick()
+      box.focus()
+    }
+
+    component.$on("close", closed)
+    component.$on("select", ({detail}) => {
+      insertAction(cursorPosition, detail)
+      tick().then(() => moveCursor(cursorPosition + 1))
+      closed()
+    })
+  }
+
+  let button: HTMLButtonElement
+  let box: HTMLDivElement
+  let cursorPosition = 0
+  let cursorOffset = 0
 </script>
 
-<svelte:window on:selectionchange={select} />
-
-<span
-  bind:this={field}
-  contenteditable
-  on:keydown={input}
-  spellcheck="false"
-  on:select|preventDefault={select}
-  role="textbox"
-  tabindex="0"
->
-  {#each actions as char}
-    {@const action = KEYMAP_CODES[char]}
-    {#if action?.id && /^\w$/.test(action.id)}
-      <span data-action={char}>{KEYMAP_CODES[char].id}</span>
-    {:else if action}
-      <kbd data-action={char} title={action.title} class:icon={!!action.icon}>{action.icon || action.id}</kbd>
+<div on:keydown={keypress} on:mousedown={clickCursor} role="textbox" tabindex="0" bind:this={box}>
+  <div class="cursor" style:translate="{cursorOffset}px 0">
+    <button class="icon" bind:this={button} on:click={selectAction}>add</button>
+  </div>
+  {#each actions as actionId}
+    {@const {icon, id, code} = KEYMAP_CODES[actionId] ?? {code: actionId}}
+    {#if !icon && id?.length === 1}
+      <span>{id}</span>
     {:else}
-      <kbd data-action={char}>{action}</kbd>
+      <kbd class:icon={!!icon}>{icon ?? id ?? `0x${code.toString(16)}`}</kbd>
     {/if}
   {/each}
-  <!-- <kbd class="icon" style="background: red">abc</kbd> -->
-</span>
+</div>
 
 <style lang="scss">
-  kbd {
-    min-width: 24px;
-    height: 24px;
-    margin-inline-end: 4px;
+  .cursor {
+    display: none;
   }
 
-  :not(kbd) + kbd {
-    margin-inline-start: 4px;
+  :not(.cursor) + kbd {
+    margin-inline-start: 2px;
   }
 
-  span[contenteditable]:focus-within {
-    outline-offset: 4px;
+  kbd + * {
+    margin-inline-start: 2px;
+  }
+
+  [role="textbox"] {
+    cursor: text;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    height: 1em;
+
+    &:focus-within {
+      outline: none;
+
+      .cursor {
+        position: absolute;
+        transform: translateX(-50%);
+        translate: 0 0;
+
+        display: block;
+
+        width: 2px;
+        height: 100%;
+
+        background: var(--md-sys-color-on-secondary-container);
+
+        transition: translate 50ms ease;
+
+        button {
+          position: absolute;
+          top: -24px;
+          left: 0;
+
+          height: 24px;
+          padding: 0;
+
+          color: var(--md-sys-color-on-secondary-container);
+
+          background: var(--md-sys-color-secondary-container);
+          border: 2px solid currentcolor;
+          border-radius: 12px 12px 12px 0;
+        }
+      }
+    }
   }
 </style>

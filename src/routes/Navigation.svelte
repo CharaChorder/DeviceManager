@@ -30,6 +30,7 @@
   <div class="actions">
     {#if $canShare}
       <button transition:fly={{x: -8}} class="icon" on:click={triggerShare}>share</button>
+      <button transition:fly={{x: -8}} class="icon" on:click={() => print()}>print</button>
       <div transition:slide class="separator" />
     {/if}
     {#if import.meta.env.TAURI_FAMILY === undefined}
@@ -128,7 +129,6 @@
   nav {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    gap: 4px;
 
     width: calc(min(100%, 28cm));
     margin-block: 8px;
@@ -158,7 +158,7 @@
     justify-content: center;
 
     aspect-ratio: 1;
-    padding: 2px;
+    padding: 0;
 
     color: inherit;
     text-decoration: none;
@@ -177,7 +177,6 @@
 
   .actions {
     display: flex;
-    gap: 8px;
     align-items: center;
 
     &:last-child {

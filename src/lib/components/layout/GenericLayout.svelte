@@ -171,8 +171,11 @@
 
 <svelte:window on:keydown={navigate} />
 
-<p>{layoutInfo.name}</p>
-<svg viewBox="0 0 {layoutInfo.size[0] * scale} {layoutInfo.size[1] * scale}" bind:this={groupParent}>
+<svg
+  class="print"
+  viewBox="0 0 {layoutInfo.size[0] * scale} {layoutInfo.size[1] * scale}"
+  bind:this={groupParent}
+>
   {#each layoutInfo.keys as key, i}
     <KeyboardKey
       {i}
@@ -191,6 +194,7 @@
 <style lang="scss">
   svg {
     overflow: visible;
+    grid-area: "d";
     width: calc(min(100%, 35cm));
     max-height: calc(100% - 170px);
   }
