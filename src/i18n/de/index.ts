@@ -1,7 +1,8 @@
 import type {Translation} from "../i18n-types"
 
 const de = {
-  TITLE: "amaCC1ng",
+  TITLE: "CharaChorder Gerätemanager",
+  DESCRIPTION: "Gerätemanager und Konfigurationstool für CharaChorder Geräte.",
   saveActions: {
     UNDO: "Rückgängig",
     REDO: "Wiederholen",

@@ -1,7 +1,8 @@
 import type {BaseTranslation} from "../i18n-types"
 
 const en = {
-  TITLE: "amaCC1ng",
+  TITLE: "CharaChorder Device Manager",
+  DESCRIPTION: "The device manager and configuration tool for CharaChorder devices.",
   saveActions: {
     UNDO: "Undo",
     REDO: "Redo",

@@ -16,7 +16,7 @@
   import "tippy.js/dist/tippy.css"
   import tippy from "tippy.js"
   import {theme, userPreferences} from "$lib/preferences.js"
-  import {setLocale} from "../i18n/i18n-svelte"
+  import {LL, setLocale} from "../i18n/i18n-svelte"
   import {loadLocale} from "../i18n/i18n-util.sync"
   import {detectLocale} from "../i18n/i18n-util"
   import type {Locales} from "../i18n/i18n-types"
@@ -58,8 +58,8 @@
 
 <svelte:head>
   {@html webManifestLink}
-  <title>amaCC1ng</title>
-  <meta name="description" content="Tool for CharaChorder devices" />
+  <title>{$LL.TITLE()}</title>
+  <meta name="description" content={$LL.DESCRIPTION()} />
   <meta name="theme-color" content={data.themeColor} />
 </svelte:head>
 
