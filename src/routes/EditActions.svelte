@@ -1,10 +1,11 @@
 <script lang="ts">
   import LL from "../i18n/i18n-svelte"
-  import {changes, ChangeType, chords, layout, settings} from "$lib/undo-redo"
+  import {changes, ChangeType, chords, layout, overlay, settings} from "$lib/undo-redo"
   import type {Change} from "$lib/undo-redo"
   import {fly} from "svelte/transition"
   import {action} from "$lib/title"
   import {deviceChords, deviceLayout, deviceSettings, serialPort, syncStatus} from "$lib/serial/connection"
+  import {deserializeActions} from "$lib/serial/chord"
 
   function undo() {
     redoQueue = [$changes.pop()!, ...redoQueue]
@@ -26,23 +27,26 @@
     if (!port) return
 
     $syncStatus = "uploading"
-    for (const change of $changes) {
-      switch (change.type) {
-        case ChangeType.Layout:
-          await port.setLayoutKey(change.layer + 1, change.id, change.action)
-          break
-        case ChangeType.Chord:
-          if (change.phrase.length > 0) {
-            await port.setChord({actions: change.actions, phrase: change.phrase})
-          } else {
-            await port.deleteChord({actions: change.actions})
-          }
-          break
-        case ChangeType.Setting:
-          await port.setSetting(change.id, change.setting)
-          break
+
+    for (const [id, phrase] of $overlay.chords) {
+      const actions = deserializeActions(id)
+      if (actions.length > 0) {
+        await port.setChord({actions, phrase})
+      } else {
+        await port.deleteChord({actions})
       }
     }
+
+    for (const [layer, actions] of $overlay.layout.entries()) {
+      for (const [id, action] of actions) {
+        await port.setLayoutKey(layer + 1, id, action)
+      }
+    }
+
+    for (const [id, setting] of $overlay.settings) {
+      await port.setSetting(id, setting)
+    }
+
     $deviceLayout = $layout.map(layer => layer.map<number>(({action}) => action)) as [
       number[],
       number[],

@@ -211,6 +211,7 @@ export class CharaDevice {
   }
 
   async deleteChord(chord: Pick<Chord, "actions">) {
+    console.log(`CML C4 ${stringifyChordActions(chord.actions)}`)
     const status = await this.send(`CML C4 ${stringifyChordActions(chord.actions)}`)
     if (status.at(-1) !== "0") throw new Error(`Failed with status ${status}`)
   }
