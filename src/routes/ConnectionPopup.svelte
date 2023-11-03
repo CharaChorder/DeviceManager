@@ -21,7 +21,7 @@
       {$serialPort.device}
       {$serialPort.chipset}
       <br />
-      Version {$serialPort.version.map(it => it.toString()).join(".")}
+      Version {$serialPort.version}
     </p>
   {/if}
 

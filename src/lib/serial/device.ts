@@ -1,17 +1,33 @@
 import {LineBreakTransformer} from "$lib/serial/line-break-transformer"
 import {serialLog} from "$lib/serial/connection"
 import type {Chord} from "$lib/serial/chord"
+import {SemVer} from "$lib/serial/sem-ver"
 import {parseChordActions, parsePhrase, stringifyChordActions, stringifyPhrase} from "$lib/serial/chord"
 import {browser} from "$app/environment"
 
-export const VENDOR_ID = 0x239a
+const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
+  ["ONE M0", {usbProductId: 32783, usbVendorId: 9114}],
+  ["LITE S2", {usbProductId: 33070, usbVendorId: 12346}],
+  ["LITE M0", {usbProductId: 32796, usbVendorId: 9114}],
+  ["X", {usbProductId: 33163, usbVendorId: 12346}],
+])
 
 if (browser && navigator.serial === undefined && import.meta.env.TAURI_FAMILY !== undefined) {
   await import("./tauri-serial")
 }
 
 export async function getViablePorts(): Promise<SerialPort[]> {
-  return navigator.serial.getPorts().then(ports => ports.filter(it => it.getInfo().usbVendorId === VENDOR_ID))
+  return navigator.serial.getPorts().then(ports =>
+    ports.filter(it => {
+      const {usbProductId, usbVendorId} = it.getInfo()
+      for (const filter of PORT_FILTERS.values()) {
+        if (filter.usbProductId === usbProductId && filter.usbVendorId === usbVendorId) {
+          return true
+        }
+      }
+      return false
+    }),
+  )
 }
 
 export async function canAutoConnect() {
@@ -29,7 +45,7 @@ export class CharaDevice {
 
   private lock?: Promise<true>
 
-  version!: [number, number, number]
+  version!: SemVer
   company!: "CHARACHORDER"
   device!: "ONE" | "LITE"
   chipset!: "M0" | "S2"
@@ -42,7 +58,7 @@ export class CharaDevice {
     this.port =
       !manual && ports.length === 1
         ? ports[0]
-        : await navigator.serial.requestPort({filters: [{usbVendorId: VENDOR_ID}]})
+        : await navigator.serial.requestPort({filters: [...PORT_FILTERS.values()]})
 
     await this.port.open({baudRate: this.baudRate})
     const info = this.port.getInfo()
@@ -57,8 +73,7 @@ export class CharaDevice {
     })
     await this.port.close()
 
-    const [version] = await this.send("VERSION")
-    this.version = version.split(".").map(Number) as [number, number, number]
+    this.version = new SemVer(await this.send("VERSION").then(([version]) => version))
     const [company, device, chipset] = await this.send("ID")
     this.company = company as "CHARACHORDER"
     this.device = device as "ONE" | "LITE"
