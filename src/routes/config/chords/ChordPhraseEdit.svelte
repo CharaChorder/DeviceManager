@@ -2,12 +2,11 @@
   import {KEYMAP_CODES, KEYMAP_IDS, specialKeycodes} from "$lib/serial/keymap-codes"
   import {tick} from "svelte"
   import ActionSelector from "$lib/components/layout/ActionSelector.svelte"
-  import type {Chord} from "$lib/serial/chord"
   import {changes, ChangeType} from "$lib/undo-redo"
+  import type {ChordInfo} from "$lib/undo-redo"
   import {scale} from "svelte/transition"
 
-  export let chord: Chord
-  export let edited: boolean
+  export let chord: ChordInfo
 
   function keypress(event: KeyboardEvent) {
     if (event.key === "ArrowUp") {
@@ -37,9 +36,11 @@
   }
 
   function deleteAction(at: number, count = 1) {
+    if (!(at in chord.phrase)) return
     changes.update(changes => {
       changes.push({
         type: ChangeType.Chord,
+        id: chord.id,
         actions: chord.actions,
         phrase: chord.phrase.toSpliced(at, count),
       })
@@ -51,6 +52,7 @@
     changes.update(changes => {
       changes.push({
         type: ChangeType.Chord,
+        id: chord.id,
         actions: chord.actions,
         phrase: chord.phrase.toSpliced(at, 0, action),
       })
@@ -132,7 +134,7 @@
   role="textbox"
   tabindex="0"
   bind:this={box}
-  class:edited
+  class:edited={chord.phraseChanged}
   on:focusin={() => (hasFocus = true)}
   on:focusout={() => (hasFocus = false)}
 >

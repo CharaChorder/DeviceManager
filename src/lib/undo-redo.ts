@@ -1,6 +1,5 @@
 import {persistentWritable} from "$lib/storage"
 import {derived} from "svelte/store"
-import {serializeActions} from "$lib/serial/chord"
 import type {Chord} from "$lib/serial/chord"
 import {deviceChords, deviceLayout, deviceSettings} from "$lib/serial/connection"
 
@@ -19,6 +18,7 @@ export interface LayoutChange {
 
 export interface ChordChange {
   type: ChangeType.Chord
+  id: number[]
   actions: number[]
   phrase: number[]
 }
@@ -40,7 +40,7 @@ export const changes = persistentWritable<Change[]>("changes", [])
 
 export interface Overlay {
   layout: [Map<number, number>, Map<number, number>, Map<number, number>]
-  chords: Map<bigint, number[]>
+  chords: Map<string, Chord>
   settings: Map<number, number>
 }
 
@@ -58,7 +58,7 @@ export const overlay = derived(changes, changes => {
         overlay.layout[change.layer].set(change.id, change.action)
         break
       case ChangeType.Chord:
-        overlay.chords.set(serializeActions(change.actions), change.phrase)
+        overlay.chords.set(JSON.stringify(change.id), {actions: change.actions, phrase: change.phrase})
         break
       case ChangeType.Setting:
         overlay.settings.set(change.id, change.setting)
@@ -88,24 +88,32 @@ export const layout = derived([overlay, deviceLayout], ([overlay, layout]) =>
   ),
 )
 
-export type ChordInfo = Chord & ChangeInfo
+export type ChordInfo = Chord &
+  ChangeInfo & {phraseChanged: boolean; actionsChanged: boolean} & {id: number[]}
 export const chords = derived([overlay, deviceChords], ([overlay, chords]) =>
   chords
     .map<ChordInfo>(chord => {
-      const key = serializeActions(chord.actions)
-      if (overlay.chords.has(key)) {
+      const id = JSON.stringify(chord.actions)
+      if (overlay.chords.has(id)) {
+        const changedChord = overlay.chords.get(id)!
         return {
-          actions: chord.actions,
-          phrase: overlay.chords.get(key)!,
+          id: chord.actions,
+          actions: changedChord.actions,
+          phrase: changedChord.phrase,
+          actionsChanged: id !== JSON.stringify(changedChord.actions),
+          phraseChanged: JSON.stringify(chord.phrase) !== JSON.stringify(changedChord.phrase),
           isApplied: false,
         }
       } else {
         return {
+          id: chord.actions,
           actions: chord.actions,
           phrase: chord.phrase,
+          phraseChanged: false,
+          actionsChanged: false,
           isApplied: true,
         }
       }
     })
-    .sort((a, b) => (a.actions.some((it, i) => it > b.actions[i]) ? 1 : -1)),
+    .sort((a, b) => a.phrase.map((it, i) => it - b.phrase[i]).find(it => it !== 0) ?? 0),
 )

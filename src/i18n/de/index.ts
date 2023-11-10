@@ -80,6 +80,13 @@ const de = {
       search: {
         PLACEHOLDER: "{0} Akkord{{|e}} durchsuchen",
       },
+      conflict: {
+        TITLE: "Akkordkonflikt",
+        DESCRIPTION:
+          "Der Akkord {0} würde einen bereits existierenden Akkord überschreiben. Wirklich fortfahren?",
+        CONFIRM: "Überschreiben",
+        ABORT: "Überspringen",
+      },
     },
     layout: {
       TITLE: "Layout",

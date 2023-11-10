@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type {Chord} from "$lib/serial/chord"
   import {KEYMAP_CODES, KEYMAP_IDS} from "$lib/serial/keymap-codes"
+  import type {ChordInfo} from "$lib/undo-redo"
+  import {changes, ChangeType} from "$lib/undo-redo"
 
-  export let chord: Chord
+  export let chord: ChordInfo
 
   let pressedKeys = new Set<number>()
   let editing = false
@@ -13,18 +14,35 @@
   }
 
   function keydown(event: KeyboardEvent) {
-    // TODO...
+    if (!editing) return
+    event.preventDefault()
     pressedKeys.add(KEYMAP_IDS.get(event.key)!.code)
     pressedKeys = pressedKeys
   }
 
   function keyup() {
+    if (!editing) return
     editing = false
-    // TODO: apply
+    if (pressedKeys.size < 2) return
+    changes.update(changes => {
+      changes.push({
+        type: ChangeType.Chord,
+        id: chord.id,
+        actions: [...pressedKeys],
+        phrase: chord.phrase,
+      })
+      return changes
+    })
   }
 </script>
 
-<button class:deleted={chord.phrase.length === 0} on:click={edit} on:keydown={keydown} on:keyup={keyup}>
+<button
+  class:deleted={chord.phrase.length === 0}
+  class:edited={chord.actionsChanged}
+  on:click={edit}
+  on:keydown={keydown}
+  on:keyup={keyup}
+>
   {#if editing && pressedKeys.size === 0}
     <span>Press keys</span>
   {/if}
@@ -34,6 +52,7 @@
       {icon ?? id ?? `0x${code.toString(16)}`}
     </kbd>
   {/each}
+  <sup>•</sup>
 </button>
 
 <style lang="scss">
@@ -41,10 +60,19 @@
     opacity: 0.5;
   }
 
+  sup {
+    translate: 0 -60%;
+    opacity: 0;
+    transition: opacity 250ms ease;
+  }
+
   button {
     position: relative;
+
     display: inline-flex;
     gap: 4px;
+
+    height: 32px;
     margin-inline: 4px;
 
     &:focus-within {
@@ -53,6 +81,8 @@
   }
 
   kbd {
+    height: 24px;
+    padding-block: auto;
     transition: color 250ms ease;
   }
 
@@ -72,6 +102,14 @@
     transition:
       scale 250ms ease,
       color 250ms ease;
+  }
+
+  .edited {
+    color: var(--md-sys-color-primary);
+
+    & > sup {
+      opacity: 1;
+    }
   }
 
   .deleted {

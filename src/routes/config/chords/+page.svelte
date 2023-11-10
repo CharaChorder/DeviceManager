@@ -92,8 +92,10 @@
 <section bind:this={results}>
   <table>
     {#if $lastPage !== -1}
-      {#each $items.slice(page * $pageSize, (page + 1) * $pageSize) as [chord], i (`${page}:${i}`)}
-        <ChordEdit {chord} isApplied={chord.isApplied} />
+      {#each $items.slice(page * $pageSize, (page + 1) * $pageSize) as [chord] (chord.id)}
+        <tr>
+          <ChordEdit {chord} />
+        </tr>
       {/each}
     {:else}
       <caption> No Results </caption>

@@ -5,7 +5,8 @@
   import {fly} from "svelte/transition"
   import {action} from "$lib/title"
   import {deviceChords, deviceLayout, deviceSettings, serialPort, syncStatus} from "$lib/serial/connection"
-  import {deserializeActions} from "$lib/serial/chord"
+  import {askForConfirmation} from "$lib/confirm-dialog"
+  import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
 
   function undo(event: MouseEvent) {
     if (event.shiftKey) {
@@ -32,9 +33,29 @@
 
     $syncStatus = "uploading"
 
-    for (const [id, phrase] of $overlay.chords) {
-      const actions = deserializeActions(id)
-      if (actions.length > 0) {
+    for (const [id, {actions, phrase}] of $overlay.chords) {
+      if (phrase.length > 0) {
+        if (id !== JSON.stringify(actions)) {
+          const existingChord = await port.getChordPhrase(actions)
+          if (
+            existingChord !== undefined &&
+            !(await askForConfirmation(
+              $LL.configure.chords.conflict.TITLE(),
+              $LL.configure.chords.conflict.DESCRIPTION(
+                actions.map(it => `<kbd>${KEYMAP_CODES[it].id}</kbd>`).join(" "),
+              ),
+              $LL.configure.chords.conflict.CONFIRM(),
+              $LL.configure.chords.conflict.ABORT(),
+            ))
+          ) {
+            changes.update(changes =>
+              changes.filter(it => !(it.type === ChangeType.Chord && JSON.stringify(it.id) === id)),
+            )
+            continue
+          }
+
+          await port.deleteChord({actions: JSON.parse(id)})
+        }
         await port.setChord({actions, phrase})
       } else {
         await port.deleteChord({actions})
@@ -56,7 +77,9 @@
       number[],
       number[],
     ]
-    $deviceChords = $chords.map(({actions, phrase}) => ({actions, phrase}))
+    $deviceChords = $chords
+      .map(({actions, phrase}) => ({actions, phrase}))
+      .filter(({phrase}) => phrase.length > 1)
     $deviceSettings = $settings.map(({value}) => value)
     $changes = []
     $syncStatus = "done"

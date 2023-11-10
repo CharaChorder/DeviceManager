@@ -1,16 +1,16 @@
 <script lang="ts">
   import {changes, ChangeType} from "$lib/undo-redo.js"
+  import type {ChordInfo} from "$lib/undo-redo.js"
   import ChordPhraseEdit from "./ChordPhraseEdit.svelte"
   import ChordActionEdit from "./ChordActionEdit.svelte"
   import type {Chord} from "$lib/serial/chord"
   import {slide} from "svelte/transition"
 
-  export let chord: Chord
-  export let isApplied: boolean
+  export let chord: ChordInfo
 
   function remove() {
     changes.update(changes => {
-      changes.push({type: ChangeType.Chord, actions: chord.actions, phrase: []})
+      changes.push({type: ChangeType.Chord, id: chord.id, actions: chord.actions, phrase: []})
       return changes
     })
   }
@@ -24,24 +24,22 @@
   }
 </script>
 
-<tr>
-  <th>
-    <ChordActionEdit {chord} />
-  </th>
-  <td>
-    <ChordPhraseEdit {chord} edited={!isApplied} />
-  </td>
-  <td class="table-buttons">
-    {#if chord.phrase.length === 0}
-      <button transition:slide class="icon compact" on:click={restore}>restore_from_trash</button>
-    {:else}
-      <button transition:slide class="icon compact" on:click={remove}>delete</button>
-    {/if}
-    <button class="icon compact" class:disabled={isApplied} on:click={restore}>undo</button>
-    <div class="separator" />
-    <button class="icon compact">share</button>
-  </td>
-</tr>
+<th>
+  <ChordActionEdit {chord} />
+</th>
+<td>
+  <ChordPhraseEdit {chord} />
+</td>
+<td class="table-buttons">
+  {#if chord.phrase.length === 0}
+    <button transition:slide class="icon compact" on:click={restore}>restore_from_trash</button>
+  {:else}
+    <button transition:slide class="icon compact" on:click={remove}>delete</button>
+  {/if}
+  <button class="icon compact" class:disabled={chord.isApplied} on:click={restore}>undo</button>
+  <div class="separator" />
+  <button class="icon compact">share</button>
+</td>
 
 <style lang="scss">
   .separator {
@@ -63,8 +61,8 @@
     transition: opacity 75ms ease;
   }
 
-  tr:focus-within > .table-buttons,
-  tr:hover > .table-buttons {
+  :global(tr):focus-within > .table-buttons,
+  :global(tr):hover > .table-buttons {
     opacity: 1;
   }
 </style>

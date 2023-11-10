@@ -197,7 +197,7 @@ export class CharaDevice {
    */
   async getChordPhrase(actions: number[]): Promise<number[] | undefined> {
     const [phrase] = await this.send(`CML C2 ${stringifyChordActions(actions)}`)
-    return phrase === "0" ? undefined : parsePhrase(phrase)
+    return phrase === "2" ? undefined : parsePhrase(phrase)
   }
 
   async setChord(chord: Chord) {
@@ -211,9 +211,9 @@ export class CharaDevice {
   }
 
   async deleteChord(chord: Pick<Chord, "actions">) {
-    console.log(`CML C4 ${stringifyChordActions(chord.actions)}`)
     const status = await this.send(`CML C4 ${stringifyChordActions(chord.actions)}`)
-    if (status.at(-1) !== "0") throw new Error(`Failed with status ${status}`)
+    console.log(status)
+    if (status.at(-1) !== "2") throw new Error(`Failed with status ${status}`)
   }
 
   /**
