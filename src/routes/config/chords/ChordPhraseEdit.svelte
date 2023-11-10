@@ -60,8 +60,9 @@
     })
   }
 
-  function clickCursor(event: unknown) {
-    const distance = (event as {layerX: number}).layerX
+  function clickCursor(event: MouseEvent) {
+    if (event.target === button) return
+    const distance = (event as unknown as {layerX: number}).layerX
 
     let i = 0
     for (const child of box.children) {
@@ -136,7 +137,9 @@
   bind:this={box}
   class:edited={chord.phraseChanged}
   on:focusin={() => (hasFocus = true)}
-  on:focusout={() => (hasFocus = false)}
+  on:focusout={event => {
+    if (event.relatedTarget !== button) hasFocus = false
+  }}
 >
   {#if hasFocus}
     <div transition:scale class="cursor" style:translate="{cursorOffset}px 0">
