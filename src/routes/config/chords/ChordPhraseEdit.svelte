@@ -2,9 +2,12 @@
   import {KEYMAP_CODES, KEYMAP_IDS, specialKeycodes} from "$lib/serial/keymap-codes"
   import {tick} from "svelte"
   import ActionSelector from "$lib/components/layout/ActionSelector.svelte"
+  import type {Chord} from "$lib/serial/chord"
   import {changes, ChangeType} from "$lib/undo-redo"
+  import {scale} from "svelte/transition"
 
-  export let actions: number[]
+  export let chord: Chord
+  export let edited: boolean
 
   function keypress(event: KeyboardEvent) {
     if (event.key === "ArrowUp") {
@@ -28,17 +31,31 @@
   }
 
   function moveCursor(to: number) {
-    cursorPosition = Math.max(0, Math.min(to, actions.length))
+    cursorPosition = Math.max(0, Math.min(to, chord.phrase.length))
     const item = box.children.item(cursorPosition) as HTMLElement
     cursorOffset = item.offsetLeft + item.offsetWidth
   }
 
   function deleteAction(at: number, count = 1) {
-    actions = actions.toSpliced(at, count)
+    changes.update(changes => {
+      changes.push({
+        type: ChangeType.Chord,
+        actions: chord.actions,
+        phrase: chord.phrase.toSpliced(at, count),
+      })
+      return changes
+    })
   }
 
   function insertAction(at: number, action: number) {
-    actions = actions.toSpliced(at, 0, action)
+    changes.update(changes => {
+      changes.push({
+        type: ChangeType.Chord,
+        actions: chord.actions,
+        phrase: chord.phrase.toSpliced(at, 0, action),
+      })
+      return changes
+    })
   }
 
   function clickCursor(event: unknown) {
@@ -105,13 +122,29 @@
   let box: HTMLDivElement
   let cursorPosition = 0
   let cursorOffset = 0
+
+  let hasFocus = false
 </script>
 
-<div on:keydown={keypress} on:mousedown={clickCursor} role="textbox" tabindex="0" bind:this={box}>
-  <div class="cursor" style:translate="{cursorOffset}px 0">
-    <button class="icon" bind:this={button} on:click={selectAction}>add</button>
-  </div>
-  {#each actions as actionId}
+<div
+  on:keydown={keypress}
+  on:mousedown={clickCursor}
+  role="textbox"
+  tabindex="0"
+  bind:this={box}
+  class:edited
+  on:focusin={() => (hasFocus = true)}
+  on:focusout={() => (hasFocus = false)}
+>
+  {#if hasFocus}
+    <div transition:scale class="cursor" style:translate="{cursorOffset}px 0">
+      <button class="icon" bind:this={button} on:click={selectAction}>add</button>
+    </div>
+  {:else}
+    <div />
+    <!-- placeholder for cursor placement -->
+  {/if}
+  {#each chord.phrase as actionId, i (`${actionId}:${i}`)}
     {@const {icon, id, code} = KEYMAP_CODES[actionId] ?? {code: actionId}}
     {#if !icon && id?.length === 1}
       <span>{id}</span>
@@ -119,11 +152,50 @@
       <kbd class:icon={!!icon}>{icon ?? id ?? `0x${code.toString(16)}`}</kbd>
     {/if}
   {/each}
+  <sup>•</sup>
 </div>
 
 <style lang="scss">
+  sup {
+    translate: 0 -40%;
+    opacity: 0;
+    transition: opacity 250ms ease;
+  }
+
   .cursor {
-    display: none;
+    position: absolute;
+    transform: translateX(-50%);
+    translate: 0 0;
+
+    width: 2px;
+    height: 100%;
+
+    background: var(--md-sys-color-on-secondary-container);
+
+    transition: translate 50ms ease;
+
+    button {
+      position: absolute;
+      top: -24px;
+      left: 0;
+
+      height: 24px;
+      padding: 0;
+
+      color: var(--md-sys-color-on-secondary-container);
+
+      background: var(--md-sys-color-secondary-container);
+      border: 2px solid currentcolor;
+      border-radius: 12px 12px 12px 0;
+    }
+  }
+
+  .edited {
+    color: var(--md-sys-color-primary);
+
+    sup {
+      opacity: 1;
+    }
   }
 
   :not(.cursor) + kbd {
@@ -143,38 +215,40 @@
     align-items: center;
 
     height: 1em;
+    padding-block: 4px;
+
+    &::after,
+    &::before {
+      content: "";
+
+      position: absolute;
+      bottom: -4px;
+
+      width: 100%;
+      height: 1px;
+
+      opacity: 0;
+      background: currentcolor;
+
+      transition:
+        opacity 250ms ease,
+        scale 250ms ease;
+    }
+
+    &::after {
+      scale: 0 1;
+    }
+
+    &:hover::before {
+      opacity: 0.3;
+    }
 
     &:focus-within {
       outline: none;
 
-      .cursor {
-        position: absolute;
-        transform: translateX(-50%);
-        translate: 0 0;
-
-        display: block;
-
-        width: 2px;
-        height: 100%;
-
-        background: var(--md-sys-color-on-secondary-container);
-
-        transition: translate 50ms ease;
-
-        button {
-          position: absolute;
-          top: -24px;
-          left: 0;
-
-          height: 24px;
-          padding: 0;
-
-          color: var(--md-sys-color-on-secondary-container);
-
-          background: var(--md-sys-color-secondary-container);
-          border: 2px solid currentcolor;
-          border-radius: 12px 12px 12px 0;
-        }
+      &::after {
+        scale: 1;
+        opacity: 1;
       }
     }
   }

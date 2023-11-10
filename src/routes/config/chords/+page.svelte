@@ -3,11 +3,12 @@
   import Index from "flexsearch"
   import LL from "../../../i18n/i18n-svelte"
   import {action} from "$lib/title"
-  import {onDestroy, onMount} from "svelte"
-  import ActionStringEdit from "$lib/components/ActionStringEdit.svelte"
-  import {changes, ChangeType, chords} from "$lib/undo-redo"
+  import {onDestroy, onMount, setContext} from "svelte"
+  import {chords} from "$lib/undo-redo"
   import type {ChordInfo} from "$lib/undo-redo"
   import {derived, writable} from "svelte/store"
+  import ChordEdit from "./ChordEdit.svelte"
+  import {crossfade} from "svelte/transition"
 
   const resultSize = 38
   let results: HTMLElement
@@ -45,12 +46,14 @@
     searchFilter.set(query && searchIndex ? searchIndex.search(query) : undefined)
   }
 
-  const items = derived([searchFilter, chords], ([filter, chords]) =>
-    (filter?.map(it => [chords[it], it] as const) ?? chords.map((it, i) => [it, i] as const)).filter(
-      ([{phrase}]) => phrase.length > 0,
-    ),
+  const items = derived(
+    [searchFilter, chords],
+    ([filter, chords]) =>
+      filter?.map(it => [chords[it], it] as const) ?? chords.map((it, i) => [it, i] as const),
   )
   const lastPage = derived([items, pageSize], ([items, pageSize]) => Math.ceil(items.length / pageSize) - 1)
+
+  setContext("cursor-crossfade", crossfade({}))
 
   let page = 0
   $: {
@@ -89,26 +92,8 @@
 <section bind:this={results}>
   <table>
     {#if $lastPage !== -1}
-      {#each $items.slice(page * $pageSize, (page + 1) * $pageSize) as [{ actions, phrase, isApplied }]}
-        <tr style:color={isApplied ? "" : "var(--md-sys-color-secondary"}>
-          <th>
-            <ActionStringEdit {actions} />
-          </th>
-          <td>
-            <ActionStringEdit actions={phrase} />
-          </td>
-          <td class="table-buttons">
-            <button class="icon compact">share</button>
-            <button
-              class="icon compact"
-              on:click={() =>
-                changes.update(changes => {
-                  changes.push({type: ChangeType.Chord, actions, phrase: []})
-                  return changes
-                })}>delete</button
-            >
-          </td>
-        </tr>
+      {#each $items.slice(page * $pageSize, (page + 1) * $pageSize) as [chord], i (`${page}:${i}`)}
+        <ChordEdit {chord} isApplied={chord.isApplied} />
       {/each}
     {:else}
       <caption> No Results </caption>
@@ -174,18 +159,5 @@
     overflow: hidden;
     min-width: min(90vw, 16.5cm);
     transition: all 1s ease;
-  }
-
-  th {
-    text-align: start;
-  }
-
-  .table-buttons {
-    opacity: 0;
-    transition: opacity 75ms ease;
-  }
-
-  tr:hover > .table-buttons {
-    opacity: 1;
   }
 </style>

@@ -4,7 +4,7 @@ const de = {
   TITLE: "CharaChorder Gerätemanager",
   DESCRIPTION: "Gerätemanager und Konfigurationstool für CharaChorder Geräte.",
   saveActions: {
-    UNDO: "Rückgängig",
+    UNDO: "Rückgängig (<kbd class='icon'>shift</kbd> halten um alle Änderungen rückgängig zu machen)",
     REDO: "Wiederholen",
     APPLY: "Anwenden",
     SAVE: "Änderungen auf das Gerät schreiben",

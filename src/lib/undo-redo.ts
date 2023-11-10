@@ -90,20 +90,22 @@ export const layout = derived([overlay, deviceLayout], ([overlay, layout]) =>
 
 export type ChordInfo = Chord & ChangeInfo
 export const chords = derived([overlay, deviceChords], ([overlay, chords]) =>
-  chords.map<ChordInfo>(chord => {
-    const key = serializeActions(chord.actions)
-    if (overlay.chords.has(key)) {
-      return {
-        actions: chord.actions,
-        phrase: overlay.chords.get(key)!,
-        isApplied: false,
+  chords
+    .map<ChordInfo>(chord => {
+      const key = serializeActions(chord.actions)
+      if (overlay.chords.has(key)) {
+        return {
+          actions: chord.actions,
+          phrase: overlay.chords.get(key)!,
+          isApplied: false,
+        }
+      } else {
+        return {
+          actions: chord.actions,
+          phrase: chord.phrase,
+          isApplied: true,
+        }
       }
-    } else {
-      return {
-        actions: chord.actions,
-        phrase: chord.phrase,
-        isApplied: true,
-      }
-    }
-  }),
+    })
+    .sort((a, b) => (a.actions.some((it, i) => it > b.actions[i]) ? 1 : -1)),
 )

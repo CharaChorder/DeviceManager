@@ -4,7 +4,7 @@ const en = {
   TITLE: "CharaChorder Device Manager",
   DESCRIPTION: "The device manager and configuration tool for CharaChorder devices.",
   saveActions: {
-    UNDO: "Undo",
+    UNDO: "Undo (hold <kbd class='icon'>shift</kbd> to undo all changes)",
     REDO: "Redo",
     APPLY: "Apply",
     SAVE: "Write changes to your device",

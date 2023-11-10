@@ -7,9 +7,13 @@
   import {deviceChords, deviceLayout, deviceSettings, serialPort, syncStatus} from "$lib/serial/connection"
   import {deserializeActions} from "$lib/serial/chord"
 
-  function undo() {
-    redoQueue = [$changes.pop()!, ...redoQueue]
-    changes.update(it => it)
+  function undo(event: MouseEvent) {
+    if (event.shiftKey) {
+      changes.set([])
+    } else {
+      redoQueue = [$changes.pop()!, ...redoQueue]
+      changes.update(it => it)
+    }
   }
 
   function redo() {

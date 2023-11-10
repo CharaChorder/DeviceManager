@@ -71,6 +71,7 @@ const config: IconsConfig = {
     "navigate_before",
     "navigate_next",
     "print",
+    "restore_from_trash",
   ],
   codePoints: {
     speed: "e9e4",
