@@ -45,6 +45,7 @@
     position: relative;
     display: inline-flex;
     gap: 4px;
+    margin-inline: 4px;
 
     &:focus-within {
       outline: none;
@@ -55,16 +56,15 @@
     transition: color 250ms ease;
   }
 
-  span::after {
+  button::after {
     content: "";
 
     position: absolute;
     top: 50%;
-    left: -4px;
     transform-origin: center left;
     scale: 0 1;
 
-    width: calc(100% + 8px);
+    width: calc(100% - 16px);
     height: 1px;
 
     background: currentcolor;
