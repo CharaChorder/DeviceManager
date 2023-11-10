@@ -2,6 +2,7 @@ import {persistentWritable} from "$lib/storage"
 import {derived} from "svelte/store"
 import type {Chord} from "$lib/serial/chord"
 import {deviceChords, deviceLayout, deviceSettings} from "$lib/serial/connection"
+import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
 
 export enum ChangeType {
   Layout,
@@ -89,7 +90,7 @@ export const layout = derived([overlay, deviceLayout], ([overlay, layout]) =>
 )
 
 export type ChordInfo = Chord &
-  ChangeInfo & {phraseChanged: boolean; actionsChanged: boolean} & {id: number[]}
+  ChangeInfo & {phraseChanged: boolean; actionsChanged: boolean; sortBy: string} & {id: number[]}
 export const chords = derived([overlay, deviceChords], ([overlay, chords]) =>
   chords
     .map<ChordInfo>(chord => {
@@ -98,6 +99,8 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) =>
         const changedChord = overlay.chords.get(id)!
         return {
           id: chord.actions,
+          // use the old phrase for stable editing
+          sortBy: chord.phrase.map(it => KEYMAP_CODES[it].id || it).join(),
           actions: changedChord.actions,
           phrase: changedChord.phrase,
           actionsChanged: id !== JSON.stringify(changedChord.actions),
@@ -107,6 +110,7 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) =>
       } else {
         return {
           id: chord.actions,
+          sortBy: chord.phrase.map(it => KEYMAP_CODES[it].id || it).join(),
           actions: chord.actions,
           phrase: chord.phrase,
           phraseChanged: false,
@@ -115,5 +119,5 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) =>
         }
       }
     })
-    .sort((a, b) => a.phrase.map((it, i) => it - b.phrase[i]).find(it => it !== 0) ?? 0),
+    .sort(({sortBy: a}, {sortBy: b}) => a.localeCompare(b)),
 )
