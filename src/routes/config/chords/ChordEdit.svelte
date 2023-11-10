@@ -31,10 +31,10 @@
   <ChordPhraseEdit {chord} />
 </td>
 <td class="table-buttons">
-  {#if chord.phrase.length === 0}
-    <button transition:slide class="icon compact" on:click={restore}>restore_from_trash</button>
-  {:else}
+  {#if chord.phrase.length !== 0}
     <button transition:slide class="icon compact" on:click={remove}>delete</button>
+  {:else if chord.phraseChanged}
+    <button transition:slide class="icon compact" on:click={restore}>restore_from_trash</button>
   {/if}
   <button class="icon compact" class:disabled={chord.isApplied} on:click={restore}>undo</button>
   <div class="separator" />

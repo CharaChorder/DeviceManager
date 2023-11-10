@@ -46,7 +46,6 @@ export interface Overlay {
 }
 
 export const overlay = derived(changes, changes => {
-  console.time("overlay building")
   const overlay: Overlay = {
     layout: [new Map(), new Map(), new Map()],
     chords: new Map(),
@@ -66,7 +65,6 @@ export const overlay = derived(changes, changes => {
         break
     }
   }
-  console.timeEnd("overlay building")
 
   return overlay
 })
@@ -91,33 +89,48 @@ export const layout = derived([overlay, deviceLayout], ([overlay, layout]) =>
 
 export type ChordInfo = Chord &
   ChangeInfo & {phraseChanged: boolean; actionsChanged: boolean; sortBy: string} & {id: number[]}
-export const chords = derived([overlay, deviceChords], ([overlay, chords]) =>
-  chords
-    .map<ChordInfo>(chord => {
-      const id = JSON.stringify(chord.actions)
-      if (overlay.chords.has(id)) {
-        const changedChord = overlay.chords.get(id)!
-        return {
-          id: chord.actions,
-          // use the old phrase for stable editing
-          sortBy: chord.phrase.map(it => KEYMAP_CODES[it].id || it).join(),
-          actions: changedChord.actions,
-          phrase: changedChord.phrase,
-          actionsChanged: id !== JSON.stringify(changedChord.actions),
-          phraseChanged: JSON.stringify(chord.phrase) !== JSON.stringify(changedChord.phrase),
-          isApplied: false,
-        }
-      } else {
-        return {
-          id: chord.actions,
-          sortBy: chord.phrase.map(it => KEYMAP_CODES[it].id || it).join(),
-          actions: chord.actions,
-          phrase: chord.phrase,
-          phraseChanged: false,
-          actionsChanged: false,
-          isApplied: true,
-        }
+export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
+  const newChords = new Set(overlay.chords.keys())
+
+  const changedChords = chords.map<ChordInfo>(chord => {
+    const id = JSON.stringify(chord.actions)
+    if (overlay.chords.has(id)) {
+      newChords.delete(id)
+      const changedChord = overlay.chords.get(id)!
+      return {
+        id: chord.actions,
+        // use the old phrase for stable editing
+        sortBy: chord.phrase.map(it => KEYMAP_CODES[it].id || it).join(),
+        actions: changedChord.actions,
+        phrase: changedChord.phrase,
+        actionsChanged: id !== JSON.stringify(changedChord.actions),
+        phraseChanged: JSON.stringify(chord.phrase) !== JSON.stringify(changedChord.phrase),
+        isApplied: false,
       }
+    } else {
+      return {
+        id: chord.actions,
+        sortBy: chord.phrase.map(it => KEYMAP_CODES[it].id || it).join(),
+        actions: chord.actions,
+        phrase: chord.phrase,
+        phraseChanged: false,
+        actionsChanged: false,
+        isApplied: true,
+      }
+    }
+  })
+  for (const id of newChords) {
+    const chord = overlay.chords.get(id)!
+    changedChords.push({
+      sortBy: "",
+      isApplied: false,
+      actionsChanged: true,
+      phraseChanged: false,
+      id: JSON.parse(id),
+      phrase: chord.phrase,
+      actions: chord.actions,
     })
-    .sort(({sortBy: a}, {sortBy: b}) => a.localeCompare(b)),
-)
+  }
+
+  return changedChords.sort(({sortBy: a}, {sortBy: b}) => a.localeCompare(b))
+})

@@ -4,7 +4,7 @@ export interface CharaFile<T extends string> {
 }
 
 export interface CharaLayoutFile extends CharaFile<"layout"> {
-  device: "one" | "lite" | string
+  device?: "ONE" | "LITE" | string
   layout: [number[], number[], number[]]
 }
 
@@ -12,8 +12,12 @@ export interface CharaChordFile extends CharaFile<"chords"> {
   chords: [number[], number[]][]
 }
 
-export interface CharaChordSettings extends CharaFile<"settings"> {
+export interface CharaSettingsFile extends CharaFile<"settings"> {
   settings: number[]
+}
+
+export interface CharaBackupFile extends CharaFile<"backup"> {
+  history: [CharaChordFile, CharaLayoutFile, CharaSettingsFile][]
 }
 
 export type CharaFiles = CharaLayoutFile | CharaChordFile

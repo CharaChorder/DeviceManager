@@ -4,11 +4,12 @@
   import LL from "../../../i18n/i18n-svelte"
   import {action} from "$lib/title"
   import {onDestroy, onMount, setContext} from "svelte"
-  import {chords} from "$lib/undo-redo"
+  import {changes, ChangeType, chords} from "$lib/undo-redo"
   import type {ChordInfo} from "$lib/undo-redo"
   import {derived, writable} from "svelte/store"
   import ChordEdit from "./ChordEdit.svelte"
   import {crossfade} from "svelte/transition"
+  import ChordActionEdit from "./ChordActionEdit.svelte"
 
   const resultSize = 38
   let results: HTMLElement
@@ -46,12 +47,27 @@
     searchFilter.set(query && searchIndex ? searchIndex.search(query) : undefined)
   }
 
+  function insertChord(actions: number[]) {
+    changes.update(changes => {
+      changes.push({
+        type: ChangeType.Chord,
+        id: actions,
+        actions,
+        phrase: [],
+      })
+      return changes
+    })
+  }
+
   const items = derived(
     [searchFilter, chords],
     ([filter, chords]) =>
       filter?.map(it => [chords[it], it] as const) ?? chords.map((it, i) => [it, i] as const),
   )
-  const lastPage = derived([items, pageSize], ([items, pageSize]) => Math.ceil(items.length / pageSize) - 1)
+  const lastPage = derived(
+    [items, pageSize],
+    ([items, pageSize]) => Math.ceil((items.length + 1) / pageSize) - 1,
+  )
 
   setContext("cursor-crossfade", crossfade({}))
 
@@ -91,8 +107,11 @@
 
 <section bind:this={results}>
   <table>
+    {#if page === 0}
+      <tr><th><ChordActionEdit on:submit={({detail}) => insertChord(detail)} /></th><td /><td /></tr>
+    {/if}
     {#if $lastPage !== -1}
-      {#each $items.slice(page * $pageSize, (page + 1) * $pageSize) as [chord] (chord.id)}
+      {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord.id))}
         <tr>
           <ChordEdit {chord} />
         </tr>

@@ -2,8 +2,12 @@
   import {KEYMAP_CODES, KEYMAP_IDS} from "$lib/serial/keymap-codes"
   import type {ChordInfo} from "$lib/undo-redo"
   import {changes, ChangeType} from "$lib/undo-redo"
+  import {createEventDispatcher} from "svelte"
+  import LL from "../../../i18n/i18n-svelte"
 
-  export let chord: ChordInfo
+  export let chord: ChordInfo | undefined = undefined
+
+  const dispatch = createEventDispatcher()
 
   let pressedKeys = new Set<number>()
   let editing = false
@@ -24,12 +28,13 @@
     if (!editing) return
     editing = false
     if (pressedKeys.size < 2) return
+    if (!chord) return dispatch("submit", [...pressedKeys])
     changes.update(changes => {
       changes.push({
         type: ChangeType.Chord,
-        id: chord.id,
+        id: chord!.id,
         actions: [...pressedKeys],
-        phrase: chord.phrase,
+        phrase: chord!.phrase,
       })
       return changes
     })
@@ -37,16 +42,18 @@
 </script>
 
 <button
-  class:deleted={chord.phrase.length === 0}
-  class:edited={chord.actionsChanged}
+  class:deleted={chord && chord.phrase.length === 0}
+  class:edited={chord && chord.actionsChanged}
   on:click={edit}
   on:keydown={keydown}
   on:keyup={keyup}
 >
   {#if editing && pressedKeys.size === 0}
-    <span>Press keys</span>
+    <span>{$LL.configure.chords.HOLD_KEYS()}</span>
+  {:else if !editing && !chord}
+    <span>{$LL.configure.chords.NEW_CHORD()}</span>
   {/if}
-  {#each editing ? [...pressedKeys].sort() : chord.actions as actionId}
+  {#each editing ? [...pressedKeys].sort() : chord?.actions ?? [] as actionId}
     {@const {icon, id, code} = KEYMAP_CODES[actionId] ?? {code: actionId}}
     <kbd class:icon={!!icon}>
       {icon ?? id ?? `0x${code.toString(16)}`}
@@ -92,9 +99,10 @@
     position: absolute;
     top: 50%;
     transform-origin: center left;
+    translate: -6px 0;
     scale: 0 1;
 
-    width: calc(100% - 16px);
+    width: calc(100% - 32px);
     height: 1px;
 
     background: currentcolor;

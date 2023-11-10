@@ -75,6 +75,8 @@ const en = {
   configure: {
     chords: {
       TITLE: "Chords",
+      HOLD_KEYS: "Hold chord",
+      NEW_CHORD: "New chord",
       search: {
         PLACEHOLDER: "Search {0} chord{{|s}}",
       },

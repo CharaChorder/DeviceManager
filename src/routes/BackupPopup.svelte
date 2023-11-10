@@ -1,27 +1,42 @@
 <script lang="ts">
-  import {parseCompressed, stringifyCompressed} from "$lib/serial/serialization"
-  import {deviceChords, deviceLayout} from "$lib/serial/connection"
+  import {serialPort} from "$lib/serial/connection"
   import {preference} from "$lib/preferences"
-  import type {Chord} from "$lib/serial/chord"
-  import type {CharaLayout} from "$lib/serialization/layout"
   import LL from "../i18n/i18n-svelte"
-
-  interface Backup {
-    isCharaBackup: string
-    chords: Chord[]
-    layout: CharaLayout
-  }
+  import type {
+    CharaBackupFile,
+    CharaChordFile,
+    CharaSettingsFile,
+    CharaLayoutFile,
+  } from "$lib/share/chara-file.js"
+  import {changes, ChangeType, chords, layout, settings} from "$lib/undo-redo.js"
+  import type {Change} from "$lib/undo-redo.js"
 
   async function downloadBackup() {
     const downloadUrl = URL.createObjectURL(
-      await stringifyCompressed({
-        isCharaBackup: "v1.0",
-        chords: $deviceChords,
-        layout: $deviceLayout,
-      }),
+      new Blob(
+        [
+          JSON.stringify({
+            charaVersion: 1,
+            type: "backup",
+            history: [
+              [
+                {charaVersion: 1, type: "chords", chords: $chords.map(it => [it.actions, it.phrase])},
+                {
+                  charaVersion: 1,
+                  type: "layout",
+                  device: $serialPort?.device,
+                  layout: $layout.map(it => it.map(it => it.action)) as [number[], number[], number[]],
+                },
+                {charaVersion: 1, type: "settings", settings: $settings.map(it => it.value)},
+              ],
+            ],
+          } satisfies CharaBackupFile),
+        ],
+        {type: "application/json"},
+      ),
     )
     const element = document.createElement("a")
-    element.setAttribute("download", "chords.chb")
+    element.setAttribute("download", "backup.json")
     element.href = downloadUrl
     element.setAttribute("target", "_blank")
     element.click()
@@ -31,14 +46,57 @@
   async function restoreBackup(event: Event) {
     const input = (event.target as HTMLInputElement).files![0]
     if (!input) return
-    const backup = await parseCompressed<Backup>(input)
-    if (backup.isCharaBackup !== "v1.0") throw new Error("Invalid Backup")
-    if (backup.chords) {
-      $deviceChords = backup.chords
+    const backup: CharaBackupFile = JSON.parse(await input.text())
+    if (backup.charaVersion !== 1 || backup.type !== "backup") throw new Error("Invalid Backup")
+
+    const recent = backup.history[0]
+    if (recent[1].device !== $serialPort?.device) throw new Error("Backup is incompatible with this device")
+
+    changes.update(changes => {
+      changes.push(
+        ...getChangesFromChordFile(recent[0]),
+        ...getChangesFromLayoutFile(recent[1]),
+        ...getChangesFromSettingsFile(recent[2]),
+      )
+      return changes
+    })
+  }
+
+  function getChangesFromChordFile(file: CharaChordFile) {
+    const changes: Change[] = []
+    // TODO...
+    return changes
+  }
+
+  function getChangesFromSettingsFile(file: CharaSettingsFile) {
+    const changes: Change[] = []
+    for (const [id, value] of file.settings.entries()) {
+      if ($settings[id].value !== value) {
+        changes.push({
+          type: ChangeType.Setting,
+          id,
+          setting: value,
+        })
+      }
     }
-    if (backup.layout) {
-      $deviceLayout = backup.layout
+    return changes
+  }
+
+  function getChangesFromLayoutFile(file: CharaLayoutFile) {
+    const changes: Change[] = []
+    for (const [layer, keys] of file.layout.entries()) {
+      for (const [id, action] of keys.entries()) {
+        if ($layout[layer][id].action !== action) {
+          changes.push({
+            type: ChangeType.Layout,
+            layer,
+            id,
+            action,
+          })
+        }
+      }
     }
+    return changes
   }
 </script>
 

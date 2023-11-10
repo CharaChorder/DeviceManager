@@ -77,6 +77,8 @@ const de = {
   configure: {
     chords: {
       TITLE: "Akkorde",
+      HOLD_KEYS: "Akkord halten",
+      NEW_CHORD: "Neuer Akkord",
       search: {
         PLACEHOLDER: "{0} Akkord{{|e}} durchsuchen",
       },

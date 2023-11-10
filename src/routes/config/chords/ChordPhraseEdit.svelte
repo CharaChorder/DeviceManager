@@ -135,7 +135,7 @@
   role="textbox"
   tabindex="0"
   bind:this={box}
-  class:edited={chord.phraseChanged}
+  class:edited={chord.phrase.length !== 0 && chord.phraseChanged}
   on:focusin={() => (hasFocus = true)}
   on:focusout={event => {
     if (event.relatedTarget !== button) hasFocus = false
@@ -236,12 +236,13 @@
       background: currentcolor;
 
       transition:
-        opacity 250ms ease,
+        opacity 150ms ease,
         scale 250ms ease;
     }
 
     &::after {
       scale: 0 1;
+      transition-duration: 250ms;
     }
 
     &:hover::before {
