@@ -7,13 +7,19 @@ const en = {
     UNDO: "Undo (hold <kbd class='icon'>shift</kbd> to undo all changes)",
     REDO: "Redo",
     APPLY: "Apply",
-    SAVE: "Write changes to your device",
+    SAVE: "Burn changes to your device",
   },
   backup: {
     TITLE: "Local Backup",
     DISCLAIMER: "Backups remain on your computer and are never shared with us or uploaded to our servers.",
     DOWNLOAD: "Download Backup",
     RESTORE: "Restore",
+  },
+  sync: {
+    TITLE_READ: "Reading latest changes",
+    TITLE_WRITE: "Burning changes to device",
+    DISCLAIMER_WRITE:
+      "Burning is only necessary if you want your layout or settings to persist across reboots. Chords always persist automatically on apply.",
   },
   modal: {
     CLOSE: "Close",
@@ -27,8 +33,12 @@ const en = {
     },
   },
   share: {
+    TITLE: "Share",
     URL_COPIED: "Sharable URL copied!",
     EXTRA_DOWNLOAD: "Download as file",
+  },
+  print: {
+    TITLE: "Print",
   },
   profile: {
     TITLE: "Profile",
@@ -65,12 +75,21 @@ const en = {
     DOWNLOAD_APP: "Download the desktop app",
   },
   changes: {
-    TITLE: "Apply changes",
-    CHORD_ADD: "{0} chord{{|s}} added",
-    CHORD_EDIT: "{0} chord{{|s}} edited",
-    CHORD_DELETE: "{0} chord{{|s}} deleted",
-    SETTING_CHANGE: "{0} setting{{|s}} changed",
-    LAYOUT_CHANGE: "{0} layout key{{|s}} changed",
+    TITLE: "Import changes",
+    ALL_CHANGES: "All changes",
+    layout: {
+      TITLE: "{0} layout change{{|s}}",
+      LAYER: "Update {changes} key{{changes:|s}} in layer {layer}",
+    },
+    settings: {
+      TITLE: "Update {0} setting{{|s}}",
+    },
+    chords: {
+      TITLE: "{0} chords",
+      NEW_CHORDS: "Add {0} new chord{{|s}}",
+      CHANGED_CHORDS: "Replace {0} chord{{|s}}",
+      DELETED_CHORDS: "Mark {0} chord{{|s}} for deletion",
+    },
   },
   configure: {
     chords: {

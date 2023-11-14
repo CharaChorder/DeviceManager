@@ -9,7 +9,7 @@
   import Navigation from "./Navigation.svelte"
   import {canAutoConnect} from "$lib/serial/device"
   import {initSerial} from "$lib/serial/connection"
-  import type {LayoutServerData} from "./$types"
+  import type {LayoutData} from "./$types"
   import {browser} from "$app/environment"
   import BrowserWarning from "./BrowserWarning.svelte"
   import "tippy.js/animations/shift-away.css"
@@ -21,12 +21,16 @@
   import {detectLocale} from "../i18n/i18n-util"
   import type {Locales} from "../i18n/i18n-types"
   import Footer from "./Footer.svelte"
+  import {runLayoutDetection} from "$lib/os-layout.js"
+  import PageTransition from "./PageTransition.svelte"
+  import SyncOverlay from "./SyncOverlay.svelte"
 
   const locale = ((browser && localStorage.getItem("locale")) as Locales) || detectLocale()
   loadLocale(locale)
   setLocale(locale)
 
   if (browser) {
+    runLayoutDetection()
     tippy.setDefaultProps({
       animation: "shift-away",
       theme: "surface-variant",
@@ -37,7 +41,7 @@
     })
   }
 
-  export let data: LayoutServerData
+  export let data: LayoutData
 
   onMount(async () => {
     theme.subscribe(it => {
@@ -63,11 +67,15 @@
   <meta name="theme-color" content={data.themeColor} />
 </svelte:head>
 
+<SyncOverlay />
+
 <Navigation />
 
-<main>
+<!-- <PickChangesDialog /> -->
+
+<PageTransition>
   <slot />
-</main>
+</PageTransition>
 
 <Footer />
 

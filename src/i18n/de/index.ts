@@ -9,6 +9,12 @@ const de = {
     APPLY: "Anwenden",
     SAVE: "Änderungen auf das Gerät schreiben",
   },
+  sync: {
+    TITLE_READ: "Neueste Änderungen werden abgerufen",
+    TITLE_WRITE: "Änderungen werden gebrannt",
+    DISCLAIMER_WRITE:
+      "Das Brennen von Änderungen ist nur für Layouts und Einstellungen erforderlich wenn diese Neustarts überdauern sollen. Bei Akkorden passiert das brennen automatisch beim anwenden.",
+  },
   backup: {
     TITLE: "Sicherungskopie",
     DISCLAIMER:
@@ -28,8 +34,12 @@ const de = {
     },
   },
   share: {
+    TITLE: "Teilen",
     URL_COPIED: "Teilbare URL kopiert!",
     EXTRA_DOWNLOAD: "Als Datei herunterladen",
+  },
+  print: {
+    TITLE: "Drucken",
   },
   profile: {
     TITLE: "Profil",
@@ -67,12 +77,21 @@ const de = {
     DOWNLOAD_APP: "Desktop-app herunterladen",
   },
   changes: {
-    TITLE: "Änderungen anwenden",
-    CHORD_ADD: "{0} Akkord{{|e}} hinzugefügt",
-    CHORD_EDIT: "{0} Akkord{{|e}} bearbeitet",
-    CHORD_DELETE: "{0} Akkord{{|e}} entfernt",
-    SETTING_CHANGE: "{0} Einstellung{{|en}} geändert",
-    LAYOUT_CHANGE: "{0} Layout-belegung{{|en}} geändert",
+    TITLE: "Änderungen importieren",
+    ALL_CHANGES: "Alle Änderungen",
+    layout: {
+      TITLE: "{0} veränderte Belegung{{:|en}}",
+      LAYER: "{changes} Belegung{{changes:|en}} in Ebene {layer} ändern",
+    },
+    settings: {
+      TITLE: "{0} Einstellung{{|en}} anpassen",
+    },
+    chords: {
+      TITLE: "{0} Akkorde",
+      NEW_CHORDS: "{0} neue Akkord{{|e}} hinzufügen",
+      CHANGED_CHORDS: "{0} Akkord{{|e}} ersetzen",
+      DELETED_CHORDS: "{0} Akkord{{|e}} zum löschen markieren",
+    },
   },
   configure: {
     chords: {

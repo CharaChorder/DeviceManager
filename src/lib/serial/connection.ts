@@ -45,17 +45,33 @@ export const deviceSettings = persistentWritable<number[]>(
 
 export const syncStatus: Writable<"done" | "error" | "downloading" | "uploading"> = writable("done")
 
+export interface ProgressInfo {
+  max: number
+  current: number
+}
+export const syncProgress = writable<ProgressInfo | undefined>(undefined)
+
 export async function initSerial(manual = false) {
   const device = get(serialPort) ?? new CharaDevice()
   await device.init(manual)
   serialPort.set(device)
-
+  const chordCount = await device.getChordCount()
   syncStatus.set("downloading")
+
+  const max = Object.keys(settingInfo.settings).length + device.keyCount * 3 + chordCount
+  let current = 0
+  syncProgress.set({max, current})
+  function progressTick() {
+    current++
+    syncProgress.set({max, current})
+  }
+
   const parsedSettings: number[] = []
   for (const key in settingInfo.settings) {
     try {
       parsedSettings[Number.parseInt(key)] = await device.getSetting(Number.parseInt(key))
     } catch {}
+    progressTick()
   }
   deviceSettings.set(parsedSettings)
 
@@ -63,15 +79,17 @@ export async function initSerial(manual = false) {
   for (let layer = 1; layer <= 3; layer++) {
     for (let i = 0; i < device.keyCount; i++) {
       parsedLayout[layer - 1][i] = await device.getLayoutKey(layer, i)
+      progressTick()
     }
   }
   deviceLayout.set(parsedLayout)
 
-  const chordCount = await device.getChordCount()
   const chordInfo = []
   for (let i = 0; i < chordCount; i++) {
     chordInfo.push(await device.getChord(i))
+    progressTick()
   }
   deviceChords.set(chordInfo)
   syncStatus.set("done")
+  syncProgress.set(undefined)
 }

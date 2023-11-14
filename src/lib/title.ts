@@ -13,7 +13,6 @@ export const action: Action<HTMLElement, {title?: string; shortcut?: string}> = 
     arrow: false,
     theme: "tooltip",
     animation: "fade",
-    delay: [500, 0],
     onShow(instance) {
       component ??= new Tooltip({
         target: instance.popper.querySelector(".tippy-content") as HTMLElement,

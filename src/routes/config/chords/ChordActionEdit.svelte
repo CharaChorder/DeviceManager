@@ -1,9 +1,10 @@
 <script lang="ts">
-  import {KEYMAP_CODES, KEYMAP_IDS} from "$lib/serial/keymap-codes"
+  import {KEYMAP_IDS} from "$lib/serial/keymap-codes"
   import type {ChordInfo} from "$lib/undo-redo"
   import {changes, ChangeType} from "$lib/undo-redo"
   import {createEventDispatcher} from "svelte"
   import LL from "../../../i18n/i18n-svelte"
+  import ActionString from "$lib/components/ActionString.svelte"
 
   export let chord: ChordInfo | undefined = undefined
 
@@ -33,7 +34,7 @@
       changes.push({
         type: ChangeType.Chord,
         id: chord!.id,
-        actions: [...pressedKeys],
+        actions: [...pressedKeys].sort(),
         phrase: chord!.phrase,
       })
       return changes
@@ -53,12 +54,7 @@
   {:else if !editing && !chord}
     <span>{$LL.configure.chords.NEW_CHORD()}</span>
   {/if}
-  {#each editing ? [...pressedKeys].sort() : chord?.actions ?? [] as actionId}
-    {@const {icon, id, code} = KEYMAP_CODES[actionId] ?? {code: actionId}}
-    <kbd class:icon={!!icon}>
-      {icon ?? id ?? `0x${code.toString(16)}`}
-    </kbd>
-  {/each}
+  <ActionString display="keys" actions={editing ? [...pressedKeys].sort() : chord?.actions ?? []} />
   <sup>•</sup>
 </button>
 
@@ -85,12 +81,6 @@
     &:focus-within {
       outline: none;
     }
-  }
-
-  kbd {
-    height: 24px;
-    padding-block: auto;
-    transition: color 250ms ease;
   }
 
   button::after {

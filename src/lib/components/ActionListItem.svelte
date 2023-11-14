@@ -35,6 +35,7 @@
     align-items: center;
 
     width: 100%;
+    height: auto;
     margin: 0;
     padding: 8px;
 
@@ -60,5 +61,9 @@
     justify-content: flex-start;
 
     text-align: start;
+  }
+
+  kbd {
+    height: 24px;
   }
 </style>

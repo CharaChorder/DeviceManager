@@ -1,4 +1,4 @@
-import ConfirmDialog from "$lib/ConfirmDialog.svelte"
+import ConfirmDialog from "$lib/dialogs/ConfirmDialog.svelte"
 
 export async function askForConfirmation(
   title: string,

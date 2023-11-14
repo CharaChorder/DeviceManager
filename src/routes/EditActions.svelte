@@ -4,8 +4,15 @@
   import type {Change} from "$lib/undo-redo"
   import {fly} from "svelte/transition"
   import {action} from "$lib/title"
-  import {deviceChords, deviceLayout, deviceSettings, serialPort, syncStatus} from "$lib/serial/connection"
-  import {askForConfirmation} from "$lib/confirm-dialog"
+  import {
+    deviceChords,
+    deviceLayout,
+    deviceSettings,
+    serialPort,
+    syncProgress,
+    syncStatus,
+  } from "$lib/serial/connection"
+  import {askForConfirmation} from "$lib/dialogs/confirm-dialog"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
 
   function undo(event: MouseEvent) {
@@ -94,7 +101,23 @@
     // would be if they click it every time they change a setting.
     // Because of that, we don't need to show a fearmongering message such as
     // "Your device will break after you click this 10,000 times!"
-    await new Promise(resolve => setTimeout(resolve, 6000))
+    const virtualWriteTime = 6000
+    const startStamp = performance.now()
+    await new Promise<void>(resolve => {
+      function animate() {
+        const delta = performance.now() - startStamp
+        syncProgress.set({
+          max: virtualWriteTime,
+          current: delta,
+        })
+        if (delta >= virtualWriteTime) {
+          resolve()
+        } else {
+          requestAnimationFrame(animate)
+        }
+      }
+      requestAnimationFrame(animate)
+    })
     if ($serialPort) {
       await $serialPort.commit()
       $changes = []

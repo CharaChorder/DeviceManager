@@ -1,10 +1,11 @@
 <script lang="ts">
-  import {KEYMAP_CODES, KEYMAP_IDS, specialKeycodes} from "$lib/serial/keymap-codes"
+  import {KEYMAP_IDS, specialKeycodes} from "$lib/serial/keymap-codes"
   import {tick} from "svelte"
   import ActionSelector from "$lib/components/layout/ActionSelector.svelte"
   import {changes, ChangeType} from "$lib/undo-redo"
   import type {ChordInfo} from "$lib/undo-redo"
   import {scale} from "svelte/transition"
+  import ActionString from "$lib/components/ActionString.svelte"
 
   export let chord: ChordInfo
 
@@ -149,14 +150,7 @@
     <div />
     <!-- placeholder for cursor placement -->
   {/if}
-  {#each chord.phrase as actionId, i (`${actionId}:${i}`)}
-    {@const {icon, id, code} = KEYMAP_CODES[actionId] ?? {code: actionId}}
-    {#if !icon && id?.length === 1}
-      <span>{id}</span>
-    {:else}
-      <kbd class:icon={!!icon}>{icon ?? id ?? `0x${code.toString(16)}`}</kbd>
-    {/if}
-  {/each}
+  <ActionString actions={chord.phrase} />
   <sup>•</sup>
 </div>
 
@@ -201,14 +195,6 @@
     sup {
       opacity: 1;
     }
-  }
-
-  :not(.cursor) + kbd {
-    margin-inline-start: 2px;
-  }
-
-  kbd + * {
-    margin-inline-start: 2px;
   }
 
   [role="textbox"] {

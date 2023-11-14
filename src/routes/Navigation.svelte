@@ -8,8 +8,8 @@
   import {canAutoConnect} from "$lib/serial/device"
   import {browser} from "$app/environment"
   import {userPreferences} from "$lib/preferences"
+  import {action} from "$lib/title"
   import LL from "../i18n/i18n-svelte"
-  import Profile from "./Profile.svelte"
   import ConfigTabs from "./ConfigTabs.svelte"
   import EditActions from "./EditActions.svelte"
 
@@ -29,8 +29,18 @@
 
   <div class="actions">
     {#if $canShare}
-      <button transition:fly={{x: -8}} class="icon" on:click={triggerShare}>share</button>
-      <button transition:fly={{x: -8}} class="icon" on:click={() => print()}>print</button>
+      <button
+        use:action={{title: $LL.share.TITLE()}}
+        transition:fly={{x: -8}}
+        class="icon"
+        on:click={triggerShare}>share</button
+      >
+      <button
+        use:action={{title: $LL.print.TITLE()}}
+        transition:fly={{x: -8}}
+        class="icon"
+        on:click={() => print()}>print</button
+      >
       <div transition:slide class="separator" />
     {/if}
     {#if import.meta.env.TAURI_FAMILY === undefined}
@@ -39,90 +49,31 @@
       {/await}
     {/if}
     {#if $serialPort}
-      <button title={$LL.backup.TITLE()} use:popup={BackupPopup} class="icon {$syncStatus}">
-        {#if $syncStatus === "downloading"}
-          backup
-        {:else if $syncStatus === "uploading"}
-          cloud_download
-        {:else if $userPreferences.backup}
-          cloud_done
+      <button use:action={{title: $LL.backup.TITLE()}} use:popup={BackupPopup} class="icon {$syncStatus}">
+        {#if $userPreferences.backup}
+          history
         {:else}
-          cloud_off
+          history_toggle_off
         {/if}
       </button>
     {/if}
     <button
       bind:this={connectButton}
-      title="Devices"
+      use:action={{title: $LL.deviceManager.TITLE()}}
       use:popup={ConnectionPopup}
       class="icon connect"
       class:error={$serialPort === undefined}
     >
       cable
     </button>
-    <button title={$LL.profile.TITLE()} use:popup={Profile} class="icon account">person</button>
   </div>
 </nav>
 
 <style lang="scss">
-  @keyframes sync {
-    0% {
-      scale: 1 1;
-      opacity: 1;
-    }
-
-    85% {
-      scale: 1 0;
-      opacity: 1;
-    }
-
-    86% {
-      scale: 1 1;
-      opacity: 0;
-    }
-
-    100% {
-      scale: 1 1;
-      opacity: 1;
-    }
-  }
-
-  .uploading::after,
-  .downloading::after {
-    content: "";
-
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform-origin: top;
-    translate: -50% 0;
-
-    width: 8px;
-    height: 10px;
-
-    background: var(--md-sys-color-background);
-
-    animation: sync 1s linear infinite;
-  }
-
-  .uploading::after {
-    transform-origin: bottom;
-  }
-
-  .downloading.active::after,
-  .uploading.active::after {
-    background: var(--md-sys-color-primary);
-  }
-
-  .sync.downloading::after {
-    top: 10px;
-    transform-origin: bottom;
-    border-radius: 4px;
-  }
-
   .separator {
     width: 1px;
     height: 24px;
+    margin-inline: 4px;
     background: var(--md-sys-color-outline-variant);
   }
 
@@ -182,12 +133,6 @@
     &:last-child {
       justify-content: flex-end;
     }
-  }
-
-  .icon.account {
-    font-size: 32px;
-    color: var(--md-sys-color-on-secondary-container);
-    background: var(--md-sys-color-secondary-container);
   }
 
   :disabled {
