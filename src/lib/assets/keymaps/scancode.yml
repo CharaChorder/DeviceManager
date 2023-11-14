@@ -1,5 +1,5 @@
-name: Raw Scancodes
-description: Raw Keyboard Scancodes
+name: Key codes
+description: OS-Layout sensitive keycodes
 actions:
   256:
     id: "KSC_00"

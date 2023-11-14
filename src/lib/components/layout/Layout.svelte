@@ -21,6 +21,7 @@
   const layouts = {
     ONE: () => import("$lib/assets/layouts/one.yml"),
     LITE: () => import("$lib/assets/layouts/lite.yml"),
+    X: () => import("$lib/assets/layouts/generic/103-key.yml"),
   }
 
   async function importLayout() {
@@ -57,8 +58,9 @@
   .controls {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+
     width: 100%;
   }
 
@@ -80,7 +82,6 @@
     align-items: center;
     justify-content: center;
 
-    margin-block-end: -36px;
     padding: 0;
 
     border: none;

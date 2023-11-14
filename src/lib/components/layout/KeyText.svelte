@@ -21,7 +21,7 @@
 </script>
 
 {#each positions as position, layer}
-  {@const {action: actionId, isApplied} = $layout[layer][key.id]}
+  {@const {action: actionId, isApplied} = $layout[layer][key.id] ?? {action: 0, isApplied: true}}
   {@const {code, icon, id} = KEYMAP_CODES[actionId] ?? {code: actionId}}
   {@const isActive = layer === $activeLayer}
   {@const direction = [(middle[0] - margin * 3) / position[0], (middle[1] - margin * 3) / position[1]]}
