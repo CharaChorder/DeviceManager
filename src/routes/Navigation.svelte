@@ -5,17 +5,19 @@
   import {popup} from "$lib/popup"
   import BackupPopup from "./BackupPopup.svelte"
   import ConnectionPopup from "./ConnectionPopup.svelte"
-  import {canAutoConnect} from "$lib/serial/device"
   import {browser} from "$app/environment"
   import {userPreferences} from "$lib/preferences"
   import {action} from "$lib/title"
   import LL from "../i18n/i18n-svelte"
   import ConfigTabs from "./ConfigTabs.svelte"
   import EditActions from "./EditActions.svelte"
+  import {onMount} from "svelte"
 
-  $: if (browser && !canAutoConnect()) {
-    connectButton?.click()
-  }
+  onMount(async () => {
+    if (browser && !$userPreferences.autoConnect) {
+      connectButton.click()
+    }
+  })
 
   let connectButton: HTMLButtonElement
 </script>

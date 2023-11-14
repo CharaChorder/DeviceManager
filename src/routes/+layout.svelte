@@ -54,7 +54,9 @@
       await initPwa()
     }
 
-    if (browser && $userPreferences.autoConnect && (await canAutoConnect())) await initSerial()
+    if (browser && $userPreferences.autoConnect && (await canAutoConnect())) {
+      await initSerial()
+    }
   })
 
   let webManifestLink = ""
