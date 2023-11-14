@@ -34,16 +34,20 @@
     </fieldset>
 
     <fieldset>
-      <legend><label><input type="checkbox" use:setting={{id: 12}} />Character Entry</label></legend>
+      <legend>Character Entry</legend>
       {#if $serialPort.device === "LITE"}
         <label>Swap Keymap 0 and 1<input type="checkbox" use:setting={{id: 13}} /></label>
       {/if}
-      <label
-        >Key Scan Rate<span class="unit"><input type="number" use:setting={{id: 14, inverse: 1000}} />Hz</span
-        ></label
+      <label>
+        Character Entry (chentry)
+        <input type="checkbox" use:setting={{id: 12}} />
+      </label>
+      <label>
+        Key Scan Rate
+        <span class="unit"><input type="number" use:setting={{id: 14, inverse: 1000}} />Hz</span></label
       >
-      <label
-        >Key Debounce Press<span class="unit"><input type="number" use:setting={{id: 15}} />ms</span></label
+      <label>
+        Key Debounce Press<span class="unit"><input type="number" use:setting={{id: 15}} />ms</span></label
       >
       <label
         >Key Debounce Release<span class="unit"><input type="number" use:setting={{id: 16}} />ms</span></label
