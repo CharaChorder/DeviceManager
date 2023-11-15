@@ -143,6 +143,10 @@
     font-weight: bold;
   }
 
+  input[type="checkbox"] {
+    font-size: 12px;
+  }
+
   fieldset {
     max-width: 400px;
     border: 1px solid var(--md-sys-color-outline);
@@ -169,10 +173,6 @@
         &:hover {
           filter: none;
         }
-      }
-
-      input[type="checkbox"] {
-        font-size: 12px;
       }
     }
 
