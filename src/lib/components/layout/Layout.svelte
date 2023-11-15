@@ -4,7 +4,7 @@
   import GenericLayout from "$lib/components/layout/GenericLayout.svelte"
   import {getContext} from "svelte"
   import type {Writable} from "svelte/store"
-  import {csvLayoutToJson, isCsvLayout} from "$lib/compat/legacy-layout"
+  import {csvLayoutToJson, isCsvLayout} from "$lib/backup/compat/legacy-layout"
   import type {CharaLayoutFile} from "$lib/share/chara-file"
 
   export let layoutOverride: "ONE" | "LITE" | undefined = undefined

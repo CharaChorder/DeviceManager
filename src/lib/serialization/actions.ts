@@ -24,7 +24,7 @@ export function decompressActions(raw: Uint8Array): number[] {
   const actions: number[] = []
   for (let i = 0; i < raw.length; i++) {
     let action = raw[i]
-    if (action < 32) {
+    if (action > 0 && action < 32) {
       action = (action << 8) | raw[++i]
     }
     actions.push(action)

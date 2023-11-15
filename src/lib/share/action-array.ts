@@ -1,5 +1,5 @@
-import {compressActions, decompressActions} from "$lib/serialization/actions"
-import {CHARA_FILE_TYPES} from "$lib/share/share-url"
+import {compressActions, decompressActions} from "../serialization/actions"
+import {CHARA_FILE_TYPES} from "../share/share-url"
 
 export type ActionArray = number[] | ActionArray[]
 export function serializeActionArray(array: ActionArray): Uint8Array {
@@ -11,7 +11,9 @@ export function serializeActionArray(array: ActionArray): Uint8Array {
     return out
   } else if (typeof array[0] === "number") {
     writer.setUint8(4, CHARA_FILE_TYPES.indexOf("number"))
-    return concatUint8Arrays(out, compressActions(array as number[]))
+    const compressed = compressActions(array as number[])
+    writer.setUint32(0, compressed.length)
+    return concatUint8Arrays(out, compressed)
   } else if (Array.isArray(array[0])) {
     writer.setUint8(4, CHARA_FILE_TYPES.indexOf("array"))
     return concatUint8Arrays(out, ...(array as ActionArray[]).map(serializeActionArray))
@@ -20,20 +22,23 @@ export function serializeActionArray(array: ActionArray): Uint8Array {
   }
 }
 
-export function deserializeActionArray(raw: Uint8Array): ActionArray {
+export function deserializeActionArray(raw: Uint8Array, cursor = {pos: 0}): ActionArray {
   const reader = new DataView(raw.buffer)
-  const length = reader.getUint32(0)
-  const type = CHARA_FILE_TYPES[reader.getUint8(4)]
+  const length = reader.getUint32(cursor.pos)
+  cursor.pos += 4
+  const type = CHARA_FILE_TYPES[reader.getUint8(cursor.pos)]
+  cursor.pos++
+
+  console.log(cursor, raw)
 
   if (type === "number") {
-    return decompressActions(raw.slice(5, 5 + length))
+    const decompressed = decompressActions(raw.slice(cursor.pos, cursor.pos + length))
+    cursor.pos += length
+    return decompressed
   } else if (type === "array") {
-    const innerLength = reader.getUint32(5)
     const out = []
-    let cursor = 5
     for (let i = 0; i < length; i++) {
-      out.push(deserializeActionArray(raw.slice(cursor, cursor + innerLength)))
-      cursor += innerLength
+      out.push(deserializeActionArray(raw, cursor))
     }
     return out
   } else {

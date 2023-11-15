@@ -24,6 +24,8 @@
   import {runLayoutDetection} from "$lib/os-layout.js"
   import PageTransition from "./PageTransition.svelte"
   import SyncOverlay from "./SyncOverlay.svelte"
+  import {restoreFromFile} from "$lib/backup/backup"
+  import {goto} from "$app/navigation"
 
   const locale = ((browser && localStorage.getItem("locale")) as Locales) || detectLocale()
   loadLocale(locale)
@@ -56,6 +58,12 @@
 
     if (browser && $userPreferences.autoConnect && (await canAutoConnect())) {
       await initSerial()
+    }
+    if (data.importFile) {
+      restoreFromFile(data.importFile)
+      const url = new URL(location.href)
+      url.searchParams.delete("import")
+      await goto(url.href, {replaceState: true})
     }
   })
 

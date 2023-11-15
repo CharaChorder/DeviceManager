@@ -1,7 +1,7 @@
-import type {CharaFile, CharaFiles} from "$lib/share/chara-file"
-import type {ActionArray} from "$lib/share/action-array"
-import {deserializeActionArray, serializeActionArray} from "$lib/share/action-array"
-import {fromBase64, toBase64} from "$lib/serialization/base64"
+import type {CharaFile, CharaFiles} from "../share/chara-file"
+import type {ActionArray} from "../share/action-array"
+import {deserializeActionArray, serializeActionArray} from "../share/action-array"
+import {fromBase64, toBase64} from "../serialization/base64"
 
 type CharaLayoutOrder = {
   [K in CharaFiles["type"]]: Array<
@@ -15,6 +15,7 @@ const keys: CharaLayoutOrder = {
     ["device", "string"],
   ],
   chords: [["chords", "array"]],
+  settings: [["settings", "array"]],
 }
 
 export const CHARA_FILE_TYPES = ["unknown", "number", "string", "array"] as const
@@ -42,17 +43,21 @@ export async function charaFileToUriComponent<T extends CharaFiles>(file: T): Pr
   return url
 }
 
-export async function charaFileFromUriComponent<T extends CharaFiles>(uriComponent: string): Promise<T> {
+export async function charaFileFromUriComponent<T extends CharaFiles>(
+  uriComponent: string,
+  fetch = window.fetch,
+): Promise<T> {
   const [fileType, version, ...values] = uriComponent.split(sep)
-  const file: any = {type: fileType, version: Number(version)}
+  const file: any = {type: fileType, charaVersion: Number(version)}
 
   for (const [key, type] of keys[fileType as keyof typeof keys]) {
-    const value = values.pop()!
+    const value = values.shift()!
     if (type === "string") {
       file[key] = value
     } else if (type === "array") {
-      const stream = (await fromBase64(value)).stream().pipeThrough(new DecompressionStream("deflate"))
+      const stream = (await fromBase64(value, fetch)).stream().pipeThrough(new DecompressionStream("deflate"))
       const actions = new Uint8Array(await new Response(stream).arrayBuffer())
+      console.log(actions)
       file[key] = deserializeActionArray(actions)
     }
   }

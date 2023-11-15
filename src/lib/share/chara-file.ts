@@ -20,4 +20,4 @@ export interface CharaBackupFile extends CharaFile<"backup"> {
   history: [CharaChordFile, CharaLayoutFile, CharaSettingsFile][]
 }
 
-export type CharaFiles = CharaLayoutFile | CharaChordFile
+export type CharaFiles = CharaLayoutFile | CharaChordFile | CharaSettingsFile

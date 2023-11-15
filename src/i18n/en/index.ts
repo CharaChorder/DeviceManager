@@ -11,8 +11,9 @@ const en = {
   },
   backup: {
     TITLE: "Local Backup",
+    INDIVIDUAL: "Individual backups",
     DISCLAIMER: "Backups remain on your computer and are never shared with us or uploaded to our servers.",
-    DOWNLOAD: "Download Backup",
+    DOWNLOAD: "Full Backup",
     RESTORE: "Restore",
   },
   sync: {

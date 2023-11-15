@@ -17,9 +17,10 @@ const de = {
   },
   backup: {
     TITLE: "Sicherungskopie",
+    INDIVIDUAL: "Einzeldateien",
     DISCLAIMER:
       "Sicherungskopien verlassen unter keinen Umständen diesen Computer und werden nie mit uns geteilt oder auf Server hochgeladen.",
-    DOWNLOAD: "Kopie Speichern",
+    DOWNLOAD: "Vollständig Speichern",
     RESTORE: "Wiederherstellen",
   },
   modal: {

@@ -1,40 +1,29 @@
 <script lang="ts">
   import {share} from "$lib/share"
-  import {deviceLayout} from "$lib/serial/connection"
   import tippy from "tippy.js"
-  import {onMount, setContext} from "svelte"
+  import {setContext} from "svelte"
   import Layout from "$lib/components/layout/Layout.svelte"
-  import {csvLayoutToJson, isCsvLayout} from "$lib/compat/legacy-layout"
-  import {charaFileFromUriComponent, charaFileToUriComponent} from "$lib/share/share-url"
-  import type {CharaLayoutFile} from "$lib/share/chara-file"
+  import {charaFileToUriComponent} from "$lib/share/share-url"
   import SharePopup from "../SharePopup.svelte"
   import type {VisualLayoutConfig} from "$lib/components/layout/visual-layout"
   import {writable} from "svelte/store"
-
-  onMount(async () => {
-    const url = new URL(window.location.href)
-    if (url.searchParams.has("import")) {
-      const file = await charaFileFromUriComponent(url.searchParams.get("import")!)
-      if (file.type === "layout") {
-        $deviceLayout = file.layout
-      }
-    }
-  })
+  import {layout} from "$lib/undo-redo"
 
   async function shareLayout(event: Event) {
-    const url = new URL(window.location.href)
+    const url = new URL(window.location.origin)
     url.searchParams.set(
       "import",
       await charaFileToUriComponent({
         charaVersion: 1,
         type: "layout",
         device: "one",
-        layout: $deviceLayout,
+        layout: $layout.map(it => it.map(it => it.action)) as [number[], number[], number[]],
       }),
     )
     await navigator.clipboard.writeText(url.toString())
     let shareComponent: SharePopup
     tippy(event.target as HTMLElement, {
+      interactive: true,
       onCreate(instance) {
         const target = instance.popper.querySelector(".tippy-content")!
         shareComponent = new SharePopup({target})

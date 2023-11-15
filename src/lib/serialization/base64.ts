@@ -20,7 +20,7 @@ export async function toBase64(blob: Blob): Promise<string> {
   })
 }
 
-export async function fromBase64(base64: string): Promise<Blob> {
+export async function fromBase64(base64: string, fetch = window.fetch): Promise<Blob> {
   return fetch(
     `data:application/octet-stream;base64,${base64
       .replaceAll(".", "+")
