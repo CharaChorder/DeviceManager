@@ -10,7 +10,7 @@
   import {layout} from "$lib/undo-redo"
 
   async function shareLayout(event: Event) {
-    const url = new URL(window.location.origin)
+    const url = new URL(window.location.href)
     url.searchParams.set(
       "import",
       await charaFileToUriComponent({
