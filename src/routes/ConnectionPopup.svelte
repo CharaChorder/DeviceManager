@@ -57,7 +57,16 @@
       </div>
     </div>
     {#if powerDialog}
-      <div class="backdrop" transition:fade={{duration: 250}} on:click={() => (powerDialog = !powerDialog)} />
+      <div
+        class="backdrop"
+        role="button"
+        tabindex="-1"
+        transition:fade={{duration: 250}}
+        on:click={() => (powerDialog = !powerDialog)}
+        on:keypress={event => {
+          if (event.key === "Enter") powerDialog = !powerDialog
+        }}
+      />
       <dialog open transition:slide={{duration: 250}}>
         <h3>{$LL.deviceManager.bootMenu.TITLE()}</h3>
         <button

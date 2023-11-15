@@ -97,7 +97,7 @@
     </fieldset>
 
     <fieldset>
-      <legend><label>Device</label></legend>
+      <legend>Device</legend>
       <label>Boot message<input type="checkbox" use:setting={{id: 93}} /></label>
       <label>Realtime Feedback<input type="checkbox" use:setting={{id: 92}} /></label>
       <label>
@@ -118,7 +118,7 @@
       <fieldset>
         <legend><label><input type="checkbox" />RGB</label></legend>
         <label>Brightness<input type="range" min="0" max="50" step="1" /></label>
-        <label>Color</label>
+        Color
         <label>Reactive Keys<input type="checkbox" /></label>
       </fieldset>
     {/if}
@@ -141,10 +141,6 @@
   legend > label {
     font-size: 24px;
     font-weight: bold;
-
-    > input {
-      font-size: 12px;
-    }
   }
 
   fieldset {
@@ -230,6 +226,7 @@
     }
   }
 
+  // stylelint-disable-next-line
   form label:has(:global(.pending-changes)) {
     color: var(--md-sys-color-tertiary);
   }

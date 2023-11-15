@@ -1,13 +1,10 @@
 <script lang="ts">
-  import {deviceLayout, serialPort} from "$lib/serial/connection"
+  import {serialPort} from "$lib/serial/connection"
   import {action} from "$lib/title"
   import GenericLayout from "$lib/components/layout/GenericLayout.svelte"
   import {getContext} from "svelte"
   import type {Writable} from "svelte/store"
-  import {csvLayoutToJson, isCsvLayout} from "$lib/backup/compat/legacy-layout"
-  import type {CharaLayoutFile} from "$lib/share/chara-file"
-
-  export let layoutOverride: "ONE" | "LITE" | undefined = undefined
+  import type {VisualLayout} from "$lib/serialization/visual-layout"
 
   $: device = $serialPort?.device ?? "ONE"
   const activeLayer = getContext<Writable<number>>("active-layer")
@@ -19,20 +16,10 @@
   ] as const
 
   const layouts = {
-    ONE: () => import("$lib/assets/layouts/one.yml"),
-    LITE: () => import("$lib/assets/layouts/lite.yml"),
-    X: () => import("$lib/assets/layouts/generic/103-key.yml"),
+    ONE: () => import("$lib/assets/layouts/one.yml").then(it => it.default as VisualLayout),
+    LITE: () => import("$lib/assets/layouts/lite.yml").then(it => it.default as VisualLayout),
+    X: () => import("$lib/assets/layouts/generic/103-key.yml").then(it => it.default as VisualLayout),
   }
-
-  async function importLayout() {
-    const file = await fileInput.files?.item(0)?.text()
-    if (!file) return
-    const importedLayout = isCsvLayout(file) ? csvLayoutToJson(file) : (JSON.parse(file) as CharaLayoutFile)
-    if (importedLayout.type === "layout" && importedLayout.charaVersion === 1)
-      $deviceLayout = importedLayout.layout
-  }
-
-  let fileInput: HTMLInputElement
 </script>
 
 <div class="container">
@@ -49,21 +36,12 @@
     {/each}
   </fieldset>
 
-  {#await layouts[layoutOverride || device]() then { default: visualLayout }}
+  {#await layouts[device]() then visualLayout}
     <GenericLayout {visualLayout} />
   {/await}
 </div>
 
 <style lang="scss">
-  .controls {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-  }
-
   .container {
     display: flex;
     flex-direction: column;

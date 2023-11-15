@@ -15,7 +15,6 @@ export async function askForConfirmation(
       abortTitle,
     },
   })
-  dialog.show()
 
   let resolvePromise: (value: boolean) => void
   const resultPromise = new Promise<boolean>(resolve => {

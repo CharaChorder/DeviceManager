@@ -27,26 +27,9 @@
     text-align: center;
   }
 
-  dialog {
-    min-width: 300px;
-    max-width: 512px;
-
-    color: var(--md-sys-color-on-background);
-
-    background: var(--md-sys-color-background);
-    border: none;
-    border-radius: 38px;
-    box-shadow: 0 0 48px rgba(0 0 0 / 60%);
-  }
-
   .buttons {
     display: flex;
     justify-content: flex-end;
     width: 100%;
-  }
-
-  dialog::backdrop {
-    opacity: 0.5;
-    background: black;
   }
 </style>

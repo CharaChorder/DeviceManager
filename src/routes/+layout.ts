@@ -6,9 +6,9 @@ export const prerender = true
 export const trailingSlash = "always"
 
 export const load = (async ({url, data, fetch}) => {
-  const importFile = new URLSearchParams(url.search).get("import")
+  const importFile = browser && new URLSearchParams(url.search).get("import")
   return {
     ...data,
-    importFile: browser && importFile ? await charaFileFromUriComponent(importFile, fetch) : undefined,
+    importFile: importFile ? await charaFileFromUriComponent(importFile, fetch) : undefined,
   }
 }) satisfies LayoutLoad

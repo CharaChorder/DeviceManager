@@ -7,11 +7,11 @@ interface ImportMetaEnv {
   readonly TAURI_ARCH?: string
   readonly TAURI_DEBUG?: boolean
   readonly TAURI_PLATFORM_TYPE?: string
+
+  readonly VITE_HOMEPAGE_URL: string
+  readonly VITE_BUGS_URL: string
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
-
-declare const HOMEPAGE_URL: string
-declare const BUGS_URL: string

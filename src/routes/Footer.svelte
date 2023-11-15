@@ -34,10 +34,13 @@
 <footer>
   <ul>
     <li>
-      <a href={HOMEPAGE_URL} rel="noreferrer" target="_blank"><span class="icon">commit</span> v{version}</a>
+      <!-- svelte-ignore not-defined -->
+      <a href={import.meta.env.VITE_HOMEPAGE_URL} rel="noreferrer" target="_blank"
+        ><span class="icon">commit</span> v{version}</a
+      >
     </li>
     <li>
-      <a href={BUGS_URL} rel="noreferrer" target="_blank"
+      <a href={import.meta.env.VITE_BUGS_URL} rel="noreferrer" target="_blank"
         ><span class="icon">bug_report</span> File an issue</a
       >
     </li>

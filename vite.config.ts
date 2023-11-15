@@ -13,6 +13,9 @@ const {homepage, bugs} = JSON.parse(
   await readFile(fileURLToPath(new URL("package.json", import.meta.url)), "utf8"),
 )
 
+process.env.VITE_HOMEPAGE_URL = homepage
+process.env.VITE_BUGS_URL = bugs.url
+
 export default defineConfig({
   build: {
     // we rely on the serial api, so just chrome is fine
@@ -21,11 +24,7 @@ export default defineConfig({
       external: isTauri ? [/virtual:pwa.*/] : [],
     },
   },
-  define: {
-    HOMEPAGE_URL: `"${homepage}"`,
-    BUGS_URL: `"${bugs.url}"`,
-  },
-  envPrefix: "TAURI_",
+  envPrefix: ["TAURI_", "VITE_"],
   plugins: [
     ViteYaml(),
     sveltekit(),
