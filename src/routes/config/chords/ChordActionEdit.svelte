@@ -29,7 +29,7 @@
     if (!editing) return
     editing = false
     if (pressedKeys.size < 2) return
-    if (!chord) return dispatch("submit", [...pressedKeys])
+    if (!chord) return dispatch("submit", [...pressedKeys].sort())
     changes.update(changes => {
       changes.push({
         type: ChangeType.Chord,
