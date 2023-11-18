@@ -29,12 +29,16 @@
     if (!editing) return
     editing = false
     if (pressedKeys.size < 2) return
-    if (!chord) return dispatch("submit", [...pressedKeys].sort())
+    if (!chord)
+      return dispatch(
+        "submit",
+        [...pressedKeys].sort((a, b) => a - b),
+      )
     changes.update(changes => {
       changes.push({
         type: ChangeType.Chord,
         id: chord!.id,
-        actions: [...pressedKeys].sort(),
+        actions: [...pressedKeys].sort((a, b) => a - b),
         phrase: chord!.phrase,
       })
       return changes
@@ -54,7 +58,10 @@
   {:else if !editing && !chord}
     <span>{$LL.configure.chords.NEW_CHORD()}</span>
   {/if}
-  <ActionString display="keys" actions={editing ? [...pressedKeys].sort() : chord?.actions ?? []} />
+  <ActionString
+    display="keys"
+    actions={editing ? [...pressedKeys].sort((a, b) => a - b) : chord?.actions ?? []}
+  />
   <sup>•</sup>
 </button>
 
