@@ -207,7 +207,7 @@ export class CharaDevice {
       stringifyChordActions(chord.actions),
       stringifyPhrase(chord.phrase),
     )
-    if (status !== "0") throw new Error(`Failed with status ${status}`)
+    if (status !== "0") console.error(`Failed with status ${status}`)
   }
 
   async deleteChord(chord: Pick<Chord, "actions">) {
