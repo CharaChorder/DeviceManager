@@ -109,9 +109,9 @@ export function restoreFromFile(
 
 export function getChangesFromChordFile(file: CharaChordFile) {
   const changes: Change[] = []
-  const existingChords = new Set(get(chords).map(({phrase, actions}) => JSON.stringify({phrase, actions})))
+  const existingChords = new Set(get(chords).map(({phrase, actions}) => JSON.stringify([actions, phrase])))
   for (const [input, output] of file.chords) {
-    if (existingChords.has(JSON.stringify({actions: input, phrase: output}))) {
+    if (existingChords.has(JSON.stringify([input, output]))) {
       continue
     }
     changes.push({
