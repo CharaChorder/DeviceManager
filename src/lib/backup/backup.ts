@@ -1,12 +1,12 @@
 import type {
   CharaBackupFile,
   CharaChordFile,
-  CharaSettingsFile,
-  CharaLayoutFile,
   CharaFile,
+  CharaLayoutFile,
+  CharaSettingsFile,
 } from "$lib/share/chara-file.js"
-import {changes, ChangeType, chords, layout, settings} from "$lib/undo-redo.js"
 import type {Change} from "$lib/undo-redo.js"
+import {changes, ChangeType, chords, layout, settings} from "$lib/undo-redo.js"
 import {get} from "svelte/store"
 import {serialPort} from "../serial/connection"
 import {csvLayoutToJson, isCsvLayout} from "$lib/backup/compat/legacy-layout"
@@ -109,7 +109,14 @@ export function restoreFromFile(
 
 export function getChangesFromChordFile(file: CharaChordFile) {
   const changes: Change[] = []
-  // TODO...
+  for (const [input, output] of file.chords) {
+    changes.push({
+      type: ChangeType.Chord,
+      actions: input,
+      phrase: output,
+      id: input,
+    })
+  }
   return changes
 }
 
