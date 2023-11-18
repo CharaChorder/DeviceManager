@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.typesafeI18nString = exports.i18nString = exports.typesafeI18nObject = exports.i18nObject = exports.i18n = void 0;
+var util_instance_mjs_1 = require("./util.instance.cjs");
+Object.defineProperty(exports, "i18n", { enumerable: true, get: function () { return util_instance_mjs_1.i18n; } });
+var util_object_mjs_1 = require("./util.object.cjs");
+Object.defineProperty(exports, "i18nObject", { enumerable: true, get: function () { return util_object_mjs_1.i18nObject; } });
+Object.defineProperty(exports, "typesafeI18nObject", { enumerable: true, get: function () { return util_object_mjs_1.typesafeI18nObject; } });
+var util_string_mjs_1 = require("./util.string.cjs");
+Object.defineProperty(exports, "i18nString", { enumerable: true, get: function () { return util_string_mjs_1.i18nString; } });
+Object.defineProperty(exports, "typesafeI18nString", { enumerable: true, get: function () { return util_string_mjs_1.typesafeI18nString; } });

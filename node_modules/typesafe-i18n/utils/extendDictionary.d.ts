@@ -1,0 +1,1 @@
+export * from '../types/utils/src/extendDictionary.mjs'

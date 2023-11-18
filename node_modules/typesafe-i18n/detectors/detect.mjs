@@ -1,0 +1,1 @@
+var p=e=>!!e;var n=e=>Array.from(new Set(e));var Nr=(e,o,...s)=>{for(let i of s){let t=l(o,i);if(t)return t}return e},l=(e,o)=>{let s=o().map(r=>r.toLowerCase()),i=n(s.flatMap(r=>[r,r.split("-")[0]])),t=e.map(r=>r.toLowerCase());return i.map(r=>{let c=t.findIndex(x=>x===r);return c>=0&&e[c]}).find(p)};export{Nr as detectLocale};

@@ -1,0 +1,5 @@
+import type { BaseFormatters, BaseTranslation, Locale, TranslationFunctions, TypedTranslationFunctions } from './core.mjs';
+export declare function i18nObject<L extends Locale, T extends BaseTranslation | BaseTranslation[] | Readonly<BaseTranslation> | Readonly<BaseTranslation[]>, TF extends TranslationFunctions<T> = TranslationFunctions<T>, F extends BaseFormatters = BaseFormatters>(locale: L, translations: T, formatters: F): TF;
+export declare function i18nObject<L extends Locale, T extends BaseTranslation | BaseTranslation[], TF extends TranslationFunctions<T> = TranslationFunctions<T>>(locale: L, translations: T): TF;
+export declare function typesafeI18nObject<L extends Locale, T extends BaseTranslation | BaseTranslation[], F extends BaseFormatters = BaseFormatters>(locale: L, translations: T, formatters: F): TypedTranslationFunctions<T, F>;
+export declare function typesafeI18nObject<L extends Locale, T extends BaseTranslation | BaseTranslation[]>(locale: L, translations: T): TypedTranslationFunctions<T>;

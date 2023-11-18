@@ -1,0 +1,1 @@
+var o=/^((?:\w{2,3}(?:-\w{3})?)(?:-\w{4})?(?:-\w{2}|-\d{3})?(?:-[\w\d]{5,8}|-\d[\w\d]{3})*)\./,r=e=>()=>{let t=e?.hostname?.match(o);return t&&t[1]?[t[1]]:[]};export{r as initRequestHostnameDetector};

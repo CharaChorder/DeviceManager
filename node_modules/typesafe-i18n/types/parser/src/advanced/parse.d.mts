@@ -1,0 +1,10 @@
+import { type BasicArgumentPart } from '../basic.mjs';
+import type { ParameterPart, ParsedMessage, ParsedMessagePart, PluralPart, TextPart, TransformParameterFormatterPart, TransformParameterPart, TransformParameterSwitchCasePart } from './types.mjs';
+export declare const isTextPart: (part: ParsedMessagePart) => part is TextPart;
+export declare const isPluralPart: (part: ParsedMessagePart) => part is PluralPart;
+export declare const isParameterPart: (part: ParsedMessagePart) => part is ParameterPart;
+export declare const isTransformParameterFormatterPart: (part: TransformParameterPart) => part is TransformParameterFormatterPart;
+export declare const isTransformParameterSwitchCasePart: (part: TransformParameterPart) => part is TransformParameterSwitchCasePart;
+export declare const parseMessage: (message: string) => ParsedMessage;
+export declare const createParameterPart: ({ k, i, n, f }: BasicArgumentPart) => ParameterPart;
+export declare const REGEX_BRACKETS: RegExp;

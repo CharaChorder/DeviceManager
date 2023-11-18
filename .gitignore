@@ -1,5 +1,5 @@
 .DS_Store
-node_modules
+../../node_modules
 /build
 .idea
 /.svelte-kit
@@ -10,4 +10,4 @@ node_modules
 venv
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-src/lib/assets/icons.min.woff2
+apps/manager/src/lib/assets/icons.min.woff2

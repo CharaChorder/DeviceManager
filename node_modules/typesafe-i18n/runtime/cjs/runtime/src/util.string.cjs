@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.typesafeI18nString = exports.i18nString = exports.getPartsFromString = void 0;
+const basic_mjs_1 = require("../../parser/src/basic.cjs");
+const core_mjs_1 = require("./core.cjs");
+const getPartsFromString = (cache, text) => cache[text] || (cache[text] = (0, basic_mjs_1.parseRawText)(text));
+exports.getPartsFromString = getPartsFromString;
+const translateString = (cache, pluralRules, formatters, text, ...args) => (0, core_mjs_1.translate)((0, exports.getPartsFromString)(cache, text), pluralRules, formatters, args);
+const i18nString = (locale, formatters = {}) => translateString.bind(null, {}, new Intl.PluralRules(locale), formatters);
+exports.i18nString = i18nString;
+const typesafeI18nString = (locale, formatters = {}) => translateString.bind(null, {}, new Intl.PluralRules(locale), formatters);
+exports.typesafeI18nString = typesafeI18nString;

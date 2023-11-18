@@ -26,6 +26,7 @@
         ];
         packages = (with pkgs; [
           nodejs_18
+          nodePackages.pnpm
           rust-bin
           fontMin
         ]) ++ (with tauriPkgs; [

@@ -1,0 +1,42 @@
+name: CI
+on:
+  - push
+  - pull_request
+jobs:
+  test:
+    name: Node.js ${{ matrix.node-version }} on ${{ matrix.os }} with stylelint ${{ matrix.dep-versions.stylelint }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        node-version:
+          - 18
+          - 16
+          - 14
+        dep-versions:
+          - stylelint: 15
+            scss: 5
+            recommended: 11
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - if: ${{ matrix.os != 'windows-latest' }}
+        env:
+          STYLELINT_VERSION: ${{ matrix.dep-versions.stylelint }}
+          SCSS_VERSION: ${{ matrix.dep-versions.scss }}
+          RECOMMENDED_VERSION: ${{ matrix.dep-versions.recommended }}
+        run: npm install --no-save "stylelint@${STYLELINT_VERSION}" "stylelint-scss@${SCSS_VERSION}" "stylelint-config-recommended-scss@${RECOMMENDED_VERSION}"
+      - if: ${{ matrix.os == 'windows-latest' }}
+        env:
+          STYLELINT_VERSION: ${{ matrix.dep-versions.stylelint }}
+          SCSS_VERSION: ${{ matrix.dep-versions.scss }}
+          RECOMMENDED_VERSION: ${{ matrix.dep-versions.recommended }}
+        run: npm install --no-save "stylelint@${env:STYLELINT_VERSION}" "stylelint-scss@${env:SCSS_VERSION}" "stylelint-config-recommended-scss@${env:RECOMMENDED_VERSION}"
+      - run: npm test

@@ -1,0 +1,1 @@
+var r=(o,c)=>{let t=o?.split(";").map(e=>e.trim()).find(e=>e.startsWith(c))?.split("=")[1];return t?[t]:[]};var i=(o="lang")=>()=>r(document?.cookie,o),n=i();export{n as documentCookieDetector,i as initDocumentCookieDetector};

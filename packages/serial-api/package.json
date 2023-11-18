@@ -1,0 +1,14 @@
+{
+  "name": "@charachorder/serial-api",
+  "version": "1.0.0",
+  "type:": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./types.d.ts"
+    }
+  },
+  "devDependencies": {
+    "typescript": "5.2.2"
+  }
+}

@@ -1,0 +1,14 @@
+export { e as builtinEnvironments, p as populateGlobal } from './vendor-environments.c9c96bf7.js';
+import 'node:url';
+import 'pathe';
+import './vendor-index.0b5b3600.js';
+import 'acorn';
+import 'node:module';
+import 'node:fs';
+import 'node:assert';
+import 'node:process';
+import 'node:path';
+import 'node:v8';
+import 'node:util';
+import 'node:console';
+import 'local-pkg';

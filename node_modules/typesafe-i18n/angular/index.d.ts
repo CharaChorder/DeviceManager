@@ -1,0 +1,1 @@
+export * from '../types/adapter-angular/src/index.mjs'

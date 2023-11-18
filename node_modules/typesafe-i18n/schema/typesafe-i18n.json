@@ -1,0 +1,188 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "anyOf": [
+        {
+            "additionalProperties": false,
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "adapterFileName": {
+                    "type": "string"
+                },
+                "banner": {
+                    "type": "string"
+                },
+                "baseLocale": {
+                    "type": "string"
+                },
+                "esmImports": {
+                    "$ref": "#/definitions/EsmImportsOption"
+                },
+                "formattersTemplateFileName": {
+                    "type": "string"
+                },
+                "generateOnlyTypes": {
+                    "type": "boolean"
+                },
+                "outputFormat": {
+                    "$ref": "#/definitions/OutputFormats"
+                },
+                "outputPath": {
+                    "type": "string"
+                },
+                "runAfterGenerator": {
+                    "type": "string"
+                },
+                "tempPath": {
+                    "type": "string"
+                },
+                "typesFileName": {
+                    "type": "string"
+                },
+                "typesTemplateFileName": {
+                    "type": "string"
+                },
+                "utilFileName": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        {
+            "additionalProperties": false,
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "adapter": {
+                    "$ref": "#/definitions/Adapters"
+                },
+                "adapterFileName": {
+                    "type": "string"
+                },
+                "banner": {
+                    "type": "string"
+                },
+                "baseLocale": {
+                    "type": "string"
+                },
+                "esmImports": {
+                    "$ref": "#/definitions/EsmImportsOption"
+                },
+                "formattersTemplateFileName": {
+                    "type": "string"
+                },
+                "generateOnlyTypes": {
+                    "type": "boolean"
+                },
+                "outputFormat": {
+                    "$ref": "#/definitions/OutputFormats"
+                },
+                "outputPath": {
+                    "type": "string"
+                },
+                "runAfterGenerator": {
+                    "type": "string"
+                },
+                "tempPath": {
+                    "type": "string"
+                },
+                "typesFileName": {
+                    "type": "string"
+                },
+                "typesTemplateFileName": {
+                    "type": "string"
+                },
+                "utilFileName": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        {
+            "additionalProperties": false,
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "adapterFileName": {
+                    "type": "string"
+                },
+                "adapters": {
+                    "items": {
+                        "$ref": "#/definitions/Adapters"
+                    },
+                    "type": "array"
+                },
+                "banner": {
+                    "type": "string"
+                },
+                "baseLocale": {
+                    "type": "string"
+                },
+                "esmImports": {
+                    "$ref": "#/definitions/EsmImportsOption"
+                },
+                "formattersTemplateFileName": {
+                    "type": "string"
+                },
+                "generateOnlyTypes": {
+                    "type": "boolean"
+                },
+                "outputFormat": {
+                    "$ref": "#/definitions/OutputFormats"
+                },
+                "outputPath": {
+                    "type": "string"
+                },
+                "runAfterGenerator": {
+                    "type": "string"
+                },
+                "tempPath": {
+                    "type": "string"
+                },
+                "typesFileName": {
+                    "type": "string"
+                },
+                "typesTemplateFileName": {
+                    "type": "string"
+                },
+                "utilFileName": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    ],
+    "definitions": {
+        "Adapters": {
+            "enum": [
+                "angular",
+                "deno",
+                "node",
+                "react",
+                "solid",
+                "svelte",
+                "vue"
+            ],
+            "type": "string"
+        },
+        "EsmImportsOption": {
+            "enum": [
+                ".js",
+                false,
+                "fileEnding",
+                true
+            ]
+        },
+        "OutputFormats": {
+            "enum": [
+                "JavaScript",
+                "TypeScript"
+            ],
+            "type": "string"
+        }
+    }
+}
+

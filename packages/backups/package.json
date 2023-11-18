@@ -1,0 +1,9 @@
+{
+  "name": "@charachorder/backups",
+  "dependencies": {
+    "zod": "3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "5.2.2"
+  }
+}

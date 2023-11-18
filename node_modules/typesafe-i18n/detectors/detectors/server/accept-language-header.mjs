@@ -1,0 +1,1 @@
+var t=r=>r!=="";var s=/;|,/,ar=({headers:r},o="accept-language")=>()=>r.get(o)?.split(s).filter(e=>!e.startsWith("q")).map(e=>e.trim()).filter(e=>e!=="*").filter(t)||[];export{ar as initAcceptLanguageHeaderDetector};

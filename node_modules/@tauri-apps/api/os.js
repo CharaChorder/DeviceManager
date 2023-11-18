@@ -1,0 +1,1 @@
+import{a,b,c,d,e,f,g}from"./chunk-2GTLV2NE.js";import"./chunk-V5J25SYE.js";import"./chunk-RKMHWDGH.js";import"./chunk-5UWJICAP.js";import"./chunk-FEIY7W7S.js";export{a as EOL,e as arch,g as locale,b as platform,f as tempdir,d as type,c as version};

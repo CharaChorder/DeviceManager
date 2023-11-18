@@ -1,0 +1,13 @@
+import type { JsonObject } from 'type-fest';
+export declare const readFile: (file: string, createPath?: boolean) => Promise<string>;
+export declare const doesPathExist: (path: string) => Promise<boolean>;
+export declare const createPathIfNotExits: (path: string) => Promise<void>;
+export declare const deleteFolderRecursive: (path: string) => Promise<boolean>;
+export declare const writeFile: (filePath: string, content: string) => Promise<void>;
+export declare const writeConfigFile: (content: JsonObject) => Promise<void>;
+export declare const writeNewFile: (path: string, file: string, content: string) => Promise<void>;
+export declare const writeFileIfContainsChanges: (path: string, file: string, content: string) => Promise<void>;
+export declare const writeFileIfNotExists: (path: string, file: string, content: string) => Promise<void>;
+export declare const containsFolders: (path: string) => Promise<boolean>;
+export declare const getDirectoryStructure: (path: string) => Promise<Record<string, unknown>>;
+export declare const importFile: <T = unknown>(file: string, outputError?: boolean) => Promise<T>;

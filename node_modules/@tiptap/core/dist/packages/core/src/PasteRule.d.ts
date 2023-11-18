@@ -1,0 +1,46 @@
+import { EditorState, Plugin } from '@tiptap/pm/state';
+import { Editor } from './Editor.js';
+import { CanCommands, ChainedCommands, ExtendedRegExpMatchArray, Range, SingleCommands } from './types.js';
+export declare type PasteRuleMatch = {
+    index: number;
+    text: string;
+    replaceWith?: string;
+    match?: RegExpMatchArray;
+    data?: Record<string, any>;
+};
+export declare type PasteRuleFinder = RegExp | ((text: string) => PasteRuleMatch[] | null | undefined);
+export declare class PasteRule {
+    find: PasteRuleFinder;
+    handler: (props: {
+        state: EditorState;
+        range: Range;
+        match: ExtendedRegExpMatchArray;
+        commands: SingleCommands;
+        chain: () => ChainedCommands;
+        can: () => CanCommands;
+        pasteEvent: ClipboardEvent;
+        dropEvent: DragEvent;
+    }) => void | null;
+    constructor(config: {
+        find: PasteRuleFinder;
+        handler: (props: {
+            can: () => CanCommands;
+            chain: () => ChainedCommands;
+            commands: SingleCommands;
+            dropEvent: DragEvent;
+            match: ExtendedRegExpMatchArray;
+            pasteEvent: ClipboardEvent;
+            range: Range;
+            state: EditorState;
+        }) => void | null;
+    });
+}
+/**
+ * Create an paste rules plugin. When enabled, it will cause pasted
+ * text that matches any of the given rules to trigger the rule’s
+ * action.
+ */
+export declare function pasteRulesPlugin(props: {
+    editor: Editor;
+    rules: PasteRule[];
+}): Plugin[];
