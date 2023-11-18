@@ -13,6 +13,10 @@
   let pressedKeys = new Set<number>()
   let editing = false
 
+  function compare(a: number, b: number) {
+    return a - b
+  }
+
   function edit() {
     pressedKeys = new Set()
     editing = true
@@ -29,16 +33,12 @@
     if (!editing) return
     editing = false
     if (pressedKeys.size < 2) return
-    if (!chord)
-      return dispatch(
-        "submit",
-        [...pressedKeys].sort((a, b) => a - b),
-      )
+    if (!chord) return dispatch("submit", [...pressedKeys].sort(compare))
     changes.update(changes => {
       changes.push({
         type: ChangeType.Chord,
         id: chord!.id,
-        actions: [...pressedKeys].sort((a, b) => a - b),
+        actions: [...pressedKeys].sort(compare),
         phrase: chord!.phrase,
       })
       return changes
@@ -49,6 +49,7 @@
 <button
   class:deleted={chord && chord.phrase.length === 0}
   class:edited={chord && chord.actionsChanged}
+  class:invalid={chord && chord.actions.toSorted(compare).some((it, i) => chord?.actions[i] !== it)}
   on:click={edit}
   on:keydown={keydown}
   on:keyup={keyup}
@@ -58,10 +59,7 @@
   {:else if !editing && !chord}
     <span>{$LL.configure.chords.NEW_CHORD()}</span>
   {/if}
-  <ActionString
-    display="keys"
-    actions={editing ? [...pressedKeys].sort((a, b) => a - b) : chord?.actions ?? []}
-  />
+  <ActionString display="keys" actions={editing ? [...pressedKeys].sort(compare) : chord?.actions ?? []} />
   <sup>•</sup>
 </button>
 
@@ -115,6 +113,10 @@
     & > sup {
       opacity: 1;
     }
+  }
+
+  .invalid {
+    color: var(--md-sys-color-error);
   }
 
   .deleted {
