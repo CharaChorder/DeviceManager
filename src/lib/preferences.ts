@@ -1,5 +1,5 @@
-import type {Action} from "svelte/action"
-import {persistentWritable} from "$lib/storage"
+import type { Action } from "svelte/action"
+import { persistentWritable } from "$lib/storage"
 
 export interface UserPreferences {
   backup: boolean
@@ -13,7 +13,7 @@ export const theme = persistentWritable("user-theme", {
 
 export const userPreferences = persistentWritable<UserPreferences>("user-preferences", {
   backup: false,
-  autoConnect: true,
+  autoConnect: false,
 })
 
 export const preference: Action<HTMLInputElement, keyof UserPreferences> = (node, key) => {
