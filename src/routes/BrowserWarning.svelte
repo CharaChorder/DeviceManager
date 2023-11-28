@@ -17,7 +17,7 @@
     >{$LL.browserWarning.INFO_BROWSER_SUFFIX()}
   </p>
   <div>
-    <a href="https://github.com/Theaninova/dotio/releases" target="_blank"
+    <a href="https://github.com/CharaChorder/DeviceManager/releases" target="_blank"
       >{$LL.browserWarning.DOWNLOAD_APP()}</a
     >
   </div>
