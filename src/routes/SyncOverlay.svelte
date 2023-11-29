@@ -30,7 +30,6 @@
     <h2>{$LL.sync.TITLE_READ()}</h2>
   {:else}
     <h2>{$LL.sync.TITLE_WRITE()}</h2>
-    <p>{$LL.sync.DISCLAIMER_WRITE()}</p>
   {/if}
   <progress max={$syncProgress?.max ?? 1} value={$syncProgress?.current ?? 1}></progress>
 </dialog>

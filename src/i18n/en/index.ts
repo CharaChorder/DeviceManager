@@ -1,4 +1,4 @@
-import type {BaseTranslation} from "../i18n-types"
+import type { BaseTranslation } from "../i18n-types"
 
 const en = {
   TITLE: "CharaChorder Device Manager",
@@ -18,9 +18,7 @@ const en = {
   },
   sync: {
     TITLE_READ: "Reading latest changes",
-    TITLE_WRITE: "Burning changes to device",
-    DISCLAIMER_WRITE:
-      "Burning is only necessary if you want your layout or settings to persist across reboots. Chords always persist automatically on apply.",
+    TITLE_WRITE: "Saving changes to device",
   },
   modal: {
     CLOSE: "Close",

@@ -1,4 +1,4 @@
-import type {Translation} from "../i18n-types"
+import type { Translation } from "../i18n-types"
 
 const de = {
   TITLE: "CharaChorder Gerätemanager",
@@ -11,9 +11,7 @@ const de = {
   },
   sync: {
     TITLE_READ: "Neueste Änderungen werden abgerufen",
-    TITLE_WRITE: "Änderungen werden gebrannt",
-    DISCLAIMER_WRITE:
-      "Das Brennen von Änderungen ist nur für Layouts und Einstellungen erforderlich wenn diese Neustarts überdauern sollen. Bei Akkorden passiert das brennen automatisch beim anwenden.",
+    TITLE_WRITE: "Änderungen werden gespeichert",
   },
   backup: {
     TITLE: "Sicherungskopie",
