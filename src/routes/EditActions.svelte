@@ -132,19 +132,30 @@
   on:click={redo}>redo</button
 >
 {#if $changes.length !== 0}
-  <div transition:slide class="separator" />
   <button
     transition:fly={{x: 10}}
     use:action={{title: $LL.saveActions.SAVE(), shortcut: "ctrl+shift+s"}}
     on:click={save}
-    class="icon">save</button
+    class="click-me"><span class="icon">save</span>{$LL.saveActions.SAVE()}</button
   >
 {/if}
 
 <style lang="scss">
-  .separator {
-    width: 1px;
-    height: 24px;
-    background: var(--md-sys-color-outline-variant);
+  .click-me {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: fit-content;
+    margin-inline: 8px;
+    padding-block: 2px;
+    padding-inline-start: 8px;
+    padding-inline-end: 12px;
+    font-family: inherit;
+    font-weight: bold;
+    color: var(--md-sys-color-primary);
+    border: 2px solid var(--md-sys-color-primary);
+    border-radius: 18px;
+    outline: 2px dashed var(--md-sys-color-primary);
+    outline-offset: 2px;
   }
 </style>

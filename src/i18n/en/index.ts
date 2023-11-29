@@ -6,8 +6,7 @@ const en = {
   saveActions: {
     UNDO: "Undo (hold <kbd class='icon'>shift</kbd> to undo all changes)",
     REDO: "Redo",
-    APPLY: "Apply",
-    SAVE: "Burn changes to your device",
+    SAVE: "Save",
   },
   backup: {
     TITLE: "Local Backup",

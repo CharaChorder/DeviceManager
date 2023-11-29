@@ -6,8 +6,7 @@ const de = {
   saveActions: {
     UNDO: "Rückgängig (<kbd class='icon'>shift</kbd> halten um alle Änderungen rückgängig zu machen)",
     REDO: "Wiederholen",
-    APPLY: "Anwenden",
-    SAVE: "Änderungen auf das Gerät schreiben",
+    SAVE: "Speichern",
   },
   sync: {
     TITLE_READ: "Neueste Änderungen werden abgerufen",
