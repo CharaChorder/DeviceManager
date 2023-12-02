@@ -1,7 +1,7 @@
 <script lang="ts">
   import {fly} from "svelte/transition"
   import {afterNavigate, beforeNavigate} from "$app/navigation"
-  import {expoIn, expoOut, quadIn, quadOut} from "svelte/easing"
+  import {expoIn, expoOut} from "svelte/easing"
 
   let inDirection = 0
   let outDirection = 0
@@ -20,14 +20,13 @@
     if (!(from && to && routeOrder.includes(from) && routeOrder.includes(to))) {
       inDirection = 0
       outDirection = 0
-      return
+    } else {
+      const fromIndex = routeOrder.indexOf(from)
+      const toIndex = routeOrder.indexOf(to)
+
+      inDirection = fromIndex > toIndex ? -1 : 1
+      outDirection = fromIndex > toIndex ? 1 : -1
     }
-
-    const fromIndex = routeOrder.indexOf(from)
-    const toIndex = routeOrder.indexOf(to)
-
-    inDirection = fromIndex > toIndex ? -1 : 1
-    outDirection = fromIndex > toIndex ? 1 : -1
 
     animationDone = new Promise(resolve => {
       outroEnd = resolve
