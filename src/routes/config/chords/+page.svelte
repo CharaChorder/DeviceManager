@@ -45,6 +45,7 @@
   function search(event: Event) {
     const query = (event.target as HTMLInputElement).value
     searchFilter.set(query && searchIndex ? searchIndex.search(query) : undefined)
+    page = 0
   }
 
   function insertChord(actions: number[]) {
@@ -72,10 +73,6 @@
   setContext("cursor-crossfade", crossfade({}))
 
   let page = 0
-  $: {
-    $items
-    page = 0
-  }
 </script>
 
 <svelte:head>
