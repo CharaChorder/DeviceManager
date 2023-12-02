@@ -100,7 +100,7 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
       return {
         id: chord.actions,
         // use the old phrase for stable editing
-        sortBy: chord.phrase.map(it => KEYMAP_CODES[it].id || it).join(),
+        sortBy: chord.phrase.map(it => KEYMAP_CODES[it]?.id ?? it).join(),
         actions: changedChord.actions,
         phrase: changedChord.phrase,
         actionsChanged: id !== JSON.stringify(changedChord.actions),
@@ -110,7 +110,7 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
     } else {
       return {
         id: chord.actions,
-        sortBy: chord.phrase.map(it => KEYMAP_CODES[it].id || it).join(),
+        sortBy: chord.phrase.map(it => KEYMAP_CODES[it]?.id ?? it).join(),
         actions: chord.actions,
         phrase: chord.phrase,
         phraseChanged: false,
