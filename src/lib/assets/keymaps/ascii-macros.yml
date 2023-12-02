@@ -1,0 +1,141 @@
+name: ASCII Macros
+description: ASCII Characters that are macros for SHFT + key
+actions:
+  33:
+    id: "!"
+    title: Exclamation Point
+  34:
+    id: '"'
+    title: Double Quote
+  35:
+    id: "#"
+    title: Hash Symbol
+  36:
+    id: "$"
+    title: Dollar Sign
+  37:
+    id: "%"
+    title: Percent
+  38:
+    id: "&"
+    title: Ampersand
+  40:
+    id: "("
+    title: Opening Parenthesis
+  41:
+    id: ")"
+    title: Closing Parenthesis
+  42:
+    id: "*"
+    title: Asterisk
+  58:
+    id: ":"
+    title: Colon
+  60:
+    id: "<"
+    title: Less Than
+  62:
+    id: ">"
+    title: Greater Than
+  63:
+    id: "?"
+    title: Question Mark
+  64:
+    id: "@"
+    title: At Symbol
+  65:
+    id: "A"
+    title: Uppercase A
+  66:
+    id: "B"
+    title: Uppercase B
+  67:
+    id: "C"
+    title: Uppercase C
+  68:
+    id: "D"
+    title: Uppercase D
+  69:
+    id: "E"
+    title: Uppercase E
+  70:
+    id: "F"
+    title: Uppercase F
+  71:
+    id: "G"
+    title: Uppercase G
+  72:
+    id: "H"
+    title: Uppercase H
+  73:
+    id: "I"
+    title: Uppercase I
+  74:
+    id: "J"
+    title: Uppercase J
+  75:
+    id: "K"
+    title: Uppercase K
+  76:
+    id: "L"
+    title: Uppercase L
+  77:
+    id: "M"
+    title: Uppercase M
+  78:
+    id: "N"
+    title: Uppercase N
+  79:
+    id: "O"
+    title: Uppercase O
+  80:
+    id: "P"
+    title: Uppercase P
+  81:
+    id: "Q"
+    title: Uppercase Q
+  82:
+    id: "R"
+    title: Uppercase R
+  83:
+    id: "S"
+    title: Uppercase S
+  84:
+    id: "T"
+    title: Uppercase T
+  85:
+    id: "U"
+    title: Uppercase U
+  86:
+    id: "V"
+    title: Uppercase V
+  87:
+    id: "W"
+    title: Uppercase W
+  88:
+    id: "X"
+    title: Uppercase X
+  89:
+    id: "Y"
+    title: Uppercase Y
+  90:
+    id: "Z"
+    title: Uppercase Z
+  94:
+    id: "^"
+    title: Caret
+  95:
+    id: "_"
+    title: Underscore
+  123:
+    id: "{"
+    title: Left Curly Brace
+  124:
+    id: "|"
+    title: Pipe
+  125:
+    id: "}"
+    title: Right Curly Brace
+  126:
+    id: "~"
+    title: Tilde

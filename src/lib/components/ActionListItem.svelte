@@ -1,6 +1,7 @@
 <script lang="ts">
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import type {KeyInfo} from "$lib/serial/keymap-codes"
+  import LL from "../../i18n/i18n-svelte"
 
   export let id: number | KeyInfo
 
@@ -20,6 +21,12 @@
       </b>
       {#if key.description}
         <i>{key.description}</i>
+      {/if}
+      {#if key.category.name === "ASCII Macros"}
+        <span class="warning">{@html $LL.actionSearch.SHIFT_WARNING()}</span>
+      {/if}
+      {#if key.category.name === "CP-1252"}
+        <span class="warning">{@html $LL.actionSearch.ALT_CODE_WARNING()}</span>
       {/if}
     </div>
     <kbd class:icon={!!key.icon}>{key.icon || key.id || `0x${key.code.toString(16)}`}</kbd>
@@ -61,6 +68,17 @@
     justify-content: flex-start;
 
     text-align: start;
+  }
+
+  .warning {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--md-sys-color-error);
+
+    > :global(.icon) {
+      font-size: 16px;
+    }
   }
 
   kbd {

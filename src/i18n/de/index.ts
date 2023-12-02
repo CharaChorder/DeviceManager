@@ -30,6 +30,8 @@ const de = {
     filter: {
       ALL: "Alle",
     },
+    SHIFT_WARNING: "Diese Aktion hält <kbd class='icon'>shift</kbd>",
+    ALT_CODE_WARNING: "Dieser Alt-Code Hack funktioniert nur unter Windows",
   },
   share: {
     TITLE: "Teilen",
