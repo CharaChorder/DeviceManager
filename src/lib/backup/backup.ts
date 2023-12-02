@@ -67,8 +67,10 @@ export function restoreFromFile(
   switch (file.type) {
     case "backup": {
       const recent = file.history[0]
-      if (recent[1].device !== get(serialPort)?.device)
+      if (recent[1].device !== get(serialPort)?.device) {
+        alert("Backup is incompatible with this device")
         throw new Error("Backup is incompatible with this device")
+      }
 
       changes.update(changes => {
         changes.push(
