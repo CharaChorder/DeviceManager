@@ -54,31 +54,37 @@ export class CharaDevice {
   constructor(private readonly baudRate = 115200) {}
 
   async init(manual = false) {
-    const ports = await getViablePorts()
-    this.port =
-      !manual && ports.length === 1
-        ? ports[0]
-        : await navigator.serial.requestPort({filters: [...PORT_FILTERS.values()]})
+    try {
+      const ports = await getViablePorts()
+      this.port =
+        !manual && ports.length === 1
+          ? ports[0]
+          : await navigator.serial.requestPort({filters: [...PORT_FILTERS.values()]})
 
-    await this.port.open({baudRate: this.baudRate})
-    const info = this.port.getInfo()
-    serialLog.update(it => {
-      it.push({
-        type: "system",
-        value: `Connected; ID: 0x${info.usbProductId?.toString(16)}; Vendor: 0x${info.usbVendorId?.toString(
-          16,
-        )}`,
+      await this.port.open({baudRate: this.baudRate})
+      const info = this.port.getInfo()
+      serialLog.update(it => {
+        it.push({
+          type: "system",
+          value: `Connected; ID: 0x${info.usbProductId?.toString(16)}; Vendor: 0x${info.usbVendorId?.toString(
+            16,
+          )}`,
+        })
+        return it
       })
-      return it
-    })
-    await this.port.close()
+      await this.port.close()
 
-    this.version = new SemVer(await this.send("VERSION").then(([version]) => version))
-    const [company, device, chipset] = await this.send("ID")
-    this.company = company as "CHARACHORDER"
-    this.device = device as "ONE" | "LITE"
-    this.chipset = chipset as "M0" | "S2"
-    this.keyCount = this.device === "ONE" ? 90 : 67
+      this.version = new SemVer(await this.send("VERSION").then(([version]) => version))
+      const [company, device, chipset] = await this.send("ID")
+      this.company = company as "CHARACHORDER"
+      this.device = device as "ONE" | "LITE"
+      this.chipset = chipset as "M0" | "S2"
+      this.keyCount = this.device === "ONE" ? 90 : 67
+    } catch (e) {
+      alert(e)
+      console.error(e)
+      throw e
+    }
   }
 
   private async suspend() {
