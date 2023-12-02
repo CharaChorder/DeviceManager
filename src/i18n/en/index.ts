@@ -1,4 +1,4 @@
-import type { BaseTranslation } from "../i18n-types"
+import type {BaseTranslation} from "../i18n-types"
 
 const en = {
   TITLE: "CharaChorder Device Manager",
@@ -9,10 +9,10 @@ const en = {
     SAVE: "Save",
   },
   backup: {
-    TITLE: "Local Backup",
+    TITLE: "Store History",
     INDIVIDUAL: "Individual backups",
-    DISCLAIMER: "Backups remain on your computer and are never shared with us or uploaded to our servers.",
-    DOWNLOAD: "Full Backup",
+    DISCLAIMER: "Your history is stored as a backup in this browser. The history remains on your computer.",
+    DOWNLOAD: "Download Everything",
     RESTORE: "Restore",
   },
   sync: {

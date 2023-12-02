@@ -33,7 +33,7 @@
   </fieldset>
   <div class="save">
     <button class="primary" on:click={downloadBackup}
-      ><span class="icon">save</span>{$LL.backup.DOWNLOAD()}</button
+      ><span class="icon">download</span>{$LL.backup.DOWNLOAD()}</button
     >
     <label class="button"
       ><input on:input={restoreBackup} type="file" /><span class="icon">settings_backup_restore</span

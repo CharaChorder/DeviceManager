@@ -1,4 +1,4 @@
-import type { Translation } from "../i18n-types"
+import type {Translation} from "../i18n-types"
 
 const de = {
   TITLE: "CharaChorder Gerätemanager",
@@ -13,11 +13,11 @@ const de = {
     TITLE_WRITE: "Änderungen werden gespeichert",
   },
   backup: {
-    TITLE: "Sicherungskopie",
+    TITLE: "Verlauf speichern",
     INDIVIDUAL: "Einzeldateien",
     DISCLAIMER:
-      "Sicherungskopien verlassen unter keinen Umständen diesen Computer und werden nie mit uns geteilt oder auf Server hochgeladen.",
-    DOWNLOAD: "Vollständig Speichern",
+      "Der Verlauf wird als Backup in diesem Browser gespeichert. Der Verlauf bleibt auf diesem Computer.",
+    DOWNLOAD: "Alles herunterladen",
     RESTORE: "Wiederherstellen",
   },
   modal: {

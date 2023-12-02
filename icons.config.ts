@@ -89,6 +89,7 @@ const config: IconsConfig = {
     "sentiment_worried",
     "timer",
     "target",
+    "download",
   ],
   codePoints: {
     speed: "e9e4",
