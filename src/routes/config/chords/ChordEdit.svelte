@@ -5,6 +5,9 @@
   import ChordActionEdit from "./ChordActionEdit.svelte"
   import type {Chord} from "$lib/serial/chord"
   import {slide} from "svelte/transition"
+  import {charaFileToUriComponent} from "$lib/share/share-url"
+  import SharePopup from "../SharePopup.svelte"
+  import tippy from "tippy.js"
 
   export let chord: ChordInfo
 
@@ -22,6 +25,32 @@
   function restore() {
     changes.update(changes => changes.filter(it => !(it.type === ChangeType.Chord && isSameChord(it, chord))))
   }
+
+  async function share(event: Event) {
+    const url = new URL(window.location.href)
+    url.searchParams.set(
+      "import",
+      await charaFileToUriComponent({
+        charaVersion: 1,
+        type: "chords",
+        chords: [[chord.actions, chord.phrase]],
+      }),
+    )
+    await navigator.clipboard.writeText(url.toString())
+    let shareComponent: SharePopup
+    tippy(event.target as HTMLElement, {
+      onCreate(instance) {
+        const target = instance.popper.querySelector(".tippy-content")!
+        shareComponent = new SharePopup({target})
+      },
+      onHidden(instance) {
+        instance.destroy()
+      },
+      onDestroy(instance) {
+        shareComponent.$destroy()
+      },
+    }).show()
+  }
 </script>
 
 <th>
@@ -38,7 +67,7 @@
   {/if}
   <button class="icon compact" class:disabled={chord.isApplied} on:click={restore}>undo</button>
   <div class="separator" />
-  <button class="icon compact">share</button>
+  <button class="icon compact" on:click={share}>share</button>
 </td>
 
 <style lang="scss">

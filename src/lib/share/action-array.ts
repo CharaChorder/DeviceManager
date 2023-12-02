@@ -29,8 +29,6 @@ export function deserializeActionArray(raw: Uint8Array, cursor = {pos: 0}): Acti
   const type = CHARA_FILE_TYPES[reader.getUint8(cursor.pos)]
   cursor.pos++
 
-  console.log(cursor, raw)
-
   if (type === "number") {
     const decompressed = decompressActions(raw.slice(cursor.pos, cursor.pos + length))
     cursor.pos += length

@@ -23,7 +23,6 @@
     await navigator.clipboard.writeText(url.toString())
     let shareComponent: SharePopup
     tippy(event.target as HTMLElement, {
-      interactive: true,
       onCreate(instance) {
         const target = instance.popper.querySelector(".tippy-content")!
         shareComponent = new SharePopup({target})
