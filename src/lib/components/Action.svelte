@@ -1,6 +1,7 @@
 <script lang="ts">
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import type {KeyInfo} from "$lib/serial/keymap-codes"
+  import {action as title} from "$lib/title"
 
   export let action: number | KeyInfo
   export let display: "inline-keys" | "keys" = "inline-keys"
@@ -9,15 +10,15 @@
 </script>
 
 {#if display === "keys"}
-  <kbd class:icon={!!info.icon}>
+  <kbd class:icon={!!info.icon} use:title={{title: info.title ?? info.id}}>
     {info.icon ?? info.id ?? `0x${info.code.toString(16)}`}
   </kbd>
 {:else if display === "inline-keys"}
   {#if !info.icon && info.id?.length === 1}
     <span>{info.id}</span>
   {:else}
-    <kbd class="inline-kbd" class:icon={!!info.icon}
-      >{info.icon ?? info.id ?? `0x${info.code.toString(16)}`}</kbd
+    <kbd class="inline-kbd" class:icon={!!info.icon} use:title={{title: info.title ?? info.id}}>
+      {info.icon ?? info.id ?? `0x${info.code.toString(16)}`}</kbd
     >
   {/if}
 {/if}

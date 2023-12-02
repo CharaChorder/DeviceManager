@@ -5,6 +5,7 @@
   import type {CompiledLayoutKey} from "$lib/serialization/visual-layout"
   import {layout} from "$lib/undo-redo.js"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
+  import {action} from "$lib/title"
 
   const {fontSize, margin, inactiveOpacity, inactiveScale, iconFontSize} =
     getContext<VisualLayoutConfig>("visual-layout-config")
@@ -22,7 +23,7 @@
 
 {#each positions as position, layer}
   {@const {action: actionId, isApplied} = $layout[layer][key.id] ?? {action: 0, isApplied: true}}
-  {@const {code, icon, id} = KEYMAP_CODES[actionId] ?? {code: actionId}}
+  {@const {code, icon, id, title} = KEYMAP_CODES[actionId] ?? {code: actionId}}
   {@const isActive = layer === $activeLayer}
   {@const direction = [(middle[0] - margin * 3) / position[0], (middle[1] - margin * 3) / position[1]]}
   <text
@@ -38,6 +39,7 @@
     style:scale={isActive ? 1 : inactiveScale}
     style:translate={isActive ? "0 0 0" : `${direction[0]}px ${direction[1]}px 0`}
     style:rotate="{rotate}deg"
+    use:action={{title: title ?? id}}
   >
     {#if code !== 0}
       {icon || id || `0x${code.toString(16)}`}
