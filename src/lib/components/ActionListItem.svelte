@@ -2,6 +2,7 @@
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import type {KeyInfo} from "$lib/serial/keymap-codes"
   import LL from "../../i18n/i18n-svelte"
+  import Action from "$lib/components/Action.svelte"
 
   export let id: number | KeyInfo
 
@@ -29,7 +30,7 @@
         <span class="warning">{@html $LL.actionSearch.ALT_CODE_WARNING()}</span>
       {/if}
     </div>
-    <kbd class:icon={!!key.icon}>{key.icon || key.id || `0x${key.code.toString(16)}`}</kbd>
+    <Action display="keys" action={key} />
   {:else}
     <span class="key">0x{key.toString(16)}</span>
   {/if}

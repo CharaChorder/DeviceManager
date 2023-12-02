@@ -13,4 +13,5 @@ export interface ActionInfo {
   description: string
   variant: "left" | "right"
   variantOf: number
+  keyCode: string
 }
