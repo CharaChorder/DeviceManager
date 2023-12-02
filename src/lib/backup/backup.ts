@@ -10,6 +10,7 @@ import {changes, ChangeType, chords, layout, settings} from "$lib/undo-redo.js"
 import {get} from "svelte/store"
 import {serialPort} from "../serial/connection"
 import {csvLayoutToJson, isCsvLayout} from "$lib/backup/compat/legacy-layout"
+import {isCsvChords, csvChordsToJson} from "./compat/legacy-chords"
 
 export function downloadFile<T extends CharaFile<string>>(contents: T) {
   const downloadUrl = URL.createObjectURL(new Blob([JSON.stringify(contents)], {type: "application/json"}))
@@ -57,6 +58,8 @@ export async function restoreBackup(event: Event) {
     restoreFromFile(JSON.parse(text))
   } else if (isCsvLayout(text)) {
     restoreFromFile(csvLayoutToJson(text))
+  } else if (isCsvChords(text)) {
+    restoreFromFile(csvChordsToJson(text))
   }
 }
 
