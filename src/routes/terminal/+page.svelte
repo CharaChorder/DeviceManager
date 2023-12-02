@@ -17,5 +17,6 @@
 
     width: calc(min(100%, 28cm));
     height: 100%;
+    margin-block-end: 48px;
   }
 </style>

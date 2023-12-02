@@ -28,8 +28,18 @@
         A quick, single key press and release used to indicate a suffix, prefix, or modifier to be associated
         with a chord.
       </p>
+      <p>The following keys have special behavior when arpeggiates are enabled:</p>
+      <ul>
+        <li><kbd>,</kbd>, <kbd>;</kbd> and <kbd>:</kbd> will be placed before the auto-inserted space</li>
+        <li>
+          <kbd>.</kbd>, <kbd>?</kbd> and <kbd>!</kbd> will be placed before the auto-inserted space and capitalize
+          the next word
+        </li>
+        <li><kbd>-</kbd> will replace the auto-inserted space</li>
+      </ul>
       <label
-        >Tolerance<span class="unit"><input type="number" step="1" use:setting={{id: 54}} />ms</span></label
+        >Timeout After Chord<span class="unit"><input type="number" step="1" use:setting={{id: 54}} />ms</span
+        ></label
       >
     </fieldset>
 
@@ -99,7 +109,7 @@
     <fieldset>
       <legend>Device</legend>
       <label>Boot message<input type="checkbox" use:setting={{id: 93}} /></label>
-      <label>Realtime Feedback<input type="checkbox" use:setting={{id: 92}} /></label>
+      <label>GTM Realtime Feedback<input type="checkbox" use:setting={{id: 92}} /></label>
       <label>
         Operating System
         <select>
@@ -127,14 +137,14 @@
 
 <style lang="scss">
   form {
-    overflow: hidden;
+    overflow-y: auto;
     display: flex;
     flex-flow: row wrap;
     gap: 16px;
     justify-content: center;
 
-    max-width: 30cm;
     margin-block: auto;
+    padding-block-end: 48px;
   }
 
   legend,
@@ -221,6 +231,7 @@
       }
     }
 
+    ul,
     p {
       font-size: 10px;
     }
