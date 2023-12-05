@@ -34,7 +34,13 @@
     const index = new Index({tokenize: "full"})
     chords.forEach((chord, i) => {
       if ("phrase" in chord) {
-        index.add(i, chord.phrase.map(it => KEYMAP_CODES[it].id).join(""))
+        index.add(
+          i,
+          chord.phrase
+            .map(it => KEYMAP_CODES[it]?.id)
+            .filter(it => !!it)
+            .join(""),
+        )
       }
     })
     return index
