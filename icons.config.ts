@@ -90,6 +90,10 @@ const config: IconsConfig = {
     "timer",
     "target",
     "download",
+    "download_2",
+    "upload_2",
+    "stat_minus_2",
+    "stat_2",
   ],
   codePoints: {
     speed: "e9e4",
@@ -104,6 +108,10 @@ const config: IconsConfig = {
     upload_file: "e9fc",
     no_sound: "e710",
     sentiment_extremely_dissatisfied: "f194",
+    download_2: "f523",
+    upload_2: "ff52",
+    stat_minus_2: "e69c",
+    stat_2: "e699",
   },
 }
 

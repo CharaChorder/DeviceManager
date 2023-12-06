@@ -51,3 +51,11 @@ actions:
     id: "RELEASE_KEYS"
     title: Release all keys, but not keyboard modifiers
     icon: text_rotate_up
+  523:
+    id: "PRESS_NEXT"
+    title: "Press and do not release the next key/action"
+    icon: download
+  524:
+    id: "RELEASE_NEXT"
+    title: "Release the next key/action in the sequence"
+    icon: upload

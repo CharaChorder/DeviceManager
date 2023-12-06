@@ -62,15 +62,13 @@ for (const icon of icons) {
     .flatMap(it => [...it])
     .map(it => it.codePointAt(0).toString(16))
 
-  if (codePoints.length === 0) {
-    const codePoint = config.codePoints[icon]
-    if (config.codePoints?.[icon]) {
-      glyphs.push(config.codePoints[icon])
-    } else {
-      console.log()
-      console.error(`${icon} code point could not be determined. Add it to config.codePoints.`)
-      process.exit(-1)
-    }
+  const codePoint = config.codePoints[icon]
+  if (codePoint) {
+    glyphs.push(codePoint)
+  } else if (codePoints.length === 0) {
+    console.log()
+    console.error(`${icon} code point could not be determined. Add it to config.codePoints.`)
+    process.exit(-1)
   }
 
   glyphs.push(...codePoints)
