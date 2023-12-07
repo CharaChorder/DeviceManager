@@ -15,7 +15,7 @@ const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
 const KEY_COUNTS = {
   ONE: 90,
   LITE: 67,
-  X: 255,
+  X: 256,
 }
 
 if (browser && navigator.serial === undefined && import.meta.env.TAURI_FAMILY !== undefined) {
@@ -55,7 +55,7 @@ export class CharaDevice {
   company!: "CHARACHORDER"
   device!: "ONE" | "LITE" | "X"
   chipset!: "M0" | "S2"
-  keyCount!: 90 | 67 | 255
+  keyCount!: 90 | 67 | 256
 
   constructor(private readonly baudRate = 115200) {}
 
