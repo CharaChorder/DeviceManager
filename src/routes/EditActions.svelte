@@ -2,7 +2,7 @@
   import LL from "../i18n/i18n-svelte"
   import {changes, ChangeType, chords, layout, overlay, settings} from "$lib/undo-redo"
   import type {Change} from "$lib/undo-redo"
-  import {fly, slide} from "svelte/transition"
+  import {fly} from "svelte/transition"
   import {action} from "$lib/title"
   import {
     deviceChords,

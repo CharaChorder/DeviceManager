@@ -31,7 +31,7 @@ const en = {
     },
     LIVE_LAYOUT_INFO: "This output was determined using on your system layout.",
     SHIFT_WARNING: "This action holds <kbd class='icon'>shift</kbd>",
-    ALT_CODE_WARNING: "This alt-code hack only works on Windows",
+    ALT_CODE_WARNING: "This alt-code macro only works on Windows",
   },
   share: {
     TITLE: "Share",

@@ -32,7 +32,7 @@ const de = {
     },
     LIVE_LAYOUT_INFO: "Diese Aktion wurde auf Basis des Systemtastaturlayouts ermittelt.",
     SHIFT_WARNING: "Diese Aktion hält <kbd class='icon'>shift</kbd>",
-    ALT_CODE_WARNING: "Dieser Alt-Code Hack funktioniert nur unter Windows",
+    ALT_CODE_WARNING: "Dieses Alt-Code Makro funktioniert nur unter Windows",
   },
   share: {
     TITLE: "Teilen",
