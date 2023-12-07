@@ -34,7 +34,9 @@ export const setting: Action<HTMLInputElement, {id: number; inverse?: number; sc
     if (type === "number") {
       value = Number.parseInt(node.value)
       if (Number.isNaN(value)) return
-      value = inverse !== undefined ? inverse / value : scale !== undefined ? value / scale : value
+      value = Math.floor(
+        inverse !== undefined ? inverse / value : scale !== undefined ? value / scale : value,
+      )
     } else {
       value = node.checked ? 1 : 0
     }
@@ -48,11 +50,12 @@ export const setting: Action<HTMLInputElement, {id: number; inverse?: number; sc
       return changes
     })
   }
-  node.addEventListener("input", listener)
+
+  node.addEventListener("change", listener)
 
   return {
     destroy() {
-      node.removeEventListener("input", listener)
+      node.removeEventListener("change", listener)
       unsubscribe()
     },
   }
