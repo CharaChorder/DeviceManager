@@ -23,7 +23,6 @@
   import Footer from "./Footer.svelte"
   import {runLayoutDetection} from "$lib/os-layout.js"
   import PageTransition from "./PageTransition.svelte"
-  import SyncOverlay from "./SyncOverlay.svelte"
   import {restoreFromFile} from "$lib/backup/backup"
   import {goto} from "$app/navigation"
 
@@ -76,8 +75,6 @@
   <meta name="description" content={$LL.DESCRIPTION()} />
   <meta name="theme-color" content={data.themeColor} />
 </svelte:head>
-
-<SyncOverlay />
 
 <Navigation />
 

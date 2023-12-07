@@ -7,6 +7,7 @@
   import {detectLocale, locales} from "../i18n/i18n-util"
   import {loadLocaleAsync} from "../i18n/i18n-util.async"
   import {tick} from "svelte"
+  import SyncOverlay from "./SyncOverlay.svelte"
 
   let locale = (browser && (localStorage.getItem("locale") as Locales)) || detectLocale()
   $: if (browser)
@@ -45,6 +46,9 @@
       >
     </li>
   </ul>
+
+  <SyncOverlay />
+
   <ul>
     <li>
       <input use:action={{title: $LL.profile.theme.COLOR_SCHEME()}} type="color" bind:value={$theme.color} />
