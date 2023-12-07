@@ -132,7 +132,8 @@ export function getChangesFromChordFile(file: CharaChordFile) {
 export function getChangesFromSettingsFile(file: CharaSettingsFile) {
   const changes: Change[] = []
   for (const [id, value] of file.settings.entries()) {
-    if (get(settings)[id].value !== value) {
+    const setting = get(settings)[id]
+    if (setting !== undefined && setting.value !== value) {
       changes.push({
         type: ChangeType.Setting,
         id,
