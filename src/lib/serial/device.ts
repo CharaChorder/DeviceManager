@@ -12,6 +12,12 @@ const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["X", {usbProductId: 33163, usbVendorId: 12346}],
 ])
 
+const KEY_COUNTS = {
+  ONE: 90,
+  LITE: 67,
+  X: 255,
+}
+
 if (browser && navigator.serial === undefined && import.meta.env.TAURI_FAMILY !== undefined) {
   await import("./tauri-serial")
 }
@@ -47,9 +53,9 @@ export class CharaDevice {
 
   version!: SemVer
   company!: "CHARACHORDER"
-  device!: "ONE" | "LITE"
+  device!: "ONE" | "LITE" | "X"
   chipset!: "M0" | "S2"
-  keyCount!: 90 | 67
+  keyCount!: 90 | 67 | 255
 
   constructor(private readonly baudRate = 115200) {}
 
@@ -77,9 +83,9 @@ export class CharaDevice {
       this.version = new SemVer(await this.send("VERSION").then(([version]) => version))
       const [company, device, chipset] = await this.send("ID")
       this.company = company as "CHARACHORDER"
-      this.device = device as "ONE" | "LITE"
+      this.device = device as "ONE" | "LITE" | "X"
       this.chipset = chipset as "M0" | "S2"
-      this.keyCount = this.device === "ONE" ? 90 : 67
+      this.keyCount = KEY_COUNTS[this.device]
     } catch (e) {
       alert(e)
       console.error(e)
