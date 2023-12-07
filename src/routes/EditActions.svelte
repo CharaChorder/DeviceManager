@@ -75,9 +75,12 @@
     }
 
     for (const [id, setting] of $overlay.settings) {
-      await port.setSetting(id, setting)
+      try {
+        await port.setSetting(id, setting)
+      } catch (e) {
+        console.log("Skipping invalid ID", e)
+      }
     }
-
 
     // Yes, this is a completely arbitrary and unnecessary delay.
     // The only purpose of it is to create a sense of weight,
