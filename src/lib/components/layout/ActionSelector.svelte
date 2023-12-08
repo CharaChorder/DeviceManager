@@ -238,7 +238,7 @@
 
     background: none;
     border: none;
-    border-bottom: 1px solid var(--md-sys-color-primary-container);
+    border-bottom: 1px solid var(--md-sys-color-surface-variant);
 
     transition: all 250ms ease;
 
