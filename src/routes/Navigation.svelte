@@ -50,15 +50,13 @@
         <PwaStatus />
       {/await}
     {/if}
-    {#if $serialPort}
-      <button use:action={{title: $LL.backup.TITLE()}} use:popup={BackupPopup} class="icon {$syncStatus}">
-        {#if $userPreferences.backup}
-          history
-        {:else}
-          history_toggle_off
-        {/if}
-      </button>
-    {/if}
+    <button use:action={{title: $LL.backup.TITLE()}} use:popup={BackupPopup} class="icon {$syncStatus}">
+      {#if $userPreferences.backup}
+        history
+      {:else}
+        history_toggle_off
+      {/if}
+    </button>
     <button
       bind:this={connectButton}
       use:action={{title: $LL.deviceManager.TITLE()}}

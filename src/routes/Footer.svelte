@@ -8,6 +8,7 @@
   import {loadLocaleAsync} from "../i18n/i18n-util.async"
   import {tick} from "svelte"
   import SyncOverlay from "./SyncOverlay.svelte"
+  import {serialPort} from "$lib/serial/connection"
 
   let locale = (browser && (localStorage.getItem("locale") as Locales)) || detectLocale()
   $: if (browser)
@@ -46,9 +47,14 @@
       >
     </li>
   </ul>
-
-  <SyncOverlay />
-
+  <div>
+    {#if !$serialPort}
+      <div class="warning">
+        <span class="icon">warning</span>{$LL.deviceManager.NO_DEVICE()}
+      </div>
+    {/if}
+    <SyncOverlay />
+  </div>
   <ul>
     <li>
       <input use:action={{title: $LL.profile.theme.COLOR_SCHEME()}} type="color" bind:value={$theme.color} />
@@ -87,6 +93,14 @@
     opacity: 0;
   }
 
+  .warning {
+    color: var(--md-sys-color-error);
+    gap: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   input[type="color"] {
     cursor: pointer;
 
@@ -116,9 +130,10 @@
   }
 
   footer {
-    display: flex;
+    display: grid;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    grid-template-columns: 1fr auto 1fr;
 
     width: 100%;
     padding: 8px;
@@ -137,6 +152,10 @@
     padding: 0;
 
     list-style: none;
+
+    &:last-child {
+      justify-content: flex-end;
+    }
   }
 
   ul:last-child {

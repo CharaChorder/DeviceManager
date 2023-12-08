@@ -30,7 +30,7 @@
       onHidden(instance) {
         instance.destroy()
       },
-      onDestroy(instance) {
+      onDestroy() {
         shareComponent.$destroy()
       },
     }).show()
