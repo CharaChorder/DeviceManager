@@ -81,8 +81,4 @@
       font-size: 16px;
     }
   }
-
-  kbd {
-    height: 24px;
-  }
 </style>
