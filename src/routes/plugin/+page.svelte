@@ -139,13 +139,7 @@
   <div class="editor-root" bind:this={editor} />
 </section>
 
-<iframe
-  aria-hidden="true"
-  title="code sandbox"
-  bind:this={frame}
-  src="/sandbox.html"
-  sandbox="allow-scripts"
-/>
+<iframe aria-hidden="true" title="code sandbox" bind:this={frame} src="/sandbox/" sandbox="allow-scripts" />
 
 <style lang="scss">
   section {
