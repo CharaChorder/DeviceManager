@@ -11,7 +11,7 @@ export function csvLayoutToJson(csv: string, device: CharaLayoutFile["device"] =
     layout: [[], [], []],
   }
 
-  for (const layer of csv.split("\n")) {
+  for (const layer of csv.trim().split("\n")) {
     const [layerId, key, action] = layer.substring(1).split(",").map(Number)
 
     layout.layout[Number(layerId) - 1][Number(key)] = Number(action)
