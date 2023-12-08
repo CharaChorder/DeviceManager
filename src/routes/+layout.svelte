@@ -112,8 +112,7 @@
     flex-direction: column;
     flex-grow: 1;
     align-items: center;
-
-    padding: 16px;
+    padding-inline: 16px;
   }
 
   h1 {

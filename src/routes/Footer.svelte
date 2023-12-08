@@ -116,16 +116,14 @@
   }
 
   footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     width: 100%;
-    padding: 16px;
+    padding: 8px;
+    padding-inline-end: 16px;
+    padding-block-start: 0;
 
     opacity: 0.4;
   }

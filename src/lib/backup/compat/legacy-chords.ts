@@ -12,7 +12,10 @@ export function csvChordsToJson(csv: string): CharaChordFile {
         const [input, output] = line.split(",", 2)
         return [
           input.split("+").map(it => KEYMAP_IDS.get(it.trim())?.code ?? 0),
-          output.split("").map(it => KEYMAP_IDS.get(it.trim())?.code ?? 0),
+          output
+            .trim()
+            .split("")
+            .map(it => KEYMAP_IDS.get(it)?.code ?? 0),
         ]
       }),
   }
