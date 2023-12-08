@@ -5,16 +5,19 @@ export function csvChordsToJson(csv: string): CharaChordFile {
   return {
     charaVersion: 1,
     type: "chords",
-    chords: csv.split("\n").map(line => {
-      const [input, output] = line.split(",", 2)
-      return [
-        input.split("+").map(it => KEYMAP_IDS.get(it.trim())?.code ?? 0),
-        output.split("").map(it => KEYMAP_IDS.get(it.trim())?.code ?? 0),
-      ]
-    }),
+    chords: csv
+      .trim()
+      .split("\n")
+      .map(line => {
+        const [input, output] = line.split(",", 2)
+        return [
+          input.split("+").map(it => KEYMAP_IDS.get(it.trim())?.code ?? 0),
+          output.split("").map(it => KEYMAP_IDS.get(it.trim())?.code ?? 0),
+        ]
+      }),
   }
 }
 
 export function isCsvChords(csv: string): boolean {
-  return /^([^+,\s]( *\+ *[^+,\s]+)* *, *[^+,\s]+ *(\n|(?=$)))+$/.test(csv)
+  return /^([^+, ]+( *\+ *[^+, ]+)* *, *[^+, ]+ *(\n|(?=$)))+$/.test(csv)
 }

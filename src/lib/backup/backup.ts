@@ -60,6 +60,8 @@ export async function restoreBackup(event: Event) {
     restoreFromFile(csvLayoutToJson(text))
   } else if (isCsvChords(text)) {
     restoreFromFile(csvChordsToJson(text))
+  } else {
+    alert("Unknown backup format")
   }
 }
 
