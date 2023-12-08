@@ -33,6 +33,10 @@ export const action: Action<Element, {title?: string; shortcut?: string}> = (
   }
 
   return {
+    update(updated) {
+      title = updated.title
+      shortcut = updated.shortcut
+    },
     destroy() {
       tooltip.destroy()
       hotkeys.unbind(shortcut)
