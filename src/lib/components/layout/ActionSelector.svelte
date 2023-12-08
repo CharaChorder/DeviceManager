@@ -122,12 +122,12 @@
         <h3>{$LL.actionSearch.CURRENT_ACTION()}</h3>
         <ActionListItem id={currentAction} />
       </aside>
-      <aside>
-        {#if nextAction}
+      {#if nextAction}
+        <aside>
           <h3>{$LL.actionSearch.NEXT_ACTION()}</h3>
           <ActionListItem id={nextAction} />
-        {/if}
-      </aside>
+        </aside>
+      {/if}
     {/if}
     <ul bind:this={resultList}>
       {#if exact !== undefined}
