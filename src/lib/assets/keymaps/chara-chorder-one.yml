@@ -6,34 +6,73 @@ type: unassigned
 actions:
   600:
     id: "LH_THUMB_3_3D"
-    title: Left Hand Thumb Top 3D Click
+    title: "Left Hand Thumb Top 3D Click"
+    icon: "adjust"
   601:
     id: "LH_THUMB_2_3D"
-    title: Left Hand Thumb Middle 3D Click
+    title: "Left Hand Thumb Middle 3D Click"
+    icon: "adjust"
   602:
     id: "LH_THUMB_1_3D"
-    title: Left Hand Thumb Bottom 3D Click
+    title: "Left Hand Thumb Bottom 3D Click"
+    icon: "adjust"
   603:
     id: "LH_INDEX_3D"
-    title: Left Hand Index Finger 3D Click
+    title: "Left Hand Index Finger 3D Click"
+    icon: "adjust"
   604:
     id: "LH_MID_1_3D"
-    title: Left Hand Middle Finger 3D Click
+    title: "Left Hand Middle Finger 3D Click"
+    icon: "adjust"
   605:
     id: "LH_RING_1_3D"
-    title: Left Hand Ring Finger 3D Click
+    title: "Left Hand Ring Finger 3D Click"
+    icon: "adjust"
   606:
     id: "LH_PINKY_3D"
-    title: Left Hand Pinky 3D Click,
-  # TODO...
-  # ["607", "CharaChorder One", "LH_MID_2_3D", "", ""],
-  # ["608", "CharaChorder One", "LH_RING_2_3D", "", ""],
-  # ["609", "CharaChorder One", "RH_THUMB_3_3D", "", ""],
-  # ["610", "CharaChorder One", "RH_THUMB_2_3D", "", ""],
-  # ["611", "CharaChorder One", "RH_THUMB_1_3D", "", ""],
-  # ["612", "CharaChorder One", "RH_INDEX_3D", "", ""],
-  # ["613", "CharaChorder One", "RH_MID_1_3D", "", ""],
-  # ["614", "CharaChorder One", "RH_RING_1_3D", "", ""],
-  # ["615", "CharaChorder One", "RH_PINKY_3D", "", ""],
-  # ["616", "CharaChorder One", "RH_MID_2_3D", "", ""],
-  # ["617", "CharaChorder One", "RH_RING_2_3D", "", ""]
+    title: "Left Hand Pinky 3D Click"
+    icon: "adjust"
+  607:
+    id: "LH_MID_2_3D"
+    title: "Left Hand Middle Finger 2 3D Click"
+    icon: "adjust"
+  608:
+    id: "LH_RING_2_3D"
+    title: "Left Hand Ring Finger 2 3D Click"
+    icon: "adjust"
+  609:
+    id: "RH_THUMB_3_3D"
+    title: "Right Hand Thumb Top 3D Click"
+    icon: "adjust"
+  610:
+    id: "RH_THUMB_2_3D"
+    title: "Right Hand Thumb Middle 3D Click"
+    icon: "adjust"
+  611:
+    id: "RH_THUMB_1_3D"
+    title: "Right Hand Thumb Bottom 3D Click"
+    icon: "adjust"
+  612:
+    id: "RH_INDEX_3D"
+    title: "Right Hand Index Finger 3D Click"
+    icon: "adjust"
+  613:
+    id: "RH_MID_1_3D"
+    title: "Right Hand Middle Finger 3D Click"
+    icon: "adjust"
+  614:
+    id: "RH_RING_1_3D"
+    title: "Right Hand Ring Finger 3D Click"
+    icon: "adjust"
+  615:
+    id: "RH_PINKY_3D"
+    title: "Right Hand Pinky 3D Click"
+    icon: "adjust"
+  616:
+    id: "RH_MID_2_3D"
+    title: "Right Hand Middle Finger 2 3D Click"
+    icon: "adjust"
+  617:
+    id: "RH_RING_2_3D"
+    title: "Right Hand Ring Finger 2 3D Click"
+    icon: "adjust"
