@@ -58,6 +58,7 @@ const en = {
     DISCONNECT: "Disconnect",
     TERMINAL: "Terminal",
     APPLY_SETTINGS: "Flash changes to device",
+    NO_DEVICE: "No device connected",
     bootMenu: {
       TITLE: "Boot Menu",
       REBOOT: "Reboot",

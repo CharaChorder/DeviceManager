@@ -59,6 +59,7 @@ const de = {
     DISCONNECT: "Entfernen",
     TERMINAL: "Konsole",
     APPLY_SETTINGS: "Änderungen auf das Gerät brennen",
+    NO_DEVICE: "Kein Gerät verbunden",
     bootMenu: {
       TITLE: "Bootmenü",
       REBOOT: "Neustarten",
