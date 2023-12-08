@@ -75,7 +75,7 @@ const en = {
       "Though all chromium-based desktop browsers fulfill this requirement, some derivations such as Brave ",
     INFO_BROWSER_INFIX: "have been known to disable the API intentionally",
     INFO_BROWSER_SUFFIX: ".",
-    DOWNLOAD_APP: "Download the desktop app",
+    DOWNLOAD_APP: "Chrome or Edge are officially supported, but other browsers might work as well.",
   },
   changes: {
     TITLE: "Import changes",

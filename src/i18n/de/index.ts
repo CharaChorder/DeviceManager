@@ -77,7 +77,8 @@ const de = {
       "Auch wenn alle Chromium-basieren Desktop Browser diese Voraussetzung grundsätzlich erfüllen, haben einige Browser ",
     INFO_BROWSER_INFIX: "wie zum Beispiel Brave",
     INFO_BROWSER_SUFFIX: " sich bewusst dazu entschieden die API zu deaktivieren.",
-    DOWNLOAD_APP: "Desktop-app herunterladen",
+    DOWNLOAD_APP:
+      "Chrome oder Edge werden offiziell unterstützt, andere Browser könnten aber auch funktionieren.",
   },
   changes: {
     TITLE: "Änderungen importieren",

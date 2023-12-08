@@ -17,9 +17,7 @@
     >{$LL.browserWarning.INFO_BROWSER_SUFFIX()}
   </p>
   <div>
-    <a href="https://github.com/CharaChorder/DeviceManager/releases" target="_blank"
-      >{$LL.browserWarning.DOWNLOAD_APP()}</a
-    >
+    <p>{$LL.browserWarning.DOWNLOAD_APP()}</p>
   </div>
 </dialog>
 
@@ -50,9 +48,10 @@
 
   a {
     color: var(--md-sys-color-on-error);
+    text-decoration: underline;
   }
 
-  div > a {
+  div > p {
     display: flex;
     gap: 8px;
     align-items: center;
