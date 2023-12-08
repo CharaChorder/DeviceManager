@@ -8,6 +8,7 @@
   import {action} from "$lib/title"
 
   export let currentAction: number | undefined = undefined
+  export let nextAction: number | undefined = undefined
 
   const index = new Index({tokenize: "full"})
   for (const action of Object.values(KEYMAP_CODES)) {
@@ -120,6 +121,12 @@
       <aside>
         <h3>{$LL.actionSearch.CURRENT_ACTION()}</h3>
         <ActionListItem id={currentAction} />
+      </aside>
+      <aside>
+        {#if nextAction}
+          <h3>{$LL.actionSearch.NEXT_ACTION()}</h3>
+          <ActionListItem id={nextAction} />
+        {/if}
       </aside>
     {/if}
     <ul bind:this={resultList}>

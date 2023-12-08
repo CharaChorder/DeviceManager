@@ -25,6 +25,7 @@ const en = {
   actionSearch: {
     PLACEHOLDER: "Search for actions",
     CURRENT_ACTION: "Current action",
+    NEXT_ACTION: "Action after next save",
     DELETE: "Remove",
     filter: {
       ALL: "All",

@@ -9,7 +9,7 @@
   import KeyboardKey from "$lib/components/layout/KeyboardKey.svelte"
   import {getContext} from "svelte"
   import type {VisualLayoutConfig} from "./visual-layout.js"
-  import {changes, ChangeType} from "$lib/undo-redo"
+  import {changes, ChangeType, layout} from "$lib/undo-redo"
 
   const {scale, margin, strokeWidth, fontSize, iconFontSize} =
     getContext<VisualLayoutConfig>("visual-layout-config")
@@ -113,9 +113,14 @@
   function edit(index: number) {
     const keyInfo = layoutInfo.keys[index]
     const clickedGroup = groupParent.children.item(index) as SVGGElement
+    const nextAction = get(layout)[get(activeLayer)][keyInfo.id]
+    const currentAction = get(deviceLayout)[get(activeLayer)][keyInfo.id]
     const component = new ActionSelector({
       target: document.body,
-      props: {currentAction: get(deviceLayout)[get(activeLayer)][keyInfo.id]},
+      props: {
+        currentAction,
+        nextAction: nextAction.isApplied ? undefined : nextAction.action,
+      },
     })
     const dialog = document.querySelector("dialog > div") as HTMLDivElement
     const backdrop = document.querySelector("dialog") as HTMLDialogElement
