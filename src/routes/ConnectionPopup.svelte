@@ -9,6 +9,9 @@
     $serialPort?.reboot()
     $serialPort = undefined
     powerDialog = false
+    setTimeout(() => {
+      initSerial()
+    }, 1000)
   }
 
   function bootloader() {

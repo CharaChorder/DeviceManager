@@ -289,7 +289,6 @@ export class CharaDevice {
    */
   async reboot() {
     await this.send("RST")
-    // TODO: reconnect
   }
 
   /**
@@ -297,7 +296,6 @@ export class CharaDevice {
    */
   async bootloader() {
     await this.send("RST BOOTLOADER")
-    // TODO: more...
   }
 
   /**
