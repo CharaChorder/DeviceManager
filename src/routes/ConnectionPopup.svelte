@@ -26,6 +26,35 @@
   {/if}
 
   {#if browser}
+    {#if navigator.userAgent.includes("Linux")}
+      <details class="linux-info">
+        <summary>{@html $LL.deviceManager.LINUX_PERMISSIONS()}</summary>
+        <ul>
+          <li>
+            <a target="_blank" href="https://docs.arduino.cc/software/ide-v1/tutorials/Linux#please-read"
+              >Debian (Ubuntu, Mint, Pop!_OS, ...), Fedora, OpenSUSE</a
+            >
+          </li>
+          <li>
+            <a target="_blank" href="https://wiki.archlinux.org/title/Arduino#Accessing_serial"
+              >Arch (Manjaro, EndeavourOS, ...)</a
+            >
+          </li>
+          <li>
+            <a
+              target="_blank"
+              href="https://gist.github.com/CMCDragonkai/d00201ec143c9f749fc49533034e5009?permalink_comment_id=4670311#gistcomment-4670311"
+              >NixOS</a
+            >
+          </li>
+          <li>
+            <a target="_blank" href="https://wiki.gentoo.org/wiki/Arduino#Grant_access_to_non-root_users"
+              >Gentoo</a
+            >
+          </li>
+        </ul>
+      </details>
+    {/if}
     <div class="row">
       {#if $serialPort}
         <button
@@ -95,6 +124,11 @@
     margin-block: 8px;
   }
 
+  details a {
+    display: inline;
+    padding-inline-start: 0;
+  }
+
   section {
     display: flex;
     flex-direction: column;
@@ -102,6 +136,16 @@
     justify-content: flex-start;
 
     min-width: 260px;
+    max-width: 400px;
+  }
+
+  summary {
+    cursor: pointer;
+    transition: opacity 0.2s ease-in-out;
+
+    &:hover {
+      opacity: 0.8;
+    }
   }
 
   .backdrop {

@@ -60,6 +60,8 @@ const en = {
     TERMINAL: "Terminal",
     APPLY_SETTINGS: "Flash changes to device",
     NO_DEVICE: "No device connected",
+    LINUX_PERMISSIONS:
+      "On most Linux based systems need to adjust permissions in order to connnect your device.",
     bootMenu: {
       TITLE: "Boot Menu",
       REBOOT: "Reboot",

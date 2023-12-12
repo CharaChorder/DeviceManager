@@ -61,6 +61,8 @@ const de = {
     TERMINAL: "Konsole",
     APPLY_SETTINGS: "Änderungen auf das Gerät brennen",
     NO_DEVICE: "Kein Gerät verbunden",
+    LINUX_PERMISSIONS:
+      "Auf den meisten Linux-basierten Systemen müssen zuerst Berechtigungen angepasst werden.",
     bootMenu: {
       TITLE: "Bootmenü",
       REBOOT: "Neustarten",
