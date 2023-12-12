@@ -60,12 +60,12 @@ const en = {
     TERMINAL: "Terminal",
     APPLY_SETTINGS: "Flash changes to device",
     NO_DEVICE: "No device connected",
-    LINUX_PERMISSIONS:
-      "On most Linux based systems need to adjust permissions in order to connnect your device.",
+    LINUX_PERMISSIONS: "Most Linux based systems need adjusted permissions in order to connect your device.",
     bootMenu: {
       TITLE: "Boot Menu",
       REBOOT: "Reboot",
       BOOTLOADER: "Bootloader",
+      POWER_WARNING: "To reboot from bootloader you need to physically reconnect your device.",
     },
   },
   browserWarning: {

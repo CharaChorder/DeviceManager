@@ -67,6 +67,7 @@ const de = {
       TITLE: "Bootmenü",
       REBOOT: "Neustarten",
       BOOTLOADER: "Bootloader",
+      POWER_WARNING: "Um vom Bootloader aus neu zu starten muss das Gerät neu verbunden werden.",
     },
   },
   browserWarning: {

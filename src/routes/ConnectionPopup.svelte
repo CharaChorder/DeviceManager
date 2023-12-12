@@ -5,8 +5,26 @@
   import {preference} from "$lib/preferences"
   import LL from "../i18n/i18n-svelte"
 
+  function reboot() {
+    $serialPort?.reboot()
+    $serialPort = undefined
+    powerDialog = false
+  }
+
+  function bootloader() {
+    $serialPort?.bootloader()
+    $serialPort = undefined
+    rebootInfo = true
+    powerDialog = false
+  }
+
+  let rebootInfo = false
   let terminal = false
   let powerDialog = false
+
+  $: if ($serialPort) {
+    rebootInfo = false
+  }
 </script>
 
 <section>
@@ -26,18 +44,19 @@
   {/if}
 
   {#if browser}
-    {#if navigator.userAgent.includes("Linux")}
-      <details class="linux-info">
+    {#if navigator.userAgent.includes("Linux") && !$serialPort}
+      <details class="linux-info" transition:slide>
         <summary>{@html $LL.deviceManager.LINUX_PERMISSIONS()}</summary>
+        In most cases you can simply follow the
+        <a target="_blank" href="https://docs.arduino.cc/software/ide-v1/tutorials/Linux#please-read"
+          >Arduino Guide</a
+        >
+        on serial port permissions.
+        <p>Special systems:</p>
         <ul>
           <li>
-            <a target="_blank" href="https://docs.arduino.cc/software/ide-v1/tutorials/Linux#please-read"
-              >Debian (Ubuntu, Mint, Pop!_OS, ...), Fedora, OpenSUSE</a
-            >
-          </li>
-          <li>
             <a target="_blank" href="https://wiki.archlinux.org/title/Arduino#Accessing_serial"
-              >Arch (Manjaro, EndeavourOS, ...)</a
+              >Arch and Arch-based like Manjaro or EndeavourOS</a
             >
           </li>
           <li>
@@ -54,6 +73,9 @@
           </li>
         </ul>
       </details>
+    {/if}
+    {#if rebootInfo}
+      <p transition:slide><b>{$LL.deviceManager.bootMenu.POWER_WARNING()}</b></p>
     {/if}
     <div class="row">
       {#if $serialPort}
@@ -98,17 +120,11 @@
       />
       <dialog open transition:slide={{duration: 250}}>
         <h3>{$LL.deviceManager.bootMenu.TITLE()}</h3>
-        <button
-          on:click={() => {
-            $serialPort?.reboot()
-            $serialPort = undefined
-          }}><span class="icon">restart_alt</span>{$LL.deviceManager.bootMenu.REBOOT()}</button
+        <button on:click={reboot}
+          ><span class="icon">restart_alt</span>{$LL.deviceManager.bootMenu.REBOOT()}</button
         >
-        <button
-          on:click={() => {
-            $serialPort?.bootloader()
-            $serialPort = undefined
-          }}><span class="icon">rule_settings</span>{$LL.deviceManager.bootMenu.BOOTLOADER()}</button
+        <button on:click={bootloader}
+          ><span class="icon">rule_settings</span>{$LL.deviceManager.bootMenu.BOOTLOADER()}</button
         >
       </dialog>
     {/if}
@@ -126,7 +142,8 @@
 
   details a {
     display: inline;
-    padding-inline-start: 0;
+    padding-inline: 0;
+    text-decoration: underline;
   }
 
   section {
@@ -135,8 +152,7 @@
     align-items: flex-start;
     justify-content: flex-start;
 
-    min-width: 260px;
-    max-width: 400px;
+    width: 300px;
   }
 
   summary {
