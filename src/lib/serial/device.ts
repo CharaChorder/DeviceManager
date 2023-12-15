@@ -16,7 +16,7 @@ const KEY_COUNTS = {
   ONE: 90,
   LITE: 67,
   X: 256,
-}
+} as const
 
 if (browser && navigator.serial === undefined && import.meta.env.TAURI_FAMILY !== undefined) {
   await import("./tauri-serial")
@@ -51,11 +51,18 @@ export class CharaDevice {
 
   private lock?: Promise<true>
 
+  private readonly suspendDebounce = 100
+  private suspendDebounceId?: number
+
   version!: SemVer
   company!: "CHARACHORDER"
   device!: "ONE" | "LITE" | "X"
   chipset!: "M0" | "S2"
   keyCount!: 90 | 67 | 256
+
+  get portInfo() {
+    return this.port.getInfo()
+  }
 
   constructor(private readonly baudRate = 115200) {}
 
@@ -165,10 +172,18 @@ export class CharaDevice {
     const exec = new Promise<T>(async resolve => {
       let result!: T
       try {
-        await this.wake()
+        if (this.suspendDebounceId) {
+          clearTimeout(this.suspendDebounceId)
+        } else {
+          await this.wake()
+        }
         result = await callback(send, read)
       } finally {
-        await this.suspend()
+        this.suspendDebounceId = setTimeout(() => {
+          // cannot be locked here as all the code until clearTimeout is sync
+          console.assert(this.lock === undefined)
+          this.lock = this.suspend().then(() => true)
+        }, this.suspendDebounce) as any
         this.lock = undefined
         resolve(result)
       }

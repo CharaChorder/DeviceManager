@@ -48,6 +48,7 @@
     "@types/dom-view-transitions": "^1.0.1",
     "@types/flexsearch": "^0.7.3",
     "@types/w3c-web-serial": "^1.0.3",
+    "@types/w3c-web-usb": "^1.0.10",
     "@vite-pwa/sveltekit": "^0.2.7",
     "autoprefixer": "^10.4.15",
     "codemirror": "^6.0.1",
