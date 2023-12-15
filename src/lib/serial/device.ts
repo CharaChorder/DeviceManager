@@ -179,12 +179,16 @@ export class CharaDevice {
         }
         result = await callback(send, read)
       } finally {
+        delete this.lock
         this.suspendDebounceId = setTimeout(() => {
           // cannot be locked here as all the code until clearTimeout is sync
           console.assert(this.lock === undefined)
-          this.lock = this.suspend().then(() => true)
+          this.lock = this.suspend().then(() => {
+            delete this.lock
+            delete this.suspendDebounceId
+            return true
+          })
         }, this.suspendDebounce) as any
-        this.lock = undefined
         resolve(result)
       }
     })
