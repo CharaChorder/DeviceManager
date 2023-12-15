@@ -1,4 +1,5 @@
 <script>
+  import Action from "$lib/components/Action.svelte"
   import {serialPort} from "$lib/serial/connection"
   import {setting} from "$lib/setting"
 </script>
@@ -14,7 +15,12 @@
         chording, but also takes away the flexibility of character entry.
       </p>
       <p>Spurring also helps new users learn how to chord by eliminating the need to focus on timing.</p>
-      <p>Spurring is toggled by chording both of the 'mirror' keys together.</p>
+      <p>
+        Spurring is toggled by chording <Action display="keys" action={540} /> and <Action
+          display="keys"
+          action={542}
+        /> together.
+      </p>
       <label
         >Character Counter Timeout<span class="unit"
           ><input type="number" step="0.001" min="0" max="240" use:setting={{id: 43, scale: 0.001}} />s</span
@@ -30,17 +36,43 @@
       </p>
       <p>The following keys have special behavior when arpeggiates are enabled:</p>
       <ul>
-        <li><kbd>,</kbd>, <kbd>;</kbd> and <kbd>:</kbd> will be placed before the auto-inserted space</li>
         <li>
-          <kbd>.</kbd>, <kbd>?</kbd> and <kbd>!</kbd> will be placed before the auto-inserted space and capitalize
-          the next word
+          <Action display="keys" action={44} />, <Action display="keys" action={59} /> and <Action
+            display="keys"
+            action={58}
+          /> will be placed before the auto-inserted space
         </li>
-        <li><kbd>-</kbd> will replace the auto-inserted space</li>
+        <li>
+          <Action display="keys" action={46} />, <Action display="keys" action={63} /> and <Action
+            display="keys"
+            action={33}
+          /> will be placed before the auto-inserted space and capitalize the next word
+        </li>
+        <li>
+          <Action display="keys" action={45} /> and <Action display="keys" action={47} /> will replace the auto-inserted
+          space
+        </li>
       </ul>
       <label
         >Timeout After Chord<span class="unit"><input type="number" step="1" use:setting={{id: 54}} />ms</span
         ></label
       >
+    </fieldset>
+
+    <fieldset>
+      <legend>Chord Modifiers</legend>
+      <p>
+        Chord modifiers change a chord when held with the chord or when pressed after (arpeggiated), <b
+          >provided that arpeggiates are enabled.</b
+        >
+      </p>
+      <ul>
+        <li><Action display="keys" action={513} /> Capitalizes the first letter of a chord</li>
+        <li><Action display="keys" action={540} /> Present Tense (supported words only)</li>
+        <li><Action display="keys" action={542} /> Plural (supported words only)</li>
+        <li><Action display="keys" action={550} /> Past Tense (supported words only)</li>
+        <li><Action display="keys" action={551} /> Comparative (supported words only)</li>
+      </ul>
     </fieldset>
 
     <fieldset>
@@ -234,6 +266,11 @@
     ul,
     p {
       font-size: 10px;
+
+      :global(kbd) {
+        font-size: 12px;
+        height: 18px;
+      }
     }
   }
 

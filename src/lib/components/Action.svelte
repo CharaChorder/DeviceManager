@@ -10,23 +10,40 @@
 
   $: info = typeof action === "number" ? KEYMAP_CODES[action] ?? {code: action} : action
   $: dynamicMapping = info.keyCode && $osLayout[JSON.stringify([info.keyCode])]
+
+  $: tooltip =
+    (info.title ?? info.id ?? `0x${info.code.toString(16)}`) +
+    (info.variant === "left" ? " (left)" : info.variant === "right" ? " (right)" : "")
 </script>
 
 {#if dynamicMapping}
   <span
     use:title={{title: $LL.actionSearch.LIVE_LAYOUT_INFO()}}
     class="dynamic"
+    class:left={info.variant === "left"}
+    class:right={info.variant === "right"}
     class:inline={display === "inline-keys"}>{dynamicMapping}</span
   >
 {:else if display === "keys"}
-  <kbd class:icon={!!info.icon} use:title={{title: info.title ?? info.id}}>
+  <kbd
+    class:icon={!!info.icon}
+    class:left={info.variant === "left"}
+    class:right={info.variant === "right"}
+    use:title={{title: tooltip}}
+  >
     {info.icon ?? info.id ?? `0x${info.code.toString(16)}`}
   </kbd>
 {:else if display === "inline-keys"}
   {#if !info.icon && info.id?.length === 1}
-    <span>{info.id}</span>
+    <span class:left={info.variant === "left"} class:right={info.variant === "right"}>{info.id}</span>
   {:else}
-    <kbd class="inline-kbd" class:icon={!!info.icon} use:title={{title: info.title ?? info.id}}>
+    <kbd
+      class="inline-kbd"
+      class:left={info.variant === "left"}
+      class:right={info.variant === "right"}
+      class:icon={!!info.icon}
+      use:title={{title: tooltip}}
+    >
       {info.icon ?? info.id ?? `0x${info.code.toString(16)}`}</kbd
     >
   {/if}
@@ -37,6 +54,13 @@
     height: 24px;
     padding-block: auto;
     transition: color 250ms ease;
+  }
+
+  .left {
+    border-left-width: 3px;
+  }
+  .right {
+    border-right-width: 3px;
   }
 
   .dynamic {
