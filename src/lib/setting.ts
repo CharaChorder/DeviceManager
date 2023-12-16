@@ -32,7 +32,7 @@ export const setting: Action<HTMLInputElement, {id: number; inverse?: number; sc
   async function listener() {
     let value: number
     if (type === "number") {
-      value = Number.parseInt(node.value)
+      value = Number(node.value)
       if (Number.isNaN(value)) return
       value = Math.floor(
         inverse !== undefined ? inverse / value : scale !== undefined ? value / scale : value,

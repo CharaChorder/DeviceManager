@@ -121,8 +121,8 @@
     <fieldset>
       <legend><label><input type="checkbox" use:setting={{id: 31}} />Chording</label></legend>
       <label
-        >Character Timeout <span class="unit"
-          ><input type="number" min="0" max="25.5" step="0.1" use:setting={{id: 33, scale: 0.001}} />s</span
+        >Auto-delete Timeout <span class="unit"
+          ><input type="number" min="0" max="25500" step="10" use:setting={{id: 33}} />ms</span
         ></label
       >
       <label
