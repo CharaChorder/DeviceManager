@@ -55,6 +55,11 @@
   }
 
   function insertChord(actions: number[]) {
+    const id = JSON.stringify(actions)
+    if ($chords.some(it => JSON.stringify(it.actions) === id)) {
+      alert($LL.configure.chords.DUPLICATE())
+      return
+    }
     changes.update(changes => {
       changes.push({
         type: ChangeType.Chord,

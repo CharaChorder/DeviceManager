@@ -108,6 +108,7 @@ const de = {
       TITLE: "Akkorde",
       HOLD_KEYS: "Akkord halten",
       NEW_CHORD: "Neuer Akkord",
+      DUPLICATE: "Akkord existiert bereits",
       search: {
         PLACEHOLDER: "{0} Akkord{{|e}} durchsuchen",
       },

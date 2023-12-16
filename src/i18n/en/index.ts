@@ -104,6 +104,7 @@ const en = {
       TITLE: "Chords",
       HOLD_KEYS: "Hold chord",
       NEW_CHORD: "New chord",
+      DUPLICATE: "Chord already exists",
       search: {
         PLACEHOLDER: "Search {0} chord{{|s}}",
       },
