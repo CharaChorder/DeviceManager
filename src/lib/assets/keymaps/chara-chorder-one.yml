@@ -6,7 +6,7 @@ type: unassigned
 actions:
   600:
     id: "LH_THUMB_3_3D"
-    title: "Left Hand Thumb Top 3D Click"
+    title: "Left Hand Thumb Bottom 3D Click"
     icon: "adjust"
   601:
     id: "LH_THUMB_2_3D"
@@ -14,7 +14,7 @@ actions:
     icon: "adjust"
   602:
     id: "LH_THUMB_1_3D"
-    title: "Left Hand Thumb Bottom 3D Click"
+    title: "Left Hand Thumb Top 3D Click"
     icon: "adjust"
   603:
     id: "LH_INDEX_3D"
@@ -42,7 +42,7 @@ actions:
     icon: "adjust"
   609:
     id: "RH_THUMB_3_3D"
-    title: "Right Hand Thumb Top 3D Click"
+    title: "Right Hand Thumb Bottom 3D Click"
     icon: "adjust"
   610:
     id: "RH_THUMB_2_3D"
@@ -50,7 +50,7 @@ actions:
     icon: "adjust"
   611:
     id: "RH_THUMB_1_3D"
-    title: "Right Hand Thumb Bottom 3D Click"
+    title: "Right Hand Thumb Top 3D Click"
     icon: "adjust"
   612:
     id: "RH_INDEX_3D"
