@@ -8,6 +8,9 @@ const de = {
     REDO: "Wiederholen",
     SAVE: "Speichern",
   },
+  update: {
+    TITLE: "Gerät aktualisieren",
+  },
   sync: {
     TITLE_READ: "Neueste Änderungen werden abgerufen",
     TITLE_WRITE: "Änderungen werden gespeichert",

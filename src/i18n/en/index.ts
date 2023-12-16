@@ -8,6 +8,9 @@ const en = {
     REDO: "Redo",
     SAVE: "Save",
   },
+  update: {
+    TITLE: "Update your device",
+  },
   backup: {
     TITLE: "Store History",
     INDIVIDUAL: "Individual backups",

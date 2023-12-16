@@ -56,6 +56,7 @@
 
   text {
     will-change: translate, scale;
+    user-select: none;
     transform-origin: center;
     transform-box: fill-box;
     transition:
@@ -63,5 +64,9 @@
       opacity #{$transition} ease,
       translate #{$transition} ease,
       scale #{$transition} ease;
+  }
+
+  text:focus-within {
+    outline: none;
   }
 </style>
