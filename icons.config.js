@@ -1,11 +1,5 @@
-export interface IconsConfig {
-  codePoints: Record<string, string>
-  inputPath: string
-  outputPath: string
-  icons: string[]
-}
-
-const config: IconsConfig = {
+/** @type {import('./src/tools/icons-config').IconsConfig} */
+const config = {
   inputPath:
     "node_modules/@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-full-normal.woff2",
   outputPath: "src/lib/assets/icons.min.woff2",
@@ -27,6 +21,7 @@ const config: IconsConfig = {
     "cable",
     "person",
     "sync",
+    "school",
     "restart_alt",
     "usb",
     "usb_off",
@@ -95,6 +90,7 @@ const config: IconsConfig = {
     "upload_2",
     "stat_minus_2",
     "stat_2",
+    "description",
   ],
   codePoints: {
     speed: "e9e4",

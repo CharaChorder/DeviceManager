@@ -9,12 +9,14 @@ import {fileURLToPath} from "url"
 
 const isTauri = "TAURI_FAMILY" in process.env
 console.info(isTauri ? "Building for Tauri" : "Building for PWA")
-const {homepage, bugs} = JSON.parse(
+const {homepage, bugs, repository} = JSON.parse(
   await readFile(fileURLToPath(new URL("package.json", import.meta.url)), "utf8"),
 )
 
-process.env.VITE_HOMEPAGE_URL = homepage
+process.env.VITE_HOMEPAGE_URL = repository.url.replace(/\.git$/, "")
+process.env.VITE_DOCS_URL = homepage
 process.env.VITE_BUGS_URL = bugs.url
+process.env.VITE_LEARN_URL = "https://www.iq-eq.io/"
 
 export default defineConfig({
   build: {

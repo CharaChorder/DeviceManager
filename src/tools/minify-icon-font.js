@@ -16,11 +16,15 @@
 import {openSync} from "fontkit"
 import {exec} from "child_process"
 import config from "../../icons.config.js"
-import {statSync, existsSync} from "fs"
+import {statSync} from "fs"
 import {readFile} from "fs/promises"
 import {glob} from "glob"
 
-async function run(command: string[] | string): Promise<string> {
+/**
+ * @param {string[] | string} command
+ * @returns {Promise<string>}
+ */
+async function run(command) {
   const fullCommand = Array.isArray(command) ? command.join(" ") : command
   console.log(`>> ${fullCommand}`)
 
@@ -51,7 +55,8 @@ const font = openSync(config.inputPath)
 
 const glyphs = ["5f-7a", "30-39"]
 for (const icon of icons) {
-  const iconGlyphs: Array<{id: string}> = font.layout(icon).glyphs
+  /** @type {Array<{id: string}>} */
+  const iconGlyphs = font.layout(icon).glyphs
   if (iconGlyphs.length === 0) {
     console.error(`${icon} not found in font. Typo?`)
     process.exit(-1)
@@ -99,8 +104,9 @@ console.log(
 
 /**
  * Bytes to respective units
+ * @param {number} value
  */
-function toByteUnit(value: number) {
+function toByteUnit(value) {
   if (value < 1024) {
     return `${value}B`
   } else if (value < 1024 * 1024) {

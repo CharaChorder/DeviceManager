@@ -46,6 +46,16 @@
         ><span class="icon">bug_report</span> File an issue</a
       >
     </li>
+    <li>
+      <a href={import.meta.env.VITE_DOCS_URL} rel="noreferrer" target="_blank"
+        ><span class="icon">description</span> Read the docs</a
+      >
+    </li>
+    <li>
+      <a href={import.meta.env.VITE_LEARN_URL} rel="noreferrer" target="_blank"
+        ><span class="icon">school</span> Training</a
+      >
+    </li>
   </ul>
   <div>
     {#if !$serialPort}
