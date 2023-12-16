@@ -47,7 +47,7 @@
 </script>
 
 <button
-  class:deleted={chord && chord.phrase.length === 0}
+  class:deleted={chord && chord.deleted}
   class:edited={chord && chord.actionsChanged}
   class:invalid={chord && chord.actions.toSorted(compare).some((it, i) => chord?.actions[i] !== it)}
   on:click={edit}

@@ -136,7 +136,7 @@
   role="textbox"
   tabindex="0"
   bind:this={box}
-  class:edited={chord.phrase.length !== 0 && chord.phraseChanged}
+  class:edited={!chord.deleted && chord.phraseChanged}
   on:focusin={() => (hasFocus = true)}
   on:focusout={event => {
     if (event.relatedTarget !== button) hasFocus = false

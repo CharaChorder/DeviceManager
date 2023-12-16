@@ -39,8 +39,8 @@
     if (!port) return
     $syncStatus = "uploading"
 
-    for (const [id, {actions, phrase}] of $overlay.chords) {
-      if (phrase.length > 0) {
+    for (const [id, {actions, phrase, deleted}] of $overlay.chords) {
+      if (!deleted) {
         if (id !== JSON.stringify(actions)) {
           const existingChord = await port.getChordPhrase(actions)
           if (
@@ -109,9 +109,7 @@
       number[],
       number[],
     ]
-    $deviceChords = $chords
-      .map(({actions, phrase}) => ({actions, phrase}))
-      .filter(({phrase}) => phrase.length > 1)
+    $deviceChords = $chords.filter(({deleted}) => !deleted).map(({actions, phrase}) => ({actions, phrase}))
     $deviceSettings = $settings.map(({value}) => value)
     $changes = []
     $syncStatus = "done"

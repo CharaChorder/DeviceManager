@@ -13,7 +13,13 @@
 
   function remove() {
     changes.update(changes => {
-      changes.push({type: ChangeType.Chord, id: chord.id, actions: chord.actions, phrase: []})
+      changes.push({
+        type: ChangeType.Chord,
+        id: chord.id,
+        actions: chord.actions,
+        phrase: chord.phrase,
+        deleted: true,
+      })
       return changes
     })
   }
@@ -60,9 +66,9 @@
   <ChordPhraseEdit {chord} />
 </td>
 <td class="table-buttons">
-  {#if chord.phrase.length !== 0}
+  {#if !chord.deleted}
     <button transition:slide class="icon compact" on:click={remove}>delete</button>
-  {:else if chord.phraseChanged}
+  {:else}
     <button transition:slide class="icon compact" on:click={restore}>restore_from_trash</button>
   {/if}
   <button class="icon compact" class:disabled={chord.isApplied} on:click={restore}>undo</button>

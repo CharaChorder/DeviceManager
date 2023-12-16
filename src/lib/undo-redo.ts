@@ -19,6 +19,7 @@ export interface LayoutChange {
 
 export interface ChordChange {
   type: ChangeType.Chord
+  deleted?: true
   id: number[]
   actions: number[]
   phrase: number[]
@@ -41,7 +42,7 @@ export const changes = persistentWritable<Change[]>("changes", [])
 
 export interface Overlay {
   layout: [Map<number, number>, Map<number, number>, Map<number, number>]
-  chords: Map<string, Chord>
+  chords: Map<string, Chord & {deleted: boolean}>
   settings: Map<number, number>
 }
 
@@ -58,7 +59,11 @@ export const overlay = derived(changes, changes => {
         overlay.layout[change.layer].set(change.id, change.action)
         break
       case ChangeType.Chord:
-        overlay.chords.set(JSON.stringify(change.id), {actions: change.actions, phrase: change.phrase})
+        overlay.chords.set(JSON.stringify(change.id), {
+          actions: change.actions,
+          phrase: change.phrase,
+          deleted: change.deleted ?? false,
+        })
         break
       case ChangeType.Setting:
         overlay.settings.set(change.id, change.setting)
@@ -88,7 +93,10 @@ export const layout = derived([overlay, deviceLayout], ([overlay, layout]) =>
 )
 
 export type ChordInfo = Chord &
-  ChangeInfo & {phraseChanged: boolean; actionsChanged: boolean; sortBy: string} & {id: number[]}
+  ChangeInfo & {phraseChanged: boolean; actionsChanged: boolean; sortBy: string} & {
+    id: number[]
+    deleted: boolean
+  }
 export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
   const newChords = new Set(overlay.chords.keys())
 
@@ -106,6 +114,7 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
         actionsChanged: id !== JSON.stringify(changedChord.actions),
         phraseChanged: JSON.stringify(chord.phrase) !== JSON.stringify(changedChord.phrase),
         isApplied: false,
+        deleted: changedChord.deleted,
       }
     } else {
       return {
@@ -116,6 +125,7 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
         phraseChanged: false,
         actionsChanged: false,
         isApplied: true,
+        deleted: false,
       }
     }
   })
@@ -126,6 +136,7 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
       isApplied: false,
       actionsChanged: true,
       phraseChanged: false,
+      deleted: chord.deleted,
       id: JSON.parse(id),
       phrase: chord.phrase,
       actions: chord.actions,
