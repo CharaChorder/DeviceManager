@@ -111,6 +111,7 @@ const de = {
       DUPLICATE: "Akkord existiert bereits",
       search: {
         PLACEHOLDER: "{0} Akkord{{|e}} durchsuchen",
+        NO_RESULTS: "Keine Ergebnisse",
       },
       conflict: {
         TITLE: "Akkordkonflikt",
@@ -119,6 +120,7 @@ const de = {
         CONFIRM: "Überschreiben",
         ABORT: "Überspringen",
       },
+      TRY_TYPING: "Versuche hier zu tippen",
     },
     layout: {
       TITLE: "Layout",

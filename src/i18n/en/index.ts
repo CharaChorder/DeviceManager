@@ -107,6 +107,7 @@ const en = {
       DUPLICATE: "Chord already exists",
       search: {
         PLACEHOLDER: "Search {0} chord{{|s}}",
+        NO_RESULTS: "No results",
       },
       conflict: {
         TITLE: "Chord conflict",
@@ -115,6 +116,7 @@ const en = {
         CONFIRM: "Overwrite",
         ABORT: "Skip",
       },
+      TRY_TYPING: "Try typing here",
     },
     layout: {
       TITLE: "Layout",

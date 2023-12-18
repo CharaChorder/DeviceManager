@@ -125,9 +125,10 @@
         </tr>
       {/each}
     {:else}
-      <caption> No Results </caption>
+      <caption>{$LL.configure.chords.search.NO_RESULTS()}</caption>
     {/if}
   </table>
+  <textarea placeholder={$LL.configure.chords.TRY_TYPING()}></textarea>
 </section>
 
 <style lang="scss">
@@ -141,6 +142,20 @@
     display: flex;
     justify-content: flex-end;
     min-width: 8ch;
+  }
+
+  textarea {
+    transition: border-color 250ms ease;
+    background: none;
+    color: inherit;
+    border: 1px dashed var(--md-sys-color-surface-variant);
+    padding: 8px;
+    border-radius: 4px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--md-sys-color-primary);
+    }
   }
 
   caption {
@@ -175,6 +190,7 @@
 
   section {
     position: relative;
+    display: flex;
 
     overflow: hidden;
 
@@ -185,6 +201,7 @@
   }
 
   table {
+    height: fit-content;
     overflow: hidden;
     min-width: min(90vw, 16.5cm);
     transition: all 1s ease;
