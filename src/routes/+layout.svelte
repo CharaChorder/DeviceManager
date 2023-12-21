@@ -52,7 +52,7 @@
     })
     if (import.meta.env.TAURI_FAMILY === undefined) {
       const {initPwa} = await import("./pwa-setup")
-      await initPwa()
+      webManifestLink = await initPwa()
     }
 
     if (browser && $userPreferences.autoConnect && (await canAutoConnect())) {
