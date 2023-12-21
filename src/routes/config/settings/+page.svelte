@@ -188,6 +188,7 @@
     }
 
     > label {
+      position: relative;
       display: flex;
       gap: 16px;
       align-items: center;
@@ -263,7 +264,14 @@
   }
 
   // stylelint-disable-next-line
-  form label:has(:global(.pending-changes)) {
-    color: var(--md-sys-color-tertiary);
+  label:global(:has(.pending-changes)) {
+    color: var(--md-sys-color-primary);
+
+    &::before {
+      position: absolute;
+      top: 0.5em;
+      right: 0.25em;
+      content: "•";
+    }
   }
 </style>
