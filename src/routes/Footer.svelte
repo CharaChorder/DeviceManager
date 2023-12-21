@@ -155,7 +155,7 @@
 
   ul {
     display: flex;
-    gap: 16px;
+    gap: 8px;
     align-items: center;
 
     margin: 0;
@@ -184,6 +184,8 @@
 
     font-size: 12px;
     text-decoration: none;
+
+    padding-inline: 12px;
   }
 
   .icon {

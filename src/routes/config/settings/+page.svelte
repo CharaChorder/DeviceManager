@@ -142,21 +142,9 @@
       <legend>Device</legend>
       <label>Boot message<input type="checkbox" use:setting={{id: 93}} /></label>
       <label>GTM Realtime Feedback<input type="checkbox" use:setting={{id: 92}} /></label>
-      <label>
-        Operating System
-        <select>
-          <option value="0">Windows</option>
-          <option value="1">MacOS</option>
-          <option value="2">Linux</option>
-          <option value="3">iOS</option>
-          <option value="4">Android</option>
-          <option value="255">Unknown</option>
-        </select>
-      </label>
     </fieldset>
 
     {#if $serialPort.device === "LITE"}
-      <!-- TODO -->
       <fieldset>
         <legend><label><input type="checkbox" />RGB</label></legend>
         <label>Brightness<input type="range" min="0" max="50" step="1" /></label>
