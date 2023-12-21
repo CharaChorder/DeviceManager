@@ -7,7 +7,7 @@
 {#if $serialPort}
   <form>
     <fieldset>
-      <legend><label><input type="checkbox" use:setting={{id: 41}} />Spurring</label></legend>
+      <legend><label><input type="checkbox" use:setting={{id: 0x41}} />Spurring</label></legend>
       <p>
         "Chording only" mode which tells your device to output chords on a press rather than a press &
         release. It also enables you to jump from one chord to another without releasing everything and can be
@@ -23,13 +23,19 @@
       </p>
       <label
         >Character Counter Timeout<span class="unit"
-          ><input type="number" step="0.001" min="0" max="240" use:setting={{id: 43, scale: 0.001}} />s</span
+          ><input
+            type="number"
+            step="0.001"
+            min="0"
+            max="240"
+            use:setting={{id: 0x43, scale: 0.001}}
+          />s</span
         ></label
       >
     </fieldset>
 
     <fieldset>
-      <legend><label><input type="checkbox" use:setting={{id: 51}} />Arpeggiates</label></legend>
+      <legend><label><input type="checkbox" use:setting={{id: 0x51}} />Arpeggiates</label></legend>
       <p>
         A quick, single key press and release used to indicate a suffix, prefix, or modifier to be associated
         with a chord.
@@ -54,7 +60,8 @@
         </li>
       </ul>
       <label
-        >Timeout After Chord<span class="unit"><input type="number" step="1" use:setting={{id: 54}} />ms</span
+        >Timeout After Chord<span class="unit"
+          ><input type="number" step="1" use:setting={{id: 0x54}} />ms</span
         ></label
       >
     </fieldset>
@@ -78,74 +85,75 @@
     <fieldset>
       <legend>Character Entry</legend>
       {#if $serialPort.device === "LITE"}
-        <label>Swap Keymap 0 and 1<input type="checkbox" use:setting={{id: 13}} /></label>
+        <label>Swap Keymap 0 and 1<input type="checkbox" use:setting={{id: 0x13}} /></label>
       {/if}
       <label>
         Character Entry (chentry)
-        <input type="checkbox" use:setting={{id: 12}} />
+        <input type="checkbox" use:setting={{id: 0x12}} />
       </label>
       <label>
         Key Scan Rate
-        <span class="unit"><input type="number" use:setting={{id: 14, inverse: 1000}} />Hz</span></label
+        <span class="unit"><input type="number" use:setting={{id: 0x14, inverse: 1000}} />Hz</span></label
       >
       <label>
-        Key Debounce Press<span class="unit"><input type="number" use:setting={{id: 15}} />ms</span></label
+        Key Debounce Press<span class="unit"><input type="number" use:setting={{id: 0x15}} />ms</span></label
       >
       <label
-        >Key Debounce Release<span class="unit"><input type="number" use:setting={{id: 16}} />ms</span></label
+        >Key Debounce Release<span class="unit"><input type="number" use:setting={{id: 0x16}} />ms</span
+        ></label
       >
       <label
-        >Output Character Delay<span class="unit"><input type="number" use:setting={{id: 17}} />µs</span
+        >Output Character Delay<span class="unit"><input type="number" use:setting={{id: 0x17}} />µs</span
         ></label
       >
     </fieldset>
 
     <fieldset>
-      <legend><label><input type="checkbox" use:setting={{id: 21}} />Mouse</label></legend>
+      <legend><label><input type="checkbox" use:setting={{id: 0x21}} />Mouse</label></legend>
       <label
-        >Mouse Speed<input type="number" use:setting={{id: 22}} /><input
+        >Mouse Speed<input type="number" use:setting={{id: 0x22}} /><input
           type="number"
-          use:setting={{id: 23}}
+          use:setting={{id: 0x23}}
         /></label
       >
-      <label>Scroll Speed<input type="number" use:setting={{id: 25}} /></label>
+      <label>Scroll Speed<input type="number" use:setting={{id: 0x25}} /></label>
       <label>
         <span>
           Active Mouse
           <p>Bounces mouse by 1px every 60s if enabled</p></span
         >
-        <input type="checkbox" use:setting={{id: 24}} /></label
+        <input type="checkbox" use:setting={{id: 0x24}} /></label
       >
       <label
-        >Poll Rate<span class="unit"><input type="number" use:setting={{id: 26, inverse: 1000}} />Hz</span
+        >Poll Rate<span class="unit"><input type="number" use:setting={{id: 0x26, inverse: 1000}} />Hz</span
         ></label
       >
     </fieldset>
 
     <fieldset>
-      <legend><label><input type="checkbox" use:setting={{id: 31}} />Chording</label></legend>
+      <legend><label><input type="checkbox" use:setting={{id: 0x31}} />Chording</label></legend>
       <label
         >Auto-delete Timeout <span class="unit"
-          ><input type="number" min="0" max="25500" step="10" use:setting={{id: 33}} />ms</span
+          ><input type="number" min="0" max="25500" step="10" use:setting={{id: 0x33}} />ms</span
         ></label
       >
       <label
         >Press Tolerance<span class="unit"
-          ><input type="number" min="1" max="50" step="1" use:setting={{id: 34}} />ms</span
+          ><input type="number" min="1" max="50" step="1" use:setting={{id: 0x34}} />ms</span
         ></label
       >
       <label
         >Release Tolerance<span class="unit"
-          ><input type="number" min="1" max="50" step="1" use:setting={{id: 35}} />ms</span
+          ><input type="number" min="1" max="50" step="1" use:setting={{id: 0x35}} />ms</span
         ></label
       >
-      <label>Compound Chording<input type="checkbox" use:setting={{id: 61}} /></label>
+      <label>Compound Chording<input type="checkbox" use:setting={{id: 0x61}} /></label>
     </fieldset>
 
     <fieldset>
       <legend>Device</legend>
-      <label>Boot message<input type="checkbox" use:setting={{id: 93}} /></label>
-      <label>GTM Realtime Feedback<input type="checkbox" use:setting={{id: 92}} /></label>
+      <label>Boot message<input type="checkbox" use:setting={{id: 0x93}} /></label>
+      <label>GTM Realtime Feedback<input type="checkbox" use:setting={{id: 0x92}} /></label>
     </fieldset>
 
     {#if $serialPort.device === "LITE"}

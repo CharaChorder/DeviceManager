@@ -290,7 +290,7 @@ export class CharaDevice {
    * To permanently store the settings, you *must* call commit.
    */
   async setSetting(id: number, value: number) {
-    const [status] = await this.send(`VAR B2 ${id} ${value}`)
+    const [status] = await this.send(`VAR B2 ${id.toString(16).toUpperCase()} ${value}`)
     if (status !== "0") throw new Error(`Failed with status ${status}`)
   }
 
@@ -298,8 +298,9 @@ export class CharaDevice {
    * Retrieves a setting from the device
    */
   async getSetting(id: number): Promise<number> {
-    const [value, status] = await this.send(`VAR B1 ${id}`)
-    if (status !== "0") throw new Error(`Setting "${id}" doesn't exist (Status code ${status})`)
+    const [value, status] = await this.send(`VAR B1 ${id.toString(16).toUpperCase()}`)
+    if (status !== "0")
+      throw new Error(`Setting "0x${id.toString(16)}" doesn't exist (Status code ${status})`)
     return Number(value)
   }
 
