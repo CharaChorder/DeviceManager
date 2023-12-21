@@ -1,5 +1,42 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<svg version="1.1" width="144" height="144" viewBox="0 0 144 144" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="72" cy="72" r="44" fill="black" />
-    <text x="72" y="82" font-size="36" font-weight="900" font-family="monospace" text-anchor="middle" dominant-baseline="middle" fill="white">i/o</text>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 241130.1 252004"
+   version="1.1"
+   id="svg2"
+   width="241130.09"
+   height="252004"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <style
+       id="style1">.cls-1{fill:#fff;}</style>
+  </defs>
+  <title
+     id="title1">Asset 3</title>
+  <ellipse
+     style="fill:#000000;fill-opacity:1;stroke-width:2"
+     id="path3"
+     cx="245.52499"
+     cy="251"
+     rx="245.52499"
+     ry="251" />
+  <g
+     id="Layer_2"
+     data-name="Layer 2"
+     transform="matrix(0.88451777,0,0,0.88451777,28.353768,28.98604)">
+    <g
+       id="Layer_1-2"
+       data-name="Layer 1"
+       transform="matrix(0.93987996,0,0,0.93987996,7.7865873,15.09013)">
+      <path
+         class="cls-1"
+         d="M 251,429.09 A 177.55,177.55 0 1 1 412.42,177.5 h 78.63 C 459.63,74.74 364.05,0 251,0 112.38,0 0,112.38 0,251 0,389.62 112.38,502 251,502 364.05,502 459.63,427.26 491.05,324.5 H 412.92 A 177.59,177.59 0 0 1 251,429.09 Z"
+         id="path1" />
+      <path
+         class="cls-1"
+         d="m 255.65,324.5 a 73.5,73.5 0 0 1 0,-147 h 141.11 a 163.46,163.46 0 1 0 0.53,147 z"
+         id="path2" />
+    </g>
+  </g>
 </svg>
