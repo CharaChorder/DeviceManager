@@ -31,14 +31,17 @@ actions:
     variationOf: 513
     <<: *left_shift
     id: "RIGHT_SHIFT"
+    variant: right
   518:
     variationOf: 514
     <<: *left_alt
     id: "RIGHT_ALT"
+    variant: right
   519:
     variationOf: 515
     <<: *left_gui
     id: "RIGHT_GUI"
+    variant: right
   520:
     id: "RELEASE_MOD"
     title: Release all keyboard modifiers
