@@ -43,7 +43,7 @@ export default defineConfig({
             includeAssets: ["favicon.png"],
             workbox: {
               // https://vite-pwa-org.netlify.app/frameworks/sveltekit.html#globpatterns
-              globPatterns: ["client/**/*.{js,css,woff2,csv,png,svg}", "prerendered/**/*.html"],
+              globPatterns: ["client/**/*.{js,map,css,woff2,csv,png,svg}", "prerendered/**/*.html"],
             },
             manifest: {
               name: "CharaChorder Device Manager",
