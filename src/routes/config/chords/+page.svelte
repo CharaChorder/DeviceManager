@@ -116,7 +116,10 @@
 <section bind:this={results}>
   <table>
     {#if page === 0}
-      <tr><th><ChordActionEdit on:submit={({detail}) => insertChord(detail)} /></th><td /><td /></tr>
+      <tr
+        ><th class="new-chord"><ChordActionEdit on:submit={({detail}) => insertChord(detail)} /></th><td /><td
+        /></tr
+      >
     {/if}
     {#if $lastPage !== -1}
       {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord.id))}
@@ -142,6 +145,10 @@
     display: flex;
     justify-content: flex-end;
     min-width: 8ch;
+  }
+
+  .new-chord :global(.add) {
+    visibility: hidden;
   }
 
   textarea {

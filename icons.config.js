@@ -91,6 +91,7 @@ const config = {
     "stat_minus_2",
     "stat_2",
     "description",
+    "add_circle",
   ],
   codePoints: {
     speed: "e9e4",

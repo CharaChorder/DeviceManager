@@ -5,6 +5,7 @@
   import {createEventDispatcher} from "svelte"
   import LL from "../../../i18n/i18n-svelte"
   import ActionString from "$lib/components/ActionString.svelte"
+  import {selectAction} from "./action-selector"
 
   export let chord: ChordInfo | undefined = undefined
 
@@ -44,12 +45,27 @@
       return changes
     })
   }
+
+  function addSpecial(event: MouseEvent) {
+    selectAction(event, action => {
+      changes.update(changes => {
+        changes.push({
+          type: ChangeType.Chord,
+          id: chord!.id,
+          actions: [...chord!.actions, action].sort(compare),
+          phrase: chord!.phrase,
+        })
+        return changes
+      })
+    })
+  }
 </script>
 
 <button
   class:deleted={chord && chord.deleted}
   class:edited={chord && chord.actionsChanged}
   class:invalid={chord && chord.actions.toSorted(compare).some((it, i) => chord?.actions[i] !== it)}
+  class="chord"
   on:click={edit}
   on:keydown={keydown}
   on:keyup={keyup}
@@ -60,6 +76,7 @@
     <span>{$LL.configure.chords.NEW_CHORD()}</span>
   {/if}
   <ActionString display="keys" actions={editing ? [...pressedKeys].sort(compare) : chord?.actions ?? []} />
+  <button class="icon add" on:click|stopPropagation={addSpecial}>add_circle</button>
   <sup>•</sup>
 </button>
 
@@ -74,7 +91,19 @@
     transition: opacity 250ms ease;
   }
 
-  button {
+  .add {
+    font-size: 18px;
+    margin-inline-start: 4px;
+    height: 20px;
+    opacity: 0;
+    --icon-fill: 1;
+  }
+
+  .chord:hover .add {
+    opacity: 1;
+  }
+
+  .chord {
     position: relative;
 
     display: inline-flex;
@@ -88,7 +117,7 @@
     }
   }
 
-  button::after {
+  .chord::after {
     content: "";
 
     position: absolute;

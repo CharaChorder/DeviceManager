@@ -6,12 +6,13 @@
   import type {ChordInfo} from "$lib/undo-redo"
   import {scale} from "svelte/transition"
   import ActionString from "$lib/components/ActionString.svelte"
+  import {selectAction} from "./action-selector"
 
   export let chord: ChordInfo
 
   function keypress(event: KeyboardEvent) {
     if (event.key === "ArrowUp") {
-      selectAction()
+      addSpecial(event)
     } else if (event.key === "ArrowLeft") {
       moveCursor(cursorPosition - 1)
     } else if (event.key === "ArrowRight") {
@@ -77,49 +78,15 @@
     moveCursor(i - 1)
   }
 
-  function selectAction() {
-    const component = new ActionSelector({target: document.body})
-    const dialog = document.querySelector("dialog > div") as HTMLDivElement
-    const backdrop = document.querySelector("dialog") as HTMLDialogElement
-    const dialogRect = dialog.getBoundingClientRect()
-    const groupRect = button.getBoundingClientRect()
-
-    const scale = 0.5
-    const dialogScale = `${1 - scale * (1 - groupRect.width / dialogRect.width)} ${
-      1 - scale * (1 - groupRect.height / dialogRect.height)
-    }`
-    const dialogTranslate = `${scale * (groupRect.x - dialogRect.x)}px ${
-      scale * (groupRect.y - dialogRect.y)
-    }px`
-
-    const duration = 150
-    const options = {duration, easing: "ease"}
-    const dialogAnimation = dialog.animate(
-      [
-        {scale: dialogScale, translate: dialogTranslate},
-        {translate: "0 0", scale: "1"},
-      ],
-      options,
+  function addSpecial(event: MouseEvent | KeyboardEvent) {
+    selectAction(
+      event,
+      action => {
+        insertAction(cursorPosition, action)
+        tick().then(() => moveCursor(cursorPosition + 1))
+      },
+      () => box.focus(),
     )
-    const backdropAnimation = backdrop.animate([{opacity: 0}, {opacity: 1}], options)
-
-    async function closed() {
-      dialogAnimation.reverse()
-      backdropAnimation.reverse()
-
-      await dialogAnimation.finished
-
-      component.$destroy()
-      await tick()
-      box.focus()
-    }
-
-    component.$on("close", closed)
-    component.$on("select", ({detail}) => {
-      insertAction(cursorPosition, detail)
-      tick().then(() => moveCursor(cursorPosition + 1))
-      closed()
-    })
   }
 
   let button: HTMLButtonElement
@@ -144,7 +111,7 @@
 >
   {#if hasFocus}
     <div transition:scale class="cursor" style:translate="{cursorOffset}px 0">
-      <button class="icon" bind:this={button} on:click={selectAction}>add</button>
+      <button class="icon" bind:this={button} on:click={addSpecial}>add</button>
     </div>
   {:else}
     <div />
