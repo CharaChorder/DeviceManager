@@ -10,7 +10,7 @@ const {version} = JSON.parse(await readFile(fileURLToPath(new URL("package.json"
 const config = {
   preprocess: [preprocess({postcss: {plugins: autoprefixer()}})],
   kit: {
-    adapter: adapter(),
+    adapter: adapter({fallback: "404.html"}),
     version: {
       name: version,
     },

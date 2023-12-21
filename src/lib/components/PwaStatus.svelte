@@ -5,7 +5,9 @@
 </script>
 
 {#if $needRefresh}
-  <button title="Update ready" class="icon" on:click={() => updateServiceWorker(true)}>update</button>
+  <button title="Update ready" on:click={() => updateServiceWorker(true)}
+    >Update <span class="icon">update</span></button
+  >
 {:else if $offlineReady}
   <div title="App can now be used offline" class="icon">offline_pin</div>
 {/if}

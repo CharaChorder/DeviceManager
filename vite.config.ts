@@ -45,8 +45,8 @@ export default defineConfig({
               globPatterns: ["**/*.{js,css,html,woff2,json,csv,png,svg}"],
             },
             manifest: {
-              name: "dot i/o",
-              id: "dot_io_v2",
+              name: "CharaChorder Device Manager",
+              id: "charchorder-device-manager",
               theme_color: themeColor,
               icons: [
                 {
