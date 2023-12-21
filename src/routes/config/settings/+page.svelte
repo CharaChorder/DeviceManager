@@ -130,7 +130,7 @@
         ></label
       >
       <label
-        >Detection Tolerance<span class="unit"
+        >Press Tolerance<span class="unit"
           ><input type="number" min="1" max="50" step="1" use:setting={{id: 34}} />ms</span
         ></label
       >
