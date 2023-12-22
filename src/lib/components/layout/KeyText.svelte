@@ -4,6 +4,7 @@
   import type {VisualLayoutConfig} from "$lib/components/layout/visual-layout"
   import type {CompiledLayoutKey} from "$lib/serialization/visual-layout"
   import {layout} from "$lib/undo-redo.js"
+  import {osLayout} from "$lib/os-layout.js"
   import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
   import {action} from "$lib/title"
 
@@ -23,9 +24,14 @@
 
 {#each positions as position, layer}
   {@const {action: actionId, isApplied} = $layout[layer][key.id] ?? {action: 0, isApplied: true}}
-  {@const {code, icon, id, title} = KEYMAP_CODES[actionId] ?? {code: actionId}}
+  {@const {code, icon, id, title, keyCode, variant} = KEYMAP_CODES[actionId] ?? {code: actionId}}
+  {@const dynamicMapping = keyCode && $osLayout[JSON.stringify([keyCode])]}
+  {@const tooltip =
+    (title ?? id ?? `0x${code.toString(16)}`) +
+    (variant === "left" ? " (left)" : variant === "right" ? " (right)" : "")}
   {@const isActive = layer === $activeLayer}
   {@const direction = [(middle[0] - margin * 3) / position[0], (middle[1] - margin * 3) / position[1]]}
+  {@const hasIcon = !dynamicMapping && !!icon}
   <text
     fill={isApplied ? "currentcolor" : "var(--md-sys-color-primary)"}
     font-weight={isApplied ? "" : "bold"}
@@ -33,16 +39,16 @@
     alignment-baseline="central"
     x={pos[0] + middle[0] + (isApplied ? 0 : fontSize / 3)}
     y={pos[1] + middle[1]}
-    font-size={fontSizeMultiplier * (icon ? iconFontSize : fontSize)}
-    font-family={icon ? "Material Symbols Rounded" : undefined}
+    font-size={fontSizeMultiplier * (hasIcon ? iconFontSize : fontSize)}
+    font-family={hasIcon ? "Material Symbols Rounded" : undefined}
     opacity={isActive ? 1 : inactiveOpacity}
     style:scale={isActive ? 1 : inactiveScale}
     style:translate={isActive ? "0 0 0" : `${direction[0]}px ${direction[1]}px 0`}
     style:rotate="{rotate}deg"
-    use:action={{title: title ?? id}}
+    use:action={{title: tooltip}}
   >
     {#if code !== 0}
-      {icon || id || `0x${code.toString(16)}`}
+      {dynamicMapping || icon || id || `0x${code.toString(16)}`}
     {/if}
     {#if !isApplied}
       <tspan>•</tspan>
