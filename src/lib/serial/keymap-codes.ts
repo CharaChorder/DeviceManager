@@ -20,6 +20,12 @@ export const KEYMAP_CODES: Record<number, KeyInfo> = Object.fromEntries(
   ),
 )
 
+export const KEYMAP_KEYCODES: Map<string, number> = new Map(
+  KEYMAP_CATEGORIES.flatMap(category =>
+    Object.entries(category.actions).map(([code, action]) => [action.keyCode!, Number(code)] as const),
+  ).filter(([keyCode]) => keyCode !== undefined),
+)
+
 export const KEYMAP_IDS: Map<string, KeyInfo> = new Map(
   KEYMAP_CATEGORIES.flatMap(category =>
     Object.entries(category.actions).map(

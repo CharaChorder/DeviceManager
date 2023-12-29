@@ -66,6 +66,7 @@
   .dynamic {
     padding: 4px;
     border-radius: 1px;
+    min-width: 8px;
     background: var(--md-sys-color-surface-variant);
 
     &.inline {

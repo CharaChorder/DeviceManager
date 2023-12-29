@@ -7,6 +7,9 @@
   import {scale} from "svelte/transition"
   import ActionString from "$lib/components/ActionString.svelte"
   import {selectAction} from "./action-selector"
+  import {inputToAction} from "./input-converter"
+  import {serialPort} from "$lib/serial/connection"
+  import {get} from "svelte/store"
 
   export let chord: ChordInfo
 
@@ -22,12 +25,12 @@
       moveCursor(cursorPosition - 1)
     } else if (event.key === "Delete") {
       deleteAction(cursorPosition)
-    } else if (KEYMAP_IDS.has(event.key)) {
-      insertAction(cursorPosition, KEYMAP_IDS.get(event.key)!.code)
-      tick().then(() => moveCursor(cursorPosition + 1))
-    } else if (specialKeycodes.has(event.key)) {
-      insertAction(cursorPosition, specialKeycodes.get(event.key)!)
-      tick().then(() => moveCursor(cursorPosition + 1))
+    } else {
+      const action = inputToAction(event, get(serialPort)?.device === "X")
+      if (action !== undefined) {
+        insertAction(cursorPosition, action)
+        tick().then(() => moveCursor(cursorPosition + 1))
+      }
     }
   }
 

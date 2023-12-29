@@ -1,11 +1,13 @@
 <script lang="ts">
-  import {KEYMAP_IDS} from "$lib/serial/keymap-codes"
   import type {ChordInfo} from "$lib/undo-redo"
   import {changes, ChangeType} from "$lib/undo-redo"
   import {createEventDispatcher} from "svelte"
   import LL from "../../../i18n/i18n-svelte"
   import ActionString from "$lib/components/ActionString.svelte"
   import {selectAction} from "./action-selector"
+  import {serialPort} from "$lib/serial/connection"
+  import {get} from "svelte/store"
+  import {inputToAction} from "./input-converter"
 
   export let chord: ChordInfo | undefined = undefined
 
@@ -26,7 +28,7 @@
   function keydown(event: KeyboardEvent) {
     if (!editing) return
     event.preventDefault()
-    pressedKeys.add(KEYMAP_IDS.get(event.key)!.code)
+    pressedKeys.add(inputToAction(event, get(serialPort)?.device === "X")!)
     pressedKeys = pressedKeys
   }
 
