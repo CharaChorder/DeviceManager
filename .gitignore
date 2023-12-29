@@ -6,6 +6,7 @@ node_modules
 /package
 .env
 .env.*
+.direnv
 !.env.example
 venv
 vite.config.js.timestamp-*
