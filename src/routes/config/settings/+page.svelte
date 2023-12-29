@@ -1,7 +1,9 @@
 <script>
   import Action from "$lib/components/Action.svelte"
+  import {popup} from "$lib/popup"
   import {serialPort} from "$lib/serial/connection"
   import {setting} from "$lib/setting"
+  import ResetPopup from "./ResetPopup.svelte"
 </script>
 
 {#if $serialPort}
@@ -154,6 +156,7 @@
       <legend>Device</legend>
       <label>Boot message<input type="checkbox" use:setting={{id: 0x93}} /></label>
       <label>GTM Realtime Feedback<input type="checkbox" use:setting={{id: 0x92}} /></label>
+      <button class="outline" use:popup={ResetPopup}>Reset...</button>
     </fieldset>
 
     {#if $serialPort.device === "LITE"}
@@ -177,6 +180,14 @@
 
     margin-block: auto;
     padding-block-end: 48px;
+  }
+
+  button.outline {
+    border: 1px solid currentcolor;
+    border-radius: 8px;
+    height: 2em;
+    margin-block: 2em;
+    margin-inline: auto;
   }
 
   legend,

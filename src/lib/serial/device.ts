@@ -319,6 +319,13 @@ export class CharaDevice {
   }
 
   /**
+   * Resets the device
+   */
+  async reset(type: "FACTORY" | "PARAMS" | "KEYMAPS" | "STARTER" | "CLEARCML" | "FUNC") {
+    await this.send(`RST ${type}`)
+  }
+
+  /**
    * Returns the current number of bytes available in SRAM.
    *
    * This is useful for debugging when there is a suspected heap or stack issue.

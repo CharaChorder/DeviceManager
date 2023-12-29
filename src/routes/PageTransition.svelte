@@ -15,6 +15,7 @@
   beforeNavigate(navigation => {
     const from = navigation.from?.url.pathname
     const to = navigation.to?.url.pathname
+    if (from === to) return
     isNavigating = true
 
     if (!(from && to && routeOrder.includes(from) && routeOrder.includes(to))) {
