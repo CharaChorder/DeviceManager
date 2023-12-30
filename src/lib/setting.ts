@@ -7,8 +7,9 @@ export const setting: Action<HTMLInputElement, {id: number; inverse?: number; sc
 ) {
   node.setAttribute("disabled", "")
   const type = node.getAttribute("type") as "number" | "checkbox"
-  const min = Number(node.getAttribute("min"))
-  const max = Number(node.getAttribute("max"))
+  const min = node.hasAttribute("min") ? Number(node.getAttribute("min")) : undefined
+  const max = node.hasAttribute("max") ? Number(node.getAttribute("max")) : undefined
+  console.log(min, max, "|", id, "|", node.getAttribute("min"), node.getAttribute("max"))
 
   const unsubscribe = settings.subscribe(async settings => {
     if (id in settings) {
@@ -39,8 +40,8 @@ export const setting: Action<HTMLInputElement, {id: number; inverse?: number; sc
       value = Math.floor(
         inverse !== undefined ? inverse / value : scale !== undefined ? value / scale : value,
       )
-      if (!Number.isNaN(min)) value = Math.max(min, value)
-      if (!Number.isNaN(max)) value = Math.min(max, value)
+      if (min !== undefined) value = Math.max(min, value)
+      if (max !== undefined) value = Math.min(max, value)
     } else {
       value = node.checked ? 1 : 0
     }
