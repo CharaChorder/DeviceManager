@@ -42,23 +42,30 @@
     {@const r2 = r1 - sizeY + innerMargin * 2}
     {@const p2 = r2 - innerMargin}
     {@const multiplier = 1.25}
-    <g style:transform="rotateZ({key.rotate}deg) translate({innerMargin}px, {innerMargin}px)">
-      <path
-        d="M{posX + p1},{posY} a{r1},{r1} 0 0,1 {-p1},{p1} l0,{-(p1 - p2)} a{r2},{r2} 0 0,0 {p2},{-p2}z"
-      />
-      <KeyText
-        {key}
-        middle={[sizeY - margin * 2, sizeY - margin * 2]}
-        pos={[posX, posY]}
-        rotate={-key.rotate}
-        fontSizeMultiplier={multiplier}
-        positions={[
-          [-0.5, -0.5],
-          [0.5, -0.5],
-          [-0.5, 0.5],
-        ]}
-      />
-    </g>
+
+    {@const rotateRad = (key.rotate + 45) * (Math.PI / 180)}
+    {@const rotX = Math.round((Math.abs(Math.cos(rotateRad - Math.PI / 2)) + Number.EPSILON) * 100) / 100}
+    {@const rotY = Math.round((Math.abs(Math.sin(rotateRad - Math.PI / 2)) + Number.EPSILON) * 100) / 100}
+
+    {@const rc = r1 - (r1 - r2) / 2}
+    {@const middleX = Math.cos(rotateRad) * rc}
+    {@const middleY = Math.sin(rotateRad) * rc}
+    <path
+      style:transform="rotateZ({key.rotate}deg) translate({innerMargin}px, {innerMargin}px)"
+      d="M{posX + p1},{posY} a{r1},{r1} 0 0,1 {-p1},{p1} l0,{-(p1 - p2)} a{r2},{r2} 0 0,0 {p2},{-p2}z"
+    />
+    <KeyText
+      {key}
+      middle={[middleX, middleY]}
+      pos={[posX, posY]}
+      rotate={0}
+      fontSizeMultiplier={multiplier}
+      positions={[
+        [-rotY, -rotX],
+        [-rotX, -rotY],
+        [rotX, rotY],
+      ]}
+    />
   {/if}
 </g>
 
@@ -71,6 +78,7 @@
     transform-box: fill-box;
   }
 
+  path,
   g {
     transform-origin: top left;
     transform-box: fill-box;

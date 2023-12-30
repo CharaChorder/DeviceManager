@@ -30,7 +30,10 @@
     (title ?? id ?? `0x${code.toString(16)}`) +
     (variant === "left" ? " (left)" : variant === "right" ? " (right)" : "")}
   {@const isActive = layer === $activeLayer}
-  {@const direction = [(middle[0] - margin * 3) / position[0], (middle[1] - margin * 3) / position[1]]}
+  {@const direction = [
+    Math.sign(middle[0]) * (Math.abs(middle[0]) - margin * 3) * position[0],
+    Math.sign(middle[1]) * (Math.abs(middle[1]) - margin * 3) * position[1],
+  ]}
   {@const hasIcon = !dynamicMapping && !!icon}
   <text
     fill={isApplied ? "currentcolor" : "var(--md-sys-color-primary)"}
@@ -43,7 +46,9 @@
     font-family={hasIcon ? "Material Symbols Rounded" : undefined}
     opacity={isActive ? 1 : inactiveOpacity}
     style:scale={isActive ? 1 : inactiveScale}
-    style:translate={isActive ? "0 0 0" : `${direction[0]}px ${direction[1]}px 0`}
+    style:translate={isActive
+      ? "0 0 0"
+      : `${direction[0].toPrecision(2)}px ${direction[1].toPrecision(2)}px 0`}
     style:rotate="{rotate}deg"
     use:action={{title: tooltip}}
   >
