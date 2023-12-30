@@ -87,7 +87,8 @@
 </script>
 
 <svelte:head>
-  <title>Chord Manager</title>
+  <title>Chord Manager - CharaChorder Device Manager</title>
+  <meta name="description" content="Manage your chords" />
 </svelte:head>
 
 <div class="search-container">

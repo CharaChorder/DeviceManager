@@ -49,6 +49,11 @@
   setContext("active-layer", writable(0))
 </script>
 
+<svelte:head>
+  <title>Layout Manager - CharaChorder Device Manager</title>
+  <meta name="description" content="Edit your layout" />
+</svelte:head>
+
 <svelte:window use:share={shareLayout} />
 
 <section>

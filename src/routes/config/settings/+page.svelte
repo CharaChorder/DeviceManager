@@ -6,6 +6,11 @@
   import ResetPopup from "./ResetPopup.svelte"
 </script>
 
+<svelte:head>
+  <title>Device Settings - CharaChorder Device Manager</title>
+  <meta name="description" content="Change your device's settings" />
+</svelte:head>
+
 {#if $serialPort}
   <form>
     <fieldset>
