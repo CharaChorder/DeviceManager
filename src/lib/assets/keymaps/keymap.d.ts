@@ -2,6 +2,7 @@ export interface KeymapCategory {
   name: string
   description: string
   icon?: string
+  display?: string
   type?: "unassigned"
   actions: Record<number, Partial<ActionInfo>>
 }

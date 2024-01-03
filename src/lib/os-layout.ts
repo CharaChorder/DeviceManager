@@ -34,6 +34,7 @@ export function runLayoutDetection() {
       })
     })
   }
-  window.addEventListener("keydown", keydown)
-  window.addEventListener("keyup", keyup)
+  // TODO: do we want this?
+  //window.addEventListener("keydown", keydown)
+  //window.addEventListener("keyup", keyup)
 }

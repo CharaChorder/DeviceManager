@@ -31,7 +31,7 @@
     class:right={info.variant === "right"}
     use:title={{title: tooltip}}
   >
-    {info.icon ?? info.id ?? `0x${info.code.toString(16)}`}
+    {info.icon ?? info.display ?? info.id ?? `0x${info.code.toString(16)}`}
   </kbd>
 {:else if display === "inline-keys"}
   {#if !info.icon && info.id?.length === 1}
@@ -44,7 +44,7 @@
       class:icon={!!info.icon}
       use:title={{title: tooltip}}
     >
-      {info.icon ?? info.id ?? `0x${info.code.toString(16)}`}</kbd
+      {info.icon ?? info.display ?? info.id ?? `0x${info.code.toString(16)}`}</kbd
     >
   {/if}
 {/if}

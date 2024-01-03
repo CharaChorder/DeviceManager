@@ -151,4 +151,3 @@ actions:
   127:
     id: "DEL"
     title: Delete
-    icon: delete_forever

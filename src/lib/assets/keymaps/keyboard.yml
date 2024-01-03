@@ -4,9 +4,9 @@ icon: keyboard
 actions:
   512: &left_ctrl
     id: "LEFT_CTRL"
+    display: CTRL
     title: Control Keyboard Modifier
     variant: left
-    icon: keyboard_control_key
   513: &left_shift
     id: "LEFT_SHIFT"
     title: Shift Keyboard Modifier
@@ -14,14 +14,14 @@ actions:
     icon: shift
   514: &left_alt
     id: "LEFT_ALT"
+    display: ALT
     title: Alt Keyboard Modifier
     variant: left
-    icon: keyboard_option_key
   515: &left_gui
     id: "LEFT_GUI"
     title: GUI Keyboard Modifier
+    icon: apps
     variant: left
-    icon: keyboard_command_key
   516:
     variationOf: 512
     <<: *left_ctrl

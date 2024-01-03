@@ -26,7 +26,7 @@ actions:
   536:
     id: "DUP"
     title: Repeat Last Note
-    icon: control_point_duplicate
+    icon: copy_all
     description: |
       In character entry, it repeats your last input.
       In chorded entry, it is used for words with repeating letters.

@@ -24,7 +24,7 @@
 
 {#each positions as position, layer}
   {@const {action: actionId, isApplied} = $layout[layer][key.id] ?? {action: 0, isApplied: true}}
-  {@const {code, icon, id, title, keyCode, variant} = KEYMAP_CODES[actionId] ?? {code: actionId}}
+  {@const {code, icon, id, display, title, keyCode, variant} = KEYMAP_CODES[actionId] ?? {code: actionId}}
   {@const dynamicMapping = keyCode && $osLayout[JSON.stringify([keyCode])]}
   {@const tooltip =
     (title ?? id ?? `0x${code.toString(16)}`) +
@@ -53,7 +53,7 @@
     use:action={{title: tooltip}}
   >
     {#if code !== 0}
-      {dynamicMapping || icon || id || `0x${code.toString(16)}`}
+      {dynamicMapping || icon || display || id || `0x${code.toString(16)}`}
     {/if}
     {#if !isApplied}
       <tspan>•</tspan>
