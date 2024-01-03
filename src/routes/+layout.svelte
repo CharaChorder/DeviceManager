@@ -4,7 +4,7 @@
   import "$lib/style/scrollbar.scss"
   import "$lib/style/tippy.scss"
   import "$lib/style/theme.scss"
-  import {onMount} from "svelte"
+  import {onDestroy, onMount} from "svelte"
   import {applyTheme, argbFromHex, themeFromSourceColor} from "@material/material-color-utilities"
   import Navigation from "./Navigation.svelte"
   import {canAutoConnect} from "$lib/serial/device"
@@ -29,9 +29,10 @@
   const locale = ((browser && localStorage.getItem("locale")) as Locales) || detectLocale()
   loadLocale(locale)
   setLocale(locale)
+  let stopLayoutDetection: () => void
 
   if (browser) {
-    runLayoutDetection()
+    stopLayoutDetection = runLayoutDetection()
     tippy.setDefaultProps({
       animation: "shift-away",
       theme: "surface-variant",
@@ -64,6 +65,10 @@
       url.searchParams.delete("import")
       await goto(url.href, {replaceState: true})
     }
+  })
+
+  onDestroy(() => {
+    stopLayoutDetection?.()
   })
 
   let webManifestLink = ""
