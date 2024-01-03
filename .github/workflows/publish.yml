@@ -1,8 +1,8 @@
-name: "publish"
+name: "publish desktop apps"
 on:
   push:
     tags:
-      - "v*"
+      - "desktop-app-v*"
   workflow_dispatch:
 
 jobs:
