@@ -9,7 +9,7 @@
   export let display: "inline-keys" | "keys" = "inline-keys"
 
   $: info = typeof action === "number" ? KEYMAP_CODES[action] ?? {code: action} : action
-  $: dynamicMapping = info.keyCode && $osLayout[JSON.stringify([info.keyCode])]
+  $: dynamicMapping = info.keyCode && $osLayout.get(info.keyCode)
 
   $: tooltip =
     (info.title ?? info.id ?? `0x${info.code.toString(16)}`) +
