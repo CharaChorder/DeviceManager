@@ -11,6 +11,7 @@ export interface ActionInfo {
   id: string
   title: string
   icon: string
+  display: string
   description: string
   variant: "left" | "right"
   variantOf: number
