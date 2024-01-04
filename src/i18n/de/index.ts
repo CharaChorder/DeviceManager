@@ -14,6 +14,7 @@ const de = {
   sync: {
     TITLE_READ: "Neueste Änderungen werden abgerufen",
     TITLE_WRITE: "Änderungen werden gespeichert",
+    RELOAD: "Neu laden",
   },
   backup: {
     TITLE: "Verlauf speichern",

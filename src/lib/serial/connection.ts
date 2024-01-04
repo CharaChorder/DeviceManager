@@ -55,6 +55,12 @@ export async function initSerial(manual = false) {
   const device = get(serialPort) ?? new CharaDevice()
   await device.init(manual)
   serialPort.set(device)
+  sync()
+}
+
+export async function sync() {
+  const device = get(serialPort)
+  if (!device) return
   const chordCount = await device.getChordCount()
   syncStatus.set("downloading")
 

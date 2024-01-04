@@ -1,21 +1,32 @@
 <script lang="ts">
-  import {syncProgress, syncStatus} from "$lib/serial/connection"
+  import {serialPort, syncProgress, syncStatus, sync} from "$lib/serial/connection"
   import LL from "../i18n/i18n-svelte"
-  import {fly} from "svelte/transition"
+  import {slide} from "svelte/transition"
 </script>
 
-{#if $syncStatus !== "done"}
-  <div transition:fly={{y: 40}}>
-    <progress max={$syncProgress?.max ?? 1} value={$syncProgress?.current ?? 1}></progress>
-    {#if $syncStatus === "downloading"}
-      <div>{$LL.sync.TITLE_READ()}</div>
-    {:else}
-      <div>{$LL.sync.TITLE_WRITE()}</div>
-    {/if}
-  </div>
-{/if}
+<div class="container">
+  {#if $syncStatus !== "done"}
+    <div transition:slide>
+      <progress max={$syncProgress?.max ?? 1} value={$syncProgress?.current ?? 1}></progress>
+      {#if $syncStatus === "downloading"}
+        <div>{$LL.sync.TITLE_READ()}</div>
+      {:else}
+        <div>{$LL.sync.TITLE_WRITE()}</div>
+      {/if}
+    </div>
+  {:else if $serialPort}
+    <button transition:slide on:click={sync}><span class="icon">refresh</span>{$LL.sync.RELOAD()}</button>
+  {/if}
+</div>
 
 <style lang="scss">
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
   div {
     font-size: 12px;
   }

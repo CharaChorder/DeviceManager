@@ -92,6 +92,7 @@ const config = {
     "stat_2",
     "description",
     "add_circle",
+    "refresh",
   ],
   codePoints: {
     speed: "e9e4",

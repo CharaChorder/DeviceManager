@@ -21,6 +21,7 @@ const en = {
   sync: {
     TITLE_READ: "Reading latest changes",
     TITLE_WRITE: "Saving changes to device",
+    RELOAD: "Reload",
   },
   modal: {
     CLOSE: "Close",
