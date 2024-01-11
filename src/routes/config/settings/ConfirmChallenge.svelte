@@ -11,7 +11,7 @@
   const dispatch = createEventDispatcher()
 </script>
 
-<h3>Type the following to confim the action</h3>
+<h3>Type the following to confirm the action</h3>
 
 <p>{challengeString}</p>
 <input type="text" bind:value={challengeInput} placeholder={challengeString} />
