@@ -3,7 +3,9 @@ description: OS-Layout sensitive keycodes
 actions:
   256:
     id: "KSC_00"
+    icon: block
     title: No Key Pressed
+    description: Also commonly used at the end of a chord to remove auto-spaces
   257:
     id: "KSC_01"
     title: Keyboard Error Roll Over
