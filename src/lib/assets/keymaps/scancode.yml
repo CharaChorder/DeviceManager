@@ -920,35 +920,27 @@ actions:
     description: Not required to be supported by any OS
   480:
     id: "KSC_E0"
-    keyCode: "ControlLeft"
     title: Keyboard Left Control
   481:
     id: "KSC_E1"
-    keyCode: "ShiftLeft"
     title: Keyboard Left Shift
   482:
     id: "KSC_E2"
-    keyCode: "AltLeft"
     title: Keyboard Left Alt
   483:
     id: "KSC_E3"
-    keyCode: "MetaLeft"
     title: Keyboard Left GUI
   484:
     id: "KSC_E4"
-    keyCode: "ControlRight"
     title: Keyboard Right Control
   485:
     id: "KSC_E5"
-    keyCode: "ShiftRight"
     title: Keyboard Right Shift
   486:
     id: "KSC_E6"
-    keyCode: "AltRight"
     title: Keyboard Right Alt
   487:
     id: "KSC_E7"
-    keyCode: "MetaRight"
     title: Keyboard Right GUI
   488:
     id: "KSC_E8"

@@ -33,7 +33,3 @@ export const KEYMAP_IDS: Map<string, KeyInfo> = new Map(
     ),
   ).filter(([id]) => id !== undefined),
 )
-
-export const specialKeycodes = new Map([
-  [" ", 32], // Space
-])

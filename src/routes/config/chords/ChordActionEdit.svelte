@@ -28,7 +28,12 @@
   function keydown(event: KeyboardEvent) {
     if (!editing) return
     event.preventDefault()
-    pressedKeys.add(inputToAction(event, get(serialPort)?.device === "X")!)
+    const input = inputToAction(event, get(serialPort)?.device === "X")
+    if (input == undefined) {
+      alert("Invalid key")
+      return
+    }
+    pressedKeys.add(input)
     pressedKeys = pressedKeys
   }
 

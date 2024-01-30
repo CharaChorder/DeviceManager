@@ -1,7 +1,5 @@
 <script lang="ts">
-  import {KEYMAP_IDS, specialKeycodes} from "$lib/serial/keymap-codes"
   import {tick} from "svelte"
-  import ActionSelector from "$lib/components/layout/ActionSelector.svelte"
   import {changes, ChangeType} from "$lib/undo-redo"
   import type {ChordInfo} from "$lib/undo-redo"
   import {scale} from "svelte/transition"
@@ -26,6 +24,7 @@
     } else if (event.key === "Delete") {
       deleteAction(cursorPosition)
     } else {
+      if (event.key === "Shift") return
       const action = inputToAction(event, get(serialPort)?.device === "X")
       if (action !== undefined) {
         insertAction(cursorPosition, action)

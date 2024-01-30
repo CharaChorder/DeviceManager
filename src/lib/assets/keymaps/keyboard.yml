@@ -6,41 +6,49 @@ actions:
     id: "LEFT_CTRL"
     display: CTRL
     title: Control Keyboard Modifier
+    keyCode: ControlLeft
     variant: left
   513: &left_shift
     id: "LEFT_SHIFT"
     title: Shift Keyboard Modifier
+    keyCode: ShiftLeft
     variant: left
     icon: shift
   514: &left_alt
     id: "LEFT_ALT"
     display: ALT
     title: Alt Keyboard Modifier
+    keyCode: AltLeft
     variant: left
   515: &left_gui
     id: "LEFT_GUI"
     title: GUI Keyboard Modifier
+    keyCode: MetaLeft
     icon: apps
     variant: left
   516:
     variationOf: 512
     <<: *left_ctrl
     id: "RIGHT_CTRL"
+    keyCode: ControlRight
     variant: right
   517:
     variationOf: 513
     <<: *left_shift
     id: "RIGHT_SHIFT"
+    keyCode: ShiftRight
     variant: right
   518:
     variationOf: 514
     <<: *left_alt
     id: "RIGHT_ALT"
+    keyCode: AltRight
     variant: right
   519:
     variationOf: 515
     <<: *left_gui
     id: "RIGHT_GUI"
+    keyCode: MetaRight
     variant: right
   520:
     id: "RELEASE_MOD"
