@@ -9,7 +9,6 @@ export const setting: Action<HTMLInputElement, {id: number; inverse?: number; sc
   const type = node.getAttribute("type") as "number" | "checkbox"
   const min = node.hasAttribute("min") ? Number(node.getAttribute("min")) : undefined
   const max = node.hasAttribute("max") ? Number(node.getAttribute("max")) : undefined
-  console.log(min, max, "|", id, "|", node.getAttribute("min"), node.getAttribute("max"))
 
   const unsubscribe = settings.subscribe(async settings => {
     if (id in settings) {
