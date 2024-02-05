@@ -12,9 +12,9 @@ const en = {
     TITLE: "Update your device",
   },
   backup: {
-    TITLE: "Store History",
+    TITLE: "Local backup",
     INDIVIDUAL: "Individual backups",
-    DISCLAIMER: "Your history is stored as a backup in this browser. The history remains on your computer.",
+    DISCLAIMER: "A backup is made and stored in this browser, and always remains only on your computer.",
     DOWNLOAD: "Download Everything",
     RESTORE: "Restore",
   },

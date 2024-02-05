@@ -17,10 +17,9 @@ const de = {
     RELOAD: "Neu laden",
   },
   backup: {
-    TITLE: "Verlauf speichern",
+    TITLE: "Lokale Kopie",
     INDIVIDUAL: "Einzeldateien",
-    DISCLAIMER:
-      "Der Verlauf wird als Backup in diesem Browser gespeichert. Der Verlauf bleibt auf diesem Computer.",
+    DISCLAIMER: "Das Backup in diesem Browser gespeichert und bleibt nur auf diesem Computer.",
     DOWNLOAD: "Alles herunterladen",
     RESTORE: "Wiederherstellen",
   },
