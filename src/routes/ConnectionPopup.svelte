@@ -4,6 +4,7 @@
   import {slide, fade} from "svelte/transition"
   import {preference} from "$lib/preferences"
   import LL from "../i18n/i18n-svelte"
+  import Tooltip from "$lib/components/Tooltip.svelte"
 
   function reboot() {
     $serialPort?.reboot()
@@ -51,6 +52,11 @@
       <br />
       Version {$serialPort.version}
     </p>
+    {#if $serialPort.version.toString() !== import.meta.env.VITE_LATEST_FIRMWARE}
+      <a href="https://docs.charachorder.com/CharaChorder%20One.html#updating-the-firmware"
+        >Firmware Update Instructions</a
+      >
+    {/if}
     <!--<button on:click={updateFirmware}>Update</button>-->
   {/if}
 

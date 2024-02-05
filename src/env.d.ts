@@ -12,6 +12,7 @@ interface ImportMetaEnv {
   readonly VITE_BUGS_URL: string
   readonly VITE_DOCS_URL: string
   readonly VIET_LEARN_URL: string
+  readonly VITE_LATEST_FIRMWARE: string
 }
 
 interface ImportMeta {

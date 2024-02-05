@@ -17,6 +17,7 @@ process.env.VITE_HOMEPAGE_URL = repository.url.replace(/\.git$/, "")
 process.env.VITE_DOCS_URL = homepage
 process.env.VITE_BUGS_URL = bugs.url
 process.env.VITE_LEARN_URL = "https://www.iq-eq.io/"
+process.env.VITE_LATEST_FIRMWARE = "1.1.3"
 
 export default defineConfig({
   build: {
