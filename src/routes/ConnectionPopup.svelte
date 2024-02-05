@@ -4,7 +4,7 @@
   import {slide, fade} from "svelte/transition"
   import {preference} from "$lib/preferences"
   import LL from "../i18n/i18n-svelte"
-  import Tooltip from "$lib/components/Tooltip.svelte"
+  import {downloadBackup} from "$lib/backup/backup"
 
   function reboot() {
     $serialPort?.reboot()
@@ -16,6 +16,7 @@
   }
 
   function bootloader() {
+    downloadBackup()
     $serialPort?.bootloader()
     $serialPort = undefined
     rebootInfo = true
