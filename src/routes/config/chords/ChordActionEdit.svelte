@@ -66,12 +66,19 @@
       })
     })
   }
+
+  $: chordActions = chord?.actions.slice(chord.actions.lastIndexOf(0) + 1).toSorted(compare)
+  $: compoundIndices = chord?.actions.slice(0, chord.actions.indexOf(0))
+
+  $: {
+    console.log(chord?.actions, chordActions, compoundIndices)
+  }
 </script>
 
 <button
   class:deleted={chord && chord.deleted}
   class:edited={chord && chord.actionsChanged}
-  class:invalid={chord && chord.actions.toSorted(compare).some((it, i) => chord?.actions[i] !== it)}
+  class:invalid={chord && chordActions?.some((it, i) => chordActions?.[i] !== it)}
   class="chord"
   on:click={edit}
   on:keydown={keydown}
@@ -82,7 +89,15 @@
   {:else if !editing && !chord}
     <span>{$LL.configure.chords.NEW_CHORD()}</span>
   {/if}
-  <ActionString display="keys" actions={editing ? [...pressedKeys].sort(compare) : chord?.actions ?? []} />
+  {#if !editing}
+    {#each compoundIndices ?? [] as index}
+      <sub>{index}</sub>
+    {/each}
+    {#if compoundIndices?.length}
+      <span>&rarr;</span>
+    {/if}
+  {/if}
+  <ActionString display="keys" actions={editing ? [...pressedKeys].sort(compare) : chordActions ?? []} />
   <button class="icon add" on:click|stopPropagation={addSpecial}>add_circle</button>
   <sup>•</sup>
 </button>

@@ -48,9 +48,7 @@ export function deserializeActions(native: bigint): number[] {
   const actions = []
   for (let i = 0; i < 12; i++) {
     const action = Number(native & 0x3ffn)
-    if (action !== 0) {
-      actions.push(action)
-    }
+    actions.push(action)
     native >>= 10n
   }
 
