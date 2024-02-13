@@ -1,0 +1,1 @@
+{"version":3,"file":"3.9b930cb7.js","sources":["../../../../../../src/routes/+page.ts"],"sourcesContent":["import {redirect} from \"@sveltejs/kit\"\nimport type {PageLoad} from \"./$types\"\n\nexport const load = (() => {\n  throw redirect(302, \"/config/\")\n}) satisfies PageLoad\n"],"names":["load","redirect"],"mappings":"gDAGO,MAAMA,EAAQ,IAAM,CACnB,MAAAC,EAAS,IAAK,UAAU,CAChC"}

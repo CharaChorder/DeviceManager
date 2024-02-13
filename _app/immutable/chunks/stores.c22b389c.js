@@ -1,0 +1,2 @@
+import{d as e}from"./singletons.f6466d31.js";const r=()=>{const s=e;return{page:{subscribe:s.page.subscribe},navigating:{subscribe:s.navigating.subscribe},updated:s.updated}},b={subscribe(s){return r().page.subscribe(s)}};export{b as p};
+//# sourceMappingURL=stores.c22b389c.js.map
