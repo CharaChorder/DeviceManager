@@ -91,3 +91,19 @@ actions:
     <<: *tertiary_keymap
     id: "KM_3_R"
     variant: right
+  576:
+    id: ACTION_DELAY_1000
+    icon: clock_loader_90
+    description: Wait for one second
+  577:
+    id: ACTION_DELAY_100
+    icon: clock_loader_60
+    description: Wait for 100 milliseconds
+  578:
+    id: ACTION_DELAY_10
+    icon: clock_loader_40
+    description: Wait for 10 milliseconds
+  579:
+    id: ACTION_DELAY_1
+    icon: clock_loader_10
+    description: Wait for one millisecond
