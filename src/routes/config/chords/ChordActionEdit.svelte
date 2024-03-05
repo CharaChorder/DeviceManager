@@ -69,10 +69,6 @@
 
   $: chordActions = chord?.actions.slice(chord.actions.lastIndexOf(0) + 1).toSorted(compare)
   $: compoundIndices = chord?.actions.slice(0, chord.actions.indexOf(0))
-
-  $: {
-    console.log(chord?.actions, chordActions, compoundIndices)
-  }
 </script>
 
 <button

@@ -40,6 +40,16 @@ export async function canAutoConnect() {
   return getViablePorts().then(it => it.length === 1)
 }
 
+function timeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: number
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      timer = setTimeout(() => reject(new Error("Timeout")), ms) as unknown as number
+    }),
+  ]).finally(() => clearTimeout(timer))
+}
+
 export class CharaDevice {
   private port!: SerialPort
   private reader!: ReadableStreamDefaultReader<string>
@@ -124,15 +134,25 @@ export class CharaDevice {
   }
 
   private async internalRead() {
-    const {value} = await this.reader.read()
-    serialLog.update(it => {
-      it.push({
-        type: "output",
-        value: value!,
+    try {
+      const {value} = await timeout(this.reader.read(), 5000)
+      serialLog.update(it => {
+        it.push({
+          type: "output",
+          value: value!,
+        })
+        return it
       })
-      return it
-    })
-    return value!
+      return value!
+    } catch (e) {
+      serialLog.update(it => {
+        it.push({
+          type: "output",
+          value: `${e}`,
+        })
+        return it
+      })
+    }
   }
 
   /**
@@ -169,31 +189,32 @@ export class CharaDevice {
     }
     const send = this.internalSend.bind(this)
     const read = this.internalRead.bind(this)
-    const exec = new Promise<T>(async resolve => {
-      let result!: T
-      try {
-        if (this.suspendDebounceId) {
-          clearTimeout(this.suspendDebounceId)
-        } else {
-          await this.wake()
-        }
-        result = await callback(send, read)
-      } finally {
-        delete this.lock
-        this.suspendDebounceId = setTimeout(() => {
-          // cannot be locked here as all the code until clearTimeout is sync
-          console.assert(this.lock === undefined)
-          this.lock = this.suspend().then(() => {
-            delete this.lock
-            delete this.suspendDebounceId
-            return true
-          })
-        }, this.suspendDebounce) as any
-        resolve(result)
-      }
+    let resolveLock: (result: true) => void
+    this.lock = new Promise<true>(resolve => {
+      resolveLock = resolve
     })
-    this.lock = exec.then(() => true)
-    return exec
+    let result!: T
+    try {
+      if (this.suspendDebounceId) {
+        clearTimeout(this.suspendDebounceId)
+      } else {
+        await this.wake()
+      }
+      result = await callback(send, read)
+    } finally {
+      delete this.lock
+      this.suspendDebounceId = setTimeout(() => {
+        // cannot be locked here as all the code until clearTimeout is sync
+        console.assert(this.lock === undefined)
+        this.lock = this.suspend().then(() => {
+          delete this.lock
+          delete this.suspendDebounceId
+          return true
+        })
+      }, this.suspendDebounce) as any
+      resolveLock!(true)
+      return result
+    }
   }
 
   /**
