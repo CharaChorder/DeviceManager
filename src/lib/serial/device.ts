@@ -117,6 +117,13 @@ export class CharaDevice {
     })
     this.reader.releaseLock()
     await this.port.close()
+    serialLog.update(it => {
+      it.push({
+        type: "system",
+        value: "Connection suspended",
+      })
+      return it
+    })
   }
 
   private async wake() {
@@ -131,6 +138,13 @@ export class CharaDevice {
         signal: this.abortController2.signal,
       })
       .getReader()
+    serialLog.update(it => {
+      it.push({
+        type: "system",
+        value: "Connection resumed",
+      })
+      return it
+    })
   }
 
   private async internalRead() {
