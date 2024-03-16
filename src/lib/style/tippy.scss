@@ -22,6 +22,17 @@ $padding: 16px;
       border-#{$placement}-color: var(--md-sys-color-surface-variant);
     }
   }
+
+  @media (forced-colors: active) {
+    color: CanvasText;
+    background-color: Canvas;
+    filter: none;
+    border: 1px solid CanvasText;
+
+    > .tippy-arrow {
+      display: none;
+    }
+  }
 }
 
 .tippy-box[data-theme~="tooltip"] {

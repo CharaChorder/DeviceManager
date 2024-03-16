@@ -13,8 +13,10 @@
   },
   "scripts": {
     "dev": "npm-run-all --parallel vite typesafe-i18n",
+    "dev:external": "npm-run-all --parallel vite:external typesafe-i18n",
     "dev:tauri": "tauri dev",
     "vite": "vite dev",
+    "vite:external": "vite --host",
     "build": "typesafe-i18n --no-watch && vite build",
     "build:tauri": "tauri build",
     "tauri": "tauri",

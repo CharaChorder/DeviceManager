@@ -19,10 +19,23 @@ button {
 
   font-family: inherit;
   font-weight: 600;
-  color: currentcolor;
 
-  background: transparent;
-  border: none;
+  @media not (forced-colors: active) {
+    color: currentcolor;
+    background: transparent;
+    border: none;
+
+    &.primary {
+      color: var(--md-sys-color-on-primary);
+      background: var(--md-sys-color-primary);
+    }
+  }
+
+  @media (forced-colors: active) {
+    border: 1px solid ButtonBorder;
+    color: ButtonText;
+  }
+
   border-radius: 32px;
 
   transition: all 250ms ease;
@@ -37,11 +50,11 @@ button {
     font-size: 24px;
 
     border-radius: 50%;
-  }
 
-  &.primary {
-    color: var(--md-sys-color-on-primary);
-    background: var(--md-sys-color-primary);
+    @media (forced-colors: active) {
+      padding: 2px;
+      margin: 2px;
+    }
   }
 
   &.compact {
@@ -49,27 +62,48 @@ button {
   }
 }
 
-label:has(input):hover,
-.button:hover:not(:active),
-a:hover:not(:active),
-button:hover:not(:active) {
-  filter: brightness(70%);
-  transition: filter 250ms ease;
+@media not (forced-colors: active) {
+  label:has(input):hover,
+  .button:hover:not(:active),
+  a:hover:not(:active),
+  button:hover:not(:active) {
+    filter: brightness(70%);
+    transition: filter 250ms ease;
 
-  &:has(:checked),
-  &.active {
-    filter: brightness(120%);
+    &:has(:checked),
+    &.active {
+      filter: brightness(120%);
+    }
+
+    &:disabled,
+    &.disabled {
+      opacity: 0.5;
+      filter: none;
+    }
   }
+}
 
-  &:disabled,
-  &.disabled {
-    opacity: 0.5;
-    filter: none;
+@media (forced-colors: active) {
+  label:has(input) .button,
+  a button {
+    &:hover {
+      color: ActiveText;
+    }
+    &.active,
+    &:active {
+      color: SelectedItemText;
+      background: SelectedItem;
+    }
   }
 }
 
 .disabled,
 :disabled {
   pointer-events: none;
-  opacity: 0.5;
+  @media not (forced-colors: active) {
+    opacity: 0.5;
+  }
+  @media (forced-colors: active) {
+    color: GrayText;
+  }
 }

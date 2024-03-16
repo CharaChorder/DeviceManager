@@ -48,16 +48,28 @@
     padding: 8px;
 
     font-family: "Noto Sans Mono", monospace;
-    color: inherit;
-
-    background: transparent;
-    border: none;
     border-radius: 8px;
 
-    &:focus-visible {
-      color: var(--md-sys-color-on-surface-variant);
-      background: var(--md-sys-color-surface-variant);
-      outline: none;
+    @media not (forced-colors: active) {
+      color: inherit;
+
+      background: transparent;
+      border: none;
+
+      &:focus-visible {
+        color: var(--md-sys-color-on-surface-variant);
+        background: var(--md-sys-color-surface-variant);
+        outline: none;
+      }
+    }
+
+    @media (forced-colors: active) {
+      border: 1px solid ButtonBorder;
+      margin-block: 4px;
+
+      &:hover {
+        color: ActiveText;
+      }
     }
   }
 

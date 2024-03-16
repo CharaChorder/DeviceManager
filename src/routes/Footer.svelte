@@ -66,10 +66,10 @@
     <SyncOverlay />
   </div>
   <ul>
-    <li>
+    <li class="hide-forced-colors">
       <input use:action={{title: $LL.profile.theme.COLOR_SCHEME()}} type="color" bind:value={$theme.color} />
     </li>
-    <li>
+    <li class="hide-forced-colors">
       {#if $theme.mode === "light"}
         <button use:action={{title: $LL.profile.theme.DARK_MODE()}} class="icon" on:click={switchTheme}>
           dark_mode
@@ -155,6 +155,10 @@
     @media (prefers-contrast: more) {
       opacity: 0.8;
     }
+
+    @media (forced-colors: active) {
+      opacity: unset;
+    }
   }
 
   ul {
@@ -194,5 +198,11 @@
 
   .icon {
     font-size: 16px;
+  }
+
+  @media (forced-colors: active) {
+    .hide-forced-colors {
+      display: none;
+    }
   }
 </style>

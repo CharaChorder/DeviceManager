@@ -186,6 +186,7 @@
     height: 100%;
 
     background: rgba(0 0 0 / 60%);
+
     border: none;
   }
 
@@ -211,6 +212,11 @@
     @media (prefers-contrast: more) {
       opacity: 0.8;
     }
+
+    @media (forced-colors: active) {
+      opacity: 1;
+      color: GrayText;
+    }
   }
 
   .search-row {
@@ -235,6 +241,10 @@
 
     background: var(--md-sys-color-background);
     border-radius: 16px;
+
+    @media (forced-colors: active) {
+      border: 1px solid CanvasText;
+    }
   }
 
   input[type="search"] {
@@ -301,6 +311,10 @@
 
       background: var(--md-sys-color-primary);
       border-radius: 0 0 8px 8px;
+    }
+
+    @media (forced-colors: active) {
+      background: Mark;
     }
   }
 </style>
