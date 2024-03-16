@@ -153,16 +153,25 @@
   }
 
   textarea {
-    transition: border-color 250ms ease;
+    transition: outline-color 250ms ease;
     background: none;
     color: inherit;
-    border: 1px dashed var(--md-sys-color-surface-variant);
+    outline: 1px dashed var(--md-sys-color-surface-variant);
+    margin: 2px;
+    border: none;
     padding: 8px;
     border-radius: 4px;
 
+    @media (prefers-contrast: more) {
+      outline-color: var(--md-sys-color-outline);
+
+      &:focus {
+        outline-width: 2px;
+      }
+    }
+
     &:focus {
-      outline: none;
-      border-color: var(--md-sys-color-primary);
+      outline-color: var(--md-sys-color-primary);
     }
   }
 
@@ -185,13 +194,23 @@
 
     transition: all 250ms ease;
 
+    @media (prefers-contrast: more) {
+      border-color: var(--md-sys-color-outline);
+      border-style: dashed;
+    }
+
     &::placeholder {
       color: var(--md-sys-color-on-surface-variant);
       opacity: 0.2;
+
+      @media (prefers-contrast: more) {
+        opacity: 0.8;
+      }
     }
 
     &:focus {
       border-color: var(--md-sys-color-primary);
+      border-style: solid;
       outline: none;
     }
   }

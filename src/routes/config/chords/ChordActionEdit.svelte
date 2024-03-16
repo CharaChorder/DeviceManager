@@ -101,6 +101,10 @@
 <style lang="scss">
   span {
     opacity: 0.5;
+
+    @media (prefers-contrast: more) {
+      opacity: 0.8;
+    }
   }
 
   sup {

@@ -207,6 +207,10 @@
 
       background: var(--md-sys-color-background);
     }
+
+    @media (prefers-contrast: more) {
+      opacity: 0.8;
+    }
   }
 
   .search-row {

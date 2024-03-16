@@ -44,8 +44,8 @@
     y={pos[1] + middle[1]}
     font-size={fontSizeMultiplier * (hasIcon ? iconFontSize : fontSize)}
     font-family={hasIcon ? "Material Symbols Rounded" : undefined}
-    opacity={isActive ? 1 : inactiveOpacity}
-    style:scale={isActive ? 1 : inactiveScale}
+    opacity={isActive ? 1 : `var(--inactive-opacity, ${inactiveOpacity})`}
+    style:scale={isActive ? 1 : `var(--inactive-scale, ${inactiveScale})`}
     style:translate={isActive
       ? "0 0 0"
       : `${direction[0].toPrecision(2)}px ${direction[1].toPrecision(2)}px 0`}
@@ -75,6 +75,11 @@
       opacity #{$transition} ease,
       translate #{$transition} ease,
       scale #{$transition} ease;
+
+    @media (prefers-contrast: more) {
+      --inactive-opacity: 0.8;
+      --inactive-scale: 0.7;
+    }
   }
 
   text:focus-within {

@@ -151,6 +151,10 @@
     padding-block-start: 0;
 
     opacity: 0.4;
+
+    @media (prefers-contrast: more) {
+      opacity: 0.8;
+    }
   }
 
   ul {
