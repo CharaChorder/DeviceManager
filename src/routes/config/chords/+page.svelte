@@ -3,7 +3,7 @@
   import FlexSearch from "flexsearch";
   import LL from "../../../i18n/i18n-svelte";
   import { action } from "$lib/title";
-  import { onDestroy, onMount, setContext } from "svelte";
+  import { onDestroy, onMount, setContext, tick } from "svelte";
   import { changes, ChangeType, chords } from "$lib/undo-redo";
   import type { ChordInfo } from "$lib/undo-redo";
   import { derived, writable } from "svelte/store";
@@ -12,11 +12,15 @@
   import ChordActionEdit from "./ChordActionEdit.svelte";
   import { browser } from "$app/environment";
   import { expoOut } from "svelte/easing";
+  import { osLayout } from "$lib/os-layout";
 
   const resultSize = 38;
   let results: HTMLElement;
   const pageSize = writable(0);
   let resizeObserver: ResizeObserver;
+
+  let abortIndexing: (() => void) | undefined;
+  let progress = 0;
 
   onMount(() => {
     resizeObserver = new ResizeObserver(() => {
@@ -30,18 +34,42 @@
     resizeObserver?.disconnect();
   });
 
-  let searchIndex = derived(chords, (chords) => buildIndex(chords));
+  let index = new FlexSearch.Index({ tokenize: "full" });
+  let searchIndex = writable<FlexSearch.Index | undefined>(undefined);
+  $: {
+    abortIndexing?.();
+    progress = 0;
+    buildIndex($chords, $osLayout).then(searchIndex.set);
+  }
 
-  async function buildIndex(chords: ChordInfo[]): Promise<FlexSearch.Index> {
-    const index = new FlexSearch.Index({ tokenize: "full" });
+  async function buildIndex(
+    chords: ChordInfo[],
+    osLayout: Map<string, string>,
+  ): Promise<FlexSearch.Index> {
     if (chords.length === 0 || !browser) return index;
+    index = new FlexSearch.Index({ tokenize: "full" });
+    let abort = false;
+    abortIndexing = () => {
+      abort = true;
+    };
     for (let i = 0; i < chords.length; i++) {
+      if (abort) return index;
+
       const chord = chords[i]!;
+      progress = i;
+
       if ("phrase" in chord) {
         await index.addAsync(
           i,
           chord.phrase
-            .map((it) => KEYMAP_CODES.get(it)?.id)
+            .map((it) => {
+              const info = KEYMAP_CODES.get(it);
+              if (!info) return "";
+
+              return (
+                (info.keyCode && osLayout.get(info.keyCode)) || info.id || ""
+              );
+            })
             .filter((it) => !!it)
             .join(""),
         );
@@ -101,19 +129,12 @@
 </svelte:head>
 
 <div class="search-container">
-  {#await $searchIndex}
-    <input
-      type="search"
-      placeholder={$LL.configure.chords.search.INDEXING($chords.length)}
-      disabled={true}
-    />
-  {:then index}
-    <input
-      type="search"
-      placeholder={$LL.configure.chords.search.PLACEHOLDER($chords.length)}
-      on:input={(event) => search(index, event)}
-    />
-  {/await}
+  <input
+    type="search"
+    placeholder={$LL.configure.chords.search.PLACEHOLDER(progress + 1)}
+    on:input={(event) => search($searchIndex, event)}
+    class:loading={progress !== $chords.length - 1}
+  />
   <div class="paginator">
     {#if $lastPage !== -1}
       {page + 1} / {$lastPage + 1}
@@ -135,7 +156,8 @@
 
 <section bind:this={results}>
   <div class="results">
-    {#await $searchIndex then}
+    <!-- fixes some unresponsiveness -->
+    {#await tick() then}
       <table transition:fly={{ y: 48, easing: expoOut }}>
         {#if $lastPage !== -1}
           {#if page === 0}
@@ -184,19 +206,12 @@
     transition: outline-color 250ms ease;
     background: none;
     color: inherit;
-    outline: 1px dashed var(--md-sys-color-surface-variant);
+    border: 1px dashed var(--md-sys-color-outline);
+    outline: 2px solid transparent;
+    outline-offset: -1px;
     margin: 2px;
-    border: none;
     padding: 8px;
     border-radius: 4px;
-
-    @media (prefers-contrast: more) {
-      outline-color: var(--md-sys-color-outline);
-
-      &:focus {
-        outline-width: 2px;
-      }
-    }
 
     &:focus {
       outline-color: var(--md-sys-color-primary);
@@ -205,13 +220,13 @@
 
   @keyframes pulse {
     0% {
-      opacity: 0.1;
+      opacity: 0.4;
     }
     50% {
-      opacity: 0.8;
+      opacity: 1;
     }
     100% {
-      opacity: 0.1;
+      opacity: 0.4;
     }
   }
 
@@ -237,11 +252,7 @@
 
     &::placeholder {
       color: var(--md-sys-color-on-surface-variant);
-      opacity: 0.2;
-
-      @media (prefers-contrast: more) {
-        opacity: 0.8;
-      }
+      opacity: 0.8;
     }
 
     &:focus {
@@ -250,8 +261,8 @@
       outline: none;
     }
 
-    &:disabled {
-      animation: pulse 1s infinite;
+    &.loading {
+      opacity: 0.4;
     }
   }
 
