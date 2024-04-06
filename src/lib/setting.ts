@@ -9,7 +9,9 @@ export const setting: Action<
   { id, inverse, scale },
 ) {
   node.setAttribute("disabled", "");
-  const type = node.getAttribute("type") as "number" | "checkbox";
+  const type = node.getAttribute("type") as "number" | "checkbox" | "range";
+  const isNumeric =
+    type === "number" || type === "range" || node instanceof HTMLSelectElement;
   const min = node.hasAttribute("min")
     ? Number(node.getAttribute("min"))
     : undefined;
@@ -20,7 +22,7 @@ export const setting: Action<
   const unsubscribe = settings.subscribe(async (settings) => {
     if (id in settings) {
       const { value, isApplied } = settings[id]!;
-      if (type === "number" || node instanceof HTMLSelectElement) {
+      if (isNumeric) {
         node.value = (
           inverse !== undefined
             ? inverse / value
@@ -44,7 +46,7 @@ export const setting: Action<
 
   async function listener() {
     let value: number;
-    if (type === "number" || node instanceof HTMLSelectElement) {
+    if (isNumeric) {
       value = Number(node.value);
       if (Number.isNaN(value)) return;
       value = Math.floor(

@@ -253,11 +253,14 @@
 
     {#if $serialPort.device === "LITE"}
       <fieldset>
-        <legend><label><input type="checkbox" />RGB</label></legend>
+        <legend
+          ><label><input type="checkbox" use:setting={{ id: 0x84 }} />RGB</label
+          ></legend
+        >
         <label
           >Brightness<input
             use:setting={{ id: 0x81 }}
-            type="range"
+            type="number"
             min="0"
             max="50"
             step="1"
@@ -274,7 +277,7 @@
           <option value="9">Blue</option>
           <option value="10">Violet</option>
           <option value="11">Pink</option>
-          <option value="10">Multicolor</option>
+          <option value="13">Multicolor</option>
         </select>
       </fieldset>
     {/if}
