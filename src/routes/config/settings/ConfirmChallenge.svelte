@@ -14,7 +14,13 @@
 <h3>Type the following to confirm the action</h3>
 
 <p>{challengeString}</p>
-<input type="text" bind:value={challengeInput} placeholder={challengeString} />
+<!-- svelte-ignore a11y-autofocus -->
+<input
+  autofocus
+  type="text"
+  bind:value={challengeInput}
+  placeholder={challengeString}
+/>
 
 <button disabled={!isValid} on:click={() => dispatch("confirm")}
   >Confirm {challenge}</button
