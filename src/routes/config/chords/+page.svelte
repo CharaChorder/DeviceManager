@@ -1,6 +1,6 @@
 <script lang="ts">
   import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
-  import Index from "flexsearch";
+  import flexsearch from "flexsearch";
   import LL from "../../../i18n/i18n-svelte";
   import { action } from "$lib/title";
   import { onDestroy, onMount, setContext } from "svelte";
@@ -30,8 +30,8 @@
 
   $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined;
 
-  function buildIndex(chords: ChordInfo[]): Index {
-    const index = new Index({ tokenize: "full" });
+  function buildIndex(chords: ChordInfo[]): flexsearch.Index {
+    const index = new flexsearch.Index({ tokenize: "full" });
     chords.forEach((chord, i) => {
       if ("phrase" in chord) {
         index.add(

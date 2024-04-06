@@ -1,7 +1,7 @@
 <script lang="ts">
   import { KEYMAP_CATEGORIES, KEYMAP_CODES } from "$lib/serial/keymap-codes";
   import type { KeyInfo } from "$lib/serial/keymap-codes";
-  import Index from "flexsearch";
+  import flexsearch from "flexsearch";
   import { createEventDispatcher } from "svelte";
   import ActionListItem from "$lib/components/ActionListItem.svelte";
   import LL from "../../../i18n/i18n-svelte";
@@ -10,7 +10,7 @@
   export let currentAction: number | undefined = undefined;
   export let nextAction: number | undefined = undefined;
 
-  const index = new Index({ tokenize: "full" });
+  const index = new flexsearch.Index({ tokenize: "full" });
   for (const action of Object.values(KEYMAP_CODES)) {
     index?.add(
       action.code,
