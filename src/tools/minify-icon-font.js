@@ -69,7 +69,7 @@ for (const icon of icons) {
     .flatMap((it) => [...it])
     .map((it) => it.codePointAt(0).toString(16));
 
-  const codePoint = config.codePoints[icon];
+  const codePoint = config.codePoints[icon ?? ""];
   if (codePoint) {
     glyphs.push(codePoint);
   } else if (codePoints.length === 0) {

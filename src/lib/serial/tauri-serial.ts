@@ -40,7 +40,6 @@ function NativeSerialPort(info: SerialPortInfo): TauriSerialPort {
 }
 
 // @ts-expect-error polyfill
-// noinspection JSConstantReassignment
 navigator.serial = {
   async getPorts(): Promise<SerialPort[]> {
     return invoke<any[]>("plugin:serial|get_serial_ports").then((ports) =>
@@ -69,6 +68,7 @@ navigator.serial = {
       props: { ports },
     });
     const port = await new Promise<SerialPort>((resolve) =>
+      // @ts-expect-error polyfill
       dialog.$on("confirm", resolve),
     );
     dialog.$destroy();

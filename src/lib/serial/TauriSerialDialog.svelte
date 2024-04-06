@@ -3,7 +3,7 @@
 
   export let ports: SerialPort[];
   const dispatch = createEventDispatcher<{ confirm: SerialPort | undefined }>();
-  let selected = ports[0].getInfo().name;
+  let selected = ports[0]?.getInfo().name;
 </script>
 
 <dialog>

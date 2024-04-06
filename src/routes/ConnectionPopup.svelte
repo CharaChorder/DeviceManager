@@ -23,16 +23,6 @@
     powerDialog = false;
   }
 
-  async function updateFirmware() {
-    const { usbVendorId: vendorId, usbProductId: productId } =
-      $serialPort!.portInfo;
-    $serialPort!.bootloader();
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(
-      await navigator.usb.requestDevice({ filters: [{ vendorId, productId }] }),
-    );
-  }
-
   let rebootInfo = false;
   let terminal = false;
   let powerDialog = false;

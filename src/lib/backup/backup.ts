@@ -95,6 +95,7 @@ export function restoreFromFile(
   switch (file.type) {
     case "backup": {
       const recent = file.history[0];
+      if (!recent) return;
       if (recent[1].device !== get(serialPort)?.device) {
         alert("Backup is incompatible with this device");
         throw new Error("Backup is incompatible with this device");
@@ -177,7 +178,7 @@ export function getChangesFromLayoutFile(file: CharaLayoutFile) {
   const changes: Change[] = [];
   for (const [layer, keys] of file.layout.entries()) {
     for (const [id, action] of keys.entries()) {
-      if (get(layout)[layer][id].action !== action) {
+      if (get(layout)[layer]?.[id]?.action !== action) {
         changes.push({
           type: ChangeType.Layout,
           layer,

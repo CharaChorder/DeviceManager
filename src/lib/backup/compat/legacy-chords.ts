@@ -13,11 +13,11 @@ export function csvChordsToJson(csv: string): CharaChordFile {
       .map((line) => {
         const [input, output] = line.split(/,(?=[^,]*$)/, 2);
         return [
-          input
+          input!
             .split("+")
             .map((it) => KEYMAP_IDS.get(it.trim())?.code ?? 0)
             .sort((a, b) => a - b),
-          output
+          output!
             .trim()
             .split("")
             .map((it) => KEYMAP_IDS.get(SPECIAL_KEYS.get(it) ?? it)?.code ?? 0),

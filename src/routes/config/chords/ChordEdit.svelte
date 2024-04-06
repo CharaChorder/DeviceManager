@@ -59,7 +59,7 @@
       onHidden(instance) {
         instance.destroy();
       },
-      onDestroy(instance) {
+      onDestroy(_instance) {
         shareComponent.$destroy();
       },
     }).show();

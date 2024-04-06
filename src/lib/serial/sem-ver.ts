@@ -14,9 +14,9 @@ export class SemVer {
       console.error("Invalid version string:", versionString);
     } else {
       const [, major, minor, patch, preRelease, meta] = result;
-      this.major = Number.parseInt(major);
-      this.minor = Number.parseInt(minor);
-      this.patch = Number.parseInt(patch);
+      this.major = Number.parseInt(major ?? "NaN");
+      this.minor = Number.parseInt(minor ?? "NaN");
+      this.patch = Number.parseInt(patch ?? "NaN");
       if (preRelease) this.preRelease = preRelease;
       if (meta) this.meta = meta;
     }

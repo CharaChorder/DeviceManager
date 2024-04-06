@@ -37,7 +37,7 @@
         index.add(
           i,
           chord.phrase
-            .map((it) => KEYMAP_CODES[it]?.id)
+            .map((it) => KEYMAP_CODES.get(it)?.id)
             .filter((it) => !!it)
             .join(""),
         );
@@ -51,7 +51,9 @@
   function search(event: Event) {
     const query = (event.target as HTMLInputElement).value;
     searchFilter.set(
-      query && searchIndex ? searchIndex.search(query) : undefined,
+      query && searchIndex
+        ? (searchIndex.search(query) as number[])
+        : undefined,
     );
     page = 0;
   }
@@ -131,10 +133,12 @@
       >
     {/if}
     {#if $lastPage !== -1}
-      {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord.id))}
-        <tr>
-          <ChordEdit {chord} />
-        </tr>
+      {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord?.id))}
+        {#if chord}
+          <tr>
+            <ChordEdit {chord} />
+          </tr>
+        {/if}
       {/each}
     {:else}
       <caption>{$LL.configure.chords.search.NO_RESULTS()}</caption>

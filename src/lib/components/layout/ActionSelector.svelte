@@ -26,7 +26,7 @@
   );
 
   function search() {
-    results = index!.search(searchBox.value);
+    results = index!.search(searchBox.value) as number[];
     exact = exactIndex[searchBox.value]?.code;
     code = Number(searchBox.value);
   }

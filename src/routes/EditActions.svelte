@@ -32,12 +32,13 @@
   }
 
   function redo() {
-    const [change, ...queue] = redoQueue;
-    changes.update((it) => {
-      it.push(change);
-      return it;
-    });
-    redoQueue = queue;
+    const change = redoQueue.shift();
+    if (change) {
+      changes.update((it) => {
+        it.push(change);
+        return it;
+      });
+    }
   }
   let redoQueue: Change[] = [];
 
@@ -57,7 +58,7 @@
                 $LL.configure.chords.conflict.TITLE(),
                 $LL.configure.chords.conflict.DESCRIPTION(
                   actions
-                    .map((it) => `<kbd>${KEYMAP_CODES[it].id}</kbd>`)
+                    .map((it) => `<kbd>${KEYMAP_CODES.get(it)?.id}</kbd>`)
                     .join(" "),
                 ),
                 $LL.configure.chords.conflict.CONFIRM(),

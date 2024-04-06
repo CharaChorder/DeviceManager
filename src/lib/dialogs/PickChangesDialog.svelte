@@ -119,17 +119,21 @@
           </label>
         </h3>
         <ul>
-          {#each layoutChanges
-            .map((it, i) => /** @type {const} */ ([it, i + 1]))
-            .filter(([it]) => it.length > 0) as [changes, layer]}
-            <li>
-              <h4>
-                <label>
-                  <input type="checkbox" class="checkbox" />
-                  {$LL.changes.layout.LAYER({ changes: changes.length, layer })}
-                </label>
-              </h4>
-            </li>
+          {#each layoutChanges as changes, i}
+            {@const layer = i + 1}
+            {#if changes.length > 0}
+              <li>
+                <h4>
+                  <label>
+                    <input type="checkbox" class="checkbox" />
+                    {$LL.changes.layout.LAYER({
+                      changes: changes.length,
+                      layer,
+                    })}
+                  </label>
+                </h4>
+              </li>
+            {/if}
           {/each}
         </ul>
       </li>

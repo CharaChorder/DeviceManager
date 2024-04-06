@@ -23,13 +23,12 @@
 </script>
 
 {#each positions as position, layer}
-  {@const { action: actionId, isApplied } = $layout[layer][key.id] ?? {
+  {@const { action: actionId, isApplied } = $layout[layer]?.[key.id] ?? {
     action: 0,
     isApplied: true,
   }}
-  {@const { code, icon, id, display, title, keyCode, variant } = KEYMAP_CODES[
-    actionId
-  ] ?? { code: actionId }}
+  {@const { code, icon, id, display, title, keyCode, variant } =
+    KEYMAP_CODES.get(actionId) ?? { code: actionId }}
   {@const dynamicMapping = keyCode && $osLayout.get(keyCode)}
   {@const tooltip =
     (title ?? id ?? `0x${code.toString(16)}`) +
@@ -53,7 +52,7 @@
     style:scale={isActive ? 1 : `var(--inactive-scale, ${inactiveScale})`}
     style:translate={isActive
       ? "0 0 0"
-      : `${direction[0].toPrecision(2)}px ${direction[1].toPrecision(2)}px 0`}
+      : `${direction[0]?.toPrecision(2)}px ${direction[1]?.toPrecision(2)}px 0`}
     style:rotate="{rotate}deg"
     use:action={{ title: tooltip }}
   >

@@ -17,7 +17,7 @@ export function csvLayoutToJson(
   for (const layer of csv.trim().split("\n")) {
     const [layerId, key, action] = layer.substring(1).split(",").map(Number);
 
-    layout.layout[Number(layerId) - 1][Number(key)] = Number(action);
+    layout.layout[Number(layerId) - 1]![Number(key)] = Number(action);
   }
 
   return layout;

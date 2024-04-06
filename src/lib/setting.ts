@@ -16,7 +16,7 @@ export const setting: Action<
 
   const unsubscribe = settings.subscribe(async (settings) => {
     if (id in settings) {
-      const { value, isApplied } = settings[id];
+      const { value, isApplied } = settings[id]!;
       if (type === "number") {
         node.value = (
           inverse !== undefined

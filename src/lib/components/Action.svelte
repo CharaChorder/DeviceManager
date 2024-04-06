@@ -10,7 +10,7 @@
 
   $: info =
     typeof action === "number"
-      ? KEYMAP_CODES[action] ?? { code: action }
+      ? KEYMAP_CODES.get(action) ?? { code: action }
       : action;
   $: dynamicMapping = info.keyCode && $osLayout.get(info.keyCode);
 

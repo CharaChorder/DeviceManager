@@ -67,7 +67,9 @@ export async function sync() {
   syncStatus.set("downloading");
 
   const max =
-    Object.keys(settingInfo.settings).length + device.keyCount * 3 + chordCount;
+    Object.keys(settingInfo["settings"]).length +
+    device.keyCount * 3 +
+    chordCount;
   let current = 0;
   syncProgress.set({ max, current });
   function progressTick() {
@@ -76,7 +78,7 @@ export async function sync() {
   }
 
   const parsedSettings: number[] = [];
-  for (const key in settingInfo.settings) {
+  for (const key in settingInfo["settings"]) {
     try {
       parsedSettings[Number.parseInt(key)] = await device.getSetting(
         Number.parseInt(key),
@@ -89,7 +91,7 @@ export async function sync() {
   const parsedLayout: CharaLayout = [[], [], []];
   for (let layer = 1; layer <= 3; layer++) {
     for (let i = 0; i < device.keyCount; i++) {
-      parsedLayout[layer - 1][i] = await device.getLayoutKey(layer, i);
+      parsedLayout[layer - 1]![i] = await device.getLayoutKey(layer, i);
       progressTick();
     }
   }

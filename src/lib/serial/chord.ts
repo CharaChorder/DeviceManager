@@ -37,7 +37,7 @@ export function serializeActions(actions: number[]): bigint {
   let native = 0n;
   for (let i = 1; i <= actions.length; i++) {
     native |=
-      BigInt(actions[actions.length - i] & 0x3ff) << BigInt((12 - i) * 10);
+      BigInt(actions[actions.length - i]! & 0x3ff) << BigInt((12 - i) * 10);
   }
   return native;
 }

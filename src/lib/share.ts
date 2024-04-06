@@ -10,7 +10,7 @@ export function triggerShare(event: Event) {
 }
 
 export const share: Action<Window, (event: Event) => void> = (
-  node,
+  _node,
   callback: (event: Event) => void,
 ) => {
   setCanShare.set(true);

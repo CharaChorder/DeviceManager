@@ -51,6 +51,7 @@
       });
       return changes;
     });
+    return undefined;
   }
 
   function addSpecial(event: MouseEvent) {

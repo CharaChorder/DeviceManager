@@ -1,4 +1,5 @@
 <script>
+  // @ts-nocheck
   let ongoingRequest;
   let resolveRequest;
   let source;

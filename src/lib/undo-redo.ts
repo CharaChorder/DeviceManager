@@ -60,7 +60,7 @@ export const overlay = derived(changes, (changes) => {
   for (const change of changes) {
     switch (change.type) {
       case ChangeType.Layout:
-        overlay.layout[change.layer].set(change.id, change.action);
+        overlay.layout[change.layer]?.set(change.id, change.action);
         break;
       case ChangeType.Chord:
         overlay.chords.set(JSON.stringify(change.id), {
@@ -92,8 +92,8 @@ export const layout = derived([overlay, deviceLayout], ([overlay, layout]) =>
   layout.map(
     (actions, layer) =>
       actions.map<KeyInfo>((action, id) => ({
-        action: overlay.layout[layer].get(id) ?? action,
-        isApplied: !overlay.layout[layer].has(id),
+        action: overlay.layout[layer]?.get(id) ?? action,
+        isApplied: !overlay.layout[layer]?.has(id),
       })) as [KeyInfo, KeyInfo, KeyInfo],
   ),
 );
@@ -118,7 +118,7 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
       return {
         id: chord.actions,
         // use the old phrase for stable editing
-        sortBy: chord.phrase.map((it) => KEYMAP_CODES[it]?.id ?? it).join(),
+        sortBy: chord.phrase.map((it) => KEYMAP_CODES.get(it)?.id ?? it).join(),
         actions: changedChord.actions,
         phrase: changedChord.phrase,
         actionsChanged: id !== JSON.stringify(changedChord.actions),
@@ -130,7 +130,7 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
     } else {
       return {
         id: chord.actions,
-        sortBy: chord.phrase.map((it) => KEYMAP_CODES[it]?.id ?? it).join(),
+        sortBy: chord.phrase.map((it) => KEYMAP_CODES.get(it)?.id ?? it).join(),
         actions: chord.actions,
         phrase: chord.phrase,
         phraseChanged: false,

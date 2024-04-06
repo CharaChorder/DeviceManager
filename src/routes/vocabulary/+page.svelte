@@ -48,18 +48,18 @@
       if (next.length === 0) {
         next = Array.from(
           { length: 5 },
-          () => $chords[Math.floor(Math.random() * $chords.length)],
+          () => $chords[Math.floor(Math.random() * $chords.length)]!,
         );
       } else {
         next.shift();
-        next.push($chords[Math.floor(Math.random() * $chords.length)]);
+        next.push($chords[Math.floor(Math.random() * $chords.length)]!);
         next = next;
       }
     }
     if (
       userInput ===
-      next[0].phrase
-        .map((it) => (it === 32 ? " " : KEYMAP_CODES[it]!.id))
+      next[0]!.phrase
+        .map((it) => (it === 32 ? " " : KEYMAP_CODES.get(it)!.id))
         .join("") +
         " "
     ) {

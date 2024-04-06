@@ -68,6 +68,7 @@
     {/if}
     <SyncOverlay />
   </div>
+  "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
   <ul>
     <li class="hide-forced-colors">
       <input

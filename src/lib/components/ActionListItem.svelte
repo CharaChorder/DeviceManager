@@ -6,7 +6,7 @@
 
   export let id: number | KeyInfo;
 
-  $: key = (typeof id === "number" ? KEYMAP_CODES[id] ?? id : id) as
+  $: key = (typeof id === "number" ? KEYMAP_CODES.get(id) ?? id : id) as
     | number
     | KeyInfo;
 </script>
@@ -25,10 +25,10 @@
       {#if key.description}
         <i>{key.description}</i>
       {/if}
-      {#if key.category.name === "ASCII Macros"}
+      {#if key.category?.name === "ASCII Macros"}
         <span class="warning">{@html $LL.actionSearch.SHIFT_WARNING()}</span>
       {/if}
-      {#if key.category.name === "CP-1252"}
+      {#if key.category?.name === "CP-1252"}
         <span class="warning">{@html $LL.actionSearch.ALT_CODE_WARNING()}</span>
       {/if}
     </div>
