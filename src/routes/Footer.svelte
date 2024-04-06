@@ -54,11 +54,6 @@
         ><span class="icon">description</span> Docs</a
       >
     </li>
-    <li>
-      <a href={import.meta.env.VITE_LEARN_URL} rel="noreferrer" target="_blank"
-        ><span class="icon">school</span> Train</a
-      >
-    </li>
   </ul>
   <div>
     {#if !$serialPort}
@@ -69,6 +64,16 @@
     <SyncOverlay />
   </div>
   <ul>
+    <li>
+      <a href={import.meta.VITE_STORE_URL} rel="noreferrer" target="_blank"
+        ><span class="icon">shopping_bag</span> Store</a
+      >
+    </li>
+    <li>
+      <a href={import.meta.env.VITE_LEARN_URL} rel="noreferrer" target="_blank"
+        ><span class="icon">school</span> Train</a
+      >
+    </li>
     <li class="hide-forced-colors">
       <input
         use:action={{ title: $LL.profile.theme.COLOR_SCHEME() }}

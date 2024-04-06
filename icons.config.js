@@ -41,6 +41,7 @@ const config = {
     "save",
     "settings_backup_restore",
     "sort",
+    "shopping_bag",
     "filter_list",
     "settings_power",
     "link",
