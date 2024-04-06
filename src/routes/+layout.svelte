@@ -30,7 +30,6 @@
   import { restoreFromFile } from "$lib/backup/backup";
   import { goto } from "$app/navigation";
   import { hotkeys } from "$lib/title";
-  import { KEYMAP_CODES, KEYMAP_KEYCODES } from "$lib/serial/keymap-codes";
 
   const locale =
     ((browser && localStorage.getItem("locale")) as Locales) || detectLocale();
