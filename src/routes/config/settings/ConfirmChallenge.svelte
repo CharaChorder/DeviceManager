@@ -27,6 +27,7 @@
     background: none;
     border: none;
     border-bottom: 1px solid currentcolor;
+    width: 100%;
 
     &:focus {
       outline: none;
