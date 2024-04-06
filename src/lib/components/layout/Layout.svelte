@@ -70,7 +70,7 @@
     align-items: center;
     justify-content: center;
 
-    padding: 0;
+    padding: 8px;
 
     border: none;
   }
@@ -96,7 +96,6 @@
       font-size: 32px;
 
       border-radius: 50%;
-      outline: 8px solid var(--md-sys-color-background);
     }
 
     &:first-child,
@@ -106,12 +105,14 @@
     }
 
     &:first-child {
-      padding-inline: 4px 16px;
+      margin-inline-end: -8px;
+      padding-inline: 4px 24px;
       border-radius: 16px 0 0 16px;
     }
 
     &:last-child {
-      padding-inline: 16px 4px;
+      margin-inline-start: -8px;
+      padding-inline: 24px 4px;
       border-radius: 0 16px 16px 0;
     }
 
