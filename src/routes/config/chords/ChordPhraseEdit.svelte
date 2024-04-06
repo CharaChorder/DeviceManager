@@ -99,9 +99,11 @@
   let hasFocus = false;
 </script>
 
+<!-- svelte-ignore a11y-autofocus -->
 <div
   on:keydown={keypress}
   on:mousedown={clickCursor}
+  autofocus={chord.phrase.length === 0}
   role="textbox"
   tabindex="0"
   bind:this={box}
