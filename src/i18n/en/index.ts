@@ -67,7 +67,7 @@ const en = {
     APPLY_SETTINGS: "Flash changes to device",
     NO_DEVICE: "No device connected",
     LINUX_PERMISSIONS:
-      "Most Linux based systems need adjusted permissions in order to connect your device.",
+      "Most Linux based systems need adjusted permissions in order to connect your device. Flatpak or Snap versions in particular might need additional permissions or may not work at all.",
     bootMenu: {
       TITLE: "Boot Menu",
       REBOOT: "Reboot",
