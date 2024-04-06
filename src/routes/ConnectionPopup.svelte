@@ -23,6 +23,17 @@
     powerDialog = false;
   }
 
+  async function connect() {
+    try {
+      await initSerial(true);
+    } catch (error) {
+      console.error(error);
+      alert(
+        "Connection failed. Is your device maybe pre-CCOS? Refer to the doc link in the bottom left for more information on your device.",
+      );
+    }
+  }
+
   let rebootInfo = false;
   let terminal = false;
   let powerDialog = false;
@@ -114,7 +125,7 @@
           >{$LL.deviceManager.DISCONNECT()}</button
         >
       {:else}
-        <button class="error" on:click={() => initSerial(true)}
+        <button class="error" on:click={connect}
           ><span class="icon">usb</span>{$LL.deviceManager.CONNECT()}</button
         >
       {/if}
