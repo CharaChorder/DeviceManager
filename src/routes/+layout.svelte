@@ -56,6 +56,7 @@
       const dark = it.mode === "dark"; // window.matchMedia("(prefers-color-scheme: dark)").matches
       applyTheme(theme, { target: document.body, dark });
     });
+
     if (import.meta.env.TAURI_FAMILY === undefined) {
       const { initPwa } = await import("./pwa-setup");
       webManifestLink = await initPwa();
@@ -64,6 +65,7 @@
     if (browser && $userPreferences.autoConnect && (await canAutoConnect())) {
       await initSerial();
     }
+
     if (data.importFile) {
       restoreFromFile(data.importFile);
       const url = new URL(location.href);

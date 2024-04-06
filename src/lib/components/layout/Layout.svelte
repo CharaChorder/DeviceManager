@@ -5,6 +5,7 @@
   import { getContext } from "svelte";
   import type { Writable } from "svelte/store";
   import type { VisualLayout } from "$lib/serialization/visual-layout";
+  import { fade } from "svelte/transition";
 
   $: device = $serialPort?.device ?? "ONE";
   const activeLayer = getContext<Writable<number>>("active-layer");
@@ -32,20 +33,20 @@
 </script>
 
 <div class="container">
-  <fieldset>
-    {#each layers as [title, icon, value]}
-      <button
-        class="icon"
-        use:action={{ title, shortcut: `alt+${value + 1}` }}
-        on:click={() => ($activeLayer = value)}
-        class:active={$activeLayer === value}
-      >
-        {icon}
-      </button>
-    {/each}
-  </fieldset>
-
   {#await layouts[device]() then visualLayout}
+    <fieldset transition:fade>
+      {#each layers as [title, icon, value]}
+        <button
+          class="icon"
+          use:action={{ title, shortcut: `alt+${value + 1}` }}
+          on:click={() => ($activeLayer = value)}
+          class:active={$activeLayer === value}
+        >
+          {icon}
+        </button>
+      {/each}
+    </fieldset>
+
     <GenericLayout {visualLayout} />
   {/await}
 </div>

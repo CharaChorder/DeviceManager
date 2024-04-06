@@ -1,6 +1,6 @@
 <script lang="ts">
   import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
-  import flexsearch from "flexsearch";
+  import FlexSearch from "flexsearch";
   import LL from "../../../i18n/i18n-svelte";
   import { action } from "$lib/title";
   import { onDestroy, onMount, setContext } from "svelte";
@@ -8,8 +8,10 @@
   import type { ChordInfo } from "$lib/undo-redo";
   import { derived, writable } from "svelte/store";
   import ChordEdit from "./ChordEdit.svelte";
-  import { crossfade } from "svelte/transition";
+  import { crossfade, fly } from "svelte/transition";
   import ChordActionEdit from "./ChordActionEdit.svelte";
+  import { browser } from "$app/environment";
+  import { expoOut } from "svelte/easing";
 
   const resultSize = 38;
   let results: HTMLElement;
@@ -28,13 +30,15 @@
     resizeObserver?.disconnect();
   });
 
-  $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined;
+  let searchIndex = derived(chords, (chords) => buildIndex(chords));
 
-  function buildIndex(chords: ChordInfo[]): flexsearch.Index {
-    const index = new flexsearch.Index({ tokenize: "full" });
-    chords.forEach((chord, i) => {
+  async function buildIndex(chords: ChordInfo[]): Promise<FlexSearch.Index> {
+    const index = new FlexSearch.Index({ tokenize: "full" });
+    if (chords.length === 0 || !browser) return index;
+    for (let i = 0; i < chords.length; i++) {
+      const chord = chords[i]!;
       if ("phrase" in chord) {
-        index.add(
+        await index.addAsync(
           i,
           chord.phrase
             .map((it) => KEYMAP_CODES.get(it)?.id)
@@ -42,17 +46,17 @@
             .join(""),
         );
       }
-    });
+    }
     return index;
   }
 
   const searchFilter = writable<number[] | undefined>(undefined);
 
-  function search(event: Event) {
+  async function search(index: FlexSearch.Index, event: Event) {
     const query = (event.target as HTMLInputElement).value;
     searchFilter.set(
       query && searchIndex
-        ? (searchIndex.search(query) as number[])
+        ? ((await index.searchAsync(query)) as number[])
         : undefined,
     );
     page = 0;
@@ -97,11 +101,19 @@
 </svelte:head>
 
 <div class="search-container">
-  <input
-    type="search"
-    placeholder={$LL.configure.chords.search.PLACEHOLDER($chords.length)}
-    on:input={search}
-  />
+  {#await $searchIndex}
+    <input
+      type="search"
+      placeholder={$LL.configure.chords.search.INDEXING($chords.length)}
+      disabled={true}
+    />
+  {:then index}
+    <input
+      type="search"
+      placeholder={$LL.configure.chords.search.PLACEHOLDER($chords.length)}
+      on:input={(event) => search(index, event)}
+    />
+  {/await}
   <div class="paginator">
     {#if $lastPage !== -1}
       {page + 1} / {$lastPage + 1}
@@ -122,28 +134,32 @@
 </div>
 
 <section bind:this={results}>
-  <table>
-    {#if page === 0}
-      <tr
-        ><th class="new-chord"
-          ><ChordActionEdit
-            on:submit={({ detail }) => insertChord(detail)}
-          /></th
-        ><td /><td /></tr
-      >
-    {/if}
-    {#if $lastPage !== -1}
-      {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord?.id))}
-        {#if chord}
-          <tr>
-            <ChordEdit {chord} />
-          </tr>
+  <div class="results">
+    {#await $searchIndex then}
+      <table transition:fly={{ y: 48, easing: expoOut }}>
+        {#if $lastPage !== -1}
+          {#if page === 0}
+            <tr
+              ><th class="new-chord"
+                ><ChordActionEdit
+                  on:submit={({ detail }) => insertChord(detail)}
+                /></th
+              ><td /><td /></tr
+            >
+          {/if}
+          {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord?.id))}
+            {#if chord}
+              <tr>
+                <ChordEdit {chord} />
+              </tr>
+            {/if}
+          {/each}
+        {:else}
+          <caption>{$LL.configure.chords.search.NO_RESULTS()}</caption>
         {/if}
-      {/each}
-    {:else}
-      <caption>{$LL.configure.chords.search.NO_RESULTS()}</caption>
-    {/if}
-  </table>
+      </table>
+    {/await}
+  </div>
   <textarea placeholder={$LL.configure.chords.TRY_TYPING()}></textarea>
 </section>
 
@@ -187,8 +203,16 @@
     }
   }
 
-  caption {
-    margin-top: 156px;
+  @keyframes pulse {
+    0% {
+      opacity: 0.1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0.1;
+    }
   }
 
   input[type="search"] {
@@ -225,6 +249,10 @@
       border-style: solid;
       outline: none;
     }
+
+    &:disabled {
+      animation: pulse 1s infinite;
+    }
   }
 
   section {
@@ -239,10 +267,14 @@
     border-radius: 16px;
   }
 
+  .results {
+    height: 100%;
+    min-width: min(90vw, 16.5cm);
+  }
+
   table {
     height: fit-content;
     overflow: hidden;
-    min-width: min(90vw, 16.5cm);
     transition: all 1s ease;
   }
 </style>

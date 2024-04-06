@@ -57,7 +57,7 @@ export async function initSerial(manual = false) {
   const device = get(serialPort) ?? new CharaDevice();
   await device.init(manual);
   serialPort.set(device);
-  sync();
+  await sync();
 }
 
 export async function sync() {

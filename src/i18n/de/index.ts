@@ -115,6 +115,7 @@ const de = {
       DUPLICATE: "Akkord existiert bereits",
       search: {
         PLACEHOLDER: "{0} Akkord{{|e}} durchsuchen",
+        INDEXING: "{0} Akkord{{|e}} werden indiziert...",
         NO_RESULTS: "Keine Ergebnisse",
       },
       conflict: {

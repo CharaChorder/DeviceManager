@@ -13,6 +13,8 @@
   import { getContext } from "svelte";
   import type { VisualLayoutConfig } from "./visual-layout.js";
   import { changes, ChangeType, layout } from "$lib/undo-redo";
+  import { fly } from "svelte/transition";
+  import { expoOut } from "svelte/easing";
 
   const { scale, margin, strokeWidth, fontSize, iconFontSize } =
     getContext<VisualLayoutConfig>("visual-layout-config");
@@ -194,6 +196,7 @@
   class="print"
   viewBox="0 0 {layoutInfo.size[0] * scale} {layoutInfo.size[1] * scale}"
   bind:this={groupParent}
+  transition:fly={{ y: 48, easing: expoOut }}
 >
   {#each layoutInfo.keys as key, i}
     <KeyboardKey

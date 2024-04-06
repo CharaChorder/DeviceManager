@@ -114,6 +114,7 @@ const en = {
       DUPLICATE: "Chord already exists",
       search: {
         PLACEHOLDER: "Search {0} chord{{|s}}",
+        INDEXING: "Indexing {0} chord{{|s}}...",
         NO_RESULTS: "No results",
       },
       conflict: {
