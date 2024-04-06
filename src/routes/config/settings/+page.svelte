@@ -308,6 +308,16 @@
   legend > label {
     font-size: 24px;
     font-weight: bold;
+    position: relative;
+    padding: 0 16px;
+  }
+
+  legend:has(label) {
+    padding: 0;
+  }
+
+  legend:not(:has(label)) {
+    opacity: 0.8;
   }
 
   input[type="checkbox"] {
@@ -420,6 +430,7 @@
 
     &::before {
       position: absolute;
+      font-size: 16px;
       top: 0.5em;
       right: 0.25em;
       content: "•";
