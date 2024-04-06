@@ -28,6 +28,9 @@ actions:
   42:
     id: "*"
     title: Asterisk
+  43:
+    id: "+"
+    title: Plus
   58:
     id: ":"
     title: Colon
