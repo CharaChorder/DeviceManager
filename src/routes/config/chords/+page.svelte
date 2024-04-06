@@ -1,89 +1,92 @@
 <script lang="ts">
-  import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
-  import Index from "flexsearch"
-  import LL from "../../../i18n/i18n-svelte"
-  import {action} from "$lib/title"
-  import {onDestroy, onMount, setContext} from "svelte"
-  import {changes, ChangeType, chords} from "$lib/undo-redo"
-  import type {ChordInfo} from "$lib/undo-redo"
-  import {derived, writable} from "svelte/store"
-  import ChordEdit from "./ChordEdit.svelte"
-  import {crossfade} from "svelte/transition"
-  import ChordActionEdit from "./ChordActionEdit.svelte"
+  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
+  import Index from "flexsearch";
+  import LL from "../../../i18n/i18n-svelte";
+  import { action } from "$lib/title";
+  import { onDestroy, onMount, setContext } from "svelte";
+  import { changes, ChangeType, chords } from "$lib/undo-redo";
+  import type { ChordInfo } from "$lib/undo-redo";
+  import { derived, writable } from "svelte/store";
+  import ChordEdit from "./ChordEdit.svelte";
+  import { crossfade } from "svelte/transition";
+  import ChordActionEdit from "./ChordActionEdit.svelte";
 
-  const resultSize = 38
-  let results: HTMLElement
-  const pageSize = writable(0)
-  let resizeObserver: ResizeObserver
+  const resultSize = 38;
+  let results: HTMLElement;
+  const pageSize = writable(0);
+  let resizeObserver: ResizeObserver;
 
   onMount(() => {
     resizeObserver = new ResizeObserver(() => {
-      pageSize.set(Math.floor(results.clientHeight / resultSize))
-    })
-    pageSize.set(Math.floor(results.clientHeight / resultSize))
-    resizeObserver.observe(results)
-  })
+      pageSize.set(Math.floor(results.clientHeight / resultSize));
+    });
+    pageSize.set(Math.floor(results.clientHeight / resultSize));
+    resizeObserver.observe(results);
+  });
 
   onDestroy(() => {
-    resizeObserver?.disconnect()
-  })
+    resizeObserver?.disconnect();
+  });
 
-  $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined
+  $: searchIndex = $chords?.length > 0 ? buildIndex($chords) : undefined;
 
   function buildIndex(chords: ChordInfo[]): Index {
-    const index = new Index({tokenize: "full"})
+    const index = new Index({ tokenize: "full" });
     chords.forEach((chord, i) => {
       if ("phrase" in chord) {
         index.add(
           i,
           chord.phrase
-            .map(it => KEYMAP_CODES[it]?.id)
-            .filter(it => !!it)
+            .map((it) => KEYMAP_CODES[it]?.id)
+            .filter((it) => !!it)
             .join(""),
-        )
+        );
       }
-    })
-    return index
+    });
+    return index;
   }
 
-  const searchFilter = writable<number[] | undefined>(undefined)
+  const searchFilter = writable<number[] | undefined>(undefined);
 
   function search(event: Event) {
-    const query = (event.target as HTMLInputElement).value
-    searchFilter.set(query && searchIndex ? searchIndex.search(query) : undefined)
-    page = 0
+    const query = (event.target as HTMLInputElement).value;
+    searchFilter.set(
+      query && searchIndex ? searchIndex.search(query) : undefined,
+    );
+    page = 0;
   }
 
   function insertChord(actions: number[]) {
-    const id = JSON.stringify(actions)
-    if ($chords.some(it => JSON.stringify(it.actions) === id)) {
-      alert($LL.configure.chords.DUPLICATE())
-      return
+    const id = JSON.stringify(actions);
+    if ($chords.some((it) => JSON.stringify(it.actions) === id)) {
+      alert($LL.configure.chords.DUPLICATE());
+      return;
     }
-    changes.update(changes => {
+    changes.update((changes) => {
       changes.push({
         type: ChangeType.Chord,
         id: actions,
         actions,
         phrase: [],
-      })
-      return changes
-    })
+      });
+      return changes;
+    });
   }
 
   const items = derived(
     [searchFilter, chords],
     ([filter, chords]) =>
-      filter?.map(it => [chords[it], it] as const) ?? chords.map((it, i) => [it, i] as const),
-  )
+      filter?.map((it) => [chords[it], it] as const) ??
+      chords.map((it, i) => [it, i] as const),
+  );
   const lastPage = derived(
     [items, pageSize],
     ([items, pageSize]) => Math.ceil((items.length + 1) / pageSize) - 1,
-  )
+  );
 
-  setContext("cursor-crossfade", crossfade({}))
+  setContext("cursor-crossfade", crossfade({}));
 
-  let page = 0
+  let page = 0;
 </script>
 
 <svelte:head>
@@ -104,13 +107,15 @@
       - / -
     {/if}
   </div>
-  <button class="icon" on:click={() => (page = Math.max(page - 1, 0))} use:action={{shortcut: "ctrl+left"}}
-    >navigate_before</button
+  <button
+    class="icon"
+    on:click={() => (page = Math.max(page - 1, 0))}
+    use:action={{ shortcut: "ctrl+left" }}>navigate_before</button
   >
   <button
     class="icon"
     on:click={() => (page = Math.min(page + 1, $lastPage))}
-    use:action={{shortcut: "ctrl+right"}}>navigate_next</button
+    use:action={{ shortcut: "ctrl+right" }}>navigate_next</button
   >
 </div>
 
@@ -118,8 +123,11 @@
   <table>
     {#if page === 0}
       <tr
-        ><th class="new-chord"><ChordActionEdit on:submit={({detail}) => insertChord(detail)} /></th><td /><td
-        /></tr
+        ><th class="new-chord"
+          ><ChordActionEdit
+            on:submit={({ detail }) => insertChord(detail)}
+          /></th
+        ><td /><td /></tr
       >
     {/if}
     {#if $lastPage !== -1}

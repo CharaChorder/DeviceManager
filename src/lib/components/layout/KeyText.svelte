@@ -1,30 +1,35 @@
 <script lang="ts">
-  import {getContext} from "svelte"
-  import type {Writable} from "svelte/store"
-  import type {VisualLayoutConfig} from "$lib/components/layout/visual-layout"
-  import type {CompiledLayoutKey} from "$lib/serialization/visual-layout"
-  import {layout} from "$lib/undo-redo.js"
-  import {osLayout} from "$lib/os-layout.js"
-  import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
-  import {action} from "$lib/title"
+  import { getContext } from "svelte";
+  import type { Writable } from "svelte/store";
+  import type { VisualLayoutConfig } from "$lib/components/layout/visual-layout";
+  import type { CompiledLayoutKey } from "$lib/serialization/visual-layout";
+  import { layout } from "$lib/undo-redo.js";
+  import { osLayout } from "$lib/os-layout.js";
+  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
+  import { action } from "$lib/title";
 
-  const {fontSize, margin, inactiveOpacity, inactiveScale, iconFontSize} =
-    getContext<VisualLayoutConfig>("visual-layout-config")
-  const activeLayer = getContext<Writable<number>>("active-layer")
+  const { fontSize, margin, inactiveOpacity, inactiveScale, iconFontSize } =
+    getContext<VisualLayoutConfig>("visual-layout-config");
+  const activeLayer = getContext<Writable<number>>("active-layer");
 
-  export let key: CompiledLayoutKey
-  export let fontSizeMultiplier = 1
+  export let key: CompiledLayoutKey;
+  export let fontSizeMultiplier = 1;
 
-  export let middle: [number, number]
-  export let pos: [number, number]
-  export let rotate: number
+  export let middle: [number, number];
+  export let pos: [number, number];
+  export let rotate: number;
 
-  export let positions: [[number, number], [number, number], [number, number]]
+  export let positions: [[number, number], [number, number], [number, number]];
 </script>
 
 {#each positions as position, layer}
-  {@const {action: actionId, isApplied} = $layout[layer][key.id] ?? {action: 0, isApplied: true}}
-  {@const {code, icon, id, display, title, keyCode, variant} = KEYMAP_CODES[actionId] ?? {code: actionId}}
+  {@const { action: actionId, isApplied } = $layout[layer][key.id] ?? {
+    action: 0,
+    isApplied: true,
+  }}
+  {@const { code, icon, id, display, title, keyCode, variant } = KEYMAP_CODES[
+    actionId
+  ] ?? { code: actionId }}
   {@const dynamicMapping = keyCode && $osLayout.get(keyCode)}
   {@const tooltip =
     (title ?? id ?? `0x${code.toString(16)}`) +
@@ -50,7 +55,7 @@
       ? "0 0 0"
       : `${direction[0].toPrecision(2)}px ${direction[1].toPrecision(2)}px 0`}
     style:rotate="{rotate}deg"
-    use:action={{title: tooltip}}
+    use:action={{ title: tooltip }}
   >
     {#if code !== 0}
       {dynamicMapping || icon || display || id || `0x${code.toString(16)}`}

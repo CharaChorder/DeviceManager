@@ -1,6 +1,6 @@
 <script lang="ts">
-  import {preference} from "$lib/preferences"
-  import LL from "../i18n/i18n-svelte"
+  import { preference } from "$lib/preferences";
+  import LL from "../i18n/i18n-svelte";
   import {
     createChordBackup,
     createLayoutBackup,
@@ -8,11 +8,18 @@
     downloadBackup,
     downloadFile,
     restoreBackup,
-  } from "$lib/backup/backup"
+  } from "$lib/backup/backup";
 </script>
 
 <section>
-  <h2><label><input type="checkbox" use:preference={"backup"} />{$LL.backup.TITLE()}</label></h2>
+  <h2>
+    <label
+      ><input
+        type="checkbox"
+        use:preference={"backup"}
+      />{$LL.backup.TITLE()}</label
+    >
+  </h2>
   <p class="disclaimer">
     <i>{$LL.backup.DISCLAIMER()}</i>
   </p>
@@ -36,7 +43,8 @@
       ><span class="icon">download</span>{$LL.backup.DOWNLOAD()}</button
     >
     <label class="button"
-      ><input on:input={restoreBackup} type="file" /><span class="icon">settings_backup_restore</span
+      ><input on:input={restoreBackup} type="file" /><span class="icon"
+        >settings_backup_restore</span
       >{$LL.backup.RESTORE()}</label
     >
   </div>

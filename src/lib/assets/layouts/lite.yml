@@ -15,10 +15,10 @@ col:
       - key: 64
       - key: 65
       - key: 66
-        size: [ 2, 1 ]
+        size: [2, 1]
   - row:
       - key: 39
-        size: [ 1.5, 1 ]
+        size: [1.5, 1]
       - key: 40
       - key: 41
       - key: 42
@@ -32,10 +32,10 @@ col:
       - key: 50
       - key: 51
       - key: 52
-        size: [ 1.5, 1 ]
+        size: [1.5, 1]
   - row:
       - key: 26
-        size: [ 1.75, 1 ]
+        size: [1.75, 1]
       - key: 27
       - key: 28
       - key: 29
@@ -48,10 +48,10 @@ col:
       - key: 36
       - key: 37
       - key: 38
-        size: [ 2.25, 1 ]
+        size: [2.25, 1]
   - row:
       - key: 12
-        size: [ 2, 1 ]
+        size: [2, 1]
       - key: 13
       - key: 14
       - key: 15
@@ -68,20 +68,19 @@ col:
   - row:
       - key: 0
       - key: 1
-        size: [ 1.25, 1 ]
+        size: [1.25, 1]
       - key: 2
-        size: [ 1.25, 1 ]
+        size: [1.25, 1]
       - key: 3
-        size: [ 2, 1 ]
+        size: [2, 1]
       - key: 4
       - key: 5
       - key: 6
-        size: [ 2, 1 ]
+        size: [2, 1]
       - key: 7
-        size: [ 1.25, 1 ]
+        size: [1.25, 1]
       - key: 8
-        size: [ 1.25, 1 ]
+        size: [1.25, 1]
       - key: 9
       - key: 10
       - key: 11
-

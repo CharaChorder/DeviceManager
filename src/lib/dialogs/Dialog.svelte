@@ -1,11 +1,11 @@
 <script lang="ts">
-  import {onMount} from "svelte"
+  import { onMount } from "svelte";
 
   onMount(() => {
-    modal.showModal()
-  })
+    modal.showModal();
+  });
 
-  let modal: HTMLDialogElement
+  let modal: HTMLDialogElement;
 </script>
 
 <dialog bind:this={modal}>

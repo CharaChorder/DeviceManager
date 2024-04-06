@@ -1,73 +1,74 @@
 <script lang="ts">
-  import {KEYMAP_CATEGORIES, KEYMAP_CODES} from "$lib/serial/keymap-codes"
-  import type {KeyInfo} from "$lib/serial/keymap-codes"
-  import Index from "flexsearch"
-  import {createEventDispatcher} from "svelte"
-  import ActionListItem from "$lib/components/ActionListItem.svelte"
-  import LL from "../../../i18n/i18n-svelte"
-  import {action} from "$lib/title"
+  import { KEYMAP_CATEGORIES, KEYMAP_CODES } from "$lib/serial/keymap-codes";
+  import type { KeyInfo } from "$lib/serial/keymap-codes";
+  import Index from "flexsearch";
+  import { createEventDispatcher } from "svelte";
+  import ActionListItem from "$lib/components/ActionListItem.svelte";
+  import LL from "../../../i18n/i18n-svelte";
+  import { action } from "$lib/title";
 
-  export let currentAction: number | undefined = undefined
-  export let nextAction: number | undefined = undefined
+  export let currentAction: number | undefined = undefined;
+  export let nextAction: number | undefined = undefined;
 
-  const index = new Index({tokenize: "full"})
+  const index = new Index({ tokenize: "full" });
   for (const action of Object.values(KEYMAP_CODES)) {
     index?.add(
       action.code,
       `${action.title || ""} ${action.variant || ""} ${action.category} ${action.id || ""} ${
         action.description || ""
       }`,
-    )
+    );
   }
   const exactIndex: Record<string, KeyInfo> = Object.fromEntries(
     Object.values(KEYMAP_CODES)
-      .filter(it => !!it.id)
-      .map(it => [it.id, it] as const),
-  )
+      .filter((it) => !!it.id)
+      .map((it) => [it.id, it] as const),
+  );
 
   function search() {
-    results = index!.search(searchBox.value)
-    exact = exactIndex[searchBox.value]?.code
-    code = Number(searchBox.value)
+    results = index!.search(searchBox.value);
+    exact = exactIndex[searchBox.value]?.code;
+    code = Number(searchBox.value);
   }
 
   function select(id?: number) {
     if (id !== undefined) {
-      dispatch("select", id)
+      dispatch("select", id);
     }
   }
 
   function keyboardNavigation(event: KeyboardEvent) {
     if (event.shiftKey && event.key === "Enter") {
-      dispatch("select", exact)
+      dispatch("select", exact);
     } else if (event.key === "ArrowDown") {
       const element =
-        resultList.querySelector("li:focus-within")?.nextSibling ?? resultList.querySelector("li:not(.exact)")
+        resultList.querySelector("li:focus-within")?.nextSibling ??
+        resultList.querySelector("li:not(.exact)");
       if (element instanceof HTMLLIElement) {
-        element.querySelector("button")?.focus()
+        element.querySelector("button")?.focus();
       }
     } else if (event.key === "ArrowUp") {
       const element =
         resultList.querySelector("li:focus-within")?.previousSibling ??
-        resultList.querySelector("li:not(.exact)")
+        resultList.querySelector("li:not(.exact)");
       if (element instanceof HTMLLIElement) {
-        element.querySelector("button")?.focus()
+        element.querySelector("button")?.focus();
       }
     } else {
-      searchBox.focus()
-      return
+      searchBox.focus();
+      return;
     }
-    event.preventDefault()
+    event.preventDefault();
   }
 
-  let results: number[] = Object.keys(KEYMAP_CODES).map(Number)
-  let exact: number | undefined = undefined
-  let code: number = Number.NaN
+  let results: number[] = Object.keys(KEYMAP_CODES).map(Number);
+  let exact: number | undefined = undefined;
+  let code: number = Number.NaN;
 
-  const dispatch = createEventDispatcher()
-  let searchBox: HTMLInputElement
-  let resultList: HTMLUListElement
-  let filter: Set<number>
+  const dispatch = createEventDispatcher();
+  let searchBox: HTMLInputElement;
+  let resultList: HTMLUListElement;
+  let filter: Set<number>;
 </script>
 
 <svelte:window on:keydown={keyboardNavigation} />
@@ -80,18 +81,18 @@
         type="search"
         bind:this={searchBox}
         on:input={search}
-        on:keypress={event => {
+        on:keypress={(event) => {
           if (event.key === "Enter") {
-            select(exact)
+            select(exact);
           }
         }}
         placeholder={$LL.actionSearch.PLACEHOLDER()}
       />
-      <button on:click={() => select(0)} use:action={{shortcut: "shift+esc"}}
+      <button on:click={() => select(0)} use:action={{ shortcut: "shift+esc" }}
         >{$LL.actionSearch.DELETE()}</button
       >
       <button
-        use:action={{title: $LL.modal.CLOSE(), shortcut: "esc"}}
+        use:action={{ title: $LL.modal.CLOSE(), shortcut: "esc" }}
         class="icon"
         on:click={() => dispatch("close")}>close</button
       >
@@ -143,7 +144,7 @@
           <li>Action code is out of range</li>
         {/if}
       {/if}
-      {#each filter ? results.filter(it => filter.has(it)) : results as id (id)}
+      {#each filter ? results.filter( (it) => filter.has(it), ) : results as id (id)}
         <li><ActionListItem {id} on:click={() => select(id)} /></li>
       {/each}
     </ul>

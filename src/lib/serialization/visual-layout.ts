@@ -1,45 +1,45 @@
 export interface VisualLayout {
-  name: string
-  col: VisualLayoutRow[]
+  name: string;
+  col: VisualLayoutRow[];
 }
 
 interface Positionable {
-  offset: [number, number]
-  rotate: number
+  offset: [number, number];
+  rotate: number;
 }
 
 export interface VisualLayoutRow extends Positionable {
-  row: Array<VisualLayoutKey | VisualLayoutSwitch>
+  row: Array<VisualLayoutKey | VisualLayoutSwitch>;
 }
 
 export interface VisualLayoutKey extends Positionable {
-  key: number
-  size?: [number, number]
+  key: number;
+  size?: [number, number];
 }
 
 export interface VisualLayoutSwitch extends Positionable {
   switch: {
-    n: number
-    e: number
-    w: number
-    s: number
-    d: number
-  }
+    n: number;
+    e: number;
+    w: number;
+    s: number;
+    d: number;
+  };
 }
 
 export interface CompiledLayout {
-  name: string
-  size: [number, number]
-  keys: CompiledLayoutKey[]
+  name: string;
+  size: [number, number];
+  keys: CompiledLayoutKey[];
 }
 
 export interface CompiledLayoutKey {
-  id: number
-  shape: "quarter-circle" | "square"
-  cornerRadius: number
-  size: [number, number]
-  pos: [number, number]
-  rotate: number
+  id: number;
+  shape: "quarter-circle" | "square";
+  cornerRadius: number;
+  size: [number, number];
+  pos: [number, number];
+  rotate: number;
 }
 
 export function compileLayout(layout: VisualLayout): CompiledLayout {
@@ -47,18 +47,18 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
     name: layout.name,
     size: [0, 0],
     keys: [],
-  }
+  };
 
-  let y = 0
-  for (const {row, offset} of layout.col) {
-    let x = offset?.[0] ?? 0
-    y += offset?.[1] ?? 0
-    let maxHeight = 0
+  let y = 0;
+  for (const { row, offset } of layout.col) {
+    let x = offset?.[0] ?? 0;
+    y += offset?.[1] ?? 0;
+    let maxHeight = 0;
     for (const info of row) {
-      const [ox, oy] = info.offset || [0, 0]
-      const rotate = info.rotate || 0
+      const [ox, oy] = info.offset || [0, 0];
+      const rotate = info.rotate || 0;
       if ("key" in info) {
-        const [width, height] = info.size ?? [1, 1]
+        const [width, height] = info.size ?? [1, 1];
 
         compiled.keys.push({
           id: info.key,
@@ -67,14 +67,19 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
           pos: [x + ox, y + oy],
           cornerRadius: 0.1,
           rotate,
-        })
+        });
 
-        x += width + ox
-        maxHeight = Math.max(maxHeight, height + oy)
+        x += width + ox;
+        maxHeight = Math.max(maxHeight, height + oy);
       } else if ("switch" in info) {
-        const cx = x + ox + 1
-        const cy = y + oy + 1
-        for (const [i, id] of [info.switch.s, info.switch.w, info.switch.n, info.switch.e].entries()) {
+        const cx = x + ox + 1;
+        const cy = y + oy + 1;
+        for (const [i, id] of [
+          info.switch.s,
+          info.switch.w,
+          info.switch.n,
+          info.switch.e,
+        ].entries()) {
           compiled.keys.push({
             id,
             shape: "quarter-circle",
@@ -82,7 +87,7 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
             size: [2, 0.6],
             pos: [cx, cy],
             rotate: 90 * i + 45,
-          })
+          });
         }
         compiled.keys.push({
           id: info.switch.d,
@@ -91,16 +96,16 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
           size: [0.8, 0.8],
           pos: [x + 0.6 + ox, y + 0.6 + oy],
           rotate: 0,
-        })
+        });
 
-        x += 2 + ox
-        maxHeight = Math.max(maxHeight, 2 + oy)
+        x += 2 + ox;
+        maxHeight = Math.max(maxHeight, 2 + oy);
       }
     }
-    y += maxHeight
-    compiled.size[0] = Math.max(compiled.size[0], x)
+    y += maxHeight;
+    compiled.size[0] = Math.max(compiled.size[0], x);
   }
-  compiled.size[1] = y
+  compiled.size[1] = y;
 
-  return compiled
+  return compiled;
 }

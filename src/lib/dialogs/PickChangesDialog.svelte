@@ -1,73 +1,121 @@
 <script lang="ts">
-  import Dialog from "$lib/dialogs/Dialog.svelte"
-  import type {Change, ChordChange, LayoutChange, SettingChange} from "$lib/undo-redo"
-  import {ChangeType, chords} from "$lib/undo-redo"
-  import ActionString from "$lib/components/ActionString.svelte"
-  import LL from "../../i18n/i18n-svelte"
-  import {KEYMAP_IDS} from "$lib/serial/keymap-codes"
+  import Dialog from "$lib/dialogs/Dialog.svelte";
+  import type {
+    Change,
+    ChordChange,
+    LayoutChange,
+    SettingChange,
+  } from "$lib/undo-redo";
+  import { ChangeType, chords } from "$lib/undo-redo";
+  import ActionString from "$lib/components/ActionString.svelte";
+  import LL from "../../i18n/i18n-svelte";
+  import { KEYMAP_IDS } from "$lib/serial/keymap-codes";
 
   export let changes: Change[] = [
-    {type: ChangeType.Layout, layer: 0, id: 1, action: 1},
-    {type: ChangeType.Layout, layer: 1, id: 1, action: 1},
-    {type: ChangeType.Layout, layer: 1, id: 1, action: 1},
-    {type: ChangeType.Layout, layer: 1, id: 1, action: 1},
-    {type: ChangeType.Layout, layer: 1, id: 1, action: 1},
-    {type: ChangeType.Layout, layer: 1, id: 1, action: 1},
-    {type: ChangeType.Layout, layer: 1, id: 1, action: 1},
-    {type: ChangeType.Layout, layer: 1, id: 1, action: 1},
-    {type: ChangeType.Layout, layer: 1, id: 1, action: 1},
-    {type: ChangeType.Layout, layer: 1, id: 1, action: 1},
-    {type: ChangeType.Setting, id: 0, setting: 2},
-    {type: ChangeType.Setting, id: 0, setting: 2},
-    {type: ChangeType.Setting, id: 0, setting: 2},
-    {type: ChangeType.Setting, id: 0, setting: 2},
-    {type: ChangeType.Chord, id: [1], actions: [55], phrase: [55, 63, 37, 36]},
+    { type: ChangeType.Layout, layer: 0, id: 1, action: 1 },
+    { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
+    { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
+    { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
+    { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
+    { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
+    { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
+    { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
+    { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
+    { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
+    { type: ChangeType.Setting, id: 0, setting: 2 },
+    { type: ChangeType.Setting, id: 0, setting: 2 },
+    { type: ChangeType.Setting, id: 0, setting: 2 },
+    { type: ChangeType.Setting, id: 0, setting: 2 },
     {
       type: ChangeType.Chord,
-      id: [KEYMAP_IDS.get("y")!.code, KEYMAP_IDS.get("r")!.code, KEYMAP_IDS.get("t")!.code],
-      actions: [KEYMAP_IDS.get("y")!.code, KEYMAP_IDS.get("r")!.code, KEYMAP_IDS.get("t")!.code],
+      id: [1],
+      actions: [55],
       phrase: [55, 63, 37, 36],
     },
     {
       type: ChangeType.Chord,
-      id: [KEYMAP_IDS.get("y")!.code, KEYMAP_IDS.get("r")!.code, KEYMAP_IDS.get("t")!.code],
-      actions: [KEYMAP_IDS.get("y")!.code, KEYMAP_IDS.get("r")!.code, KEYMAP_IDS.get("t")!.code],
+      id: [
+        KEYMAP_IDS.get("y")!.code,
+        KEYMAP_IDS.get("r")!.code,
+        KEYMAP_IDS.get("t")!.code,
+      ],
+      actions: [
+        KEYMAP_IDS.get("y")!.code,
+        KEYMAP_IDS.get("r")!.code,
+        KEYMAP_IDS.get("t")!.code,
+      ],
+      phrase: [55, 63, 37, 36],
+    },
+    {
+      type: ChangeType.Chord,
+      id: [
+        KEYMAP_IDS.get("y")!.code,
+        KEYMAP_IDS.get("r")!.code,
+        KEYMAP_IDS.get("t")!.code,
+      ],
+      actions: [
+        KEYMAP_IDS.get("y")!.code,
+        KEYMAP_IDS.get("r")!.code,
+        KEYMAP_IDS.get("t")!.code,
+      ],
       phrase: [],
     },
-  ]
+  ];
 
-  $: existingChords = new Set($chords.map(it => JSON.stringify(it.id)))
+  $: existingChords = new Set($chords.map((it) => JSON.stringify(it.id)));
 
   $: layoutChanges = Array.from(
-    {length: 3},
-    (_, i) => changes.filter(it => it.type === ChangeType.Layout && it.layer === i) as LayoutChange[],
-  )
-  $: settingChanges = changes.filter(it => it.type === ChangeType.Setting) as SettingChange[]
+    { length: 3 },
+    (_, i) =>
+      changes.filter(
+        (it) => it.type === ChangeType.Layout && it.layer === i,
+      ) as LayoutChange[],
+  );
+  $: settingChanges = changes.filter(
+    (it) => it.type === ChangeType.Setting,
+  ) as SettingChange[];
   $: chordChanges = {
     added: changes.filter(
-      it =>
-        it.type === ChangeType.Chord && it.phrase.length > 0 && !existingChords.has(JSON.stringify(it.id)),
+      (it) =>
+        it.type === ChangeType.Chord &&
+        it.phrase.length > 0 &&
+        !existingChords.has(JSON.stringify(it.id)),
     ) as ChordChange[],
     changed: changes.filter(
-      it => it.type === ChangeType.Chord && it.phrase.length > 0 && existingChords.has(JSON.stringify(it.id)),
+      (it) =>
+        it.type === ChangeType.Chord &&
+        it.phrase.length > 0 &&
+        existingChords.has(JSON.stringify(it.id)),
     ) as ChordChange[],
-    deleted: changes.filter(it => it.type === ChangeType.Chord && it.phrase.length === 0) as ChordChange[],
-  }
-  $: totalChordChanges = Object.values(chordChanges).reduce((acc, curr) => acc + curr.length, 0)
+    deleted: changes.filter(
+      (it) => it.type === ChangeType.Chord && it.phrase.length === 0,
+    ) as ChordChange[],
+  };
+  $: totalChordChanges = Object.values(chordChanges).reduce(
+    (acc, curr) => acc + curr.length,
+    0,
+  );
 </script>
 
 <Dialog>
   <h1>{$LL.changes.TITLE()}</h1>
   <h2>
-    <label><input type="checkbox" class="checkbox" />{$LL.changes.ALL_CHANGES()}</label>
+    <label
+      ><input
+        type="checkbox"
+        class="checkbox"
+      />{$LL.changes.ALL_CHANGES()}</label
+    >
   </h2>
   <ul>
-    {#if layoutChanges.some(it => it.length > 0)}
+    {#if layoutChanges.some((it) => it.length > 0)}
       <li>
         <h3>
           <label>
             <input type="checkbox" class="checkbox" />
-            {$LL.changes.layout.TITLE(layoutChanges.reduce((acc, curr) => acc + curr.length, 0))}
+            {$LL.changes.layout.TITLE(
+              layoutChanges.reduce((acc, curr) => acc + curr.length, 0),
+            )}
           </label>
         </h3>
         <ul>
@@ -78,7 +126,7 @@
               <h4>
                 <label>
                   <input type="checkbox" class="checkbox" />
-                  {$LL.changes.layout.LAYER({changes: changes.length, layer})}
+                  {$LL.changes.layout.LAYER({ changes: changes.length, layer })}
                 </label>
               </h4>
             </li>
@@ -90,9 +138,10 @@
       <li>
         <h3>
           <label
-            ><input type="checkbox" class="checkbox" />{$LL.changes.settings.TITLE(
-              settingChanges.length,
-            )}</label
+            ><input
+              type="checkbox"
+              class="checkbox"
+            />{$LL.changes.settings.TITLE(settingChanges.length)}</label
           >
         </h3>
       </li>
@@ -101,7 +150,10 @@
       <li>
         <h3>
           <label
-            ><input type="checkbox" class="checkbox" />{$LL.changes.chords.TITLE(totalChordChanges)}</label
+            ><input
+              type="checkbox"
+              class="checkbox"
+            />{$LL.changes.chords.TITLE(totalChordChanges)}</label
           >
         </h3>
         <ul>

@@ -1,102 +1,102 @@
 <script lang="ts">
-  import {tick} from "svelte"
-  import {changes, ChangeType} from "$lib/undo-redo"
-  import type {ChordInfo} from "$lib/undo-redo"
-  import {scale} from "svelte/transition"
-  import ActionString from "$lib/components/ActionString.svelte"
-  import {selectAction} from "./action-selector"
-  import {inputToAction} from "./input-converter"
-  import {serialPort} from "$lib/serial/connection"
-  import {get} from "svelte/store"
+  import { tick } from "svelte";
+  import { changes, ChangeType } from "$lib/undo-redo";
+  import type { ChordInfo } from "$lib/undo-redo";
+  import { scale } from "svelte/transition";
+  import ActionString from "$lib/components/ActionString.svelte";
+  import { selectAction } from "./action-selector";
+  import { inputToAction } from "./input-converter";
+  import { serialPort } from "$lib/serial/connection";
+  import { get } from "svelte/store";
 
-  export let chord: ChordInfo
+  export let chord: ChordInfo;
 
   function keypress(event: KeyboardEvent) {
     if (event.key === "ArrowUp") {
-      addSpecial(event)
+      addSpecial(event);
     } else if (event.key === "ArrowLeft") {
-      moveCursor(cursorPosition - 1)
+      moveCursor(cursorPosition - 1);
     } else if (event.key === "ArrowRight") {
-      moveCursor(cursorPosition + 1)
+      moveCursor(cursorPosition + 1);
     } else if (event.key === "Backspace") {
-      deleteAction(cursorPosition - 1)
-      moveCursor(cursorPosition - 1)
+      deleteAction(cursorPosition - 1);
+      moveCursor(cursorPosition - 1);
     } else if (event.key === "Delete") {
-      deleteAction(cursorPosition)
+      deleteAction(cursorPosition);
     } else {
-      if (event.key === "Shift") return
-      const action = inputToAction(event, get(serialPort)?.device === "X")
+      if (event.key === "Shift") return;
+      const action = inputToAction(event, get(serialPort)?.device === "X");
       if (action !== undefined) {
-        insertAction(cursorPosition, action)
-        tick().then(() => moveCursor(cursorPosition + 1))
+        insertAction(cursorPosition, action);
+        tick().then(() => moveCursor(cursorPosition + 1));
       }
     }
   }
 
   function moveCursor(to: number) {
-    cursorPosition = Math.max(0, Math.min(to, chord.phrase.length))
-    const item = box.children.item(cursorPosition) as HTMLElement
-    cursorOffset = item.offsetLeft + item.offsetWidth
+    cursorPosition = Math.max(0, Math.min(to, chord.phrase.length));
+    const item = box.children.item(cursorPosition) as HTMLElement;
+    cursorOffset = item.offsetLeft + item.offsetWidth;
   }
 
   function deleteAction(at: number, count = 1) {
-    if (!(at in chord.phrase)) return
-    changes.update(changes => {
+    if (!(at in chord.phrase)) return;
+    changes.update((changes) => {
       changes.push({
         type: ChangeType.Chord,
         id: chord.id,
         actions: chord.actions,
         phrase: chord.phrase.toSpliced(at, count),
-      })
-      return changes
-    })
+      });
+      return changes;
+    });
   }
 
   function insertAction(at: number, action: number) {
-    changes.update(changes => {
+    changes.update((changes) => {
       changes.push({
         type: ChangeType.Chord,
         id: chord.id,
         actions: chord.actions,
         phrase: chord.phrase.toSpliced(at, 0, action),
-      })
-      return changes
-    })
+      });
+      return changes;
+    });
   }
 
   function clickCursor(event: MouseEvent) {
-    if (event.target === button) return
-    const distance = (event as unknown as {layerX: number}).layerX
+    if (event.target === button) return;
+    const distance = (event as unknown as { layerX: number }).layerX;
 
-    let i = 0
+    let i = 0;
     for (const child of box.children) {
-      const {offsetLeft, offsetWidth} = child as HTMLElement
+      const { offsetLeft, offsetWidth } = child as HTMLElement;
       if (distance < offsetLeft + offsetWidth / 2) {
-        moveCursor(i - 1)
-        return
+        moveCursor(i - 1);
+        return;
       }
-      i++
+      i++;
     }
-    moveCursor(i - 1)
+    moveCursor(i - 1);
   }
 
   function addSpecial(event: MouseEvent | KeyboardEvent) {
     selectAction(
       event,
-      action => {
-        insertAction(cursorPosition, action)
-        tick().then(() => moveCursor(cursorPosition + 1))
+      (action) => {
+        insertAction(cursorPosition, action);
+        tick().then(() => moveCursor(cursorPosition + 1));
       },
       () => box.focus(),
-    )
+    );
   }
 
-  let button: HTMLButtonElement
-  let box: HTMLDivElement
-  let cursorPosition = 0
-  let cursorOffset = 0
+  let button: HTMLButtonElement;
+  let box: HTMLDivElement;
+  let cursorPosition = 0;
+  let cursorOffset = 0;
 
-  let hasFocus = false
+  let hasFocus = false;
 </script>
 
 <div
@@ -107,8 +107,8 @@
   bind:this={box}
   class:edited={!chord.deleted && chord.phraseChanged}
   on:focusin={() => (hasFocus = true)}
-  on:focusout={event => {
-    if (event.relatedTarget !== button) hasFocus = false
+  on:focusout={(event) => {
+    if (event.relatedTarget !== button) hasFocus = false;
   }}
 >
   {#if hasFocus}

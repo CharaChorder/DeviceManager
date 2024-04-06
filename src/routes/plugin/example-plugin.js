@@ -11,21 +11,21 @@
  *
  */
 
-const count = await Chara.getChordCount() // => 499
-const chord = await Chara.getChord(2) // => {actions: [1, 2, 3], phrase: [4, 5, 6]}
+const count = await Chara.getChordCount(); // => 499
+const chord = await Chara.getChord(2); // => {actions: [1, 2, 3], phrase: [4, 5, 6]}
 
-const setting = await Chara.getSetting(5) // => 0
+const setting = await Chara.getSetting(5); // => 0
 
 // This, for example, would return all chords
-const chords = []
+const chords = [];
 for (let i = 0; i < count; i++) {
-  chords.push(await Chara.getChord(i))
+  chords.push(await Chara.getChord(i));
 }
 
 // You can also print values to the browser console (F12)
-console.log("Chords:", chords)
+console.log("Chords:", chords);
 
 // You can access the actions by ID!
-Actions.SPACE // => {id: "SPACE", code: 32, icon: "space_bar", description: ...}
-Actions[32] // This also works
-Actions[0x20] // Or this!
+Actions.SPACE; // => {id: "SPACE", code: 32, icon: "space_bar", description: ...}
+Actions[32]; // This also works
+Actions[0x20]; // Or this!

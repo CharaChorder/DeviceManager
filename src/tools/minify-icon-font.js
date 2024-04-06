@@ -13,72 +13,76 @@
  * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 // @ts-expect-error missing types
-import {openSync} from "fontkit"
-import {exec} from "child_process"
-import config from "../../icons.config.js"
-import {statSync} from "fs"
-import {readFile} from "fs/promises"
-import {glob} from "glob"
+import { openSync } from "fontkit";
+import { exec } from "child_process";
+import config from "../../icons.config.js";
+import { statSync } from "fs";
+import { readFile } from "fs/promises";
+import { glob } from "glob";
 
 /**
  * @param {string[] | string} command
  * @returns {Promise<string>}
  */
 async function run(command) {
-  const fullCommand = Array.isArray(command) ? command.join(" ") : command
-  console.log(`>> ${fullCommand}`)
+  const fullCommand = Array.isArray(command) ? command.join(" ") : command;
+  console.log(`>> ${fullCommand}`);
 
   return new Promise((resolve, reject) => {
     exec(fullCommand, (error, stdout, stderr) => {
       if (error) {
-        reject(error)
+        reject(error);
       } else if (stderr) {
-        reject(stderr)
+        reject(stderr);
       } else {
-        resolve(stdout.trim())
+        resolve(stdout.trim());
       }
-    })
-  })
+    });
+  });
 }
 
-const yamlFiles = await glob("src/lib/assets/keymaps/*.yml")
+const yamlFiles = await glob("src/lib/assets/keymaps/*.yml");
 const yamlIcons = await Promise.all(
-  yamlFiles.map(it =>
-    readFile(it, "utf8").then(file => [...file.matchAll(/^\s*icon:\s+(\w+)/gm)].map(match => match[1])),
+  yamlFiles.map((it) =>
+    readFile(it, "utf8").then((file) =>
+      [...file.matchAll(/^\s*icon:\s+(\w+)/gm)].map((match) => match[1]),
+    ),
   ),
-).then(it => it.flat())
+).then((it) => it.flat());
 
-const icons = new Set([...config.icons, ...yamlIcons])
+const icons = new Set([...config.icons, ...yamlIcons]);
 
-console.log("Icons used:", [...icons.values()].sort())
-const font = openSync(config.inputPath)
+console.log("Icons used:", [...icons.values()].sort());
+const font = openSync(config.inputPath);
 
-const glyphs = ["5f-7a", "30-39"]
+const glyphs = ["5f-7a", "30-39"];
 for (const icon of icons) {
   /** @type {Array<{id: string}>} */
-  const iconGlyphs = font.layout(icon).glyphs
+  const iconGlyphs = font.layout(icon).glyphs;
   if (iconGlyphs.length === 0) {
-    console.error(`${icon} not found in font. Typo?`)
-    process.exit(-1)
+    console.error(`${icon} not found in font. Typo?`);
+    process.exit(-1);
   }
 
   const codePoints = iconGlyphs
-    .flatMap(it => font.stringsForGlyph(it.id))
-    .flatMap(it => [...it])
-    .map(it => it.codePointAt(0).toString(16))
+    .flatMap((it) => font.stringsForGlyph(it.id))
+    .flatMap((it) => [...it])
+    .map((it) => it.codePointAt(0).toString(16));
 
-  const codePoint = config.codePoints[icon]
+  const codePoint = config.codePoints[icon];
   if (codePoint) {
-    glyphs.push(codePoint)
+    glyphs.push(codePoint);
   } else if (codePoints.length === 0) {
-    console.log()
-    console.error(`${icon} code point could not be determined. Add it to config.codePoints.`)
-    process.exit(-1)
+    console.log();
+    console.error(
+      `${icon} code point could not be determined. Add it to config.codePoints.`,
+    );
+    process.exit(-1);
   }
 
-  glyphs.push(...codePoints)
+  glyphs.push(...codePoints);
 }
-glyphs.sort()
+glyphs.sort();
 
 console.log(
   await run([
@@ -89,18 +93,19 @@ console.log(
     `--output-file="${config.outputPath}"`,
     "--flavor=woff2",
   ]),
-)
+);
 
-console.log(`${glyphs.length} Used Icons Total`)
-console.log(`Minified font saved to ${config.outputPath}`)
-const result = statSync(config.outputPath).size
-const before = statSync(config.inputPath).size
+console.log(`${glyphs.length} Used Icons Total`);
+console.log(`Minified font saved to ${config.outputPath}`);
+const result = statSync(config.outputPath).size;
+const before = statSync(config.inputPath).size;
 
 console.log(
-  `${toByteUnit(before)} > ${toByteUnit(result)} (${(((before - result) / before) * 100).toFixed(
-    2,
-  )}% Reduction)`,
-)
+  `${toByteUnit(before)} > ${toByteUnit(result)} (${(
+    ((before - result) / before) *
+    100
+  ).toFixed(2)}% Reduction)`,
+);
 
 /**
  * Bytes to respective units
@@ -108,10 +113,10 @@ console.log(
  */
 function toByteUnit(value) {
   if (value < 1024) {
-    return `${value}B`
+    return `${value}B`;
   } else if (value < 1024 * 1024) {
-    return `${(value / 1024).toFixed(2)}KB`
+    return `${(value / 1024).toFixed(2)}KB`;
   } else {
-    return `${(value / 1024 / 1024).toFixed(2)}MB`
+    return `${(value / 1024 / 1024).toFixed(2)}MB`;
   }
 }

@@ -1,4 +1,4 @@
-import type {Translation} from "../i18n-types"
+import type { Translation } from "../i18n-types";
 
 const de = {
   TITLE: "CharaChorder Gerätemanager",
@@ -19,7 +19,8 @@ const de = {
   backup: {
     TITLE: "Lokale Kopie",
     INDIVIDUAL: "Einzeldateien",
-    DISCLAIMER: "Das Backup in diesem Browser gespeichert und bleibt nur auf diesem Computer.",
+    DISCLAIMER:
+      "Das Backup in diesem Browser gespeichert und bleibt nur auf diesem Computer.",
     DOWNLOAD: "Alles herunterladen",
     RESTORE: "Wiederherstellen",
   },
@@ -34,7 +35,8 @@ const de = {
     filter: {
       ALL: "Alle",
     },
-    LIVE_LAYOUT_INFO: "Diese Aktion wurde auf Basis des Systemtastaturlayouts ermittelt.",
+    LIVE_LAYOUT_INFO:
+      "Diese Aktion wurde auf Basis des Systemtastaturlayouts ermittelt.",
     SHIFT_WARNING: "Diese Aktion hält <kbd class='icon'>shift</kbd>",
     ALT_CODE_WARNING: "Dieses Alt-Code Makro funktioniert nur unter Windows",
   },
@@ -70,7 +72,8 @@ const de = {
       TITLE: "Bootmenü",
       REBOOT: "Neustarten",
       BOOTLOADER: "Bootloader",
-      POWER_WARNING: "Um vom Bootloader aus neu zu starten muss das Gerät neu verbunden werden.",
+      POWER_WARNING:
+        "Um vom Bootloader aus neu zu starten muss das Gerät neu verbunden werden.",
     },
   },
   browserWarning: {
@@ -82,7 +85,8 @@ const de = {
     INFO_BROWSER_PREFIX:
       "Auch wenn alle Chromium-basieren Desktop Browser diese Voraussetzung grundsätzlich erfüllen, haben einige Browser ",
     INFO_BROWSER_INFIX: "wie zum Beispiel Brave",
-    INFO_BROWSER_SUFFIX: " sich bewusst dazu entschieden die API zu deaktivieren.",
+    INFO_BROWSER_SUFFIX:
+      " sich bewusst dazu entschieden die API zu deaktivieren.",
     DOWNLOAD_APP:
       "Chrome oder Edge werden offiziell unterstützt, andere Browser könnten aber auch funktionieren.",
   },
@@ -134,6 +138,6 @@ const de = {
       RUN: "Ausführen",
     },
   },
-} satisfies Translation
+} satisfies Translation;
 
-export default de
+export default de;

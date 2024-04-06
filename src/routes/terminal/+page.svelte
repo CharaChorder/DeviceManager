@@ -1,5 +1,5 @@
 <script>
-  import Terminal from "$lib/components/Terminal.svelte"
+  import Terminal from "$lib/components/Terminal.svelte";
 </script>
 
 <section class="terminal">

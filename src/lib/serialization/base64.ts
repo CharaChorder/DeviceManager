@@ -5,8 +5,8 @@
  * meaning some chars are swapped for compatibility
  */
 export async function toBase64(blob: Blob): Promise<string> {
-  return new Promise(async resolve => {
-    const reader = new FileReader()
+  return new Promise(async (resolve) => {
+    const reader = new FileReader();
     reader.onloadend = function () {
       resolve(
         `${(reader.result as string)
@@ -14,17 +14,20 @@ export async function toBase64(blob: Blob): Promise<string> {
           .replaceAll("+", ".")
           .replaceAll("/", "_")
           .replaceAll("=", "-")}`,
-      )
-    }
-    reader.readAsDataURL(blob)
-  })
+      );
+    };
+    reader.readAsDataURL(blob);
+  });
 }
 
-export async function fromBase64(base64: string, fetch = window.fetch): Promise<Blob> {
+export async function fromBase64(
+  base64: string,
+  fetch = window.fetch,
+): Promise<Blob> {
   return fetch(
     `data:application/octet-stream;base64,${base64
       .replaceAll(".", "+")
       .replaceAll("_", "/")
       .replaceAll("-", "=")}`,
-  ).then(it => it.blob())
+  ).then((it) => it.blob());
 }

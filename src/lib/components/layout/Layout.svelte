@@ -1,25 +1,34 @@
 <script lang="ts">
-  import {serialPort} from "$lib/serial/connection"
-  import {action} from "$lib/title"
-  import GenericLayout from "$lib/components/layout/GenericLayout.svelte"
-  import {getContext} from "svelte"
-  import type {Writable} from "svelte/store"
-  import type {VisualLayout} from "$lib/serialization/visual-layout"
+  import { serialPort } from "$lib/serial/connection";
+  import { action } from "$lib/title";
+  import GenericLayout from "$lib/components/layout/GenericLayout.svelte";
+  import { getContext } from "svelte";
+  import type { Writable } from "svelte/store";
+  import type { VisualLayout } from "$lib/serialization/visual-layout";
 
-  $: device = $serialPort?.device ?? "ONE"
-  const activeLayer = getContext<Writable<number>>("active-layer")
+  $: device = $serialPort?.device ?? "ONE";
+  const activeLayer = getContext<Writable<number>>("active-layer");
 
   const layers = [
     ["Numeric Layer", "123", 1],
     ["Primary Layer", "abc", 0],
     ["Function Layer", "function", 2],
-  ] as const
+  ] as const;
 
   const layouts = {
-    ONE: () => import("$lib/assets/layouts/one.yml").then(it => it.default as VisualLayout),
-    LITE: () => import("$lib/assets/layouts/lite.yml").then(it => it.default as VisualLayout),
-    X: () => import("$lib/assets/layouts/generic/103-key.yml").then(it => it.default as VisualLayout),
-  }
+    ONE: () =>
+      import("$lib/assets/layouts/one.yml").then(
+        (it) => it.default as VisualLayout,
+      ),
+    LITE: () =>
+      import("$lib/assets/layouts/lite.yml").then(
+        (it) => it.default as VisualLayout,
+      ),
+    X: () =>
+      import("$lib/assets/layouts/generic/103-key.yml").then(
+        (it) => it.default as VisualLayout,
+      ),
+  };
 </script>
 
 <div class="container">
@@ -27,7 +36,7 @@
     {#each layers as [title, icon, value]}
       <button
         class="icon"
-        use:action={{title, shortcut: `alt+${value + 1}`}}
+        use:action={{ title, shortcut: `alt+${value + 1}` }}
         on:click={() => ($activeLayer = value)}
         class:active={$activeLayer === value}
       >

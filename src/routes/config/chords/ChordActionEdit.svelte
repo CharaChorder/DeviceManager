@@ -1,80 +1,83 @@
 <script lang="ts">
-  import type {ChordInfo} from "$lib/undo-redo"
-  import {changes, ChangeType} from "$lib/undo-redo"
-  import {createEventDispatcher} from "svelte"
-  import LL from "../../../i18n/i18n-svelte"
-  import ActionString from "$lib/components/ActionString.svelte"
-  import {selectAction} from "./action-selector"
-  import {serialPort} from "$lib/serial/connection"
-  import {get} from "svelte/store"
-  import {inputToAction} from "./input-converter"
+  import type { ChordInfo } from "$lib/undo-redo";
+  import { changes, ChangeType } from "$lib/undo-redo";
+  import { createEventDispatcher } from "svelte";
+  import LL from "../../../i18n/i18n-svelte";
+  import ActionString from "$lib/components/ActionString.svelte";
+  import { selectAction } from "./action-selector";
+  import { serialPort } from "$lib/serial/connection";
+  import { get } from "svelte/store";
+  import { inputToAction } from "./input-converter";
 
-  export let chord: ChordInfo | undefined = undefined
+  export let chord: ChordInfo | undefined = undefined;
 
-  const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher();
 
-  let pressedKeys = new Set<number>()
-  let editing = false
+  let pressedKeys = new Set<number>();
+  let editing = false;
 
   function compare(a: number, b: number) {
-    return a - b
+    return a - b;
   }
 
   function edit() {
-    pressedKeys = new Set()
-    editing = true
+    pressedKeys = new Set();
+    editing = true;
   }
 
   function keydown(event: KeyboardEvent) {
-    if (!editing) return
-    event.preventDefault()
-    const input = inputToAction(event, get(serialPort)?.device === "X")
+    if (!editing) return;
+    event.preventDefault();
+    const input = inputToAction(event, get(serialPort)?.device === "X");
     if (input == undefined) {
-      alert("Invalid key")
-      return
+      alert("Invalid key");
+      return;
     }
-    pressedKeys.add(input)
-    pressedKeys = pressedKeys
+    pressedKeys.add(input);
+    pressedKeys = pressedKeys;
   }
 
   function keyup() {
-    if (!editing) return
-    editing = false
-    if (pressedKeys.size < 2) return
-    if (!chord) return dispatch("submit", [...pressedKeys].sort(compare))
-    changes.update(changes => {
+    if (!editing) return;
+    editing = false;
+    if (pressedKeys.size < 2) return;
+    if (!chord) return dispatch("submit", [...pressedKeys].sort(compare));
+    changes.update((changes) => {
       changes.push({
         type: ChangeType.Chord,
         id: chord!.id,
         actions: [...pressedKeys].sort(compare),
         phrase: chord!.phrase,
-      })
-      return changes
-    })
+      });
+      return changes;
+    });
   }
 
   function addSpecial(event: MouseEvent) {
-    selectAction(event, action => {
-      changes.update(changes => {
+    selectAction(event, (action) => {
+      changes.update((changes) => {
         changes.push({
           type: ChangeType.Chord,
           id: chord!.id,
           actions: [...chord!.actions, action].sort(compare),
           phrase: chord!.phrase,
-        })
-        return changes
-      })
-    })
+        });
+        return changes;
+      });
+    });
   }
 
-  $: chordActions = chord?.actions.slice(chord.actions.lastIndexOf(0) + 1).toSorted(compare)
-  $: compoundIndices = chord?.actions.slice(0, chord.actions.indexOf(0))
+  $: chordActions = chord?.actions
+    .slice(chord.actions.lastIndexOf(0) + 1)
+    .toSorted(compare);
+  $: compoundIndices = chord?.actions.slice(0, chord.actions.indexOf(0));
 </script>
 
 <button
   class:deleted={chord && chord.deleted}
   class:edited={chord && chord.actionsChanged}
-  class:invalid={chord && chordActions?.some((it, i) => chordActions?.[i] !== it)}
+  class:invalid={chord &&
+    chordActions?.some((it, i) => chordActions?.[i] !== it)}
   class="chord"
   on:click={edit}
   on:keydown={keydown}
@@ -93,8 +96,13 @@
       <span>&rarr;</span>
     {/if}
   {/if}
-  <ActionString display="keys" actions={editing ? [...pressedKeys].sort(compare) : chordActions ?? []} />
-  <button class="icon add" on:click|stopPropagation={addSpecial}>add_circle</button>
+  <ActionString
+    display="keys"
+    actions={editing ? [...pressedKeys].sort(compare) : chordActions ?? []}
+  />
+  <button class="icon add" on:click|stopPropagation={addSpecial}
+    >add_circle</button
+  >
   <sup>•</sup>
 </button>
 

@@ -1,5 +1,5 @@
 <script>
-  import LL from "../i18n/i18n-svelte"
+  import LL from "../i18n/i18n-svelte";
 </script>
 
 <dialog open>
@@ -12,8 +12,9 @@
       >{$LL.browserWarning.INFO_SERIAL_INFIX()}</a
     >{$LL.browserWarning.INFO_SERIAL_SUFFIX()}
     {$LL.browserWarning.INFO_BROWSER_PREFIX()}
-    <a href="https://github.com/brave/brave-browser/issues/13902" target="_blank"
-      >{$LL.browserWarning.INFO_BROWSER_INFIX()}</a
+    <a
+      href="https://github.com/brave/brave-browser/issues/13902"
+      target="_blank">{$LL.browserWarning.INFO_BROWSER_INFIX()}</a
     >{$LL.browserWarning.INFO_BROWSER_SUFFIX()}
   </p>
   <div>

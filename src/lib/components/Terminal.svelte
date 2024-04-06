@@ -1,16 +1,16 @@
 <script lang="ts">
-  import {serialLog, serialPort} from "$lib/serial/connection"
-  import {slide} from "svelte/transition"
+  import { serialLog, serialPort } from "$lib/serial/connection";
+  import { slide } from "svelte/transition";
 
   function submit(event: Event) {
-    event.preventDefault()
-    $serialPort.send(value.trim())
-    value = ""
-    io.scrollTo({top: io.scrollHeight})
+    event.preventDefault();
+    $serialPort.send(value.trim());
+    value = "";
+    io.scrollTo({ top: io.scrollHeight });
   }
 
-  let value: string
-  let io: HTMLDivElement
+  let value: string;
+  let io: HTMLDivElement;
 </script>
 
 <form on:submit={submit}>

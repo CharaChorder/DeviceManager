@@ -112,6 +112,6 @@ const config = {
     stat_minus_2: "e69c",
     stat_2: "e699",
   },
-}
+};
 
-export default config
+export default config;

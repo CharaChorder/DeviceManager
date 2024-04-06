@@ -1,44 +1,47 @@
 <script lang="ts">
-  import {browser, version} from "$app/environment"
-  import {action} from "$lib/title"
-  import LL, {setLocale} from "../i18n/i18n-svelte"
-  import {theme} from "$lib/preferences.js"
-  import type {Locales} from "../i18n/i18n-types"
-  import {detectLocale, locales} from "../i18n/i18n-util"
-  import {loadLocaleAsync} from "../i18n/i18n-util.async"
-  import {tick} from "svelte"
-  import SyncOverlay from "./SyncOverlay.svelte"
-  import {serialPort} from "$lib/serial/connection"
+  import { browser, version } from "$app/environment";
+  import { action } from "$lib/title";
+  import LL, { setLocale } from "../i18n/i18n-svelte";
+  import { theme } from "$lib/preferences.js";
+  import type { Locales } from "../i18n/i18n-types";
+  import { detectLocale, locales } from "../i18n/i18n-util";
+  import { loadLocaleAsync } from "../i18n/i18n-util.async";
+  import { tick } from "svelte";
+  import SyncOverlay from "./SyncOverlay.svelte";
+  import { serialPort } from "$lib/serial/connection";
 
-  let locale = (browser && (localStorage.getItem("locale") as Locales)) || detectLocale()
+  let locale =
+    (browser && (localStorage.getItem("locale") as Locales)) || detectLocale();
   $: if (browser)
     (async () => {
-      localStorage.setItem("locale", locale)
-      await loadLocaleAsync(locale)
-      setLocale(locale)
-    })()
+      localStorage.setItem("locale", locale);
+      await loadLocaleAsync(locale);
+      setLocale(locale);
+    })();
 
   function switchTheme() {
-    const mode = $theme.mode === "light" ? "dark" : "light"
+    const mode = $theme.mode === "light" ? "dark" : "light";
     if (document.startViewTransition) {
       document.startViewTransition(async () => {
-        $theme.mode = mode
-        await tick()
-      })
+        $theme.mode = mode;
+        await tick();
+      });
     } else {
-      $theme.mode = mode
+      $theme.mode = mode;
     }
   }
 
-  let languageSelect: HTMLSelectElement
+  let languageSelect: HTMLSelectElement;
 </script>
 
 <footer>
   <ul>
     <li>
       <!-- svelte-ignore not-defined -->
-      <a href={import.meta.env.VITE_HOMEPAGE_URL} rel="noreferrer" target="_blank"
-        ><span class="icon">commit</span> v{version}</a
+      <a
+        href={import.meta.env.VITE_HOMEPAGE_URL}
+        rel="noreferrer"
+        target="_blank"><span class="icon">commit</span> v{version}</a
       >
     </li>
     <li>
@@ -67,15 +70,27 @@
   </div>
   <ul>
     <li class="hide-forced-colors">
-      <input use:action={{title: $LL.profile.theme.COLOR_SCHEME()}} type="color" bind:value={$theme.color} />
+      <input
+        use:action={{ title: $LL.profile.theme.COLOR_SCHEME() }}
+        type="color"
+        bind:value={$theme.color}
+      />
     </li>
     <li class="hide-forced-colors">
       {#if $theme.mode === "light"}
-        <button use:action={{title: $LL.profile.theme.DARK_MODE()}} class="icon" on:click={switchTheme}>
+        <button
+          use:action={{ title: $LL.profile.theme.DARK_MODE() }}
+          class="icon"
+          on:click={switchTheme}
+        >
           dark_mode
         </button>
       {:else if $theme.mode === "dark"}
-        <button use:action={{title: $LL.profile.theme.LIGHT_MODE()}} class="icon" on:click={switchTheme}>
+        <button
+          use:action={{ title: $LL.profile.theme.LIGHT_MODE() }}
+          class="icon"
+          on:click={switchTheme}
+        >
           light_mode
         </button>
       {/if}
@@ -83,7 +98,7 @@
     <li>
       <button
         class="icon"
-        use:action={{title: $LL.profile.LANGUAGE()}}
+        use:action={{ title: $LL.profile.LANGUAGE() }}
         on:click={() => languageSelect.click()}
         >translate
 

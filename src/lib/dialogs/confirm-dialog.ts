@@ -1,4 +1,4 @@
-import ConfirmDialog from "$lib/dialogs/ConfirmDialog.svelte"
+import ConfirmDialog from "$lib/dialogs/ConfirmDialog.svelte";
 
 export async function askForConfirmation(
   title: string,
@@ -14,18 +14,18 @@ export async function askForConfirmation(
       confirmTitle,
       abortTitle,
     },
-  })
+  });
 
-  let resolvePromise: (value: boolean) => void
-  const resultPromise = new Promise<boolean>(resolve => {
-    resolvePromise = resolve
-  })
+  let resolvePromise: (value: boolean) => void;
+  const resultPromise = new Promise<boolean>((resolve) => {
+    resolvePromise = resolve;
+  });
 
-  dialog.$on("abort", () => resolvePromise(false))
-  dialog.$on("confirm", () => resolvePromise(true))
+  dialog.$on("abort", () => resolvePromise(false));
+  dialog.$on("confirm", () => resolvePromise(true));
 
-  const result = await resultPromise
-  dialog.$destroy()
+  const result = await resultPromise;
+  dialog.$destroy();
 
-  return result
+  return result;
 }

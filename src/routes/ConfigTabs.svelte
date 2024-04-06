@@ -1,18 +1,34 @@
 <script>
-  import {page} from "$app/stores"
-  import {action} from "$lib/title"
-  import LL from "../i18n/i18n-svelte"
+  import { page } from "$app/stores";
+  import { action } from "$lib/title";
+  import LL from "../i18n/i18n-svelte";
 
   $: paths = [
-    {href: "/config/chords/", title: $LL.configure.chords.TITLE(), icon: "piano"},
-    {href: "/config/layout/", title: $LL.configure.layout.TITLE(), icon: "keyboard"},
-    {href: "/config/settings/", title: $LL.configure.settings.TITLE(), icon: "settings"},
-  ]
+    {
+      href: "/config/chords/",
+      title: $LL.configure.chords.TITLE(),
+      icon: "piano",
+    },
+    {
+      href: "/config/layout/",
+      title: $LL.configure.layout.TITLE(),
+      icon: "keyboard",
+    },
+    {
+      href: "/config/settings/",
+      title: $LL.configure.settings.TITLE(),
+      icon: "settings",
+    },
+  ];
 </script>
 
 <nav>
   {#each paths as { href, title, icon }, i}
-    <a {href} class:active={$page.url.pathname.startsWith(href)} use:action={{shortcut: `shift+${i + 1}`}}>
+    <a
+      {href}
+      class:active={$page.url.pathname.startsWith(href)}
+      use:action={{ shortcut: `shift+${i + 1}` }}
+    >
       <span class="icon">{icon}</span>
       {title}
     </a>

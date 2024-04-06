@@ -1,17 +1,17 @@
 <script lang="ts">
-  import {KEYMAP_CODES} from "$lib/serial/keymap-codes"
-  import {onMount} from "svelte"
-  import {basicSetup, EditorView} from "codemirror"
-  import {javascript, javascriptLanguage} from "@codemirror/lang-javascript"
-  import {defaultKeymap} from "@codemirror/commands"
-  import {keymap} from "@codemirror/view"
-  import {HighlightStyle, syntaxHighlighting} from "@codemirror/language"
-  import {tags} from "@lezer/highlight"
-  import LL from "../../i18n/i18n-svelte"
-  import type {CompletionContext} from "@codemirror/autocomplete"
-  import {serialPort} from "$lib/serial/connection"
-  import type {CharaDevice} from "$lib/serial/device"
-  import examplePlugin from "./example-plugin.js?raw"
+  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
+  import { onMount } from "svelte";
+  import { basicSetup, EditorView } from "codemirror";
+  import { javascript, javascriptLanguage } from "@codemirror/lang-javascript";
+  import { defaultKeymap } from "@codemirror/commands";
+  import { keymap } from "@codemirror/view";
+  import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+  import { tags } from "@lezer/highlight";
+  import LL from "../../i18n/i18n-svelte";
+  import type { CompletionContext } from "@codemirror/autocomplete";
+  import { serialPort } from "$lib/serial/connection";
+  import type { CharaDevice } from "$lib/serial/device";
+  import examplePlugin from "./example-plugin.js?raw";
 
   let theme = EditorView.baseTheme({
     ".cm-editor .cm-content": {
@@ -40,25 +40,29 @@
       background: "transparent !important",
       backdropFilter: "invert(0.3)",
     },
-  })
+  });
   const highlightStyle = HighlightStyle.define(
     [
-      {tag: tags.keyword, color: "var(--md-sys-color-primary)"},
-      {tag: tags.number, color: "var(--md-sys-color-secondary)"},
-      {tag: tags.string, color: "var(--md-sys-color-tertiary)"},
-      {tag: tags.comment, color: "var(--md-sys-color-on-background)", opacity: 0.6},
+      { tag: tags.keyword, color: "var(--md-sys-color-primary)" },
+      { tag: tags.number, color: "var(--md-sys-color-secondary)" },
+      { tag: tags.string, color: "var(--md-sys-color-tertiary)" },
+      {
+        tag: tags.comment,
+        color: "var(--md-sys-color-on-background)",
+        opacity: 0.6,
+      },
     ],
     {
-      all: {fontFamily: '"Noto Sans Mono", monospace', fontSize: "14px"},
+      all: { fontFamily: '"Noto Sans Mono", monospace', fontSize: "14px" },
     },
-  )
+  );
   const completion = javascriptLanguage.data.of({
     autocomplete: function completeGlobals(context: CompletionContext) {
       if (context.matchBefore(/Chara\./)) {
         // TODO
       }
     },
-  })
+  });
 
   onMount(() => {
     editorView = new EditorView({
@@ -72,8 +76,8 @@
       ],
       parent: editor,
       doc: examplePlugin,
-    })
-  })
+    });
+  });
 
   const charaMethods = [
     "reboot",
@@ -89,7 +93,7 @@
     "getChordCount",
     "getChord",
     "send",
-  ] satisfies Array<keyof CharaDevice>
+  ] satisfies Array<keyof CharaDevice>;
   $: channels = $serialPort
     ? ({
         getVersion: async (..._args: unknown[]) => $serialPort.version,
@@ -102,19 +106,23 @@
                 "Click OK to perform the commit anyways.",
             )
           ) {
-            return $serialPort.commit()
+            return $serialPort.commit();
           }
         },
-        ...Object.fromEntries(charaMethods.map(it => [it, $serialPort[it].bind($serialPort)] as const)),
+        ...Object.fromEntries(
+          charaMethods.map(
+            (it) => [it, $serialPort[it].bind($serialPort)] as const,
+          ),
+        ),
       } satisfies Record<string, Function>)
-    : ({} as any)
+    : ({} as any);
 
   async function onMessage(event: MessageEvent) {
-    if (event.origin !== "null" || event.source !== frame.contentWindow) return
+    if (event.origin !== "null" || event.source !== frame.contentWindow) return;
 
-    const [channel, params] = event.data
-    const response = channels[channel as keyof typeof channels](...params)
-    frame.contentWindow!.postMessage({response: await response}, "*")
+    const [channel, params] = event.data;
+    const response = channels[channel as keyof typeof channels](...params);
+    frame.contentWindow!.postMessage({ response: await response }, "*");
   }
 
   function runPlugin() {
@@ -125,21 +133,29 @@
         charaChannels: Object.keys(channels),
       },
       "*",
-    )
+    );
   }
 
-  let frame: HTMLIFrameElement
-  let editor: HTMLDivElement
-  let editorView: EditorView
+  let frame: HTMLIFrameElement;
+  let editor: HTMLDivElement;
+  let editorView: EditorView;
 </script>
 
 <svelte:window on:message={onMessage} />
 <section>
-  <button on:click={runPlugin}><span class="icon">play_arrow</span>{$LL.plugin.editor.RUN()}</button>
+  <button on:click={runPlugin}
+    ><span class="icon">play_arrow</span>{$LL.plugin.editor.RUN()}</button
+  >
   <div class="editor-root" bind:this={editor} />
 </section>
 
-<iframe aria-hidden="true" title="code sandbox" bind:this={frame} src="/sandbox/" sandbox="allow-scripts" />
+<iframe
+  aria-hidden="true"
+  title="code sandbox"
+  bind:this={frame}
+  src="/sandbox/"
+  sandbox="allow-scripts"
+/>
 
 <style lang="scss">
   section {

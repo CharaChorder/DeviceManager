@@ -1,8 +1,9 @@
-import type {BaseTranslation} from "../i18n-types"
+import type { BaseTranslation } from "../i18n-types";
 
 const en = {
   TITLE: "CharaChorder Device Manager",
-  DESCRIPTION: "The device manager and configuration tool for CharaChorder devices.",
+  DESCRIPTION:
+    "The device manager and configuration tool for CharaChorder devices.",
   saveActions: {
     UNDO: "Undo (hold <kbd class='icon'>shift</kbd> to undo all changes)",
     REDO: "Redo",
@@ -14,7 +15,8 @@ const en = {
   backup: {
     TITLE: "Local backup",
     INDIVIDUAL: "Individual backups",
-    DISCLAIMER: "A backup is made and stored in this browser, and always remains only on your computer.",
+    DISCLAIMER:
+      "A backup is made and stored in this browser, and always remains only on your computer.",
     DOWNLOAD: "Download Everything",
     RESTORE: "Restore",
   },
@@ -64,24 +66,28 @@ const en = {
     TERMINAL: "Terminal",
     APPLY_SETTINGS: "Flash changes to device",
     NO_DEVICE: "No device connected",
-    LINUX_PERMISSIONS: "Most Linux based systems need adjusted permissions in order to connect your device.",
+    LINUX_PERMISSIONS:
+      "Most Linux based systems need adjusted permissions in order to connect your device.",
     bootMenu: {
       TITLE: "Boot Menu",
       REBOOT: "Reboot",
       BOOTLOADER: "Bootloader",
-      POWER_WARNING: "To reboot from bootloader you need to physically reconnect your device.",
+      POWER_WARNING:
+        "To reboot from bootloader you need to physically reconnect your device.",
     },
   },
   browserWarning: {
     TITLE: "Warning",
-    INFO_SERIAL_PREFIX: "Your current browser is not supported due to this site's unique requirement for ",
+    INFO_SERIAL_PREFIX:
+      "Your current browser is not supported due to this site's unique requirement for ",
     INFO_SERIAL_INFIX: "serial connections",
     INFO_SERIAL_SUFFIX: ".",
     INFO_BROWSER_PREFIX:
       "Though all chromium-based desktop browsers fulfill this requirement, some derivations such as Brave ",
     INFO_BROWSER_INFIX: "have been known to disable the API intentionally",
     INFO_BROWSER_SUFFIX: ".",
-    DOWNLOAD_APP: "Chrome or Edge are officially supported, but other browsers might work as well.",
+    DOWNLOAD_APP:
+      "Chrome or Edge are officially supported, but other browsers might work as well.",
   },
   changes: {
     TITLE: "Import changes",
@@ -131,6 +137,6 @@ const en = {
       RUN: "Run",
     },
   },
-} satisfies BaseTranslation
+} satisfies BaseTranslation;
 
-export default en
+export default en;

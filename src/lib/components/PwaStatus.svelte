@@ -1,7 +1,7 @@
 <script>
-  import {useRegisterSW} from "virtual:pwa-register/svelte"
+  import { useRegisterSW } from "virtual:pwa-register/svelte";
 
-  const {needRefresh, updateServiceWorker, offlineReady} = useRegisterSW()
+  const { needRefresh, updateServiceWorker, offlineReady } = useRegisterSW();
 </script>
 
 {#if $needRefresh}

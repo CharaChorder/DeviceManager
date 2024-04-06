@@ -1,14 +1,14 @@
 <script lang="ts">
-  import {serialPort} from "$lib/serial/connection"
-  import {createEventDispatcher} from "svelte"
+  import { serialPort } from "$lib/serial/connection";
+  import { createEventDispatcher } from "svelte";
 
-  export let challenge: string
+  export let challenge: string;
 
-  let challengeInput = ""
-  $: challengeString = `${challenge} ${$serialPort!.device}`
-  $: isValid = challengeInput === challengeString
+  let challengeInput = "";
+  $: challengeString = `${challenge} ${$serialPort!.device}`;
+  $: isValid = challengeInput === challengeString;
 
-  const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher();
 </script>
 
 <h3>Type the following to confirm the action</h3>
@@ -16,7 +16,9 @@
 <p>{challengeString}</p>
 <input type="text" bind:value={challengeInput} placeholder={challengeString} />
 
-<button disabled={!isValid} on:click={() => dispatch("confirm")}>Confirm {challenge}</button>
+<button disabled={!isValid} on:click={() => dispatch("confirm")}
+  >Confirm {challenge}</button
+>
 
 <style lang="scss">
   input[type="text"] {

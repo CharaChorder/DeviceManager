@@ -1,6 +1,6 @@
 <script lang="ts">
-  import {confirmChallenge} from "./confirm-challenge"
-  import {serialPort} from "$lib/serial/connection"
+  import { confirmChallenge } from "./confirm-challenge";
+  import { serialPort } from "$lib/serial/connection";
 
   const options = [
     [["FACTORY", "Factory Reset"]],
@@ -13,7 +13,7 @@
       ["STARTER", "Add starter chords"],
       ["FUNC", "Add functional chords"],
     ],
-  ] as const
+  ] as const;
 </script>
 
 <h3>Reset Device</h3>
@@ -26,8 +26,8 @@
       class="error"
       use:confirmChallenge={{
         onConfirm() {
-          $serialPort?.reset(command)
-          $serialPort = undefined
+          $serialPort?.reset(command);
+          $serialPort = undefined;
         },
         challenge: description,
       }}>{description}...</button

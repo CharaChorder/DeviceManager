@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let title: string | undefined
-  export let shortcut: string | undefined
+  export let title: string | undefined;
+  export let shortcut: string | undefined;
 </script>
 
 {#if title}

@@ -4,15 +4,15 @@
  * Action codes <32 are invalid.
  */
 export function compressActions(actions: number[]): Uint8Array {
-  const buffer = new Uint8Array(actions.length * 2)
-  let i = 0
+  const buffer = new Uint8Array(actions.length * 2);
+  let i = 0;
   for (const action of actions) {
     if (action > 0xff) {
-      buffer[i++] = action >>> 8
+      buffer[i++] = action >>> 8;
     }
-    buffer[i++] = action & 0xff
+    buffer[i++] = action & 0xff;
   }
-  return buffer.slice(0, i)
+  return buffer.slice(0, i);
 }
 
 /**
@@ -21,13 +21,13 @@ export function compressActions(actions: number[]): Uint8Array {
  * @see {compressActions}
  */
 export function decompressActions(raw: Uint8Array): number[] {
-  const actions: number[] = []
+  const actions: number[] = [];
   for (let i = 0; i < raw.length; i++) {
-    let action = raw[i]
+    let action = raw[i];
     if (action > 0 && action < 32) {
-      action = (action << 8) | raw[++i]
+      action = (action << 8) | raw[++i];
     }
-    actions.push(action)
+    actions.push(action);
   }
-  return actions
+  return actions;
 }

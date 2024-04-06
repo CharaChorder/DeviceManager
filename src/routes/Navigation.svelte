@@ -1,25 +1,25 @@
 <script lang="ts">
-  import {serialPort, syncStatus} from "$lib/serial/connection"
-  import {slide, fly} from "svelte/transition"
-  import {canShare, triggerShare} from "$lib/share"
-  import {popup} from "$lib/popup"
-  import BackupPopup from "./BackupPopup.svelte"
-  import ConnectionPopup from "./ConnectionPopup.svelte"
-  import {browser} from "$app/environment"
-  import {userPreferences} from "$lib/preferences"
-  import {action} from "$lib/title"
-  import LL from "../i18n/i18n-svelte"
-  import ConfigTabs from "./ConfigTabs.svelte"
-  import EditActions from "./EditActions.svelte"
-  import {onMount} from "svelte"
+  import { serialPort, syncStatus } from "$lib/serial/connection";
+  import { slide, fly } from "svelte/transition";
+  import { canShare, triggerShare } from "$lib/share";
+  import { popup } from "$lib/popup";
+  import BackupPopup from "./BackupPopup.svelte";
+  import ConnectionPopup from "./ConnectionPopup.svelte";
+  import { browser } from "$app/environment";
+  import { userPreferences } from "$lib/preferences";
+  import { action } from "$lib/title";
+  import LL from "../i18n/i18n-svelte";
+  import ConfigTabs from "./ConfigTabs.svelte";
+  import EditActions from "./EditActions.svelte";
+  import { onMount } from "svelte";
 
   onMount(async () => {
     if (browser && !$userPreferences.autoConnect) {
-      connectButton.click()
+      connectButton.click();
     }
-  })
+  });
 
-  let connectButton: HTMLButtonElement
+  let connectButton: HTMLButtonElement;
 </script>
 
 <nav>
@@ -32,14 +32,14 @@
   <div class="actions">
     {#if $canShare}
       <button
-        use:action={{title: $LL.share.TITLE()}}
-        transition:fly={{x: -8}}
+        use:action={{ title: $LL.share.TITLE() }}
+        transition:fly={{ x: -8 }}
         class="icon"
         on:click={triggerShare}>share</button
       >
       <button
-        use:action={{title: $LL.print.TITLE()}}
-        transition:fly={{x: -8}}
+        use:action={{ title: $LL.print.TITLE() }}
+        transition:fly={{ x: -8 }}
         class="icon"
         on:click={() => print()}>print</button
       >
@@ -50,7 +50,11 @@
         <PwaStatus />
       {/await}
     {/if}
-    <button use:action={{title: $LL.backup.TITLE()}} use:popup={BackupPopup} class="icon {$syncStatus}">
+    <button
+      use:action={{ title: $LL.backup.TITLE() }}
+      use:popup={BackupPopup}
+      class="icon {$syncStatus}"
+    >
       {#if $userPreferences.backup}
         history
       {:else}
@@ -59,7 +63,7 @@
     </button>
     <button
       bind:this={connectButton}
-      use:action={{title: $LL.deviceManager.TITLE()}}
+      use:action={{ title: $LL.deviceManager.TITLE() }}
       use:popup={ConnectionPopup}
       class="icon connect"
       class:error={$serialPort === undefined}

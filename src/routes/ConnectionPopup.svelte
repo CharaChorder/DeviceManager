@@ -1,48 +1,56 @@
 <script lang="ts">
-  import {initSerial, serialPort} from "$lib/serial/connection"
-  import {browser} from "$app/environment"
-  import {slide, fade} from "svelte/transition"
-  import {preference} from "$lib/preferences"
-  import LL from "../i18n/i18n-svelte"
-  import {downloadBackup} from "$lib/backup/backup"
+  import { initSerial, serialPort } from "$lib/serial/connection";
+  import { browser } from "$app/environment";
+  import { slide, fade } from "svelte/transition";
+  import { preference } from "$lib/preferences";
+  import LL from "../i18n/i18n-svelte";
+  import { downloadBackup } from "$lib/backup/backup";
 
   function reboot() {
-    $serialPort?.reboot()
-    $serialPort = undefined
-    powerDialog = false
+    $serialPort?.reboot();
+    $serialPort = undefined;
+    powerDialog = false;
     setTimeout(() => {
-      initSerial()
-    }, 1000)
+      initSerial();
+    }, 1000);
   }
 
   function bootloader() {
-    downloadBackup()
-    $serialPort?.bootloader()
-    $serialPort = undefined
-    rebootInfo = true
-    powerDialog = false
+    downloadBackup();
+    $serialPort?.bootloader();
+    $serialPort = undefined;
+    rebootInfo = true;
+    powerDialog = false;
   }
 
   async function updateFirmware() {
-    const {usbVendorId: vendorId, usbProductId: productId} = $serialPort!.portInfo
-    $serialPort!.bootloader()
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    console.log(await navigator.usb.requestDevice({filters: [{vendorId, productId}]}))
+    const { usbVendorId: vendorId, usbProductId: productId } =
+      $serialPort!.portInfo;
+    $serialPort!.bootloader();
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log(
+      await navigator.usb.requestDevice({ filters: [{ vendorId, productId }] }),
+    );
   }
 
-  let rebootInfo = false
-  let terminal = false
-  let powerDialog = false
+  let rebootInfo = false;
+  let terminal = false;
+  let powerDialog = false;
 
   $: if ($serialPort) {
-    rebootInfo = false
+    rebootInfo = false;
   }
 </script>
 
 <section>
   <div class="row">
     <h2>{$LL.deviceManager.TITLE()}</h2>
-    <label>{$LL.deviceManager.AUTO_CONNECT()}<input type="checkbox" use:preference={"autoConnect"} /></label>
+    <label
+      >{$LL.deviceManager.AUTO_CONNECT()}<input
+        type="checkbox"
+        use:preference={"autoConnect"}
+      /></label
+    >
   </div>
 
   {#if $serialPort}
@@ -54,7 +62,8 @@
       Version {$serialPort.version}
     </p>
     {#if $serialPort.version.toString() !== import.meta.env.VITE_LATEST_FIRMWARE}
-      <a href="https://docs.charachorder.com/CharaChorder%20One.html#updating-the-firmware"
+      <a
+        href="https://docs.charachorder.com/CharaChorder%20One.html#updating-the-firmware"
         >Firmware Update Instructions</a
       >
     {/if}
@@ -66,14 +75,18 @@
       <details class="linux-info" transition:slide>
         <summary>{@html $LL.deviceManager.LINUX_PERMISSIONS()}</summary>
         In most cases you can simply follow the
-        <a target="_blank" href="https://docs.arduino.cc/software/ide-v1/tutorials/Linux#please-read"
+        <a
+          target="_blank"
+          href="https://docs.arduino.cc/software/ide-v1/tutorials/Linux#please-read"
           >Arduino Guide</a
         >
         on serial port permissions.
         <p>Special systems:</p>
         <ul>
           <li>
-            <a target="_blank" href="https://wiki.archlinux.org/title/Arduino#Accessing_serial"
+            <a
+              target="_blank"
+              href="https://wiki.archlinux.org/title/Arduino#Accessing_serial"
               >Arch and Arch-based like Manjaro or EndeavourOS</a
             >
           </li>
@@ -85,7 +98,9 @@
             >
           </li>
           <li>
-            <a target="_blank" href="https://wiki.gentoo.org/wiki/Arduino#Grant_access_to_non-root_users"
+            <a
+              target="_blank"
+              href="https://wiki.gentoo.org/wiki/Arduino#Grant_access_to_non-root_users"
               >Gentoo</a
             >
           </li>
@@ -93,16 +108,20 @@
       </details>
     {/if}
     {#if rebootInfo}
-      <p transition:slide><b>{$LL.deviceManager.bootMenu.POWER_WARNING()}</b></p>
+      <p transition:slide>
+        <b>{$LL.deviceManager.bootMenu.POWER_WARNING()}</b>
+      </p>
     {/if}
     <div class="row">
       {#if $serialPort}
         <button
           class="secondary"
           on:click={() => {
-            $serialPort?.forget()
-            $serialPort = undefined
-          }}><span class="icon">usb_off</span>{$LL.deviceManager.DISCONNECT()}</button
+            $serialPort?.forget();
+            $serialPort = undefined;
+          }}
+          ><span class="icon">usb_off</span
+          >{$LL.deviceManager.DISCONNECT()}</button
         >
       {:else}
         <button class="error" on:click={() => initSerial(true)}
@@ -130,19 +149,21 @@
         class="backdrop"
         role="button"
         tabindex="-1"
-        transition:fade={{duration: 250}}
+        transition:fade={{ duration: 250 }}
         on:click={() => (powerDialog = !powerDialog)}
-        on:keypress={event => {
-          if (event.key === "Enter") powerDialog = !powerDialog
+        on:keypress={(event) => {
+          if (event.key === "Enter") powerDialog = !powerDialog;
         }}
       />
-      <dialog open transition:slide={{duration: 250}}>
+      <dialog open transition:slide={{ duration: 250 }}>
         <h3>{$LL.deviceManager.bootMenu.TITLE()}</h3>
         <button on:click={reboot}
-          ><span class="icon">restart_alt</span>{$LL.deviceManager.bootMenu.REBOOT()}</button
+          ><span class="icon">restart_alt</span
+          >{$LL.deviceManager.bootMenu.REBOOT()}</button
         >
         <button on:click={bootloader}
-          ><span class="icon">rule_settings</span>{$LL.deviceManager.bootMenu.BOOTLOADER()}</button
+          ><span class="icon">rule_settings</span
+          >{$LL.deviceManager.bootMenu.BOOTLOADER()}</button
         >
       </dialog>
     {/if}

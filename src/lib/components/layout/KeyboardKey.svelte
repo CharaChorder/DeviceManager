@@ -1,20 +1,29 @@
 <script lang="ts">
-  import type {CompiledLayoutKey} from "$lib/serialization/visual-layout"
-  import {getContext} from "svelte"
-  import type {VisualLayoutConfig} from "./visual-layout.js"
-  import KeyText from "$lib/components/layout/KeyText.svelte"
+  import type { CompiledLayoutKey } from "$lib/serialization/visual-layout";
+  import { getContext } from "svelte";
+  import type { VisualLayoutConfig } from "./visual-layout.js";
+  import KeyText from "$lib/components/layout/KeyText.svelte";
 
-  const {scale, margin, strokeWidth} = getContext<VisualLayoutConfig>("visual-layout-config")
-  export let i: number
-  export let key: CompiledLayoutKey
+  const { scale, margin, strokeWidth } = getContext<VisualLayoutConfig>(
+    "visual-layout-config",
+  );
+  export let i: number;
+  export let key: CompiledLayoutKey;
 
-  $: posX = key.pos[0] * scale
-  $: posY = key.pos[1] * scale
-  $: sizeX = key.size[0] * scale
-  $: sizeY = key.size[1] * scale
+  $: posX = key.pos[0] * scale;
+  $: posY = key.pos[1] * scale;
+  $: sizeX = key.size[0] * scale;
+  $: sizeY = key.size[1] * scale;
 </script>
 
-<g class="key-group" on:click on:keypress on:focusin role="button" tabindex={i + 1}>
+<g
+  class="key-group"
+  on:click
+  on:keypress
+  on:focusin
+  role="button"
+  tabindex={i + 1}
+>
   {#if key.shape === "square"}
     <rect
       x={posX + margin}
@@ -44,15 +53,23 @@
     {@const multiplier = 1.25}
 
     {@const rotateRad = (key.rotate + 45) * (Math.PI / 180)}
-    {@const rotX = Math.round((Math.abs(Math.cos(rotateRad - Math.PI / 2)) + Number.EPSILON) * 100) / 100}
-    {@const rotY = Math.round((Math.abs(Math.sin(rotateRad - Math.PI / 2)) + Number.EPSILON) * 100) / 100}
+    {@const rotX =
+      Math.round(
+        (Math.abs(Math.cos(rotateRad - Math.PI / 2)) + Number.EPSILON) * 100,
+      ) / 100}
+    {@const rotY =
+      Math.round(
+        (Math.abs(Math.sin(rotateRad - Math.PI / 2)) + Number.EPSILON) * 100,
+      ) / 100}
 
     {@const rc = r1 - (r1 - r2) / 2}
     {@const middleX = Math.cos(rotateRad) * rc}
     {@const middleY = Math.sin(rotateRad) * rc}
     <path
       style:transform="rotateZ({key.rotate}deg) translate({innerMargin}px, {innerMargin}px)"
-      d="M{posX + p1},{posY} a{r1},{r1} 0 0,1 {-p1},{p1} l0,{-(p1 - p2)} a{r2},{r2} 0 0,0 {p2},{-p2}z"
+      d="M{posX + p1},{posY} a{r1},{r1} 0 0,1 {-p1},{p1} l0,{-(
+        p1 - p2
+      )} a{r2},{r2} 0 0,0 {p2},{-p2}z"
     />
     <KeyText
       {key}

@@ -1,9 +1,9 @@
 <script>
-  import Action from "$lib/components/Action.svelte"
-  import {popup} from "$lib/popup"
-  import {serialPort} from "$lib/serial/connection"
-  import {setting} from "$lib/setting"
-  import ResetPopup from "./ResetPopup.svelte"
+  import Action from "$lib/components/Action.svelte";
+  import { popup } from "$lib/popup";
+  import { serialPort } from "$lib/serial/connection";
+  import { setting } from "$lib/setting";
+  import ResetPopup from "./ResetPopup.svelte";
 </script>
 
 <svelte:head>
@@ -14,19 +14,26 @@
 {#if $serialPort}
   <form>
     <fieldset>
-      <legend><label><input type="checkbox" use:setting={{id: 0x41}} />Spurring</label></legend>
+      <legend
+        ><label
+          ><input type="checkbox" use:setting={{ id: 0x41 }} />Spurring</label
+        ></legend
+      >
       <p>
-        "Chording only" mode which tells your device to output chords on a press rather than a press &
-        release. It also enables you to jump from one chord to another without releasing everything and can be
-        activated in GTM or by chording both mirror keys. It can provide significant speed gains with
-        chording, but also takes away the flexibility of character entry.
+        "Chording only" mode which tells your device to output chords on a press
+        rather than a press & release. It also enables you to jump from one
+        chord to another without releasing everything and can be activated in
+        GTM or by chording both mirror keys. It can provide significant speed
+        gains with chording, but also takes away the flexibility of character
+        entry.
       </p>
-      <p>Spurring also helps new users learn how to chord by eliminating the need to focus on timing.</p>
       <p>
-        Spurring is toggled by chording <Action display="keys" action={540} /> and <Action
-          display="keys"
-          action={542}
-        /> together.
+        Spurring also helps new users learn how to chord by eliminating the need
+        to focus on timing.
+      </p>
+      <p>
+        Spurring is toggled by chording <Action display="keys" action={540} /> and
+        <Action display="keys" action={542} /> together.
       </p>
       <label
         >Character Counter Timeout<span class="unit"
@@ -35,40 +42,53 @@
             step="0.001"
             min="0"
             max="240"
-            use:setting={{id: 0x43, scale: 0.001}}
+            use:setting={{ id: 0x43, scale: 0.001 }}
           />s</span
         ></label
       >
     </fieldset>
 
     <fieldset>
-      <legend><label><input type="checkbox" use:setting={{id: 0x51}} />Arpeggiates</label></legend>
+      <legend
+        ><label
+          ><input
+            type="checkbox"
+            use:setting={{ id: 0x51 }}
+          />Arpeggiates</label
+        ></legend
+      >
       <p>
-        A quick, single key press and release used to indicate a suffix, prefix, or modifier to be associated
-        with a chord.
+        A quick, single key press and release used to indicate a suffix, prefix,
+        or modifier to be associated with a chord.
       </p>
-      <p>The following keys have special behavior when arpeggiates are enabled:</p>
+      <p>
+        The following keys have special behavior when arpeggiates are enabled:
+      </p>
       <ul>
         <li>
-          <Action display="keys" action={44} />, <Action display="keys" action={59} /> and <Action
+          <Action display="keys" action={44} />, <Action
             display="keys"
-            action={58}
-          /> will be placed before the auto-inserted space
+            action={59}
+          /> and <Action display="keys" action={58} /> will be placed before the
+          auto-inserted space
         </li>
         <li>
-          <Action display="keys" action={46} />, <Action display="keys" action={63} /> and <Action
+          <Action display="keys" action={46} />, <Action
             display="keys"
-            action={33}
-          /> will be placed before the auto-inserted space and capitalize the next word
+            action={63}
+          /> and <Action display="keys" action={33} /> will be placed before the
+          auto-inserted space and capitalize the next word
         </li>
         <li>
-          <Action display="keys" action={45} /> and <Action display="keys" action={47} /> will replace the auto-inserted
-          space
+          <Action display="keys" action={45} /> and <Action
+            display="keys"
+            action={47}
+          /> will replace the auto-inserted space
         </li>
       </ul>
       <label
         >Timeout After Chord<span class="unit"
-          ><input type="number" step="1" use:setting={{id: 0x54}} />ms</span
+          ><input type="number" step="1" use:setting={{ id: 0x54 }} />ms</span
         ></label
       >
     </fieldset>
@@ -76,98 +96,166 @@
     <fieldset>
       <legend>Chord Modifiers</legend>
       <p>
-        Chord modifiers change a chord when held with the chord or when pressed after (arpeggiated), <b
-          >provided that arpeggiates are enabled.</b
-        >
+        Chord modifiers change a chord when held with the chord or when pressed
+        after (arpeggiated), <b>provided that arpeggiates are enabled.</b>
       </p>
       <ul>
-        <li><Action display="keys" action={513} /> Capitalizes the first letter of a chord</li>
-        <li><Action display="keys" action={540} /> Present Tense (supported words only)</li>
-        <li><Action display="keys" action={542} /> Plural (supported words only)</li>
-        <li><Action display="keys" action={550} /> Past Tense (supported words only)</li>
-        <li><Action display="keys" action={551} /> Comparative (supported words only)</li>
+        <li>
+          <Action display="keys" action={513} /> Capitalizes the first letter of
+          a chord
+        </li>
+        <li>
+          <Action display="keys" action={540} /> Present Tense (supported words only)
+        </li>
+        <li>
+          <Action display="keys" action={542} /> Plural (supported words only)
+        </li>
+        <li>
+          <Action display="keys" action={550} /> Past Tense (supported words only)
+        </li>
+        <li>
+          <Action display="keys" action={551} /> Comparative (supported words only)
+        </li>
       </ul>
     </fieldset>
 
     <fieldset>
       <legend>Character Entry</legend>
       {#if $serialPort.device === "LITE"}
-        <label>Swap Keymap 0 and 1<input type="checkbox" use:setting={{id: 0x13}} /></label>
+        <label
+          >Swap Keymap 0 and 1<input
+            type="checkbox"
+            use:setting={{ id: 0x13 }}
+          /></label
+        >
       {/if}
       <label>
         Character Entry (chentry)
-        <input type="checkbox" use:setting={{id: 0x12}} />
+        <input type="checkbox" use:setting={{ id: 0x12 }} />
       </label>
       <label>
         Key Scan Rate
-        <span class="unit"><input type="number" use:setting={{id: 0x14, inverse: 1000}} />Hz</span></label
+        <span class="unit"
+          ><input
+            type="number"
+            use:setting={{ id: 0x14, inverse: 1000 }}
+          />Hz</span
+        ></label
       >
       <label>
-        Key Debounce Press<span class="unit"><input type="number" use:setting={{id: 0x15}} />ms</span></label
-      >
-      <label
-        >Key Debounce Release<span class="unit"><input type="number" use:setting={{id: 0x16}} />ms</span
+        Key Debounce Press<span class="unit"
+          ><input type="number" use:setting={{ id: 0x15 }} />ms</span
         ></label
       >
       <label
-        >Output Character Delay<span class="unit"><input type="number" use:setting={{id: 0x17}} />µs</span
+        >Key Debounce Release<span class="unit"
+          ><input type="number" use:setting={{ id: 0x16 }} />ms</span
+        ></label
+      >
+      <label
+        >Output Character Delay<span class="unit"
+          ><input type="number" use:setting={{ id: 0x17 }} />µs</span
         ></label
       >
     </fieldset>
 
     <fieldset>
-      <legend><label><input type="checkbox" use:setting={{id: 0x21}} />Mouse</label></legend>
+      <legend
+        ><label><input type="checkbox" use:setting={{ id: 0x21 }} />Mouse</label
+        ></legend
+      >
       <label
-        >Mouse Speed<input type="number" use:setting={{id: 0x22}} /><input
+        >Mouse Speed<input type="number" use:setting={{ id: 0x22 }} /><input
           type="number"
-          use:setting={{id: 0x23}}
+          use:setting={{ id: 0x23 }}
         /></label
       >
-      <label>Scroll Speed<input type="number" use:setting={{id: 0x25}} /></label>
+      <label
+        >Scroll Speed<input type="number" use:setting={{ id: 0x25 }} /></label
+      >
       <label>
         <span>
           Active Mouse
           <p>Bounces mouse by 1px every 60s if enabled</p></span
         >
-        <input type="checkbox" use:setting={{id: 0x24}} /></label
+        <input type="checkbox" use:setting={{ id: 0x24 }} /></label
       >
       <label
-        >Poll Rate<span class="unit"><input type="number" use:setting={{id: 0x26, inverse: 1000}} />Hz</span
+        >Poll Rate<span class="unit"
+          ><input
+            type="number"
+            use:setting={{ id: 0x26, inverse: 1000 }}
+          />Hz</span
         ></label
       >
     </fieldset>
 
     <fieldset>
-      <legend><label><input type="checkbox" use:setting={{id: 0x31}} />Chording</label></legend>
+      <legend
+        ><label
+          ><input type="checkbox" use:setting={{ id: 0x31 }} />Chording</label
+        ></legend
+      >
       <label
         >Auto-delete Timeout <span class="unit"
-          ><input type="number" min="0" max="25500" step="10" use:setting={{id: 0x33}} />ms</span
+          ><input
+            type="number"
+            min="0"
+            max="25500"
+            step="10"
+            use:setting={{ id: 0x33 }}
+          />ms</span
         ></label
       >
       <label
         >Press Tolerance<span class="unit"
-          ><input type="number" min="1" max="50" step="1" use:setting={{id: 0x34}} />ms</span
+          ><input
+            type="number"
+            min="1"
+            max="50"
+            step="1"
+            use:setting={{ id: 0x34 }}
+          />ms</span
         ></label
       >
       <label
         >Release Tolerance<span class="unit"
-          ><input type="number" min="1" max="50" step="1" use:setting={{id: 0x35}} />ms</span
+          ><input
+            type="number"
+            min="1"
+            max="50"
+            step="1"
+            use:setting={{ id: 0x35 }}
+          />ms</span
         ></label
       >
-      <label>Compound Chording<input type="checkbox" use:setting={{id: 0x61}} /></label>
+      <label
+        >Compound Chording<input
+          type="checkbox"
+          use:setting={{ id: 0x61 }}
+        /></label
+      >
     </fieldset>
 
     <fieldset>
       <legend>Device</legend>
-      <label>Boot message<input type="checkbox" use:setting={{id: 0x93}} /></label>
-      <label>GTM Realtime Feedback<input type="checkbox" use:setting={{id: 0x92}} /></label>
+      <label
+        >Boot message<input type="checkbox" use:setting={{ id: 0x93 }} /></label
+      >
+      <label
+        >GTM Realtime Feedback<input
+          type="checkbox"
+          use:setting={{ id: 0x92 }}
+        /></label
+      >
       <button class="outline" use:popup={ResetPopup}>Reset...</button>
     </fieldset>
 
     {#if $serialPort.device === "LITE"}
       <fieldset>
         <legend><label><input type="checkbox" />RGB</label></legend>
-        <label>Brightness<input type="range" min="0" max="50" step="1" /></label>
+        <label>Brightness<input type="range" min="0" max="50" step="1" /></label
+        >
         Color
         <label>Reactive Keys<input type="checkbox" /></label>
       </fieldset>

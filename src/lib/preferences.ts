@@ -1,37 +1,43 @@
-import type { Action } from "svelte/action"
-import { persistentWritable } from "$lib/storage"
+import type { Action } from "svelte/action";
+import { persistentWritable } from "$lib/storage";
 
 export interface UserPreferences {
-  backup: boolean
-  autoConnect: boolean
+  backup: boolean;
+  autoConnect: boolean;
 }
 
 export const theme = persistentWritable("user-theme", {
   color: "#6D81C7",
   mode: "dark" as "light" | "dark" | "auto",
-})
+});
 
-export const userPreferences = persistentWritable<UserPreferences>("user-preferences", {
-  backup: false,
-  autoConnect: false,
-})
+export const userPreferences = persistentWritable<UserPreferences>(
+  "user-preferences",
+  {
+    backup: false,
+    autoConnect: false,
+  },
+);
 
-export const preference: Action<HTMLInputElement, keyof UserPreferences> = (node, key) => {
-  const unsubscribe = userPreferences.subscribe(it => {
-    node.checked = it[key]
-  })
+export const preference: Action<HTMLInputElement, keyof UserPreferences> = (
+  node,
+  key,
+) => {
+  const unsubscribe = userPreferences.subscribe((it) => {
+    node.checked = it[key];
+  });
   function update() {
-    userPreferences.update(value => {
-      value[key] = node.checked
-      return value
-    })
+    userPreferences.update((value) => {
+      value[key] = node.checked;
+      return value;
+    });
   }
-  node.addEventListener("input", update)
+  node.addEventListener("input", update);
 
   return {
     destroy() {
-      unsubscribe()
-      node.removeEventListener("input", update)
+      unsubscribe();
+      node.removeEventListener("input", update);
     },
-  }
-}
+  };
+};
