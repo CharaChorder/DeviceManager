@@ -40,7 +40,7 @@
   function keyup() {
     if (!editing) return;
     editing = false;
-    if (pressedKeys.size < 2) return;
+    if (pressedKeys.size < 1) return;
     if (!chord) return dispatch("submit", [...pressedKeys].sort(compare));
     changes.update((changes) => {
       changes.push({
@@ -78,7 +78,9 @@
   class:deleted={chord && chord.deleted}
   class:edited={chord && chord.actionsChanged}
   class:invalid={chord &&
-    chordActions?.some((it, i) => chordActions?.[i] !== it)}
+    chordActions &&
+    (chordActions.length < 2 ||
+      chordActions.some((it, i) => chordActions[i] !== it))}
   class="chord"
   on:click={edit}
   on:keydown={keydown}
