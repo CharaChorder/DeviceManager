@@ -62,15 +62,15 @@
 
   {#if browser}
     {#if navigator.userAgent.includes("Linux") && !$serialPort}
-      <details class="linux-info" transition:slide>
-        <summary>{@html $LL.deviceManager.LINUX_PERMISSIONS()}</summary>
-        In most cases you can simply follow the
-        <a
-          target="_blank"
-          href="https://docs.arduino.cc/software/ide-v1/tutorials/Linux#please-read"
-          >Arduino Guide</a
-        >
-        on serial port permissions.
+      <div class="linux-info">
+        <p>{@html $LL.deviceManager.LINUX_PERMISSIONS()}</p>
+        <p>
+          In most cases you can simply follow the <a
+            target="_blank"
+            href="https://docs.arduino.cc/software/ide-v1/tutorials/Linux#please-read"
+            >Arduino Guide</a
+          > on serial port permissions.
+        </p>
         <p>Special systems:</p>
         <ul>
           <li>
@@ -95,7 +95,7 @@
             >
           </li>
         </ul>
-      </details>
+      </div>
     {/if}
     {#if rebootInfo}
       <p transition:slide>
@@ -169,7 +169,7 @@
     margin-block: 8px;
   }
 
-  details a {
+  .linux-info a {
     display: inline;
     padding-inline: 0;
     text-decoration: underline;
