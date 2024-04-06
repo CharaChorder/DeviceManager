@@ -2,9 +2,12 @@ import type { Action } from "svelte/action";
 import { changes, ChangeType, settings } from "$lib/undo-redo";
 
 export const setting: Action<
-  HTMLInputElement,
+  HTMLInputElement | HTMLSelectElement,
   { id: number; inverse?: number; scale?: number }
-> = function (node: HTMLInputElement, { id, inverse, scale }) {
+> = function (
+  node: HTMLInputElement | HTMLSelectElement,
+  { id, inverse, scale },
+) {
   node.setAttribute("disabled", "");
   const type = node.getAttribute("type") as "number" | "checkbox";
   const min = node.hasAttribute("min")
@@ -17,7 +20,7 @@ export const setting: Action<
   const unsubscribe = settings.subscribe(async (settings) => {
     if (id in settings) {
       const { value, isApplied } = settings[id]!;
-      if (type === "number") {
+      if (type === "number" || node instanceof HTMLSelectElement) {
         node.value = (
           inverse !== undefined
             ? inverse / value
@@ -41,7 +44,7 @@ export const setting: Action<
 
   async function listener() {
     let value: number;
-    if (type === "number") {
+    if (type === "number" || node instanceof HTMLSelectElement) {
       value = Number(node.value);
       if (Number.isNaN(value)) return;
       value = Math.floor(
