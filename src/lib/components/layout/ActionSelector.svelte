@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { KEYMAP_CATEGORIES, KEYMAP_CODES } from "$lib/serial/keymap-codes";
-  import type { KeyInfo } from "$lib/serial/keymap-codes";
-  import flexsearch from "flexsearch";
+  import {
+    KEYMAP_CATEGORIES,
+    KEYMAP_CODES,
+    KEYMAP_IDS,
+  } from "$lib/serial/keymap-codes";
+  import FlexSearch from "flexsearch";
   import { createEventDispatcher } from "svelte";
   import ActionListItem from "$lib/components/ActionListItem.svelte";
   import LL from "../../../i18n/i18n-svelte";
@@ -10,24 +13,23 @@
   export let currentAction: number | undefined = undefined;
   export let nextAction: number | undefined = undefined;
 
-  const index = new flexsearch.Index({ tokenize: "full" });
-  for (const action of Object.values(KEYMAP_CODES)) {
-    index?.add(
-      action.code,
-      `${action.title || ""} ${action.variant || ""} ${action.category} ${action.id || ""} ${
-        action.description || ""
-      }`,
-    );
-  }
-  const exactIndex: Record<string, KeyInfo> = Object.fromEntries(
-    Object.values(KEYMAP_CODES)
-      .filter((it) => !!it.id)
-      .map((it) => [it.id, it] as const),
-  );
+  const index = new FlexSearch.Index({ tokenize: "full" });
+  createIndex();
 
-  function search() {
-    results = index!.search(searchBox.value) as number[];
-    exact = exactIndex[searchBox.value]?.code;
+  async function createIndex() {
+    for (const [, action] of KEYMAP_CODES) {
+      await index?.addAsync(
+        action.code,
+        `${action.title || ""} ${action.variant || ""} ${action.category} ${action.id || ""} ${
+          action.description || ""
+        }`,
+      );
+    }
+  }
+
+  async function search() {
+    results = (await index!.searchAsync(searchBox.value)) as number[];
+    exact = KEYMAP_IDS.get(searchBox.value)?.code;
     code = Number(searchBox.value);
   }
 
@@ -38,7 +40,9 @@
   }
 
   function keyboardNavigation(event: KeyboardEvent) {
-    if (event.shiftKey && event.key === "Enter") {
+    if (event.key === "Escape") {
+      dispatch("close");
+    } else if (event.shiftKey && event.key === "Enter") {
       dispatch("select", exact);
     } else if (event.key === "ArrowDown") {
       const element =
@@ -61,7 +65,7 @@
     event.preventDefault();
   }
 
-  let results: number[] = Object.keys(KEYMAP_CODES).map(Number);
+  let results: number[] = [];
   let exact: number | undefined = undefined;
   let code: number = Number.NaN;
 
@@ -144,9 +148,15 @@
           <li>Action code is out of range</li>
         {/if}
       {/if}
-      {#each filter ? results.filter( (it) => filter.has(it), ) : results as id (id)}
-        <li><ActionListItem {id} on:click={() => select(id)} /></li>
-      {/each}
+      {#if filter !== undefined || results.length > 0}
+        {@const resultValue =
+          results.length === 0
+            ? Array.from(KEYMAP_CODES, ([it]) => it)
+            : results}
+        {#each filter ? resultValue.filter( (it) => filter.has(it), ) : resultValue as id (id)}
+          <li><ActionListItem {id} on:click={() => select(id)} /></li>
+        {/each}
+      {/if}
     </ul>
   </div>
 </dialog>
