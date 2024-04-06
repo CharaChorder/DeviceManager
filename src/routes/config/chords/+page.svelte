@@ -156,9 +156,9 @@
 </div>
 
 <section bind:this={results}>
-  <div class="results">
-    <!-- fixes some unresponsiveness -->
-    {#await tick() then}
+  <!-- fixes some unresponsiveness -->
+  {#await tick() then}
+    <div class="results">
       <table transition:fly={{ y: 48, easing: expoOut }}>
         {#if $lastPage !== -1}
           {#if page === 0}
@@ -181,13 +181,13 @@
           <caption>{$LL.configure.chords.search.NO_RESULTS()}</caption>
         {/if}
       </table>
-    {/await}
-  </div>
-  <textarea
-    placeholder={$LL.configure.chords.TRY_TYPING() +
-      "\n\nDid you know? " +
-      randomTips[Math.floor(randomTips.length * Math.random())]}
-  ></textarea>
+    </div>
+    <textarea
+      placeholder={$LL.configure.chords.TRY_TYPING() +
+        "\n\nDid you know? " +
+        randomTips[Math.floor(randomTips.length * Math.random())]}
+    ></textarea>
+  {/await}
 </section>
 
 <style lang="scss">

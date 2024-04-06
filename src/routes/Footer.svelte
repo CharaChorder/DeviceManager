@@ -65,7 +65,7 @@
   </div>
   <ul>
     <li>
-      <a href={import.meta.VITE_STORE_URL} rel="noreferrer" target="_blank"
+      <a href={import.meta.env.VITE_STORE_URL} rel="noreferrer" target="_blank"
         ><span class="icon">shopping_bag</span> Store</a
       >
     </li>

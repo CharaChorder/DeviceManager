@@ -40,9 +40,7 @@
   }
 
   function keyboardNavigation(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      dispatch("close");
-    } else if (event.shiftKey && event.key === "Enter") {
+    if (event.shiftKey && event.key === "Enter") {
       dispatch("select", exact);
     } else if (event.key === "ArrowDown") {
       const element =

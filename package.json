@@ -55,7 +55,6 @@
     "flexsearch": "^0.7.43",
     "fontkit": "^2.0.2",
     "glob": "^10.3.12",
-    "hotkeys-js": "^3.13.7",
     "jsdom": "^22.1.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.2.5",
