@@ -13,6 +13,7 @@
   import { browser } from "$app/environment";
   import { expoOut } from "svelte/easing";
   import { osLayout } from "$lib/os-layout";
+  import randomTips from "$lib/assets/random-tips/en.json";
 
   const resultSize = 38;
   let results: HTMLElement;
@@ -132,7 +133,7 @@
   <input
     type="search"
     placeholder={$LL.configure.chords.search.PLACEHOLDER(progress + 1)}
-    on:input={(event) => search($searchIndex, event)}
+    on:input={(event) => $searchIndex && search($searchIndex, event)}
     class:loading={progress !== $chords.length - 1}
   />
   <div class="paginator">
@@ -182,7 +183,11 @@
       </table>
     {/await}
   </div>
-  <textarea placeholder={$LL.configure.chords.TRY_TYPING()}></textarea>
+  <textarea
+    placeholder={$LL.configure.chords.TRY_TYPING() +
+      "\n\nDid you know? " +
+      randomTips[Math.floor(randomTips.length * Math.random())]}
+  ></textarea>
 </section>
 
 <style lang="scss">
