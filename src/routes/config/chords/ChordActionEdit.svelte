@@ -20,6 +20,20 @@
     return a - b;
   }
 
+  function makeChordInput(...actions: number[]) {
+    const compound = compoundIndices ?? [];
+    return [
+      ...compound,
+      ...Array.from(
+        {
+          length: 12 - (compound.length + actions.length + 1),
+        },
+        () => 0,
+      ),
+      ...actions.toSorted(compare),
+    ];
+  }
+
   function edit() {
     pressedKeys = new Set();
     editing = true;
@@ -43,12 +57,12 @@
     if (!editing) return;
     editing = false;
     if (pressedKeys.size < 1) return;
-    if (!chord) return dispatch("submit", [...pressedKeys].sort(compare));
+    if (!chord) return dispatch("submit", makeChordInput(...pressedKeys));
     changes.update((changes) => {
       changes.push({
         type: ChangeType.Chord,
         id: chord!.id,
-        actions: [...pressedKeys].sort(compare),
+        actions: makeChordInput(...pressedKeys),
         phrase: chord!.phrase,
       });
       return changes;
@@ -59,10 +73,11 @@
   function addSpecial(event: MouseEvent) {
     selectAction(event, (action) => {
       changes.update((changes) => {
+        console.log(compoundIndices, chordActions, action);
         changes.push({
           type: ChangeType.Chord,
           id: chord!.id,
-          actions: [...chord!.actions, action].sort(compare),
+          actions: makeChordInput(...chordActions!, action),
           phrase: chord!.phrase,
         });
         return changes;
