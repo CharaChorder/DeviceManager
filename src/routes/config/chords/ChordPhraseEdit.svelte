@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { tick } from "svelte";
+  import { onMount, tick } from "svelte";
   import { changes, ChangeType } from "$lib/undo-redo";
   import type { ChordInfo } from "$lib/undo-redo";
   import { scale } from "svelte/transition";
@@ -10,6 +10,12 @@
   import { get } from "svelte/store";
 
   export let chord: ChordInfo;
+
+  onMount(() => {
+    if (chord.phrase.length === 0) {
+      box.focus();
+    }
+  });
 
   function keypress(event: KeyboardEvent) {
     if (event.key === "ArrowUp") {
@@ -103,7 +109,6 @@
 <div
   on:keydown={keypress}
   on:mousedown={clickCursor}
-  autofocus={chord.phrase.length === 0}
   role="textbox"
   tabindex="0"
   bind:this={box}
