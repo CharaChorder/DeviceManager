@@ -5,13 +5,17 @@
     KEYMAP_IDS,
   } from "$lib/serial/keymap-codes";
   import FlexSearch from "flexsearch";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import ActionListItem from "$lib/components/ActionListItem.svelte";
   import LL from "../../../i18n/i18n-svelte";
   import { action } from "$lib/title";
 
   export let currentAction: number | undefined = undefined;
   export let nextAction: number | undefined = undefined;
+
+  onMount(() => {
+    searchBox.focus();
+  });
 
   const index = new FlexSearch.Index({ tokenize: "full" });
   createIndex();
