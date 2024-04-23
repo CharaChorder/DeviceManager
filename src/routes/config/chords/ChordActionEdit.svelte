@@ -121,10 +121,10 @@
     display="keys"
     actions={editing ? [...pressedKeys].sort(compare) : chordActions ?? []}
   />
+  <sup>•</sup>
   <button class="icon add" on:click|stopPropagation={addSpecial}
     >add_circle</button
   >
-  <sup>•</sup>
 </button>
 
 <style lang="scss">
@@ -144,7 +144,6 @@
 
   .add {
     font-size: 18px;
-    margin-inline-start: 4px;
     height: 20px;
     opacity: 0;
     --icon-fill: 1;
