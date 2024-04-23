@@ -12,7 +12,7 @@
 </svelte:head>
 
 {#if $serialPort}
-  <form>
+  <section>
     <fieldset>
       <legend
         ><label
@@ -281,11 +281,11 @@
         </select>
       </fieldset>
     {/if}
-  </form>
+  </section>
 {/if}
 
 <style lang="scss">
-  form {
+  section {
     overflow-y: auto;
     display: flex;
     flex-flow: row wrap;
@@ -408,7 +408,6 @@
       }
 
       &:focus {
-        filter: brightness(120%);
         outline: none;
       }
     }
