@@ -26,6 +26,8 @@
   }
 
   function keydown(event: KeyboardEvent) {
+    // This is obviously a tradeoff
+    if (event.key === "Tab" || event.key === "Escape") return;
     if (!editing) return;
     event.preventDefault();
     const input = inputToAction(event, get(serialPort)?.device === "X");
@@ -85,6 +87,7 @@
   on:click={edit}
   on:keydown={keydown}
   on:keyup={keyup}
+  on:blur={keyup}
 >
   {#if editing && pressedKeys.size === 0}
     <span>{$LL.configure.chords.HOLD_KEYS()}</span>
