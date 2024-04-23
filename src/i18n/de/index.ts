@@ -124,6 +124,7 @@ const de = {
         CONFIRM: "Überschreiben",
         ABORT: "Überspringen",
       },
+      VOCABULARY: "Vokabelliste",
       TRY_TYPING: "Versuche hier zu tippen",
     },
     layout: {

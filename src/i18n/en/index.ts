@@ -123,6 +123,7 @@ const en = {
         CONFIRM: "Overwrite",
         ABORT: "Skip",
       },
+      VOCABULARY: "Vocabulary",
       TRY_TYPING: "Try typing here",
     },
     layout: {

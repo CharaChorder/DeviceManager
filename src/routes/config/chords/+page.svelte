@@ -43,6 +43,24 @@
     buildIndex($chords, $osLayout).then(searchIndex.set);
   }
 
+  function plainPhrase(phrase: number[], osLayout: Map<string, string>) {
+    return phrase
+      .map((it) => {
+        const info = KEYMAP_CODES.get(it);
+        if (!info) return "";
+
+        const bestGuess =
+          (info.keyCode && osLayout.get(info.keyCode)) ||
+          info.display ||
+          info.id ||
+          "";
+
+        return bestGuess.length === 1 ? bestGuess : "";
+      })
+      .filter((it) => !!it)
+      .join("");
+  }
+
   async function buildIndex(
     chords: ChordInfo[],
     osLayout: Map<string, string>,
@@ -60,20 +78,7 @@
       progress = i;
 
       if ("phrase" in chord) {
-        await index.addAsync(
-          i,
-          chord.phrase
-            .map((it) => {
-              const info = KEYMAP_CODES.get(it);
-              if (!info) return "";
-
-              return (
-                (info.keyCode && osLayout.get(info.keyCode)) || info.id || ""
-              );
-            })
-            .filter((it) => !!it)
-            .join(""),
-        );
+        await index.addAsync(i, plainPhrase(chord.phrase, osLayout));
       }
     }
     return index;
@@ -106,6 +111,24 @@
       });
       return changes;
     });
+  }
+
+  function downloadVocabulary() {
+    const vocabulary = new Set(
+      $chords.map((it) =>
+        "phrase" in it ? plainPhrase(it.phrase, $osLayout).trim() : "",
+      ),
+    );
+    vocabulary.delete("");
+    const blob = new Blob([Array.from(vocabulary).join("|")], {
+      type: "text/plain",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "vocabulary.txt";
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   const items = derived(
@@ -182,11 +205,17 @@
         {/if}
       </table>
     </div>
-    <textarea
-      placeholder={$LL.configure.chords.TRY_TYPING() +
-        "\n\nDid you know? " +
-        randomTips[Math.floor(randomTips.length * Math.random())]}
-    ></textarea>
+    <div class="sidebar">
+      <textarea
+        placeholder={$LL.configure.chords.TRY_TYPING() +
+          "\n\nDid you know? " +
+          randomTips[Math.floor(randomTips.length * Math.random())]}
+      ></textarea>
+      <button on:click={downloadVocabulary}
+        ><span class="icon">download</span>
+        {$LL.configure.chords.VOCABULARY()}</button
+      >
+    </div>
   {/await}
 </section>
 
@@ -207,7 +236,17 @@
     visibility: hidden;
   }
 
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+
+    > button {
+      padding-inline-start: 0;
+    }
+  }
+
   textarea {
+    flex: 1;
     transition: outline-color 250ms ease;
     background: none;
     color: inherit;
