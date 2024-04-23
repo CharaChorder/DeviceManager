@@ -174,10 +174,10 @@
     position: absolute;
     top: 50%;
     transform-origin: center left;
-    translate: -6px 0;
+    translate: -20px 0;
     scale: 0 1;
 
-    width: calc(100% - 32px);
+    width: calc(100% - 60px);
     height: 1px;
 
     background: currentcolor;
