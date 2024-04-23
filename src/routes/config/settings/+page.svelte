@@ -212,7 +212,7 @@
           ><input
             type="number"
             min="1"
-            max="50"
+            max="150"
             step="1"
             use:setting={{ id: 0x34 }}
           />ms</span
@@ -223,7 +223,7 @@
           ><input
             type="number"
             min="1"
-            max="50"
+            max="150"
             step="1"
             use:setting={{ id: 0x35 }}
           />ms</span
