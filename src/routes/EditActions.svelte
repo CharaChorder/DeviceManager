@@ -20,7 +20,6 @@
     syncStatus,
   } from "$lib/serial/connection";
   import { askForConfirmation } from "$lib/dialogs/confirm-dialog";
-  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
 
   function undo(event: MouseEvent) {
     if (event.shiftKey) {
@@ -56,13 +55,10 @@
               existingChord !== undefined &&
               !(await askForConfirmation(
                 $LL.configure.chords.conflict.TITLE(),
-                $LL.configure.chords.conflict.DESCRIPTION(
-                  actions
-                    .map((it) => `<kbd>${KEYMAP_CODES.get(it)?.id}</kbd>`)
-                    .join(" "),
-                ),
+                $LL.configure.chords.conflict.DESCRIPTION(),
                 $LL.configure.chords.conflict.CONFIRM(),
                 $LL.configure.chords.conflict.ABORT(),
+                actions.slice(0, actions.lastIndexOf(0)),
               ))
             ) {
               changes.update((changes) =>

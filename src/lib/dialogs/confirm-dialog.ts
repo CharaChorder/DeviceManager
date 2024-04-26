@@ -5,6 +5,7 @@ export async function askForConfirmation(
   message: string,
   confirmTitle: string,
   abortTitle: string,
+  actions: number[],
 ): Promise<boolean> {
   const dialog = new ConfirmDialog({
     target: document.body,
@@ -13,6 +14,7 @@ export async function askForConfirmation(
       message,
       confirmTitle,
       abortTitle,
+      actions,
     },
   });
 

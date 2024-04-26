@@ -119,7 +119,7 @@ const en = {
       conflict: {
         TITLE: "Chord conflict",
         DESCRIPTION:
-          "Your chord {0} conflicts with an existing chord. Are you sure you want to overwrite this chord?",
+          "Your chord conflicts with an existing chord. Are you sure you want to overwrite this chord?",
         CONFIRM: "Overwrite",
         ABORT: "Skip",
       },

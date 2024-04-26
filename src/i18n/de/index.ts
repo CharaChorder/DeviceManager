@@ -120,7 +120,7 @@ const de = {
       conflict: {
         TITLE: "Akkordkonflikt",
         DESCRIPTION:
-          "Der Akkord {0} würde einen bereits existierenden Akkord überschreiben. Wirklich fortfahren?",
+          "Der Akkord würde einen bereits existierenden Akkord überschreiben. Wirklich fortfahren?",
         CONFIRM: "Überschreiben",
         ABORT: "Überspringen",
       },
