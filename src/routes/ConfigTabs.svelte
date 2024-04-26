@@ -1,6 +1,5 @@
 <script>
   import { page } from "$app/stores";
-  import { action } from "$lib/title";
   import LL from "../i18n/i18n-svelte";
 
   $: paths = [
@@ -24,11 +23,7 @@
 
 <nav>
   {#each paths as { href, title, icon }, i}
-    <a
-      {href}
-      class:active={$page.url.pathname.startsWith(href)}
-      use:action={{ shortcut: `shift+${i + 1}` }}
-    >
+    <a {href} class:active={$page.url.pathname.startsWith(href)}>
       <span class="icon">{icon}</span>
       {title}
     </a>
