@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
+  import { KEYMAP_CATEGORIES, KEYMAP_CODES } from "$lib/serial/keymap-codes";
   import FlexSearch from "flexsearch";
   import LL from "../../../i18n/i18n-svelte";
   import { action } from "$lib/title";
@@ -35,7 +35,7 @@
     resizeObserver?.disconnect();
   });
 
-  let index = new FlexSearch.Index({ tokenize: "full" });
+  let index = new FlexSearch.Index();
   let searchIndex = writable<FlexSearch.Index | undefined>(undefined);
   $: {
     abortIndexing?.();
@@ -43,22 +43,72 @@
     buildIndex($chords, $osLayout).then(searchIndex.set);
   }
 
-  function plainPhrase(phrase: number[], osLayout: Map<string, string>) {
-    return phrase
+  function encodeChord(chord: ChordInfo, osLayout: Map<string, string>) {
+    const plainPhrase: string[] = [""];
+    const extraActions: string[] = [];
+    const extraCodes: string[] = [];
+
+    for (const actionCode of chord.phrase ?? []) {
+      const action = KEYMAP_CODES.get(actionCode);
+      if (!action) {
+        extraCodes.push(`0x${actionCode.toString(16)}`);
+        continue;
+      }
+
+      const osCode = action.keyCode && osLayout.get(action.keyCode);
+      const token = osCode?.length === 1 ? osCode : action.display || action.id;
+      if (!token) {
+        extraCodes.push(`0x${action.code.toString(16)}`);
+        continue;
+      }
+
+      if (/^\s$/.test(token) && plainPhrase.at(-1) !== "") {
+        plainPhrase.push("");
+      } else if (token.length === 1) {
+        plainPhrase[plainPhrase.length - 1] =
+          plainPhrase[plainPhrase.length - 1] + token;
+      } else {
+        extraActions.push(token);
+      }
+    }
+
+    if (chord.phrase?.[0] === 298) {
+      plainPhrase.push("suffix");
+    }
+    if (
+      ["ARROW_LT", "ARROW_RT", "ARROW_UP", "ARROW_DN"].some((it) =>
+        extraActions.includes(it),
+      )
+    ) {
+      plainPhrase.push("cursor warp");
+    }
+    if (
+      ["CTRL", "ALT", "GUI", "ENTER", "TAB"].some((it) =>
+        extraActions.includes(it),
+      )
+    ) {
+      plainPhrase.push("macro");
+    }
+    if (chord.actions[0] !== 0) {
+      plainPhrase.push("compound");
+    }
+
+    const input = chord.actions
+      .slice(chord.actions.lastIndexOf(0) + 1)
       .map((it) => {
         const info = KEYMAP_CODES.get(it);
-        if (!info) return "";
+        if (!info) return `0x${it.toString(16)}`;
+        const osCode = info.keyCode && osLayout.get(info.keyCode);
+        const result = osCode?.length === 1 ? osCode : info.id;
+        return result ?? `0x${it.toString(16)}`;
+      });
 
-        const bestGuess =
-          (info.keyCode && osLayout.get(info.keyCode)) ||
-          info.display ||
-          info.id ||
-          "";
-
-        return bestGuess.length === 1 ? bestGuess : "";
-      })
-      .filter((it) => !!it)
-      .join("");
+    return [
+      ...plainPhrase,
+      `+${input.join("+")}`,
+      ...new Set(extraActions),
+      ...new Set(extraCodes),
+    ].join(" ");
   }
 
   async function buildIndex(
@@ -66,7 +116,23 @@
     osLayout: Map<string, string>,
   ): Promise<FlexSearch.Index> {
     if (chords.length === 0 || !browser) return index;
-    index = new FlexSearch.Index({ tokenize: "full" });
+    index = new FlexSearch.Index({
+      tokenize: "full",
+      encode(phrase: string) {
+        return phrase.split(/\s+/).flatMap((it) => {
+          if (/^[A-Z_]+$/.test(it)) {
+            return it;
+          }
+          if (it.startsWith("+")) {
+            return it
+              .slice(1)
+              .split("+")
+              .map((it) => `+${it}`);
+          }
+          return it.toLowerCase();
+        });
+      },
+    });
     let abort = false;
     abortIndexing = () => {
       abort = true;
@@ -78,7 +144,8 @@
       progress = i;
 
       if ("phrase" in chord) {
-        await index.addAsync(i, plainPhrase(chord.phrase, osLayout));
+        console.log(encodeChord(chord, osLayout));
+        await index.addAsync(i, encodeChord(chord, osLayout));
       }
     }
     return index;

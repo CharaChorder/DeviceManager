@@ -15,7 +15,8 @@
   $: dynamicMapping = info.keyCode && $osLayout.get(info.keyCode);
 
   $: tooltip =
-    (info.title ?? info.id ?? `0x${info.code.toString(16)}`) +
+    `&lt;${info.id ?? `0x${info.code.toString(16)}`}&gt; ` +
+    (info.title ?? "") +
     (info.variant === "left"
       ? " (left)"
       : info.variant === "right"

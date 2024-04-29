@@ -32,5 +32,7 @@
   "You can use Nexus to track words you might want to add to your chord library",
   "The CC1 default layout was 80% science, 20% art",
   "There is little to no reason to use hjkl in VIM on a CC1 since the arrows keys are so close already",
-  "The device manager automatically creates a backup for you when you reboot your device into the bootloader"
+  "The device manager automatically creates a backup for you when you reboot your device into the bootloader",
+  "You can use \"compound\", \"macro\", \"suffix\" and \"cursor warp\" in the chord search to find specific types of chords",
+  "You can search for chord inputs by using a leading \"+\", for example \"+a +DUP\" will show all chords with inputs that contain both a and DUP"
 ]

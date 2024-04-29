@@ -2,7 +2,8 @@ name: CharaChorder
 description: CharaChorder specific actions
 actions:
   0:
-    id: "No Action"
+    id: "NO_ACTION"
+    display: "No Action"
   528:
     id: "RESTART"
     title: Restart Device
@@ -60,6 +61,7 @@ actions:
   544:
     variantOf: 36
     id: "SPACERIGHT"
+    display: " "
     title: Right Spacebar (eg CC Lite)
     icon: space_bar
     variant: right
