@@ -127,12 +127,11 @@
     const clickedGroup = groupParent.children.item(index) as SVGGElement;
     const nextAction = get(layout)[get(activeLayer)]?.[keyInfo.id];
     const currentAction = get(deviceLayout)[get(activeLayer)]?.[keyInfo.id];
-    if (!nextAction || !currentAction) return;
     const component = new ActionSelector({
       target: document.body,
       props: {
         currentAction,
-        nextAction: nextAction.isApplied ? undefined : nextAction.action,
+        nextAction: nextAction?.isApplied ? undefined : nextAction?.action,
       },
     });
     const dialog = document.querySelector("dialog > div") as HTMLDivElement;

@@ -1,6 +1,8 @@
 name: CharaChorder
 description: CharaChorder specific actions
 actions:
+  0:
+    id: "No Action"
   528:
     id: "RESTART"
     title: Restart Device
