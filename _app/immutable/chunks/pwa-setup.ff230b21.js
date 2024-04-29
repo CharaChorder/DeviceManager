@@ -1,0 +1,2 @@
+import{_ as t}from"./preload-helper.a4192956.js";async function a(){const{pwaInfo:r}=await t(()=>import("./_virtual_pwa-info.ec801c31.js"),[],import.meta.url),{registerSW:e}=await t(()=>import("./virtual_pwa-register.b70ffee8.js"),["./virtual_pwa-register.b70ffee8.js","./preload-helper.a4192956.js"],import.meta.url);return e({immediate:!0,onRegisterError(i){console.log("ServiceWorker Registration Error",i)}}),r?r.webManifest.linkTag:""}export{a as initPwa};
+//# sourceMappingURL=pwa-setup.ff230b21.js.map
