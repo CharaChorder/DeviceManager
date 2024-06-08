@@ -12,6 +12,7 @@ import { browser } from "$app/environment";
 
 const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["ONE M0", { usbProductId: 32783, usbVendorId: 9114 }],
+  ["TWO S3", { usbProductId: 0x0056, usbVendorId: 0x2886}],
   ["LITE S2", { usbProductId: 33070, usbVendorId: 12346 }],
   ["LITE M0", { usbProductId: 32796, usbVendorId: 9114 }],
   ["X", { usbProductId: 33163, usbVendorId: 12346 }],
@@ -87,8 +88,8 @@ export class CharaDevice {
 
   version!: SemVer;
   company!: "CHARACHORDER";
-  device!: "ONE" | "LITE" | "X";
-  chipset!: "M0" | "S2";
+  device!: "ONE" | "TWO" | "LITE" | "X";
+  chipset!: "M0" | "S2" | "S3";
   keyCount!: 90 | 67 | 256;
 
   get portInfo() {

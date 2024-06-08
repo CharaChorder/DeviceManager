@@ -21,6 +21,10 @@
       import("$lib/assets/layouts/one.yml").then(
         (it) => it.default as VisualLayout,
       ),
+    TWO: () =>
+      import("$lib/assets/layouts/one.yml").then(
+        (it) => it.default as VisualLayout,
+      ),
     LITE: () =>
       import("$lib/assets/layouts/lite.yml").then(
         (it) => it.default as VisualLayout,
