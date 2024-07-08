@@ -25,14 +25,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.16.x
-          cache: "npm"
+          cache: "pnpm"
       - name: ⏬ Install Node dependencies
-        run: npm ci
+        run: pnpm install
 
       - name: 🔥 Optimize icon font
-        run: npm run minify-icons
+        run: pnpm minify-icons
       - name: 🔨 Build site
-        run: npm run build
+        run: pnpm build
 
       - name: 📦 Upload build artifacts
         uses: actions/upload-artifact@v3.1.2
