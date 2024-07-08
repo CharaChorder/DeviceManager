@@ -12,7 +12,7 @@ import { browser } from "$app/environment";
 
 const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["ONE M0", { usbProductId: 32783, usbVendorId: 9114 }],
-  ["TWO S3", { usbProductId: 0x0056, usbVendorId: 0x2886}],
+  ["TWO S3", { usbProductId: 0x0056, usbVendorId: 0x2886 }],
   ["LITE S2", { usbProductId: 33070, usbVendorId: 12346 }],
   ["LITE M0", { usbProductId: 32796, usbVendorId: 9114 }],
   ["X", { usbProductId: 33163, usbVendorId: 12346 }],
@@ -20,6 +20,7 @@ const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
 
 const KEY_COUNTS = {
   ONE: 90,
+  TWO: 90,
   LITE: 67,
   X: 256,
 } as const;
@@ -126,8 +127,8 @@ export class CharaDevice {
       );
       const [company, device, chipset] = await this.send(3, "ID");
       this.company = company as "CHARACHORDER";
-      this.device = device as "ONE" | "LITE" | "X";
-      this.chipset = chipset as "M0" | "S2";
+      this.device = device as "ONE" | "TWO" | "LITE" | "X";
+      this.chipset = chipset as "M0" | "S2" | "S3";
       this.keyCount = KEY_COUNTS[this.device];
     } catch (e) {
       alert(e);
