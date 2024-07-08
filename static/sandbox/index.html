@@ -1,11 +1,17 @@
-<script lang="ts">
-  import type { ChannelEventData } from "../(app)/plugin/plugin-types";
+<script>
+  /** @type {Promise<unknown> | undefined} */
+  let ongoingRequest = undefined;
+  /** @type {(data: unknown) => void | undefined} */
+  let resolveRequest = undefined;
+  /** @type {MessageEventSource | undefined} */
+  let source = undefined;
 
-  let ongoingRequest: Promise<unknown> | undefined = undefined;
-  let resolveRequest: ((data: unknown) => void) | undefined = undefined;
-  let source: MessageEventSource | undefined = undefined;
-
-  async function post(channel: string, args: unknown[]) {
+  /**
+   * @param {string} channel
+   * @param {unknown} args
+   * @returns {Promise<unknown>}
+   */
+  async function post(channel, args) {
     while (ongoingRequest) {
       await ongoingRequest;
     }
@@ -19,7 +25,10 @@
     return ongoingRequest;
   }
 
-  function onMessage(event: MessageEvent<ChannelEventData>) {
+  /**
+   * @param {MessageEvent<import('../../src/routes/plugin/plugin-types').ChannelEventData>} event
+   */
+  function onMessage(event) {
     if ("response" in event.data) {
       resolveRequest?.(event.data.response);
     } else {
@@ -40,12 +49,12 @@
         Object.fromEntries(
           event.data.charaChannels.map((name) => [
             name,
-            (...args: unknown[]) => post(name, args),
+            (...args) => post(name, args),
           ]),
         ),
       );
     }
   }
-</script>
 
-<svelte:window on:message={onMessage} />
+  window.addEventListener("message", onMessage);
+</script>

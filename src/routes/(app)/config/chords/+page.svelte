@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { KEYMAP_CATEGORIES, KEYMAP_CODES } from "$lib/serial/keymap-codes";
+  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
   import FlexSearch from "flexsearch";
-  import LL from "../../../i18n/i18n-svelte";
+  import LL from "$i18n/i18n-svelte";
   import { action } from "$lib/title";
   import { onDestroy, onMount, setContext, tick } from "svelte";
   import { changes, ChangeType, chords } from "$lib/undo-redo";

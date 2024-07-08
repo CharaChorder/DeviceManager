@@ -1,6 +1,6 @@
 <script lang="ts">
   import { preference } from "$lib/preferences";
-  import LL from "../i18n/i18n-svelte";
+  import LL from "$i18n/i18n-svelte";
   import {
     createChordBackup,
     createLayoutBackup,

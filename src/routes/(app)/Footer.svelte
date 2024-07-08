@@ -1,11 +1,11 @@
 <script lang="ts">
   import { browser, version } from "$app/environment";
   import { action } from "$lib/title";
-  import LL, { setLocale } from "../i18n/i18n-svelte";
+  import LL, { setLocale } from "$i18n/i18n-svelte";
   import { theme } from "$lib/preferences.js";
-  import type { Locales } from "../i18n/i18n-types";
-  import { detectLocale, locales } from "../i18n/i18n-util";
-  import { loadLocaleAsync } from "../i18n/i18n-util.async";
+  import type { Locales } from "$i18n/i18n-types";
+  import { detectLocale, locales } from "$i18n/i18n-util";
+  import { loadLocaleAsync } from "$i18n/i18n-util.async";
   import { tick } from "svelte";
   import SyncOverlay from "./SyncOverlay.svelte";
   import { serialPort } from "$lib/serial/connection";

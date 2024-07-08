@@ -112,6 +112,7 @@ const config = {
     upload_2: "ff52",
     stat_minus_2: "e69c",
     stat_2: "e699",
+    routine: "e20c",
   },
 };
 

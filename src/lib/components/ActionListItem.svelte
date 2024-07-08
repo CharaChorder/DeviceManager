@@ -1,7 +1,7 @@
 <script lang="ts">
   import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
   import type { KeyInfo } from "$lib/serial/keymap-codes";
-  import LL from "../../i18n/i18n-svelte";
+  import LL from "$i18n/i18n-svelte";
   import Action from "$lib/components/Action.svelte";
 
   export let id: number | KeyInfo;

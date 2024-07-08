@@ -3,7 +3,7 @@
   import { browser } from "$app/environment";
   import { slide, fade } from "svelte/transition";
   import { preference } from "$lib/preferences";
-  import LL from "../i18n/i18n-svelte";
+  import LL from "$i18n/i18n-svelte";
   import { downloadBackup } from "$lib/backup/backup";
 
   function reboot() {

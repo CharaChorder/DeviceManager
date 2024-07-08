@@ -7,11 +7,16 @@
   import { keymap } from "@codemirror/view";
   import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
   import { tags } from "@lezer/highlight";
-  import LL from "../../i18n/i18n-svelte";
-  import type { CompletionContext } from "@codemirror/autocomplete";
+  import LL from "$i18n/i18n-svelte";
+  import type { CompletionContext, Completion } from "@codemirror/autocomplete";
+  import { syntaxTree } from "@codemirror/language";
   import { serialPort } from "$lib/serial/connection";
-  import type { CharaDevice } from "$lib/serial/device";
   import examplePlugin from "./example-plugin.js?raw";
+  import {
+    charaMethods,
+    type ChannelCharaEventData,
+    type ChannelResponseEventData,
+  } from "./plugin-types";
 
   let theme = EditorView.baseTheme({
     ".cm-editor .cm-content": {
@@ -40,6 +45,18 @@
       background: "transparent !important",
       backdropFilter: "invert(0.3)",
     },
+    ".cm-tooltip": {
+      backgroundColor: "var(--md-sys-color-background) !important",
+      color: "var(--md-sys-color-on-background)",
+      borderColor: "var(--md-sys-color-outline)",
+    },
+    ".cm-tooltip-autocomplete ul li[aria-selected]": {
+      backgroundColor: "var(--md-sys-color-primary) !important",
+      color: "var(--md-sys-color-on-primary) !important",
+    },
+    ".cm-completionIcon.cm-completionIcon-keyword::after": {
+      content: "'🗝'",
+    },
   });
   const highlightStyle = HighlightStyle.define(
     [
@@ -56,11 +73,74 @@
       all: { fontFamily: '"Noto Sans Mono", monospace', fontSize: "14px" },
     },
   );
+
+  const globalsCompletion: Completion[] = [
+    { label: "Chara", type: "class", boost: 90 },
+    { label: "Actions", type: "class", boost: 90 },
+  ];
+
+  const actionsCompletion: Completion[] = Array.from(
+    KEYMAP_CODES,
+    ([id, info]) => {
+      const isValidIdentifier =
+        info.id && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(info.id);
+      return {
+        label: info.id
+          ? isValidIdentifier
+            ? info.id
+            : `["${info.id}"]`
+          : info.id!,
+        displayLabel: info.id,
+        detail: [info.title, `(0x${id.toString(16)})`, info.description]
+          .filter((it) => !!it)
+          .join(" "),
+        section: info.category,
+        boost: isValidIdentifier ? Math.min(info.id?.length ?? 0, 10) + 50 : 40,
+        type: "property",
+      };
+    },
+  ).filter((it) => it.label !== undefined);
+
   const completion = javascriptLanguage.data.of({
     autocomplete: function completeGlobals(context: CompletionContext) {
-      if (context.matchBefore(/Chara\./)) {
-        // TODO
+      let nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
+      if (nodeBefore.name === "VariableName") {
+        return {
+          from: nodeBefore.from,
+          options: globalsCompletion,
+        };
+      } else if (nodeBefore.name === "Script") {
+        return {
+          from: context.pos,
+          options: globalsCompletion,
+        };
+      } else if (
+        (nodeBefore.name === "PropertyName" || nodeBefore.name === ".") &&
+        nodeBefore.parent?.name === "MemberExpression" &&
+        nodeBefore.parent.firstChild
+      ) {
+        const variable = nodeBefore.parent.firstChild;
+        const variableName = context.state.sliceDoc(variable.from, variable.to);
+        if (variableName === "Actions") {
+          return {
+            from:
+              nodeBefore.name === "PropertyName"
+                ? nodeBefore.from
+                : nodeBefore.to,
+            options: actionsCompletion,
+          };
+        }
+        let parent = nodeBefore.prevSibling;
+        while (parent !== null && parent?.name !== "VariableName") {
+          parent = parent.prevSibling;
+        }
+        if (parent) {
+        }
       }
+      console.log(nodeBefore);
+
+      console.log(context);
+      return null;
     },
   });
 
@@ -78,22 +158,6 @@
       doc: examplePlugin,
     });
   });
-
-  const charaMethods = [
-    "reboot",
-    "bootloader",
-    "getRamBytesAvailable",
-    "getSetting",
-    "setSetting",
-    "getLayoutKey",
-    "setLayoutKey",
-    "deleteChord",
-    "setChord",
-    "getChordPhrase",
-    "getChordCount",
-    "getChord",
-    "send",
-  ] satisfies Array<keyof CharaDevice>;
   $: channels = $serialPort
     ? ({
         getVersion: async (..._args: unknown[]) => $serialPort.version,
@@ -122,7 +186,10 @@
 
     const [channel, params] = event.data;
     const response = channels[channel as keyof typeof channels](...params);
-    frame.contentWindow!.postMessage({ response: await response }, "*");
+    frame.contentWindow!.postMessage(
+      { response: await response } satisfies ChannelResponseEventData,
+      "*",
+    );
   }
 
   function runPlugin() {
@@ -131,7 +198,7 @@
         actionCodes: KEYMAP_CODES,
         script: editorView.state.doc.toString(),
         charaChannels: Object.keys(channels),
-      },
+      } satisfies ChannelCharaEventData,
       "*",
     );
   }

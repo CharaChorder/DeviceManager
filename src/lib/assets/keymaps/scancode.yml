@@ -422,8 +422,8 @@ actions:
     title: Keyboard Non-US \ and | (US English)
   357:
     id: "COMPOSE"
+    icon: menu
     title: Keyboard Application
-    description: Officially supported by Win, Unix, and Boot
   358:
     id: "POWER"
     keyCode: "Power"
@@ -944,99 +944,99 @@ actions:
     title: Keyboard Right GUI
   488:
     id: "KSC_E8"
+    icon: play_pause
     keyCode: "MediaPlayPause"
     title: Media Play Pause
-    description: Not required to be supported by any OS. Possibly deprecated.
   489:
     id: "KSC_E9"
+    icon: stop
     keyCode: "MediaStop"
     title: Media Stop CD
-    description: Not required to be supported by any OS. Possibly deprecated.
   490:
     id: "KSC_EA"
+    icon: skip_previous
     keyCode: "MediaTrackPrevious"
     title: Media Previous Song
-    description: Not required to be supported by any OS. Possibly deprecated.
   491:
     id: "KSC_EB"
+    icon: skip_next
     keyCode: "MediaTrackNext"
     title: Media Next Song
-    description: Not required to be supported by any OS. Possibly deprecated.
   492:
     id: "KSC_EC"
+    icon: eject
     keyCode: "Eject"
     title: Media Eject CD
-    description: Not required to be supported by any OS. Possibly deprecated.
+    description: MacOS only
   493:
     id: "KSC_ED"
+    icon: volume_up
     keyCode: "AudioVolumeUp"
     title: Media Volume Up
-    description: Not required to be supported by any OS. Possibly deprecated.
   494:
     id: "KSC_EE"
+    icon: volume_down
     keyCode: "AudioVolumeDown"
     title: Media Volume Down
-    description: Not required to be supported by any OS. Possibly deprecated.
   495:
     id: "KSC_EF"
+    icon: volume_off
     keyCode: "AudioVolumeMute"
     title: Media Mute
-    description: Not required to be supported by any OS. Possibly deprecated.
   496:
     id: "KSC_F0"
-    title: Media www
-    description: Not required to be supported by any OS. Possibly deprecated.
+    icon: language
+    title: Media Browser
   497:
     id: "KSC_F1"
     keyCode: "BrowserBack"
-    title: Media Back
-    description: Not required to be supported by any OS. Possibly deprecated.
+    title: Media Browser Back
   498:
     id: "KSC_F2"
     keyCode: "BrowserForward"
-    title: Media Forward
-    description: Not required to be supported by any OS. Possibly deprecated.
+    title: Media Browser Forward
   499:
     id: "KSC_F3"
     keyCode: "BrowserStop"
-    title: Media Stop
-    description: Not required to be supported by any OS. Possibly deprecated.
+    title: Media Browser Stop
+    description: Not supported on MacOS
   500:
     id: "KSC_F4"
+    icon: search
     keyCode: "BrowserSearch"
-    title: Media Find
-    description: Not required to be supported by any OS. Possibly deprecated.
+    title: Media Browser Search
   501:
     id: "KSC_F5"
-    title: Media Scroll Up
-    description: Not required to be supported by any OS. Possibly deprecated.
+    icon: brightness_high
+    title: Media Brightness Up
   502:
     id: "KSC_F6"
-    title: Media Scroll Down
-    description: Not required to be supported by any OS. Possibly deprecated.
+    icon: brightness_low
+    title: Media Brightness Down
   503:
     id: "KSC_F7"
     title: Media Edit
     description: Not required to be supported by any OS. Possibly deprecated.
   504:
     id: "KSC_F8"
+    icon: bedtime
     keyCode: "Sleep"
-    title: Media Sleep
+    title: Media System Sleep
     description: Not required to be supported by any OS. Possibly deprecated.
   505:
     id: "KSC_F9"
+    icon: routine
     keyCode: "WakeUp"
-    title: Media Coffee
-    description: Not required to be supported by any OS. Possibly deprecated.
+    title: Media System Wake
+    description: Not supported on Windows
   506:
     id: "KSC_FA"
     keyCode: "BrowserRefresh"
-    title: Media Refresh
-    description: Not required to be supported by any OS. Possibly deprecated.
+    title: Media Browser Refresh
   507:
     id: "KSC_FB"
-    title: Media Calc
-    description: Not required to be supported by any OS. Possibly deprecated.
+    title: Media Calculator
+    description: Not supported on MacOS
   508:
     id: "KSC_FC"
     description: Not required to be supported by any OS.

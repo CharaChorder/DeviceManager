@@ -8,7 +8,7 @@
   import { browser } from "$app/environment";
   import { userPreferences } from "$lib/preferences";
   import { action } from "$lib/title";
-  import LL from "../i18n/i18n-svelte";
+  import LL from "$i18n/i18n-svelte";
   import ConfigTabs from "./ConfigTabs.svelte";
   import EditActions from "./EditActions.svelte";
   import { onMount } from "svelte";

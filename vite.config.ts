@@ -20,7 +20,7 @@ process.env["VITE_HOMEPAGE_URL"] = repository.url.replace(/\.git$/, "");
 process.env["VITE_DOCS_URL"] = homepage;
 process.env["VITE_BUGS_URL"] = bugs.url;
 process.env["VITE_LEARN_URL"] = "https://www.iq-eq.io/";
-process.env["VITE_LATEST_FIRMWARE"] = "1.1.3";
+process.env["VITE_LATEST_FIRMWARE"] = "1.1.4";
 process.env["VITE_STORE_URL"] = "https://www.charachorder.com/";
 
 export default defineConfig({
@@ -49,7 +49,7 @@ export default defineConfig({
             workbox: {
               // https://vite-pwa-org.netlify.app/frameworks/sveltekit.html#globpatterns
               globPatterns: [
-                "client/**/*.{js,map,css,woff2,csv,png,svg}",
+                "client/**/*.{js,map,css,ico,woff2,csv,png,webp,svg,webmanifest}",
                 "prerendered/**/*.html",
               ],
             },

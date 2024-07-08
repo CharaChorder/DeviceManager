@@ -7,7 +7,7 @@
   import FlexSearch from "flexsearch";
   import { createEventDispatcher, onMount } from "svelte";
   import ActionListItem from "$lib/components/ActionListItem.svelte";
-  import LL from "../../../i18n/i18n-svelte";
+  import LL from "$i18n/i18n-svelte";
   import { action } from "$lib/title";
 
   export let currentAction: number | undefined = undefined;

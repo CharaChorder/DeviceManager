@@ -8,7 +8,7 @@
   } from "$lib/undo-redo";
   import { ChangeType, chords } from "$lib/undo-redo";
   import ActionString from "$lib/components/ActionString.svelte";
-  import LL from "../../i18n/i18n-svelte";
+  import LL from "$i18n/i18n-svelte";
   import { KEYMAP_IDS } from "$lib/serial/keymap-codes";
 
   export let changes: Change[] = [

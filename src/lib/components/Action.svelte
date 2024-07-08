@@ -3,7 +3,7 @@
   import type { KeyInfo } from "$lib/serial/keymap-codes";
   import { action as title } from "$lib/title";
   import { osLayout } from "$lib/os-layout";
-  import LL from "../../i18n/i18n-svelte";
+  import LL from "$i18n/i18n-svelte";
 
   export let action: number | KeyInfo;
   export let display: "inline-keys" | "keys" = "inline-keys";

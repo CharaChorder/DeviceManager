@@ -2,7 +2,7 @@
   import type { ChordInfo } from "$lib/undo-redo";
   import { changes, ChangeType } from "$lib/undo-redo";
   import { createEventDispatcher } from "svelte";
-  import LL from "../../../i18n/i18n-svelte";
+  import LL from "$i18n/i18n-svelte";
   import ActionString from "$lib/components/ActionString.svelte";
   import { selectAction } from "./action-selector";
   import { serialPort } from "$lib/serial/connection";
