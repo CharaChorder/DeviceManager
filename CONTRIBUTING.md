@@ -29,7 +29,7 @@ You may need to run through some additional setup to get Rust running inside Int
 - Python >=3.10
 - Rust Stable (For Tauri Development)
 
-I know, python in JS projects is extremely annoying, unfortunately,
+I know, python in JS projects is extremely annoying. Unfortunately,
 it seems to be the only platform that offers a functional
 way to subset variable woff2 fonts with ligatures.
 
