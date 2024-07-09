@@ -52,6 +52,7 @@ export default defineConfig({
                 "client/**/*.{js,map,css,ico,woff2,csv,png,webp,svg,webmanifest}",
                 "prerendered/**/*.html",
               ],
+              ignoreURLParametersMatching: [/^import$/],
             },
             manifest: {
               name: "CharaChorder Device Manager",

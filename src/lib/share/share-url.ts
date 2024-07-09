@@ -72,7 +72,6 @@ export async function charaFileFromUriComponent<T extends CharaFiles>(
         .stream()
         .pipeThrough(new DecompressionStream("deflate"));
       const actions = new Uint8Array(await new Response(stream).arrayBuffer());
-      console.log(actions);
       file[key] = deserializeActionArray(actions);
     }
   }
