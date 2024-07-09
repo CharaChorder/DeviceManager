@@ -1,0 +1,3 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./virtual_pwa-register.Dmh05s80.js","./preload-helper.Dch09mLN.js"])))=>i.map(i=>d[i]);
+import{_ as e}from"./preload-helper.Dch09mLN.js";async function a(){const{pwaInfo:t}=await e(async()=>{const{pwaInfo:r}=await import("./_virtual_pwa-info.D2ZL56Zr.js");return{pwaInfo:r}},[],import.meta.url),{registerSW:i}=await e(async()=>{const{registerSW:r}=await import("./virtual_pwa-register.Dmh05s80.js");return{registerSW:r}},__vite__mapDeps([0,1]),import.meta.url);return i({immediate:!0,onRegisterError(r){console.log("ServiceWorker Registration Error",r)}}),t?t.webManifest.linkTag:""}export{a as initPwa};
+//# sourceMappingURL=pwa-setup.Cm4sYrbX.js.map

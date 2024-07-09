@@ -1,0 +1,1 @@
+{"version":3,"file":"0.BfgG5hD4.js","sources":["../../../../../../src/routes/+layout.ts"],"sourcesContent":["export const prerender = true;\nexport const trailingSlash = \"always\";\n"],"names":["prerender","trailingSlash"],"mappings":"qJAAO,MAAMA,EAAY,GACZC,EAAgB"}
