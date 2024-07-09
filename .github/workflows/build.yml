@@ -21,6 +21,10 @@ jobs:
       - name: ⏬ Install Python dependencies
         run: pip install -r requirements.txt
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
       - name: 🐉 Use Node.js 18.16.x
         uses: actions/setup-node@v3
         with:
