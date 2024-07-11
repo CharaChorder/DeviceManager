@@ -109,7 +109,7 @@
   $: chordActions = chord?.actions
     .slice(chord.actions.lastIndexOf(0) + 1)
     .toSorted(compare);
-  $: compoundInputs = [...resolveCompound(chord)];
+  $: compoundInputs = [...resolveCompound(chord)].reverse();
 </script>
 
 <button
