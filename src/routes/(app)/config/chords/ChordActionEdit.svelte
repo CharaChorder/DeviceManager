@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ChordInfo } from "$lib/undo-redo";
-  import { changes, ChangeType } from "$lib/undo-redo";
+  import { changes, chordHashes, ChangeType } from "$lib/undo-redo";
   import { createEventDispatcher } from "svelte";
   import LL from "$i18n/i18n-svelte";
   import ActionString from "$lib/components/ActionString.svelte";
@@ -8,6 +8,7 @@
   import { serialPort } from "$lib/serial/connection";
   import { get } from "svelte/store";
   import { inputToAction } from "./input-converter";
+  import { hashChord } from "$lib/serial/chord";
 
   export let chord: ChordInfo | undefined = undefined;
 
@@ -21,14 +22,15 @@
   }
 
   function makeChordInput(...actions: number[]) {
-    const compound = compoundIndices ?? [];
+    const compound = compoundInputs[0]
+      ? hashChord(compoundInputs[0].actions)
+      : 0;
     return [
-      ...compound,
       ...Array.from(
         {
-          length: 12 - (compound.length + actions.length + 1),
+          length: 12 - actions.length,
         },
-        () => 0,
+        (_, i) => (compound >> (i * 10)) & 0x3ff,
       ),
       ...actions.toSorted(compare),
     ];
@@ -73,7 +75,6 @@
   function addSpecial(event: MouseEvent) {
     selectAction(event, (action) => {
       changes.update((changes) => {
-        console.log(compoundIndices, chordActions, action);
         changes.push({
           type: ChangeType.Chord,
           id: chord!.id,
@@ -85,10 +86,30 @@
     });
   }
 
+  function* resolveCompound(chord?: ChordInfo) {
+    if (!chord) return;
+    let current = chord;
+    for (let i = 0; i < 10; i++) {
+      if (current.actions[3] !== 0) return;
+      const compound = current.actions
+        .slice(0, 3)
+        .reduce((a, b, i) => a | (b << (i * 10)));
+      if (compound === 0) return;
+      const next = $chordHashes.get(compound);
+      if (!next) {
+        return null;
+      }
+
+      current = next;
+      yield next;
+    }
+    return;
+  }
+
   $: chordActions = chord?.actions
     .slice(chord.actions.lastIndexOf(0) + 1)
     .toSorted(compare);
-  $: compoundIndices = chord?.actions.slice(0, chord.actions.indexOf(0));
+  $: compoundInputs = [...resolveCompound(chord)];
 </script>
 
 <button
@@ -110,12 +131,15 @@
     <span>{$LL.configure.chords.NEW_CHORD()}</span>
   {/if}
   {#if !editing}
-    {#each compoundIndices ?? [] as index}
-      <sub>{index}</sub>
-    {/each}
-    {#if compoundIndices?.length}
+    {#each compoundInputs as compound}
+      <sub
+        ><ActionString
+          display="keys"
+          actions={compound.actions.slice(compound.actions.lastIndexOf(0) + 1)}
+        ></ActionString>
+      </sub>
       <span>&rarr;</span>
-    {/if}
+    {/each}
   {/if}
   <ActionString
     display="keys"

@@ -137,9 +137,6 @@
         if (parent) {
         }
       }
-      console.log(nodeBefore);
-
-      console.log(context);
       return null;
     },
   });

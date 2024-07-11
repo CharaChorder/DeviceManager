@@ -144,7 +144,6 @@
       progress = i;
 
       if ("phrase" in chord) {
-        console.log(encodeChord(chord, osLayout));
         await index.addAsync(i, encodeChord(chord, osLayout));
       }
     }

@@ -104,6 +104,26 @@ actions:
     <<: *tertiary_keymap
     id: "KM_3_R"
     variant: right
+  558:
+    id: HOLD_COMPOUND
+    title: Activate Chord Library
+    icon: layers
+    description: |
+      When used in a chord includes that chord as a base 
+      compound chord for all subsequent chords.
+      This is effectively a library switch.
+      Since library activations can be nested, you
+      usually add a "Reset Chord Library" before this action.
+  559:
+    id: RELEASE_COMPOUND
+    title: Reset Chord Library
+    icon: layers_clear
+    description: |
+      Releases the active compound state, returning
+      to the default library.
+      While "Activate Chord Library" can only be used
+      as an output of a chord, this action can be assigned
+      to switches directly.
   576:
     id: ACTION_DELAY_1000
     icon: clock_loader_90

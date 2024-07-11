@@ -1,6 +1,6 @@
 import { persistentWritable } from "$lib/storage";
 import { derived } from "svelte/store";
-import type { Chord } from "$lib/serial/chord";
+import { hashChord, type Chord } from "$lib/serial/chord";
 import {
   deviceChords,
   deviceLayout,
@@ -158,3 +158,9 @@ export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
     a.localeCompare(b),
   );
 });
+
+export const chordHashes = derived(
+  chords,
+  (chords) =>
+    new Map(chords.map((chord) => [hashChord(chord.actions), chord] as const)),
+);

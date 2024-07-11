@@ -55,3 +55,19 @@ export function deserializeActions(native: bigint): number[] {
 
   return actions;
 }
+
+/**
+ * Hashes a chord input the same way as CCOS
+ */
+export function hashChord(actions: number[]) {
+  const chord = new Uint8Array(16);
+  const view = new DataView(chord.buffer);
+  const serialized = serializeActions(actions);
+  view.setBigUint64(0, serialized & 0xffff_ffff_ffff_ffffn, true);
+  view.setBigUint64(8, serialized >> 64n, true);
+  let hash = 2166136261;
+  for (let i = 0; i < 16; i++) {
+    hash = Math.imul(hash ^ view.getUint8(i), 16777619);
+  }
+  return hash & 0x3fff_ffff;
+}
