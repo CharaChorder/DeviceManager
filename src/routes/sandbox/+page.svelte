@@ -5,6 +5,8 @@
   let resolveRequest: ((data: unknown) => void) | undefined = undefined;
   let source: MessageEventSource | undefined = undefined;
 
+  const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+
   async function post(channel: string, args: unknown[]) {
     while (ongoingRequest) {
       await ongoingRequest;
@@ -35,15 +37,18 @@
         ),
       );
 
-      new Function("Action", "Chara", event.data.script)(
-        Action,
-        Object.fromEntries(
-          event.data.charaChannels.map((name) => [
-            name,
-            (...args: unknown[]) => post(name, args),
-          ]),
-        ),
+      const Chara = Object.fromEntries(
+        event.data.charaChannels.map((name) => [
+          name,
+          (...args: unknown[]) => post(name, args),
+        ]),
       );
+
+      AsyncFunction(
+        "Action",
+        "Chara",
+        '"use strict"\n' + event.data.script,
+      )(Action, Chara);
     }
   }
 </script>
