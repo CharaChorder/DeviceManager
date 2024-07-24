@@ -106,24 +106,21 @@ actions:
     variant: right
   558:
     id: HOLD_COMPOUND
-    title: Activate Chord Library
+    title: Dynamic Library
     icon: layers
     description: |
-      When used in a chord includes that chord as a base 
-      compound chord for all subsequent chords.
-      This is effectively a library switch.
-      Since library activations can be nested, you
-      usually add a "Reset Chord Library" before this action.
+      Allows for the activation & creation of dynamic chord libraries.
+      When included as part of a chord output,
+      that chord's input becomes the seed for a dynamic chord library,
+      and that library is activated.
+      Any new chords created while a dynamic library is active are established one level above its seed.
   559:
     id: RELEASE_COMPOUND
-    title: Reset Chord Library
+    title: Base Library
     icon: layers_clear
     description: |
-      Releases the active compound state, returning
-      to the default library.
-      While "Activate Chord Library" can only be used
-      as an output of a chord, this action can be assigned
-      to switches directly.
+      Re-activates your base chord library,
+      and deactivates any currently active dynamic chord library.
   576:
     id: ACTION_DELAY_1000
     icon: clock_loader_90
