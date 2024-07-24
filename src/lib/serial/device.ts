@@ -16,6 +16,7 @@ const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["LITE S2", { usbProductId: 33070, usbVendorId: 12346 }],
   ["LITE M0", { usbProductId: 32796, usbVendorId: 9114 }],
   ["X", { usbProductId: 33163, usbVendorId: 12346 }],
+  ["M4G S3", { usbProductId: 0x1001, usbVendorId: 0x303a }],
 ]);
 
 const KEY_COUNTS = {
@@ -23,6 +24,7 @@ const KEY_COUNTS = {
   TWO: 90,
   LITE: 67,
   X: 256,
+  M4G: 90,
 } as const;
 
 if (
@@ -88,8 +90,8 @@ export class CharaDevice {
   private suspendDebounceId?: number;
 
   version!: SemVer;
-  company!: "CHARACHORDER";
-  device!: "ONE" | "TWO" | "LITE" | "X";
+  company!: "CHARACHORDER" | "FORGE";
+  device!: "ONE" | "TWO" | "LITE" | "X" | "M4G";
   chipset!: "M0" | "S2" | "S3";
   keyCount!: 90 | 67 | 256;
 
@@ -126,9 +128,9 @@ export class CharaDevice {
         await this.send(1, "VERSION").then(([version]) => version),
       );
       const [company, device, chipset] = await this.send(3, "ID");
-      this.company = company as "CHARACHORDER";
-      this.device = device as "ONE" | "TWO" | "LITE" | "X";
-      this.chipset = chipset as "M0" | "S2" | "S3";
+      this.company = company as typeof this.company;
+      this.device = device as typeof this.device;
+      this.chipset = chipset as typeof this.chipset;
       this.keyCount = KEY_COUNTS[this.device];
     } catch (e) {
       alert(e);

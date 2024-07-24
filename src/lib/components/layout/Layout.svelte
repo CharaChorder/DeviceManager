@@ -33,6 +33,10 @@
       import("$lib/assets/layouts/generic/103-key.yml").then(
         (it) => it.default as VisualLayout,
       ),
+    M4G: () =>
+      import("$lib/assets/layouts/m4g.yml").then(
+        (it) => it.default as VisualLayout,
+      ),
   };
 </script>
 
