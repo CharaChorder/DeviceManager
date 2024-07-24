@@ -16,7 +16,7 @@ const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["LITE S2", { usbProductId: 33070, usbVendorId: 12346 }],
   ["LITE M0", { usbProductId: 32796, usbVendorId: 9114 }],
   ["X", { usbProductId: 33163, usbVendorId: 12346 }],
-  ["M4G S3", { usbProductId: 0x1001, usbVendorId: 0x303a }],
+  ["M4G S3", { usbProductId: 4097, usbVendorId: 12346 }],
 ]);
 
 const KEY_COUNTS = {
