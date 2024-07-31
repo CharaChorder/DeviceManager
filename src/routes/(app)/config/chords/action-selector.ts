@@ -1,12 +1,21 @@
 import ActionSelector from "$lib/components/layout/ActionSelector.svelte";
-import { tick } from "svelte";
+import { mount, unmount, tick } from "svelte";
 
 export function selectAction(
   event: MouseEvent | KeyboardEvent,
   select: (action: number) => void,
   dismissed?: () => void,
 ) {
-  const component = new ActionSelector({ target: document.body });
+  const component = mount(ActionSelector, {
+    target: document.body,
+    props: {
+      onclose: () => closed(),
+      onselect: (action: number) => {
+        select(action);
+        closed();
+      },
+    },
+  });
   const dialog = document.querySelector("dialog > div") as HTMLDivElement;
   const backdrop = document.querySelector("dialog") as HTMLDialogElement;
   const dialogRect = dialog.getBoundingClientRect();
@@ -40,14 +49,8 @@ export function selectAction(
 
     await dialogAnimation.finished;
 
-    component.$destroy();
+    unmount(component);
     await tick();
     dismissed?.();
   }
-
-  component.$on("close", closed);
-  component.$on("select", ({ detail }) => {
-    select(detail);
-    closed();
-  });
 }

@@ -9,11 +9,11 @@
   import { serialPort } from "$lib/serial/connection";
   import { get } from "svelte/store";
 
-  export let chord: ChordInfo;
+  let { chord }: { chord: ChordInfo } = $props();
 
   onMount(() => {
     if (chord.phrase.length === 0) {
-      box.focus();
+      box?.focus();
     }
   });
 
@@ -40,6 +40,7 @@
   }
 
   function moveCursor(to: number) {
+    if (!box) return;
     cursorPosition = Math.max(0, Math.min(to, chord.phrase.length));
     const item = box.children.item(cursorPosition) as HTMLElement;
     cursorOffset = item.offsetLeft + item.offsetWidth;
@@ -71,7 +72,7 @@
   }
 
   function clickCursor(event: MouseEvent) {
-    if (event.target === button) return;
+    if (box === undefined || event.target === button) return;
     const distance = (event as unknown as { layerX: number }).layerX;
 
     let i = 0;
@@ -93,37 +94,36 @@
         insertAction(cursorPosition, action);
         tick().then(() => moveCursor(cursorPosition + 1));
       },
-      () => box.focus(),
+      () => box?.focus(),
     );
   }
 
-  let button: HTMLButtonElement;
-  let box: HTMLDivElement;
+  let button: HTMLButtonElement | undefined = $state();
+  let box: HTMLDivElement | undefined = $state();
   let cursorPosition = 0;
-  let cursorOffset = 0;
+  let cursorOffset = $state(0);
 
-  let hasFocus = false;
+  let hasFocus = $state(false);
 </script>
 
-<!-- svelte-ignore a11y-autofocus -->
 <div
-  on:keydown={keypress}
-  on:mousedown={clickCursor}
+  onkeydown={keypress}
+  onmousedown={clickCursor}
   role="textbox"
   tabindex="0"
   bind:this={box}
   class:edited={!chord.deleted && chord.phraseChanged}
-  on:focusin={() => (hasFocus = true)}
-  on:focusout={(event) => {
+  onfocusin={() => (hasFocus = true)}
+  onfocusout={(event) => {
     if (event.relatedTarget !== button) hasFocus = false;
   }}
 >
   {#if hasFocus}
     <div transition:scale class="cursor" style:translate="{cursorOffset}px 0">
-      <button class="icon" bind:this={button} on:click={addSpecial}>add</button>
+      <button class="icon" bind:this={button} onclick={addSpecial}>add</button>
     </div>
   {:else}
-    <div />
+    <div></div>
     <!-- placeholder for cursor placement -->
   {/if}
   <ActionString actions={chord.phrase} />

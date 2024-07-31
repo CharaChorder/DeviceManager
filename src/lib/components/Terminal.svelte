@@ -9,11 +9,11 @@
     io.scrollTo({ top: io.scrollHeight });
   }
 
-  let value: string;
+  let value: string = $state("");
   let io: HTMLDivElement;
 </script>
 
-<form on:submit={submit}>
+<form onsubmit={submit}>
   <div bind:this={io} class="io">
     {#each $serialLog as { type, value }}
       {#if type === "input"}
@@ -24,10 +24,10 @@
         <p transition:slide>{value}</p>
       {/if}
     {/each}
-    <div class="anchor" />
+    <div class="anchor"></div>
   </div>
   <fieldset>
-    <input on:submit={submit} bind:value />
+    <input onsubmit={submit} bind:value />
   </fieldset>
 </form>
 

@@ -2,13 +2,16 @@
   import { fly } from "svelte/transition";
   import { afterNavigate, beforeNavigate } from "$app/navigation";
   import { expoIn, expoOut } from "svelte/easing";
+  import type { Snippet } from "svelte";
 
-  let inDirection = 0;
-  let outDirection = 0;
-  let outroEnd: undefined | (() => void) = undefined;
+  let { children }: { children: Snippet } = $props();
+
+  let inDirection = $state(0);
+  let outDirection = $state(0);
+  let outroEnd: undefined | (() => void) = $state(undefined);
   let animationDone: Promise<void>;
 
-  let isNavigating = false;
+  let isNavigating = $state(false);
 
   const routeOrder = [
     "/config/chords/",
@@ -48,8 +51,8 @@
   <main
     in:fly={{ x: inDirection * 24, duration: 150, easing: expoOut }}
     out:fly={{ x: outDirection * 24, duration: 150, easing: expoIn }}
-    on:outroend={outroEnd}
+    onoutroend={outroEnd}
   >
-    <slot />
+    {@render children()}
   </main>
 {/if}

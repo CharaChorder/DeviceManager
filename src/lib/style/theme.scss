@@ -1,10 +1,35 @@
+@import "./reset";
+
 @import "./form/button";
 @import "./form/toggle";
 @import "./form/checkbox";
+
 @import "./kbd";
 @import "./print";
 
-* {
-  box-sizing: border-box;
-  appearance: none;
+@import "./elements/h1";
+
+body {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+
+  font-family: "Noto Sans Mono", monospace;
+  color: var(--md-sys-color-on-background);
+
+  background: var(--md-sys-color-background);
+}
+
+main {
+  contain: strict;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+
+  padding-inline: 16px;
 }

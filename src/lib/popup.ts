@@ -1,12 +1,12 @@
 import tippy from "tippy.js";
 import type { Action } from "svelte/action";
-import type { ComponentType, SvelteComponent } from "svelte";
+import { unmount, mount, type Component } from "svelte";
 
-export const popup: Action<HTMLButtonElement, ComponentType> = (
+export const popup: Action<HTMLButtonElement, Component> = (
   node,
   Component,
 ) => {
-  let component: SvelteComponent | undefined;
+  let component: {} | undefined;
   let target: HTMLElement | undefined;
   const edit = tippy(node, {
     interactive: true,
@@ -14,12 +14,14 @@ export const popup: Action<HTMLButtonElement, ComponentType> = (
     onShow(instance) {
       target = instance.popper.querySelector(".tippy-content") as HTMLElement;
       target.classList.add("active");
-      component ??= new Component({ target });
+      component ??= mount(Component, { target });
     },
     onHidden() {
-      component?.$destroy();
+      if (component) {
+        unmount(component);
+        component = undefined;
+      }
       target?.classList.remove("active");
-      component = undefined;
     },
   });
 

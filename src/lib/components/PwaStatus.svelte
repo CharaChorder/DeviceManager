@@ -6,7 +6,7 @@
 </script>
 
 {#if $needRefresh}
-  <button title="Update ready" on:click={() => updateServiceWorker(true)}
+  <button title="Update ready" onclick={() => updateServiceWorker(true)}
     >Update <span class="icon">update</span></button
   >
 {:else if $offlineReady}

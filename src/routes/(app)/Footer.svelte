@@ -10,14 +10,16 @@
   import SyncOverlay from "./SyncOverlay.svelte";
   import { serialPort } from "$lib/serial/connection";
 
-  let locale =
-    (browser && (localStorage.getItem("locale") as Locales)) || detectLocale();
-  $: if (browser)
-    (async () => {
-      localStorage.setItem("locale", locale);
-      await loadLocaleAsync(locale);
+  let locale = $state(
+    (browser && (localStorage.getItem("locale") as Locales)) || detectLocale(),
+  );
+  $effect(() => {
+    if (!browser) return;
+    localStorage.setItem("locale", locale);
+    loadLocaleAsync(locale).then(() => {
       setLocale(locale);
-    })();
+    });
+  });
 
   function switchTheme() {
     const mode = $theme.mode === "light" ? "dark" : "light";
@@ -37,7 +39,6 @@
 <footer>
   <ul>
     <li>
-      <!-- svelte-ignore not-defined -->
       <a
         href={import.meta.env.VITE_HOMEPAGE_URL}
         rel="noreferrer"
@@ -86,7 +87,7 @@
         <button
           use:action={{ title: $LL.profile.theme.DARK_MODE() }}
           class="icon"
-          on:click={switchTheme}
+          onclick={switchTheme}
         >
           dark_mode
         </button>
@@ -94,25 +95,27 @@
         <button
           use:action={{ title: $LL.profile.theme.LIGHT_MODE() }}
           class="icon"
-          on:click={switchTheme}
+          onclick={switchTheme}
         >
           light_mode
         </button>
       {/if}
     </li>
     <li>
-      <button
+      <div
+        role="button"
         class="icon"
         use:action={{ title: $LL.profile.LANGUAGE() }}
-        on:click={() => languageSelect.click()}
-        >translate
+        onclick={() => languageSelect.click()}
+      >
+        translate
 
         <select bind:value={locale} bind:this={languageSelect}>
           {#each locales as code}
             <option value={code}>{code}</option>
           {/each}
         </select>
-      </button>
+      </div>
     </li>
   </ul>
 </footer>

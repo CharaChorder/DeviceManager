@@ -1,16 +1,24 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import Dialog from "$lib/dialogs/Dialog.svelte";
   import ActionString from "$lib/components/ActionString.svelte";
 
-  export let title: string;
-  export let message: string | undefined;
-  export let abortTitle: string;
-  export let confirmTitle: string;
-
-  export let actions: number[] = [];
-
-  const dispatch = createEventDispatcher();
+  let {
+    title,
+    message,
+    abortTitle,
+    confirmTitle,
+    actions = [],
+    onabort,
+    onconfirm,
+  }: {
+    title: string;
+    message?: string;
+    abortTitle: string;
+    confirmTitle: string;
+    actions: number[];
+    onabort: () => void;
+    onconfirm: () => void;
+  } = $props();
 </script>
 
 <Dialog>
@@ -20,10 +28,8 @@
   {/if}
   <p><ActionString {actions} /></p>
   <div class="buttons">
-    <button on:click={() => dispatch("abort")}>{abortTitle}</button>
-    <button class="primary" on:click={() => dispatch("confirm")}
-      >{confirmTitle}</button
-    >
+    <button onclick={onabort}>{abortTitle}</button>
+    <button class="primary" onclick={onconfirm}>{confirmTitle}</button>
   </div>
 </Dialog>
 

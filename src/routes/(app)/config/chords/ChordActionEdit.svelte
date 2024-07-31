@@ -1,21 +1,22 @@
 <script lang="ts">
   import type { ChordInfo } from "$lib/undo-redo";
+  import { SvelteSet } from "svelte/reactivity";
   import { changes, chordHashes, ChangeType } from "$lib/undo-redo";
-  import { createEventDispatcher } from "svelte";
   import LL from "$i18n/i18n-svelte";
   import ActionString from "$lib/components/ActionString.svelte";
   import { selectAction } from "./action-selector";
   import { serialPort } from "$lib/serial/connection";
   import { get } from "svelte/store";
   import { inputToAction } from "./input-converter";
-  import { hashChord } from "$lib/serial/chord";
+  import { hashChord, type Chord } from "$lib/serial/chord";
 
-  export let chord: ChordInfo | undefined = undefined;
+  let {
+    chord = undefined,
+    onsubmit,
+  }: { chord?: ChordInfo; onsubmit: (actions: number[]) => void } = $props();
 
-  const dispatch = createEventDispatcher();
-
-  let pressedKeys = new Set<number>();
-  let editing = false;
+  let pressedKeys = new SvelteSet<number>();
+  let editing = $state(false);
 
   function compare(a: number, b: number) {
     return a - b;
@@ -37,7 +38,7 @@
   }
 
   function edit() {
-    pressedKeys = new Set();
+    pressedKeys.clear();
     editing = true;
   }
 
@@ -52,14 +53,13 @@
       return;
     }
     pressedKeys.add(input);
-    pressedKeys = pressedKeys;
   }
 
   function keyup() {
     if (!editing) return;
     editing = false;
     if (pressedKeys.size < 1) return;
-    if (!chord) return dispatch("submit", makeChordInput(...pressedKeys));
+    if (!chord) return onsubmit(makeChordInput(...pressedKeys));
     changes.update((changes) => {
       changes.push({
         type: ChangeType.Chord,
@@ -73,6 +73,7 @@
   }
 
   function addSpecial(event: MouseEvent) {
+    event.stopPropagation();
     selectAction(event, (action) => {
       changes.update((changes) => {
         changes.push({
@@ -88,7 +89,7 @@
 
   function* resolveCompound(chord?: ChordInfo) {
     if (!chord) return;
-    let current = chord;
+    let current: Chord = chord;
     for (let i = 0; i < 10; i++) {
       if (current.actions[3] !== 0) return;
       const compound = current.actions
@@ -106,10 +107,10 @@
     return;
   }
 
-  $: chordActions = chord?.actions
-    .slice(chord.actions.lastIndexOf(0) + 1)
-    .toSorted(compare);
-  $: compoundInputs = [...resolveCompound(chord)].reverse();
+  let chordActions = $derived(
+    chord?.actions.slice(chord.actions.lastIndexOf(0) + 1).toSorted(compare),
+  );
+  let compoundInputs = $derived([...resolveCompound(chord)].reverse());
 </script>
 
 <button
@@ -120,10 +121,10 @@
     (chordActions.length < 2 ||
       chordActions.some((it, i) => chordActions[i] !== it))}
   class="chord"
-  on:click={edit}
-  on:keydown={keydown}
-  on:keyup={keyup}
-  on:blur={keyup}
+  onclick={edit}
+  onkeydown={keydown}
+  onkeyup={keyup}
+  onblur={keyup}
 >
   {#if editing && pressedKeys.size === 0}
     <span>{$LL.configure.chords.HOLD_KEYS()}</span>
@@ -143,12 +144,10 @@
   {/if}
   <ActionString
     display="keys"
-    actions={editing ? [...pressedKeys].sort(compare) : chordActions ?? []}
+    actions={editing ? [...pressedKeys].sort(compare) : (chordActions ?? [])}
   />
   <sup>•</sup>
-  <button class="icon add" on:click|stopPropagation={addSpecial}
-    >add_circle</button
-  >
+  <div role="button" class="icon add" onclick={addSpecial}>add_circle</div>
 </button>
 
 <style lang="scss">

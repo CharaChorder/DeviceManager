@@ -21,7 +21,7 @@
   let resizeObserver: ResizeObserver;
 
   let abortIndexing: (() => void) | undefined;
-  let progress = 0;
+  let progress = $state(0);
 
   onMount(() => {
     resizeObserver = new ResizeObserver(() => {
@@ -37,11 +37,11 @@
 
   let index = new FlexSearch.Index();
   let searchIndex = writable<FlexSearch.Index | undefined>(undefined);
-  $: {
+  $effect(() => {
     abortIndexing?.();
     progress = 0;
     buildIndex($chords, $osLayout).then(searchIndex.set);
-  }
+  });
 
   function encodeChord(chord: ChordInfo, osLayout: Map<string, string>) {
     const plainPhrase: string[] = [""];
@@ -210,7 +210,7 @@
 
   setContext("cursor-crossfade", crossfade({}));
 
-  let page = 0;
+  let page = $state(0);
 </script>
 
 <svelte:head>
@@ -222,7 +222,7 @@
   <input
     type="search"
     placeholder={$LL.configure.chords.search.PLACEHOLDER(progress + 1)}
-    on:input={(event) => $searchIndex && search($searchIndex, event)}
+    oninput={(event) => $searchIndex && search($searchIndex, event)}
     class:loading={progress !== $chords.length - 1}
   />
   <div class="paginator">
@@ -234,12 +234,12 @@
   </div>
   <button
     class="icon"
-    on:click={() => (page = Math.max(page - 1, 0))}
+    onclick={() => (page = Math.max(page - 1, 0))}
     use:action={{ shortcut: "ctrl+left" }}>navigate_before</button
   >
   <button
     class="icon"
-    on:click={() => (page = Math.min(page + 1, $lastPage))}
+    onclick={() => (page = Math.min(page + 1, $lastPage))}
     use:action={{ shortcut: "ctrl+right" }}>navigate_next</button
   >
 </div>
@@ -250,22 +250,24 @@
     <div class="results">
       <table transition:fly={{ y: 48, easing: expoOut }}>
         {#if $lastPage !== -1}
-          {#if page === 0}
-            <tr
-              ><th class="new-chord"
-                ><ChordActionEdit
-                  on:submit={({ detail }) => insertChord(detail)}
-                /></th
-              ><td /><td /></tr
-            >
-          {/if}
-          {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord?.id))}
-            {#if chord}
-              <tr>
-                <ChordEdit {chord} on:duplicate={() => (page = 0)} />
-              </tr>
+          <tbody>
+            {#if page === 0}
+              <tr
+                ><th class="new-chord"
+                  ><ChordActionEdit
+                    onsubmit={(action) => insertChord(action)}
+                  /></th
+                ><td></td><td></td></tr
+              >
             {/if}
-          {/each}
+            {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord?.id))}
+              {#if chord}
+                <tr>
+                  <ChordEdit {chord} onduplicate={() => (page = 0)} />
+                </tr>
+              {/if}
+            {/each}</tbody
+          >
         {:else}
           <caption>{$LL.configure.chords.search.NO_RESULTS()}</caption>
         {/if}
@@ -277,7 +279,7 @@
           "\n\nDid you know? " +
           randomTips[Math.floor(randomTips.length * Math.random())]}
       ></textarea>
-      <button on:click={downloadVocabulary}
+      <button onclick={downloadVocabulary}
         ><span class="icon">download</span>
         {$LL.configure.chords.VOCABULARY()}</button
       >

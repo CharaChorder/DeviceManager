@@ -12,14 +12,21 @@
     getContext<VisualLayoutConfig>("visual-layout-config");
   const activeLayer = getContext<Writable<number>>("active-layer");
 
-  export let key: CompiledLayoutKey;
-  export let fontSizeMultiplier = 1;
-
-  export let middle: [number, number];
-  export let pos: [number, number];
-  export let rotate: number;
-
-  export let positions: [[number, number], [number, number], [number, number]];
+  let {
+    key,
+    fontSizeMultiplier = 1,
+    middle,
+    pos,
+    rotate,
+    positions,
+  }: {
+    key: CompiledLayoutKey;
+    fontSizeMultiplier?: number;
+    middle: [number, number];
+    pos: [number, number];
+    rotate: number;
+    positions: [[number, number], [number, number], [number, number]];
+  } = $props();
 </script>
 
 {#each positions as position, layer}

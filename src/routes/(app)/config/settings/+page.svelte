@@ -229,12 +229,6 @@
           />ms</span
         ></label
       >
-      <label
-        >Compound Chording<input
-          type="checkbox"
-          use:setting={{ id: 0x61 }}
-        /></label
-      >
     </fieldset>
 
     <fieldset>

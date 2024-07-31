@@ -5,13 +5,22 @@
     KEYMAP_IDS,
   } from "$lib/serial/keymap-codes";
   import FlexSearch from "flexsearch";
-  import { createEventDispatcher, onMount } from "svelte";
+  import { onMount } from "svelte";
   import ActionListItem from "$lib/components/ActionListItem.svelte";
   import LL from "$i18n/i18n-svelte";
   import { action } from "$lib/title";
 
-  export let currentAction: number | undefined = undefined;
-  export let nextAction: number | undefined = undefined;
+  let {
+    currentAction = undefined,
+    nextAction = undefined,
+    onselect,
+    onclose,
+  }: {
+    currentAction?: number;
+    nextAction?: number;
+    onselect: (id: number) => void;
+    onclose: () => void;
+  } = $props();
 
   onMount(() => {
     searchBox.focus();
@@ -39,13 +48,13 @@
 
   function select(id?: number) {
     if (id !== undefined) {
-      dispatch("select", id);
+      onselect(id);
     }
   }
 
   function keyboardNavigation(event: KeyboardEvent) {
-    if (event.shiftKey && event.key === "Enter") {
-      dispatch("select", exact);
+    if (event.shiftKey && event.key === "Enter" && exact !== undefined) {
+      onselect(exact);
     } else if (event.key === "ArrowDown") {
       const element =
         resultList.querySelector("li:focus-within")?.nextSibling ??
@@ -67,40 +76,45 @@
     event.preventDefault();
   }
 
-  let results: number[] = [];
-  let exact: number | undefined = undefined;
-  let code: number = Number.NaN;
+  let results: number[] = $state([]);
+  let exact: number | undefined = $state(undefined);
+  let code: number = $state(Number.NaN);
 
-  const dispatch = createEventDispatcher();
   let searchBox: HTMLInputElement;
   let resultList: HTMLUListElement;
-  let filter: Set<number>;
+  let filter = $state(new Set<number>());
 </script>
 
 <svelte:window on:keydown={keyboardNavigation} />
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
-<dialog open on:click|self={() => dispatch("close")}>
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<dialog
+  open
+  onclick={(event) => {
+    if (event.target === event.currentTarget) onclose();
+  }}
+>
   <div class="content">
     <div class="search-row">
       <input
         type="search"
         bind:this={searchBox}
-        on:input={search}
-        on:keypress={(event) => {
+        oninput={search}
+        onkeypress={(event) => {
           if (event.key === "Enter") {
             select(exact);
           }
         }}
         placeholder={$LL.actionSearch.PLACEHOLDER()}
       />
-      <button on:click={() => select(0)} use:action={{ shortcut: "shift+esc" }}
+      <button onclick={() => select(0)} use:action={{ shortcut: "shift+esc" }}
         >{$LL.actionSearch.DELETE()}</button
       >
       <button
         use:action={{ title: $LL.modal.CLOSE(), shortcut: "esc" }}
         class="icon"
-        on:click={() => dispatch("close")}>close</button
+        onclick={onclose}>close</button
       >
     </div>
     <fieldset class="filters">
@@ -140,12 +154,12 @@
       {#if exact !== undefined}
         <li class="exact">
           <i>Exact match</i>
-          <ActionListItem id={exact} on:click={() => select(exact)} />
+          <ActionListItem id={exact} onclick={() => select(exact)} />
         </li>
       {/if}
       {#if !exact && code}
         {#if code >= 2 ** 5 && code < 2 ** 13}
-          <li><button on:click={() => select(code)}>USE CODE</button></li>
+          <li><button onclick={() => select(code)}>USE CODE</button></li>
         {:else}
           <li>Action code is out of range</li>
         {/if}
@@ -156,7 +170,7 @@
             ? Array.from(KEYMAP_CODES, ([it]) => it)
             : results}
         {#each filter ? resultValue.filter( (it) => filter.has(it), ) : resultValue as id (id)}
-          <li><ActionListItem {id} on:click={() => select(id)} /></li>
+          <li><ActionListItem {id} onclick={() => select(id)} /></li>
         {/each}
       {/if}
     </ul>

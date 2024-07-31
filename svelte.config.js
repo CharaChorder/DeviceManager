@@ -1,8 +1,8 @@
 import adapter from "@sveltejs/adapter-static";
-import { sveltePreprocess } from "svelte-preprocess";
 import autoprefixer from "autoprefixer";
 import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 const { version } = JSON.parse(
   await readFile(
@@ -13,7 +13,10 @@ const { version } = JSON.parse(
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: [sveltePreprocess({ postcss: { plugins: autoprefixer() } })],
+  preprocess: [vitePreprocess({ postcss: { plugins: autoprefixer() } })],
+  compilerOptions: {
+    runes: true,
+  },
   kit: {
     adapter: adapter({ fallback: "404.html" }),
     alias: {

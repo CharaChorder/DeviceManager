@@ -3,15 +3,22 @@
   import type { KeyInfo } from "$lib/serial/keymap-codes";
   import LL from "$i18n/i18n-svelte";
   import Action from "$lib/components/Action.svelte";
+  import type { MouseEventHandler } from "svelte/elements";
 
-  export let id: number | KeyInfo;
+  let {
+    id,
+    onclick,
+  }: { id: number | KeyInfo; onclick?: MouseEventHandler<HTMLButtonElement> } =
+    $props();
 
-  $: key = (typeof id === "number" ? KEYMAP_CODES.get(id) ?? id : id) as
-    | number
-    | KeyInfo;
+  let key = $derived(
+    (typeof id === "number" ? KEYMAP_CODES.get(id) ?? id : id) as
+      | number
+      | KeyInfo,
+  );
 </script>
 
-<button on:click>
+<button {onclick}>
   {#if typeof key === "object"}
     <div class="title">
       <b>

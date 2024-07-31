@@ -1,6 +1,5 @@
 <script lang="ts">
-  export let title: string | undefined;
-  export let shortcut: string | undefined;
+  let { title, shortcut }: { title?: string; shortcut?: string } = $props();
 </script>
 
 {#if title}

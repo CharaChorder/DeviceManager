@@ -35,15 +35,15 @@
         use:action={{ title: $LL.share.TITLE() }}
         transition:fly={{ x: -8 }}
         class="icon"
-        on:click={triggerShare}>share</button
+        onclick={triggerShare}>share</button
       >
       <button
         use:action={{ title: $LL.print.TITLE() }}
         transition:fly={{ x: -8 }}
         class="icon"
-        on:click={() => print()}>print</button
+        onclick={() => print()}>print</button
       >
-      <div transition:slide class="separator" />
+      <div transition:slide class="separator"></div>
     {/if}
     {#if import.meta.env.TAURI_FAMILY === undefined}
       {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}

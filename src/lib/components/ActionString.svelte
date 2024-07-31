@@ -2,8 +2,11 @@
   import Action from "$lib/components/Action.svelte";
   import type { KeyInfo } from "$lib/serial/keymap-codes";
 
-  export let actions: Array<number | KeyInfo>;
-  export let display: "keys" | "inline-keys" = "inline-keys";
+  let {
+    actions,
+    display = "inline-keys",
+  }: { actions: Array<number | KeyInfo>; display?: "keys" | "inline-keys" } =
+    $props();
 </script>
 
 {#each actions as action, i (`${typeof action === "number" ? action : action.code}:${i}`)}

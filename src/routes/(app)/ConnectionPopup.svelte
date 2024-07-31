@@ -34,13 +34,9 @@
     }
   }
 
-  let rebootInfo = false;
-  let terminal = false;
-  let powerDialog = false;
-
-  $: if ($serialPort) {
-    rebootInfo = false;
-  }
+  let rebootInfo = $derived($serialPort !== undefined);
+  let terminal = $state(false);
+  let powerDialog = $state(false);
 </script>
 
 <section>
@@ -117,7 +113,7 @@
       {#if $serialPort}
         <button
           class="secondary"
-          on:click={() => {
+          onclick={() => {
             $serialPort?.forget();
             $serialPort = undefined;
           }}
@@ -125,7 +121,7 @@
           >{$LL.deviceManager.DISCONNECT()}</button
         >
       {:else}
-        <button class="error" on:click={connect}
+        <button class="error" onclick={connect}
           ><span class="icon">usb</span>{$LL.deviceManager.CONNECT()}</button
         >
       {/if}
@@ -135,13 +131,13 @@
           title={$LL.deviceManager.TERMINAL()}
           class="icon"
           class:disabled={$serialPort === undefined}
-          on:click={() => (terminal = !terminal)}>terminal</a
+          onclick={() => (terminal = !terminal)}>terminal</a
         >
         <button
           class="icon"
           title={$LL.deviceManager.bootMenu.TITLE()}
           disabled={$serialPort === undefined}
-          on:click={() => (powerDialog = !powerDialog)}>settings_power</button
+          onclick={() => (powerDialog = !powerDialog)}>settings_power</button
         >
       </div>
     </div>
@@ -151,18 +147,18 @@
         role="button"
         tabindex="-1"
         transition:fade={{ duration: 250 }}
-        on:click={() => (powerDialog = !powerDialog)}
-        on:keypress={(event) => {
+        onclick={() => (powerDialog = !powerDialog)}
+        onkeypress={(event) => {
           if (event.key === "Enter") powerDialog = !powerDialog;
         }}
-      />
+      ></div>
       <dialog open transition:slide={{ duration: 250 }}>
         <h3>{$LL.deviceManager.bootMenu.TITLE()}</h3>
-        <button on:click={reboot}
+        <button onclick={reboot}
           ><span class="icon">restart_alt</span
           >{$LL.deviceManager.bootMenu.REBOOT()}</button
         >
-        <button on:click={bootloader}
+        <button onclick={bootloader}
           ><span class="icon">rule_settings</span
           >{$LL.deviceManager.bootMenu.BOOTLOADER()}</button
         >

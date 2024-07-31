@@ -25,25 +25,25 @@
   </p>
   <fieldset>
     <legend>{$LL.backup.INDIVIDUAL()}</legend>
-    <button on:click={() => downloadFile(createChordBackup())}>
+    <button onclick={() => downloadFile(createChordBackup())}>
       <span class="icon">piano</span>
       {$LL.configure.chords.TITLE()}
     </button>
-    <button on:click={() => downloadFile(createLayoutBackup())}>
+    <button onclick={() => downloadFile(createLayoutBackup())}>
       <span class="icon">keyboard</span>
       {$LL.configure.layout.TITLE()}
     </button>
-    <button on:click={() => downloadFile(createSettingsBackup())}>
+    <button onclick={() => downloadFile(createSettingsBackup())}>
       <span class="icon">settings</span>
       {$LL.configure.settings.TITLE()}
     </button>
   </fieldset>
   <div class="save">
-    <button class="primary" on:click={downloadBackup}
+    <button class="primary" onclick={downloadBackup}
       ><span class="icon">download</span>{$LL.backup.DOWNLOAD()}</button
     >
     <label class="button"
-      ><input on:input={restoreBackup} type="file" /><span class="icon"
+      ><input oninput={restoreBackup} type="file" /><span class="icon"
         >settings_backup_restore</span
       >{$LL.backup.RESTORE()}</label
     >

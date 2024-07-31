@@ -9,145 +9,193 @@ actions:
       This action is unique in this way. Technically it is "printable", but it is not visible.
   39:
     id: "'"
+    keyCode: Quote
     title: Single Quote
   44:
     id: ","
+    keyCode: Comma
     title: Comma
   45:
     id: "-"
+    keyCode: Minus
     title: Minus
   46:
     id: "."
+    keyCode: Period
     title: Period
   47:
     id: "/"
+    keyCode: Slash
     title: Forward Slash
   48:
     id: "0"
+    keyCode: Digit0
     title: Zero
   49:
     id: "1"
+    keyCode: Digit1
     title: One
   50:
     id: "2"
+    keyCode: Digit2
     title: Two
   51:
     id: "3"
+    keyCode: Digit3
     title: Three
   52:
     id: "4"
+    keyCode: Digit4
     title: Four
   53:
     id: "5"
+    keyCode: Digit5
     title: Five
   54:
     id: "6"
+    keyCode: Digit6
     title: Six
   55:
     id: "7"
+    keyCode: Digit7
     title: Seven
   56:
     id: "8"
+    keyCode: Digit8
     title: Eight
   57:
     id: "9"
+    keyCode: Digit9
     title: Nine
   59:
     id: ";"
+    keyCode: Semicolon
     title: Semicolon
   61:
     id: "="
+    keyCode: Equal
     title: Equals
   91:
     id: "["
+    keyCode: BracketLeft
     title: Left Bracket
   92:
     id: "\\"
+    keyCode: Backslash
     title: Backslash
   93:
     id: "]"
+    keyCode: BracketRight
     title: Right Bracket
   96:
     id: "`"
+    keyCode: Backquote
     title: Backtick
   97:
     id: "a"
+    keyCode: KeyA
     title: Lowercase a
   98:
     id: "b"
+    keyCode: KeyB
     title: Lowercase b
   99:
     id: "c"
+    keyCode: KeyC
     title: Lowercase c
   100:
     id: "d"
+    keyCode: KeyD
     title: Lowercase d
   101:
     id: "e"
+    keyCode: KeyE
     title: Lowercase e
   102:
     id: "f"
+    keyCode: KeyF
     title: Lowercase f
   103:
     id: "g"
+    keyCode: KeyG
     title: Lowercase g
   104:
     id: "h"
+    keyCode: KeyH
     title: Lowercase h
   105:
     id: "i"
+    keyCode: KeyI
     title: Lowercase i
   106:
     id: "j"
+    keyCode: KeyJ
     title: Lowercase j
   107:
     id: "k"
+    keyCode: KeyK
     title: Lowercase k
   108:
     id: "l"
+    keyCode: KeyL
     title: Lowercase l
   109:
     id: "m"
+    keyCode: KeyM
     title: Lowercase m
   110:
     id: "n"
+    keyCode: KeyN
     title: Lowercase n
   111:
     id: "o"
+    keyCode: KeyO
     title: Lowercase o
   112:
     id: "p"
+    keyCode: KeyP
     title: Lowercase p
   113:
     id: "q"
+    keyCode: KeyQ
     title: Lowercase q
   114:
     id: "r"
+    keyCode: KeyR
     title: Lowercase r
   115:
     id: "s"
+    keyCode: KeyS
     title: Lowercase s
   116:
     id: "t"
+    keyCode: KeyT
     title: Lowercase t
   117:
     id: "u"
+    keyCode: KeyU
     title: Lowercase u
   118:
     id: "v"
+    keyCode: KeyV
     title: Lowercase v
   119:
     id: "w"
+    KeyCode: KeyW
     title: Lowercase w
   120:
     id: "x"
+    keyCode: KeyX
     title: Lowercase x
   121:
     id: "y"
+    keyCode: KeyY
     title: Lowercase y
   122:
     id: "z"
+    keyCode: KeyZ
     title: Lowercase z
   127:
     id: "DEL"
+    keyCode: Delete
     title: Delete

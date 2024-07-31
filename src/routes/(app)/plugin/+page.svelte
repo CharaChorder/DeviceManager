@@ -155,28 +155,30 @@
       doc: examplePlugin,
     });
   });
-  $: channels = $serialPort
-    ? ({
-        getVersion: async (..._args: unknown[]) => $serialPort.version,
-        getDevice: async (..._args: unknown[]) => $serialPort.device,
-        commit: async (..._args: unknown[]) => {
-          if (
-            confirm(
-              "Perform a commit? Settings are already applied until the next reboot.\n\n" +
-                "Excessive commits can lead to premature breakdowns, as the settings storage is only rated for 10,000-25,000 commits.\n\n" +
-                "Click OK to perform the commit anyways.",
-            )
-          ) {
-            return $serialPort.commit();
-          }
-        },
-        ...Object.fromEntries(
-          charaMethods.map(
-            (it) => [it, $serialPort[it].bind($serialPort)] as const,
+  let channels = $derived(
+    $serialPort
+      ? ({
+          getVersion: async (..._args: unknown[]) => $serialPort.version,
+          getDevice: async (..._args: unknown[]) => $serialPort.device,
+          commit: async (..._args: unknown[]) => {
+            if (
+              confirm(
+                "Perform a commit? Settings are already applied until the next reboot.\n\n" +
+                  "Excessive commits can lead to premature breakdowns, as the settings storage is only rated for 10,000-25,000 commits.\n\n" +
+                  "Click OK to perform the commit anyways.",
+              )
+            ) {
+              return $serialPort.commit();
+            }
+          },
+          ...Object.fromEntries(
+            charaMethods.map(
+              (it) => [it, $serialPort[it].bind($serialPort)] as const,
+            ),
           ),
-        ),
-      } satisfies Record<string, Function>)
-    : ({} as any);
+        } satisfies Record<string, Function>)
+      : ({} as any),
+  );
 
   async function onMessage(event: MessageEvent) {
     if (event.origin !== "null" || event.source !== frame.contentWindow) return;
@@ -205,12 +207,12 @@
   let editorView: EditorView;
 </script>
 
-<svelte:window on:message={onMessage} />
+<svelte:window onmessage={onMessage} />
 <section>
-  <button on:click={runPlugin}
+  <button onclick={runPlugin}
     ><span class="icon">play_arrow</span>{$LL.plugin.editor.RUN()}</button
   >
-  <div class="editor-root" bind:this={editor} />
+  <div class="editor-root" bind:this={editor}></div>
 </section>
 
 <iframe
@@ -219,7 +221,7 @@
   bind:this={frame}
   src="/sandbox/"
   sandbox="allow-scripts"
-/>
+></iframe>
 
 <style lang="scss">
   section {

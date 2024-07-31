@@ -25,7 +25,7 @@
     if (event.shiftKey) {
       changes.set([]);
     } else {
-      redoQueue = [$changes.pop()!, ...redoQueue];
+      redoQueue.unshift($changes.pop()!);
       changes.update((it) => it);
     }
   }
@@ -39,7 +39,7 @@
       });
     }
   }
-  let redoQueue: Change[] = [];
+  let redoQueue: Change[] = $state([]);
 
   async function save() {
     try {
@@ -138,19 +138,19 @@
   use:action={{ title: $LL.saveActions.UNDO(), shortcut: "ctrl+z" }}
   class="icon"
   disabled={$changes.length === 0}
-  on:click={undo}>undo</button
+  onclick={undo}>undo</button
 >
 <button
   use:action={{ title: $LL.saveActions.REDO(), shortcut: "ctrl+y" }}
   class="icon"
   disabled={redoQueue.length === 0}
-  on:click={redo}>redo</button
+  onclick={redo}>redo</button
 >
 {#if $changes.length !== 0}
   <button
     transition:fly={{ x: 10 }}
     use:action={{ title: $LL.saveActions.SAVE(), shortcut: "ctrl+shift+s" }}
-    on:click={save}
+    onclick={save}
     class="click-me"
     ><span class="icon">save</span>{$LL.saveActions.SAVE()}</button
   >

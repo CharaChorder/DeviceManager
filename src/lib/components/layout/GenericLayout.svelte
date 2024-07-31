@@ -10,7 +10,7 @@
   import { get } from "svelte/store";
   import type { Writable } from "svelte/store";
   import KeyboardKey from "$lib/components/layout/KeyboardKey.svelte";
-  import { getContext } from "svelte";
+  import { getContext, mount, unmount } from "svelte";
   import type { VisualLayoutConfig } from "./visual-layout.js";
   import { changes, ChangeType, layout } from "$lib/undo-redo";
   import { fly } from "svelte/transition";
@@ -30,8 +30,8 @@
     console.assert(iconFontSize % 1 === 0, "Icon font size must be an integer");
   }
 
-  export let visualLayout: VisualLayout;
-  $: layoutInfo = compileLayout(visualLayout);
+  let { visualLayout }: { visualLayout: VisualLayout } = $props();
+  let layoutInfo = $state(compileLayout(visualLayout));
 
   function getCenter(key: CompiledLayoutKey): [x: number, y: number] {
     return [key.pos[0] + key.size[0] / 2, key.pos[1] + key.size[1] / 2];
@@ -127,11 +127,26 @@
     const clickedGroup = groupParent.children.item(index) as SVGGElement;
     const nextAction = get(layout)[get(activeLayer)]?.[keyInfo.id];
     const currentAction = get(deviceLayout)[get(activeLayer)]?.[keyInfo.id];
-    const component = new ActionSelector({
+    const component = mount(ActionSelector, {
       target: document.body,
       props: {
         currentAction,
         nextAction: nextAction?.isApplied ? undefined : nextAction?.action,
+        onclose() {
+          closed();
+        },
+        onselect(action) {
+          changes.update((changes) => {
+            changes.push({
+              type: ChangeType.Layout,
+              id: keyInfo.id,
+              layer: get(activeLayer),
+              action,
+            });
+            return changes;
+          });
+          closed();
+        },
       },
     });
     const dialog = document.querySelector("dialog > div") as HTMLDivElement;
@@ -167,22 +182,8 @@
 
       await dialogAnimation.finished;
 
-      component.$destroy();
+      unmount(component);
     }
-
-    component.$on("close", closed);
-    component.$on("select", ({ detail }) => {
-      changes.update((changes) => {
-        changes.push({
-          type: ChangeType.Layout,
-          id: keyInfo.id,
-          layer: get(activeLayer),
-          action: detail,
-        });
-        return changes;
-      });
-      closed();
-    });
   }
 
   let focusKey: CompiledLayoutKey;
@@ -201,9 +202,9 @@
     <KeyboardKey
       {i}
       {key}
-      on:focusin={() => (focusKey = key)}
-      on:click={() => edit(i)}
-      on:keypress={({ key }) => {
+      onfocusin={() => (focusKey = key)}
+      onclick={() => edit(i)}
+      onkeypress={({ key }) => {
         if (key === "Enter") {
           edit(i);
         }

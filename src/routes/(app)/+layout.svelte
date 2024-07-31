@@ -4,7 +4,7 @@
   import "$lib/style/scrollbar.scss";
   import "$lib/style/tippy.scss";
   import "$lib/style/theme.scss";
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy, onMount, type Snippet } from "svelte";
   import {
     applyTheme,
     argbFromHex,
@@ -49,7 +49,7 @@
     });
   }
 
-  export let data: LayoutData;
+  let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
   onMount(async () => {
     theme.subscribe((it) => {
@@ -79,7 +79,7 @@
     stopLayoutDetection?.();
   });
 
-  let webManifestLink = "";
+  let webManifestLink = $state("");
 
   function handleHotkey(event: KeyboardEvent) {
     let key = $osLayout.get(event.code);
@@ -121,7 +121,9 @@
 <!-- <PickChangesDialog /> -->
 
 <PageTransition>
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </PageTransition>
 
 <Footer />
@@ -131,34 +133,4 @@
 {/if}
 
 <style lang="scss" global>
-  body {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-
-    font-family: "Noto Sans Mono", monospace;
-    color: var(--md-sys-color-on-background);
-
-    background: var(--md-sys-color-background);
-  }
-
-  main {
-    contain: strict;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    align-items: center;
-    padding-inline: 16px;
-  }
-
-  h1 {
-    margin-block-start: 0;
-    font-size: 4rem;
-    font-weight: 700;
-    color: var(--md-sys-color-secondary);
-  }
 </style>

@@ -1,9 +1,12 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-
-  export let ports: SerialPort[];
-  const dispatch = createEventDispatcher<{ confirm: SerialPort | undefined }>();
-  let selected = ports[0]?.getInfo().name;
+  let {
+    ports,
+    onconfirm,
+  }: {
+    ports: SerialPort[];
+    onconfirm: (port: SerialPort | undefined) => void;
+  } = $props();
+  let selected = $state(ports[0]?.getInfo().name);
 </script>
 
 <dialog>
@@ -19,12 +22,9 @@
     >
   {/each}
 
-  <button on:click={() => dispatch("confirm", undefined)}>Cancel</button>
+  <button onclick={() => onconfirm(undefined)}>Cancel</button>
   <button
-    on:click={() =>
-      dispatch(
-        "confirm",
-        ports.find((it) => it.getInfo().name === selected),
-      )}>Ok</button
+    onclick={() =>
+      onconfirm(ports.find((it) => it.getInfo().name === selected))}>Ok</button
   >
 </dialog>

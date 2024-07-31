@@ -1,7 +1,7 @@
 <script lang="ts">
   import { share } from "$lib/share";
   import tippy from "tippy.js";
-  import { setContext } from "svelte";
+  import { mount, setContext, unmount } from "svelte";
   import Layout from "$lib/components/layout/Layout.svelte";
   import { charaFileToUriComponent } from "$lib/share/share-url";
   import SharePopup from "../SharePopup.svelte";
@@ -25,17 +25,17 @@
       }),
     );
     await navigator.clipboard.writeText(url.toString());
-    let shareComponent: SharePopup;
+    let shareComponent: {};
     tippy(event.target as HTMLElement, {
       onCreate(instance) {
         const target = instance.popper.querySelector(".tippy-content")!;
-        shareComponent = new SharePopup({ target });
+        shareComponent = mount(SharePopup, { target });
       },
       onHidden(instance) {
         instance.destroy();
       },
       onDestroy() {
-        shareComponent.$destroy();
+        unmount(shareComponent);
       },
     }).show();
   }

@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, type Snippet } from "svelte";
+
+  let { children }: { children: Snippet } = $props();
 
   onMount(() => {
     modal.showModal();
@@ -9,7 +11,7 @@
 </script>
 
 <dialog bind:this={modal}>
-  <slot />
+  {@render children()}
 </dialog>
 
 <style lang="scss">

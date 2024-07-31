@@ -1,8 +1,11 @@
-<script>
+<script lang="ts">
   import { page } from "$app/stores";
   import LL from "$i18n/i18n-svelte";
+  import type { Snippet } from "svelte";
 
-  $: paths = [
+  let { children }: { children?: Snippet } = $props();
+
+  let paths = $derived([
     {
       href: "/config/chords/",
       title: $LL.configure.chords.TITLE(),
@@ -18,7 +21,7 @@
       title: $LL.configure.settings.TITLE(),
       icon: "settings",
     },
-  ];
+  ]);
 </script>
 
 <nav>
@@ -30,7 +33,9 @@
   {/each}
 </nav>
 
-<slot />
+{#if children}
+  {@render children()}
+{/if}
 
 <style lang="scss">
   nav {

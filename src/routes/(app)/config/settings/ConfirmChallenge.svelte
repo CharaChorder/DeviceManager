@@ -1,20 +1,18 @@
 <script lang="ts">
   import { serialPort } from "$lib/serial/connection";
-  import { createEventDispatcher } from "svelte";
 
-  export let challenge: string;
+  let { challenge, onconfirm }: { challenge: string; onconfirm: () => void } =
+    $props();
 
-  let challengeInput = "";
-  $: challengeString = `${challenge} ${$serialPort!.device}`;
-  $: isValid = challengeInput === challengeString;
-
-  const dispatch = createEventDispatcher();
+  let challengeInput = $state("");
+  let challengeString = $derived(`${challenge} ${$serialPort!.device}`);
+  let isValid = $derived(challengeInput === challengeString);
 </script>
 
 <h3>Type the following to confirm the action</h3>
 
 <p>{challengeString}</p>
-<!-- svelte-ignore a11y-autofocus -->
+<!-- svelte-ignore a11y_autofocus -->
 <input
   autofocus
   type="text"
@@ -22,9 +20,7 @@
   placeholder={challengeString}
 />
 
-<button disabled={!isValid} on:click={() => dispatch("confirm")}
-  >Confirm {challenge}</button
->
+<button disabled={!isValid} onclick={onconfirm}>Confirm {challenge}</button>
 
 <style lang="scss">
   input[type="text"] {

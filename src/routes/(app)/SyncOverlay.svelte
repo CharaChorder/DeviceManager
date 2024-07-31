@@ -23,7 +23,7 @@
       {/if}
     </div>
   {:else if $serialPort}
-    <button transition:slide on:click={sync}
+    <button transition:slide onclick={sync}
       ><span class="icon">refresh</span>{$LL.sync.RELOAD()}</button
     >
   {/if}

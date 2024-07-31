@@ -8,11 +8,10 @@
   import { charaFileToUriComponent } from "$lib/share/share-url";
   import SharePopup from "../SharePopup.svelte";
   import tippy from "tippy.js";
-  import { createEventDispatcher } from "svelte";
+  import { mount, unmount } from "svelte";
 
-  export let chord: ChordInfo;
-
-  const dispatch = createEventDispatcher<{ duplicate: void }>();
+  let { chord, onduplicate }: { chord: ChordInfo; onduplicate: () => void } =
+    $props();
 
   function remove() {
     changes.update((changes) => {
@@ -47,7 +46,7 @@
     id.splice(id.indexOf(0), 1);
     id.push(0);
     while ($chords.some((it) => JSON.stringify(it.id) === JSON.stringify(id))) {
-      id[id.length - 1]++;
+      id[id.length - 1]!++;
     }
 
     changes.update((changes) => {
@@ -60,7 +59,7 @@
       return changes;
     });
 
-    dispatch("duplicate");
+    onduplicate();
   }
 
   async function share(event: Event) {
@@ -74,48 +73,48 @@
       }),
     );
     await navigator.clipboard.writeText(url.toString());
-    let shareComponent: SharePopup;
+    let shareComponent = {};
     tippy(event.target as HTMLElement, {
       onCreate(instance) {
         const target = instance.popper.querySelector(".tippy-content")!;
-        shareComponent = new SharePopup({ target });
+        shareComponent = mount(SharePopup, { target });
       },
       onHidden(instance) {
         instance.destroy();
       },
       onDestroy(_instance) {
-        shareComponent.$destroy();
+        unmount(shareComponent);
       },
     }).show();
   }
 </script>
 
 <th>
-  <ChordActionEdit {chord} />
+  <ChordActionEdit {chord} onsubmit={() => {}} />
 </th>
 <td>
   <ChordPhraseEdit {chord} />
 </td>
 <td class="table-buttons">
   {#if !chord.deleted}
-    <button transition:slide class="icon compact" on:click={remove}
+    <button transition:slide class="icon compact" onclick={remove}
       >delete</button
     >
   {:else}
-    <button transition:slide class="icon compact" on:click={restore}
+    <button transition:slide class="icon compact" onclick={restore}
       >restore_from_trash</button
     >
   {/if}
-  <button disabled={chord.deleted} class="icon compact" on:click={duplicate}
+  <button disabled={chord.deleted} class="icon compact" onclick={duplicate}
     >content_copy</button
   >
   <button
     class="icon compact"
     class:disabled={chord.isApplied}
-    on:click={restore}>undo</button
+    onclick={restore}>undo</button
   >
-  <div class="separator" />
-  <button class="icon compact" on:click={share}>share</button>
+  <div class="separator"></div>
+  <button class="icon compact" onclick={share}>share</button>
 </td>
 
 <style lang="scss">

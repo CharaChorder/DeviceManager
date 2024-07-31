@@ -7,7 +7,7 @@
   import type { VisualLayout } from "$lib/serialization/visual-layout";
   import { fade } from "svelte/transition";
 
-  $: device = $serialPort?.device;
+  let device = $derived($serialPort?.device);
   const activeLayer = getContext<Writable<number>>("active-layer");
 
   const layers = [
@@ -48,7 +48,7 @@
           <button
             class="icon"
             use:action={{ title, shortcut: `alt+${value + 1}` }}
-            on:click={() => ($activeLayer = value)}
+            onclick={() => ($activeLayer = value)}
             class:active={$activeLayer === value}
           >
             {icon}

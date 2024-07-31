@@ -3,24 +3,41 @@
   import { getContext } from "svelte";
   import type { VisualLayoutConfig } from "./visual-layout.js";
   import KeyText from "$lib/components/layout/KeyText.svelte";
+  import type {
+    FocusEventHandler,
+    KeyboardEventHandler,
+    MouseEventHandler,
+  } from "svelte/elements";
 
   const { scale, margin, strokeWidth } = getContext<VisualLayoutConfig>(
     "visual-layout-config",
   );
-  export let i: number;
-  export let key: CompiledLayoutKey;
 
-  $: posX = key.pos[0] * scale;
-  $: posY = key.pos[1] * scale;
-  $: sizeX = key.size[0] * scale;
-  $: sizeY = key.size[1] * scale;
+  let {
+    i,
+    key,
+    onclick,
+    onkeypress,
+    onfocusin,
+  }: {
+    i: number;
+    key: CompiledLayoutKey;
+    onclick: MouseEventHandler<SVGGElement>;
+    onkeypress: KeyboardEventHandler<SVGGElement>;
+    onfocusin: FocusEventHandler<SVGGElement>;
+  } = $props();
+
+  let posX = $derived(key.pos[0] * scale);
+  let posY = $derived(key.pos[1] * scale);
+  let sizeX = $derived(key.size[0] * scale);
+  let sizeY = $derived(key.size[1] * scale);
 </script>
 
 <g
   class="key-group"
-  on:click
-  on:keypress
-  on:focusin
+  {onclick}
+  {onkeypress}
+  {onfocusin}
   role="button"
   tabindex={i + 1}
 >
