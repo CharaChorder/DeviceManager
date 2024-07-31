@@ -1,25 +1,10 @@
 <script lang="ts">
-  import { serialPort, syncStatus } from "$lib/serial/connection";
-  import { slide, fly } from "svelte/transition";
+  import { fly } from "svelte/transition";
   import { canShare, triggerShare } from "$lib/share";
-  import { popup } from "$lib/popup";
-  import BackupPopup from "./BackupPopup.svelte";
-  import ConnectionPopup from "./ConnectionPopup.svelte";
-  import { browser } from "$app/environment";
-  import { userPreferences } from "$lib/preferences";
   import { action } from "$lib/title";
   import LL from "$i18n/i18n-svelte";
   import ConfigTabs from "./ConfigTabs.svelte";
   import EditActions from "./EditActions.svelte";
-  import { onMount } from "svelte";
-
-  onMount(async () => {
-    if (browser && !$userPreferences.autoConnect) {
-      connectButton.click();
-    }
-  });
-
-  let connectButton: HTMLButtonElement;
 </script>
 
 <nav>
@@ -43,44 +28,16 @@
         class="icon"
         onclick={() => print()}>print</button
       >
-      <div transition:slide class="separator"></div>
     {/if}
     {#if import.meta.env.TAURI_FAMILY === undefined}
       {#await import("$lib/components/PwaStatus.svelte") then { default: PwaStatus }}
         <PwaStatus />
       {/await}
     {/if}
-    <button
-      use:action={{ title: $LL.backup.TITLE() }}
-      use:popup={BackupPopup}
-      class="icon {$syncStatus}"
-    >
-      {#if $userPreferences.backup}
-        history
-      {:else}
-        history_toggle_off
-      {/if}
-    </button>
-    <button
-      bind:this={connectButton}
-      use:action={{ title: $LL.deviceManager.TITLE() }}
-      use:popup={ConnectionPopup}
-      class="icon connect"
-      class:error={$serialPort === undefined}
-    >
-      cable
-    </button>
   </div>
 </nav>
 
 <style lang="scss">
-  .separator {
-    width: 1px;
-    height: 24px;
-    margin-inline: 4px;
-    background: var(--md-sys-color-outline-variant);
-  }
-
   nav {
     display: grid;
     grid-template-columns: 1fr auto 1fr;

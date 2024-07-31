@@ -94,6 +94,12 @@ const config = {
     "description",
     "add_circle",
     "refresh",
+    "tune",
+    "edit_document",
+    "chat",
+    "account_circle",
+    "experiment",
+    "code",
   ],
   codePoints: {
     speed: "e9e4",
@@ -113,6 +119,7 @@ const config = {
     stat_minus_2: "e69c",
     stat_2: "e699",
     routine: "e20c",
+    experiment: "e686",
   },
 };
 

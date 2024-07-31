@@ -5,21 +5,21 @@
   import { ChordsReplayPlugin } from "./core/plugins/chords.js";
   import type { ReplayPlayer } from "./core/player.js";
 
-  const player: ReplayPlayer | undefined = getContext("replay");
+  const player: { player: ReplayPlayer | undefined } = getContext("replay");
 
   let {
     chords = $bindable([]),
     count = 1,
   }: {
     chords: InferredChord[];
-    count: number;
+    count?: number;
   } = $props();
 
   if (browser) {
     $effect(() => {
-      if (!player) return;
+      if (!player.player) return;
       const tracker = new ChordsReplayPlugin();
-      tracker.register(player);
+      tracker.register(player.player);
       const unsubscribe = tracker.subscribe((value) => {
         chords = value.slice(-count);
       });

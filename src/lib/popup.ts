@@ -10,6 +10,7 @@ export const popup: Action<HTMLButtonElement, Component> = (
   let target: HTMLElement | undefined;
   const edit = tippy(node, {
     interactive: true,
+    placement: "right",
     trigger: "click",
     onShow(instance) {
       target = instance.popper.querySelector(".tippy-content") as HTMLElement;

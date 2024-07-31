@@ -4,13 +4,13 @@
   import "$lib/style/scrollbar.scss";
   import "$lib/style/tippy.scss";
   import "$lib/style/theme.scss";
+  import Sidebar from "./Sidebar.svelte";
   import { onDestroy, onMount, type Snippet } from "svelte";
   import {
     applyTheme,
     argbFromHex,
     themeFromSourceColor,
   } from "@material/material-color-utilities";
-  import Navigation from "./Navigation.svelte";
   import { canAutoConnect } from "$lib/serial/device";
   import { initSerial } from "$lib/serial/connection";
   import type { LayoutData } from "./$types";
@@ -116,7 +116,9 @@
 
 <svelte:window on:keydown={handleHotkey} />
 
-<Navigation />
+<div class="layout">
+
+<Sidebar />
 
 <!-- <PickChangesDialog /> -->
 
@@ -132,5 +134,18 @@
   <BrowserWarning />
 {/if}
 
-<style lang="scss" global>
+</div>
+
+<style lang="scss">
+  .layout {
+    width: 100vw;
+    height: 100vh;
+
+    display: grid;
+    grid-template-areas:
+      "sidebar main"
+      "sidebar footer";
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr ;
+  }
 </style>

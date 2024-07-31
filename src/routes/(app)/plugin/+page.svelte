@@ -209,6 +209,7 @@
 
 <svelte:window onmessage={onMessage} />
 <section>
+  <h3>Plugin</h3>
   <button onclick={runPlugin}
     ><span class="icon">play_arrow</span>{$LL.plugin.editor.RUN()}</button
   >
