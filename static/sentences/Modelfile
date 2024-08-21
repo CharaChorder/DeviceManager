@@ -1,0 +1,10 @@
+FROM llama3.1
+
+TEMPLATE """
+<|system|>
+Only output the sentence
+<|user|>
+Create a typical sentence with around 10 words that includes the word "{{ .Prompt }}".
+<|assistant|>
+Create a sentence that includes "{{ .Prompt }}".
+"""

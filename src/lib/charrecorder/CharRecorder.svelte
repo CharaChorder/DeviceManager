@@ -13,8 +13,8 @@
     children,
   }: {
     replay: ReplayPlayer | Replay;
-    cursor: boolean;
-    keys: boolean;
+    cursor?: boolean;
+    keys?: boolean;
     children?: Snippet;
   } = $props();
 

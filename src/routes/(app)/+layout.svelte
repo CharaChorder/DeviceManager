@@ -108,32 +108,30 @@
 </script>
 
 <svelte:head>
-  {@html webManifestLink}
+  <!--{@html webManifestLink}-->
   <title>{$LL.TITLE()}</title>
   <meta name="description" content={$LL.DESCRIPTION()} />
   <meta name="theme-color" content={data.themeColor} />
 </svelte:head>
 
-<svelte:window on:keydown={handleHotkey} />
+<svelte:window onkeydown={handleHotkey} />
 
 <div class="layout">
+  <Sidebar />
 
-<Sidebar />
+  <!-- <PickChangesDialog /> -->
 
-<!-- <PickChangesDialog /> -->
+  <PageTransition>
+    {#if children}
+      {@render children()}
+    {/if}
+  </PageTransition>
 
-<PageTransition>
-  {#if children}
-    {@render children()}
+  <Footer />
+
+  {#if import.meta.env.TAURI_FAMILY === undefined && browser && !("serial" in navigator)}
+    <BrowserWarning />
   {/if}
-</PageTransition>
-
-<Footer />
-
-{#if import.meta.env.TAURI_FAMILY === undefined && browser && !("serial" in navigator)}
-  <BrowserWarning />
-{/if}
-
 </div>
 
 <style lang="scss">
@@ -146,6 +144,6 @@
       "sidebar main"
       "sidebar footer";
     grid-template-columns: auto 1fr;
-    grid-template-rows: 1fr ;
+    grid-template-rows: 1fr;
   }
 </style>

@@ -100,6 +100,7 @@ const config = {
     "account_circle",
     "experiment",
     "code",
+    "dictionary",
   ],
   codePoints: {
     speed: "e9e4",
@@ -120,6 +121,7 @@ const config = {
     stat_2: "e699",
     routine: "e20c",
     experiment: "e686",
+    dictionary: "f539",
   },
 };
 

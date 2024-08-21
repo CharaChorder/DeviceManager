@@ -3,6 +3,8 @@ import autoprefixer from "autoprefixer";
 import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
+import { sequence } from "@melt-ui/pp";
+import { preprocessMeltUI } from "@melt-ui/pp";
 
 const { version } = JSON.parse(
   await readFile(
@@ -13,7 +15,10 @@ const { version } = JSON.parse(
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: [vitePreprocess({ postcss: { plugins: autoprefixer() } })],
+  preprocess: sequence([
+    vitePreprocess({ postcss: { plugins: autoprefixer() } }),
+    preprocessMeltUI(),
+  ]),
   compilerOptions: {
     runes: true,
   },

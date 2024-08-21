@@ -85,6 +85,7 @@ export class ChordsReplayPlugin
           }
         }
       }
+      console.log(this.tokens);
 
       clearTimeout(this.timeout);
       if (replay.stepper.held.size === 0) {
