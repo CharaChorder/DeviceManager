@@ -395,7 +395,7 @@ actions:
   350:
     id: "KP_6"
     keyCode: "Numpad6"
-    title: Keypad 6 and Rigth Arrow
+    title: Keypad 6 and Right Arrow
   351:
     id: "KP_7"
     keyCode: "Numpad7"
