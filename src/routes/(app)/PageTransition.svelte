@@ -56,3 +56,9 @@
     {@render children()}
   </main>
 {/if}
+
+<style lang="scss">
+  main {
+    padding: 0;
+  }
+</style>

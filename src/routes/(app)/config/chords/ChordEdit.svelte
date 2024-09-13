@@ -89,33 +89,37 @@
   }
 </script>
 
-<th>
-  <ChordActionEdit {chord} onsubmit={() => {}} />
-</th>
-<td>
-  <ChordPhraseEdit {chord} />
-</td>
-<td class="table-buttons">
-  {#if !chord.deleted}
-    <button transition:slide class="icon compact" onclick={remove}
-      >delete</button
-    >
-  {:else}
-    <button transition:slide class="icon compact" onclick={restore}
-      >restore_from_trash</button
-    >
-  {/if}
-  <button disabled={chord.deleted} class="icon compact" onclick={duplicate}
-    >content_copy</button
-  >
-  <button
-    class="icon compact"
-    class:disabled={chord.isApplied}
-    onclick={restore}>undo</button
-  >
-  <div class="separator"></div>
-  <button class="icon compact" onclick={share}>share</button>
-</td>
+<tr>
+  <th>
+    <ChordActionEdit {chord} onsubmit={() => {}} />
+  </th>
+  <td class="phrase-edit">
+    <ChordPhraseEdit {chord} />
+  </td>
+  <td>
+    <div class="table-buttons">
+      {#if !chord.deleted}
+        <button transition:slide class="icon compact" onclick={remove}
+          >delete</button
+        >
+      {:else}
+        <button transition:slide class="icon compact" onclick={restore}
+          >restore_from_trash</button
+        >
+      {/if}
+      <button disabled={chord.deleted} class="icon compact" onclick={duplicate}
+        >content_copy</button
+      >
+      <button
+        class="icon compact"
+        class:disabled={chord.isApplied}
+        onclick={restore}>undo</button
+      >
+      <div class="separator"></div>
+      <button class="icon compact" onclick={share}>share</button>
+    </div>
+  </td>
+</tr>
 
 <style lang="scss">
   .separator {
@@ -132,17 +136,29 @@
     transition: opacity 75ms ease;
   }
 
-  td {
+  .phrase-edit {
+    position: relative;
+  }
+
+  tr {
     position: relative;
   }
 
   .table-buttons {
     opacity: 0;
     transition: opacity 75ms ease;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(100%, -50%);
+    background: var(--md-sys-color-surface-variant);
   }
 
-  :global(tr):focus-within > .table-buttons,
-  :global(tr):hover > .table-buttons {
+  .icon {
+    font-size: 18px;
+  }
+
+  tr:hover .table-buttons {
     opacity: 1;
   }
 </style>

@@ -22,6 +22,7 @@ process.env["VITE_BUGS_URL"] = bugs.url;
 process.env["VITE_LEARN_URL"] = "https://www.iq-eq.io/";
 process.env["VITE_LATEST_FIRMWARE"] = "1.1.4";
 process.env["VITE_STORE_URL"] = "https://www.charachorder.com/";
+process.env["VITE_MATRIX_URL"] = "https://charachorder.io/";
 
 export default defineConfig({
   build: {
@@ -31,6 +32,9 @@ export default defineConfig({
     rollupOptions: {
       external: isTauri ? [/virtual:pwa.*/] : [],
     },
+  },
+  define: {
+    global: "window",
   },
   envPrefix: ["TAURI_", "VITE_"],
   plugins: [
@@ -42,6 +46,7 @@ export default defineConfig({
           SvelteKitPWA({
             kit: {
               trailingSlash: "always",
+              adapterFallback: "404.html",
             },
             scope: "/",
             base: "/",
@@ -52,7 +57,7 @@ export default defineConfig({
                 "client/**/*.{js,map,css,ico,woff2,csv,png,webp,svg,webmanifest}",
                 "prerendered/**/*.html",
               ],
-              ignoreURLParametersMatching: [/^import$/],
+              ignoreURLParametersMatching: [/^import|redirectUrl|loginToken$/],
             },
             manifest: {
               name: "CharaChorder Device Manager",

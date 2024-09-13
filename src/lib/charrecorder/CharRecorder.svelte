@@ -11,11 +11,13 @@
     cursor = false,
     keys = false,
     children,
+    ondone,
   }: {
     replay: ReplayPlayer | Replay;
     cursor?: boolean;
     keys?: boolean;
     children?: Snippet;
+    ondone?: () => void;
   } = $props();
 
   let replayPlayer: ReplayPlayer | undefined = $state();
@@ -61,6 +63,7 @@
     const unsubscribePlayer = player.subscribe(apply);
     textRenderer = renderer;
 
+    player.onDone = ondone;
     player.start();
     apply();
     setTimeout(() => {

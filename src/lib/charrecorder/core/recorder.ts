@@ -1,6 +1,10 @@
 import { ReplayPlayer } from "./player.js";
 import type { Replay, ReplayEvent, TransmittableKeyEvent } from "./types.js";
 
+function maybeRound<T>(value: T, round: boolean): T {
+  return typeof value === "number" && round ? (Math.round(value) as T) : value;
+}
+
 export class ReplayRecorder {
   private held = new Map<string, [string, number]>();
 
@@ -39,7 +43,7 @@ export class ReplayRecorder {
         this.player.playLiveEvent(event.key, event.code),
       );
     } else {
-      const [key, start] = this.held.get(event.code)!;
+      const [key, start] = this.held.get(event.code) ?? ["", 0];
       const delta = event.timeStamp - start;
       this.held.delete(event.code);
 
@@ -50,16 +54,24 @@ export class ReplayRecorder {
     }
   }
 
-  finish(trim = true) {
+  finish(trim = true, round = true) {
     return {
-      start: trim ? this.replay[0]?.[2] : this.start,
-      finish: trim
-        ? Math.max(...this.replay.map((it) => it[2] + it[3]))
-        : performance.now(),
+      start: maybeRound(trim ? this.replay[0]?.[2] : this.start, round),
+      finish: maybeRound(
+        trim
+          ? Math.max(...this.replay.map((it) => it[2] + it[3]))
+          : performance.now(),
+        round,
+      ),
       keys: this.replay
         .map(
           ([key, code, at, duration]) =>
-            [key, code, Math.round(at), Math.round(duration)] as const,
+            [
+              key,
+              code,
+              maybeRound(at, round),
+              maybeRound(duration, round),
+            ] as const,
         )
         .sort((a, b) => a[2] - b[2]),
     };

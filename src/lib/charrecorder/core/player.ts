@@ -18,6 +18,8 @@ export class ReplayPlayer {
 
   private subscribers = new Set<(value: TextToken | undefined) => void>();
 
+  onDone?: () => void;
+
   constructor(
     readonly replay: Replay,
     plugins: ReplayPlugin[] = [],
@@ -37,8 +39,13 @@ export class ReplayPlayer {
     if (
       this.replayCursor >= this.replay.keys.length &&
       this.releaseAt.size === 0
-    )
+    ) {
+      if (this.onDone) {
+        this.onDone();
+      }
       return;
+    }
+
     const now = performance.now() - this.startTime;
 
     while (
@@ -118,7 +125,12 @@ export class ReplayPlayer {
   start(delay = 200): this {
     this.replayCursor = 0;
     this.stepper = new ReplayStepper([], this.replay.challenge);
-    if (this.replay.keys.length === 0) return this;
+    if (this.replay.keys.length === 0) {
+      if (this.onDone) {
+        this.onDone();
+      }
+      return this;
+    }
     setTimeout(() => {
       this.startTime = performance.now();
       this.animationFrameId = requestAnimationFrame(this.updateLoop.bind(this));

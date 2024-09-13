@@ -262,9 +262,7 @@
             {/if}
             {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord?.id))}
               {#if chord}
-                <tr>
-                  <ChordEdit {chord} onduplicate={() => (page = 0)} />
-                </tr>
+                <ChordEdit {chord} onduplicate={() => (page = 0)} />
               {/if}
             {/each}</tbody
           >
@@ -397,7 +395,7 @@
 
   table {
     height: fit-content;
-    overflow: hidden;
+    overflow-y: hidden;
     transition: all 1s ease;
   }
 </style>

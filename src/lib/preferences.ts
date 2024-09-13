@@ -6,9 +6,14 @@ export interface UserPreferences {
   autoConnect: boolean;
 }
 
-export const theme = persistentWritable("user-theme", {
+export interface UserTheme {
+  color: string;
+  mode: "light" | "dark" | "auto";
+}
+
+export const theme = persistentWritable<UserTheme>("user-theme", {
   color: "#6D81C7",
-  mode: "dark" as "light" | "dark" | "auto",
+  mode: "dark",
 });
 
 export const userPreferences = persistentWritable<UserPreferences>(
