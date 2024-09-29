@@ -1,5 +1,5 @@
 // noinspection ES6PreferShortImport
-import { themeColor } from "./src/lib/style/theme.server";
+import { themeColor } from "./src/lib/style/theme";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 import { SvelteKitPWA } from "@vite-pwa/sveltekit";
