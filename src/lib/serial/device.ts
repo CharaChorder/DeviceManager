@@ -440,46 +440,80 @@ export class CharaDevice {
     return Number(await this.send(1, "RAM").then(([bytes]) => bytes));
   }
 
-  async updateFirmware(file: File): Promise<void> {
-    const size = file.size;
-    // use separate serial connection
-    await this.port.open({ baudRate: this.baudRate });
-    const decoderStream = new TextDecoderStream();
-    this.port.readable!.pipeTo(decoderStream.writable);
-
-    const reader = decoderStream
-      .readable!.pipeThrough(new TransformStream(new LineBreakTransformer()))
-      .getReader();
-    serialLog.update((it) => {
-      it.push({
-        type: "system",
-        value: "Starting firmware update",
-      });
-      return it;
-    });
-
-    const writer = this.port.writable!.getWriter();
-    try {
-      await writer.write(new TextEncoder().encode(`RST OTA\r\n`));
-    } finally {
-      writer.releaseLock();
+  async updateFirmware(file: File | Blob): Promise<void> {
+    while (this.lock) {
+      await this.lock;
     }
-
-    console.log((await reader.read()).value);
-
-    await file.stream().pipeTo(this.port.writable!);
-
-    console.log((await reader.read()).value);
-
-    await reader.cancel();
-    reader.releaseLock();
-    await this.port.close();
-    serialLog.update((it) => {
-      it.push({
-        type: "system",
-        value: "Success?",
-      });
-      return it;
+    let resolveLock: (result: true) => void;
+    this.lock = new Promise<true>((resolve) => {
+      resolveLock = resolve;
     });
+    try {
+      if (this.suspendDebounceId) {
+        clearTimeout(this.suspendDebounceId);
+      } else {
+        await this.wake();
+      }
+
+      serialLog.update((it) => {
+        it.push({
+          type: "system",
+          value: "OTA Update",
+        });
+        return it;
+      });
+
+      const writer = this.port.writable!.getWriter();
+      try {
+        await writer.write(new TextEncoder().encode(`RST OTA\r\n`));
+        serialLog.update((it) => {
+          it.push({
+            type: "input",
+            value: "RST OTA",
+          });
+          return it;
+        });
+      } finally {
+        writer.releaseLock();
+      }
+
+      // Wait for the device to be ready
+      const signal = await this.reader.read();
+      serialLog.update((it) => {
+        it.push({
+          type: "output",
+          value: signal.value!.trim(),
+        });
+        return it;
+      });
+
+      await file.stream().pipeTo(this.port.writable!);
+
+      serialLog.update((it) => {
+        it.push({
+          type: "input",
+          value: `...${file.size} bytes`,
+        });
+        return it;
+      });
+
+      const result = (await this.reader.read()).value!.trim();
+      serialLog.update((it) => {
+        it.push({
+          type: "output",
+          value: result!,
+        });
+        return it;
+      });
+
+      await this.suspend();
+
+      if (result !== "OTA OK") {
+        throw new Error(result);
+      }
+    } finally {
+      delete this.lock;
+      resolveLock!(true);
+    }
   }
 }
