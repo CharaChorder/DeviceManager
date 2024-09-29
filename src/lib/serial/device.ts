@@ -439,4 +439,47 @@ export class CharaDevice {
   async getRamBytesAvailable(): Promise<number> {
     return Number(await this.send(1, "RAM").then(([bytes]) => bytes));
   }
+
+  async updateFirmware(file: File): Promise<void> {
+    const size = file.size;
+    // use separate serial connection
+    await this.port.open({ baudRate: this.baudRate });
+    const decoderStream = new TextDecoderStream();
+    this.port.readable!.pipeTo(decoderStream.writable);
+
+    const reader = decoderStream
+      .readable!.pipeThrough(new TransformStream(new LineBreakTransformer()))
+      .getReader();
+    serialLog.update((it) => {
+      it.push({
+        type: "system",
+        value: "Starting firmware update",
+      });
+      return it;
+    });
+
+    const writer = this.port.writable!.getWriter();
+    try {
+      await writer.write(new TextEncoder().encode(`RST OTA\r\n`));
+    } finally {
+      writer.releaseLock();
+    }
+
+    console.log((await reader.read()).value);
+
+    await file.stream().pipeTo(this.port.writable!);
+
+    console.log((await reader.read()).value);
+
+    await reader.cancel();
+    reader.releaseLock();
+    await this.port.close();
+    serialLog.update((it) => {
+      it.push({
+        type: "system",
+        value: "Success?",
+      });
+      return it;
+    });
+  }
 }
