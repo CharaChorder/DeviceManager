@@ -101,17 +101,22 @@
   <section>
     <h3>OTA Upate</h3>
     {#if data.ota}
+      {@const buttonError = error || (!success && isCorrectDevice === false)}
       <button
         class:working
-        class:primary={!error}
-        class:error={error || (!success && isCorrectDevice === false)}
+        class:primary={!buttonError}
+        class:error={buttonError}
         disabled={working || $serialPort === undefined || !isCorrectDevice}
         onclick={update}>Apply Update</button
       >
-      {#if $serialPort}
+      {#if $serialPort && isCorrectDevice}
         <div transition:slide>
           Your device is ready and compatible. Click the button to perform the
           update.
+        </div>
+      {:else if $serialPort && isCorrectDevice === false}
+        <div class="error" transition:slide>
+          Your device is incompatible with the selected update.
         </div>
       {:else if success}
         <div class="primary" transition:slide>Update successful</div>
@@ -155,12 +160,12 @@
     transition: color 200ms ease;
   }
 
-  .error {
-    color: var(--md-sys-color-error);
-  }
-
   .primary {
     color: var(--md-sys-color-primary);
+  }
+
+  .error {
+    color: var(--md-sys-color-error);
   }
 
   @keyframes rotate {
