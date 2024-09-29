@@ -9,10 +9,17 @@ export function persistentWritable<T>(
 ): Writable<T> {
   if (browser) {
     const persistedValue = localStorage.getItem(key);
-    const store =
-      persistedValue !== null
-        ? writable(JSON.parse(persistedValue))
-        : writable(value);
+    let store: Writable<T>;
+    try {
+      store =
+        persistedValue !== null
+          ? writable(JSON.parse(persistedValue))
+          : writable(value);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      store = writable(value);
+    }
     store.subscribe((value) => {
       if (!condition || condition())
         localStorage.setItem(key, JSON.stringify(value));

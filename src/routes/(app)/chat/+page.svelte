@@ -1,184 +1,84 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
-  import { onDestroy, onMount, setContext } from "svelte";
-  import type {
-    IndexedDBStore,
-    IndexedDBCryptoStore,
-    LoginResponse,
-  } from "matrix-js-sdk";
-  import MatrixTimeline from "$lib/chat/MatrixTimeline.svelte";
-  import { matrixClient, currentRoomId } from "$lib/chat/chat";
-  import MatrixRooms from "$lib/chat/MatrixRooms.svelte";
-  import MatrixRoomMembers from "$lib/chat/MatrixRoomMembers.svelte";
+  import { isLoggedIn, matrix } from "$lib/chat/chat";
+  import { flip } from "svelte/animate";
+  import { slide } from "svelte/transition";
+  import Login from "./Login.svelte";
 
-  let loggedIn = $state(false);
-  let ready = $state(false);
+  let { children } = $props();
 
-  let store: IndexedDBStore;
-  let cryptoStore: IndexedDBCryptoStore;
+  let spaces = $derived($matrix?.topLevelSpaces$);
 
-  onMount(async () => {
-    if (!browser) return;
-    const { createClient, IndexedDBStore, IndexedDBCryptoStore } = await import(
-      "matrix-js-sdk"
-    );
-
-    const storedLogin = getStoredLogin();
-
-    store = new IndexedDBStore({
-      dbName: "matrix",
-      indexedDB: window.indexedDB,
-    });
-    cryptoStore = new IndexedDBCryptoStore(window.indexedDB, "matrix-crypto");
-
-    $matrixClient = createClient({
-      baseUrl: import.meta.env.VITE_MATRIX_URL,
-      userId: storedLogin?.user_id,
-      accessToken: storedLogin?.access_token,
-      timelineSupport: true,
-      store,
-      cryptoStore,
-    });
-
-    const loginToken = new URLSearchParams(window.location.search).get(
-      "loginToken",
-    );
-    if (loginToken) {
-      await handleLogin(await $matrixClient.loginWithToken(loginToken));
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-
-    await postLogin();
-  });
-
-  async function passwordLogin(event: SubmitEvent) {
-    event.preventDefault();
-    const form = event.target as HTMLFormElement;
-    const username = (form.elements.namedItem("username") as HTMLInputElement)
-      .value;
-    const password = (form.elements.namedItem("password") as HTMLInputElement)
-      .value;
-
-    await handleLogin(
-      await $matrixClient.loginWithPassword(username, password),
-    );
-    await postLogin();
+  function spaceShort(name: string) {
+    return name
+      .split(" ")
+      .map((it) => it[0])
+      .join("");
   }
-
-  async function handleLogin(response: LoginResponse) {
-    localStorage.setItem("matrix-login", JSON.stringify(response));
-  }
-
-  async function postLogin() {
-    loggedIn = $matrixClient.isLoggedIn();
-
-    if (loggedIn) {
-      await store.startup();
-      await cryptoStore.startup();
-      await $matrixClient.startClient();
-      $matrixClient.once("sync", function (state, prevState, res) {
-        ready = true;
-      });
-    }
-  }
-
-  function getStoredLogin(): LoginResponse | undefined {
-    try {
-      return JSON.parse(localStorage.getItem("matrix-login")!);
-    } catch {
-      return undefined;
-    }
-  }
-
-  onDestroy(() => {
-    if ($matrixClient) {
-      $matrixClient.stopClient();
-    }
-  });
 </script>
 
-{#if $matrixClient && loggedIn}
-  {#if ready}
-    <div class="chat">
-      <div class="rooms">
-        <button
-          onclick={() => {
-            $matrixClient.logout(true);
-            $matrixClient.clearStores();
-            localStorage.removeItem("matrix-login");
-            window.location.reload();
-          }}>logout</button
-        >
-        <MatrixRooms rooms={$matrixClient.getRooms()} />
-      </div>
-      {#if $currentRoomId}
-        {@const room = $matrixClient.getRoom($currentRoomId)}
-        {#key room}
-          {#if room}
-            <div class="timeline">
-              <MatrixTimeline timeline={room.getLiveTimeline()} />
-            </div>
-            <div class="members">
-              <MatrixRoomMembers members={room.getJoinedMembers()} />
-            </div>
-          {/if}
-        {/key}
-      {/if}
-    </div>
-  {/if}
-{:else if $matrixClient}
-  {#await $matrixClient.loginFlows() then flows}
-    {#each flows.flows as flow}
-      {#if flow.type === "m.login.sso"}
-        <a
-          href={$matrixClient.getSsoLoginUrl(`${window.location.origin}/chat/`)}
-        >
-          {#each flow.identity_providers as idp}
-            {#if idp.icon}
-              <img src={$matrixClient.mxcUrlToHttp(idp.icon)} alt={idp.name} />
-            {:else}
-              {idp.name}
-            {/if}
+{#if $isLoggedIn}
+  <div class="layout">
+    <nav class="spaces">
+      <a href="/chat/chats" class="icon chats">chat</a>
+      <hr />
+      {#if $spaces}
+        <ul>
+          {#each $spaces as space (space.roomId)}
+            <li animate:flip transition:slide>
+              <a class="space" href="/chat/space/{space.roomId}">
+                {spaceShort(space.name)}
+              </a>
+            </li>
           {/each}
-        </a>
-      {:else if flow.type === "m.login.password"}
-        <form onsubmit={passwordLogin}>
-          <input name="username" type="text" placeholder="Username" />
-          <input name="password" type="password" placeholder="Password" />
-          <button type="submit">Login</button>
-        </form>
+        </ul>
       {/if}
-    {/each}
-  {/await}
+      <button class="icon">add</button>
+    </nav>
+  </div>
+{:else}
+  <Login />
 {/if}
 
 <style lang="scss">
-  .chat {
-    display: flex;
-    width: 100%;
-    height: 100%;
-
-    > *:not(:last-child) {
-      border-right: 1px solid var(--md-sys-color-outline);
-    }
-  }
-
-  .room {
+  nav {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
   }
 
-  .timeline {
-    flex-grow: 1;
+  .layout {
+    display: flex;
+    height: 100%;
+    width: 100%;
   }
 
-  .rooms {
-    flex-shrink: 0;
+  hr {
+    width: 60%;
+    height: 1px;
   }
 
-  .members {
-    width: 200px;
-    flex-shrink: 0;
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  button,
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    width: 56px;
+    height: 56px;
+    background: var(--md-sys-color-surface-variant);
+  }
+
+  .chats {
+    font-size: 24px;
+  }
+
+  .space {
+    font-size: 20px;
+    margin-bottom: 8px;
   }
 </style>

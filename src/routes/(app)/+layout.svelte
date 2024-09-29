@@ -15,7 +15,6 @@
   import { initSerial } from "$lib/serial/connection";
   import type { LayoutData } from "./$types";
   import { browser } from "$app/environment";
-  import BrowserWarning from "./BrowserWarning.svelte";
   import "tippy.js/animations/shift-away.css";
   import "tippy.js/dist/tippy.css";
   import tippy from "tippy.js";
@@ -30,6 +29,7 @@
   import { restoreFromFile } from "$lib/backup/backup";
   import { goto } from "$app/navigation";
   import { hotkeys } from "$lib/title";
+  import { initMatrixClient } from "$lib/chat/chat";
 
   const locale =
     ((browser && localStorage.getItem("locale")) as Locales) || detectLocale();
@@ -65,6 +65,9 @@
 
     if (browser && $userPreferences.autoConnect && (await canAutoConnect())) {
       await initSerial();
+    }
+    if (browser) {
+      await initMatrixClient();
     }
 
     if (data.importFile) {
@@ -128,10 +131,6 @@
   </PageTransition>
 
   <Footer />
-
-  {#if import.meta.env.TAURI_FAMILY === undefined && browser && !("serial" in navigator)}
-    <BrowserWarning />
-  {/if}
 </div>
 
 <style lang="scss">
