@@ -23,6 +23,7 @@ process.env["VITE_LEARN_URL"] = "https://www.iq-eq.io/";
 process.env["VITE_LATEST_FIRMWARE"] = "1.1.4";
 process.env["VITE_STORE_URL"] = "https://www.charachorder.com/";
 process.env["VITE_MATRIX_URL"] = "https://charachorder.io/";
+process.env["VITE_FIRMWARE_URL"] = "https://charachorder.io/firmware/";
 
 export default defineConfig({
   build: {
@@ -54,10 +55,11 @@ export default defineConfig({
             workbox: {
               // https://vite-pwa-org.netlify.app/frameworks/sveltekit.html#globpatterns
               globPatterns: [
-                "client/**/*.{js,map,css,ico,woff2,csv,png,webp,svg,webmanifest}",
+                "client/**/*.{js,css,ico,woff2,csv,png,webp,svg,webmanifest}",
                 "prerendered/**/*.html",
               ],
               ignoreURLParametersMatching: [/^import|redirectUrl|loginToken$/],
+              maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
             },
             manifest: {
               name: "CharaChorder Device Manager",

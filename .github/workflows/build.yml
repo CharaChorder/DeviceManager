@@ -1,13 +1,9 @@
 name: Build
 
-on:
-  push:
-    tags:
-      - "v*"
-  workflow_dispatch:
+on: [push]
 
 jobs:
-  CI:
+  build:
     name: 🔨🚀 Build and deploy
     runs-on: ubuntu-latest
     steps:
@@ -25,10 +21,10 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 8
-      - name: 🐉 Use Node.js 18.16.x
+      - name: 🐉 Use Node.js 22.4.x
         uses: actions/setup-node@v3
         with:
-          node-version: 18.16.x
+          node-version: 22.4.x
           cache: "pnpm"
       - name: ⏬ Install Node dependencies
         run: pnpm install
@@ -38,17 +34,17 @@ jobs:
       - name: 🔨 Build site
         run: pnpm build
 
-      - name: 📦 Upload build artifacts
-        uses: actions/upload-artifact@v3.1.2
-        with:
-          name: build
-          path: build
-      - name: Disable jekyll
-        run: touch build/.nojekyll
-      - name: Custom domain
-        run: echo 'manager.charachorder.com' > build/CNAME
-      - run: git config user.name github-actions
-      - run: git config user.email github-actions@github.com
-      - run: git --work-tree build add --all
-      - run: git commit -m "Automatic Deploy action run by github-actions"
-      - run: git push origin HEAD:gh-pages --force
+      - name: Setup SSH
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Publish Stable
+        if: ${{ github.ref == 'refs/heads/v*' }}
+        run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/www/
+
+      - name: Publish Branch
+        run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/ref/${GITHUB_REF##*/}
+      - name: Publish Commit
+        run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/ref/${{ github.sha }}

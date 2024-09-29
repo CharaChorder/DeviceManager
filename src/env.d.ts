@@ -15,6 +15,7 @@ interface ImportMetaEnv {
   readonly VITE_LATEST_FIRMWARE: string;
   readonly VITE_STORE_URL: string;
   readonly VITE_MATRIX_URL: string;
+  readonly VITE_FIRMWARE_URL: string;
 }
 
 interface ImportMeta {

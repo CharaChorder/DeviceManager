@@ -18,6 +18,8 @@ const config = {
     "update",
     "offline_pin",
     "warning",
+    "dangerous",
+    "check",
     "cable",
     "person",
     "sync",
