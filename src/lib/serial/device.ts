@@ -12,7 +12,7 @@ import { browser } from "$app/environment";
 
 const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["ONE M0", { usbProductId: 32783, usbVendorId: 9114 }],
-  ["TWO S3", { usbProductId: 0x303a, usbVendorId: 0x8252 }],
+  ["TWO S3", { usbProductId: 0x8252, usbVendorId: 0x303a }],
   ["LITE S2", { usbProductId: 33070, usbVendorId: 12346 }],
   ["LITE M0", { usbProductId: 32796, usbVendorId: 9114 }],
   ["X", { usbProductId: 33163, usbVendorId: 12346 }],
