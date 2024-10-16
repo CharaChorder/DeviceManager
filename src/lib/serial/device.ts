@@ -506,11 +506,25 @@ export class CharaDevice {
         return it;
       });
 
-      await this.suspend();
-
       if (result !== "OTA OK") {
         throw new Error(result);
       }
+
+      const writer2 = this.port.writable!.getWriter();
+      try {
+        await writer2.write(new TextEncoder().encode(`RST REBOOT\r\n`));
+        serialLog.update((it) => {
+          it.push({
+            type: "input",
+            value: "RST REBOOT",
+          });
+          return it;
+        });
+      } finally {
+        writer2.releaseLock();
+      }
+
+      await this.suspend();
     } finally {
       delete this.lock;
       resolveLock!(true);
