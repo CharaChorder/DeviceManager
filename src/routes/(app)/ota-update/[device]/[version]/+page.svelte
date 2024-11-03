@@ -1,12 +1,15 @@
 <script lang="ts">
-  import { serialPort } from "$lib/serial/connection";
-  import { slide } from "svelte/transition";
+  import { downloadBackup } from "$lib/backup/backup";
+  import { initSerial, serialPort } from "$lib/serial/connection";
+  import { fade, slide } from "svelte/transition";
 
   let { data } = $props();
 
   let working = $state(false);
   let success = $state(false);
   let error = $state<Error | undefined>(undefined);
+
+  let step = $state(0);
 
   async function update() {
     working = true;
@@ -59,6 +62,46 @@
       return `${(value / 1024 / 1024).toFixed(2)}MB`;
     }
   }
+
+  async function connect() {
+    try {
+      await initSerial(true, false);
+      step = 1;
+    } catch (e) {
+      error = e as Error;
+    }
+  }
+
+  function backup() {
+    downloadBackup();
+    step = 2;
+  }
+
+  function bootloader() {
+    $serialPort?.bootloader();
+    $serialPort = undefined;
+    step = 3;
+  }
+
+  async function getFileSystem() {
+    if (!uf2Url) return;
+    const uf2Promise = fetch(uf2Url).then((it) => it.blob());
+    const handle = await window.showSaveFilePicker({
+      id: `${data.device}-update`,
+      suggestedName: "CURRENT.UF2",
+      excludeAcceptAllOption: true,
+      types: [
+        {
+          description: "UF2 Firmware",
+          accept: { "application/octet-stream": [".UF2"] },
+        },
+      ],
+    });
+    const writable = await handle.createWritable();
+    const uf2 = await uf2Promise;
+    await uf2.stream().pipeTo(writable);
+    step = 4;
+  }
 </script>
 
 <div>
@@ -70,6 +113,44 @@
     >
     to <em class="version">{data.version}</em>
   </h2>
+
+  {#if data.ota && !data.device.endsWith("m0")}
+    {@const buttonError = error || (!success && isCorrectDevice === false)}
+    <section>
+      <button
+        class="update-button"
+        class:working
+        class:primary={!buttonError}
+        class:error={buttonError}
+        disabled={working || $serialPort === undefined || !isCorrectDevice}
+        onclick={update}>Apply Update</button
+      >
+      {#if $serialPort && isCorrectDevice}
+        <div transition:slide>
+          Your device is ready and compatible. Click the button to perform the
+          update.
+        </div>
+      {:else if $serialPort && isCorrectDevice === false}
+        <div class="error" transition:slide>
+          Your device is incompatible with the selected update.
+        </div>
+      {:else if success}
+        <div class="primary" transition:slide>Update successful</div>
+      {:else if error}
+        <div class="error" transition:slide>{error.message}</div>
+      {:else if working}
+        <div class="primary" transition:slide>Updating your device...</div>
+      {:else}
+        <div class="primary" transition:slide>
+          Connect your device to continue
+        </div>
+      {/if}
+    </section>
+
+    <hr />
+
+    <h3>Manual Update</h3>
+  {/if}
 
   <ul class="files">
     {#if data.uf2}
@@ -99,59 +180,47 @@
   {/if}
 
   <section>
-    <h3>OTA Upate</h3>
-    {#if data.ota}
-      {@const buttonError = error || (!success && isCorrectDevice === false)}
-      <button
-        class:working
-        class:primary={!buttonError}
-        class:error={buttonError}
-        disabled={working || $serialPort === undefined || !isCorrectDevice}
-        onclick={update}>Apply Update</button
-      >
-      {#if $serialPort && isCorrectDevice}
-        <div transition:slide>
-          Your device is ready and compatible. Click the button to perform the
-          update.
-        </div>
-      {:else if $serialPort && isCorrectDevice === false}
-        <div class="error" transition:slide>
-          Your device is incompatible with the selected update.
-        </div>
-      {:else if success}
-        <div class="primary" transition:slide>Update successful</div>
-      {:else if error}
-        <div class="error" transition:slide>{error.message}</div>
-      {:else if working}
-        <div class="primary" transition:slide>Updating your device...</div>
-      {:else}
-        <div class="primary" transition:slide>
-          Connect your device to continue
-        </div>
-      {/if}
-    {:else}
-      <em>There are no OTA files for this device.</em>
-    {/if}
-  </section>
-
-  <hr />
-
-  <h3>Other options</h3>
-
-  <section>
-    <h4>Via UF2</h4>
+    <h4>UF2 Instructions</h4>
     <ol>
-      <li>Backup your device</li>
-      <li>Reboot to bootloader</li>
-      <li>Save CURRENT.UF2 to the new drive</li>
-      <li>Restore</li>
+      <li>
+        <button class="inline-button" onclick={connect}
+          ><span class="icon">usb</span>Connect</button
+        >
+        your device
+        {#if step >= 1}
+          <span class="icon ok" transition:fade>check_circle</span>
+        {/if}
+      </li>
+
+      <li class:faded={step < 1}>
+        Make a <button class="inline-button" onclick={backup}
+          ><span class="icon">download</span>Backup</button
+        >
+        {#if step >= 2}
+          <span class="icon ok" transition:fade>check_circle</span>
+        {/if}
+      </li>
+
+      <li class:faded={step < 2}>
+        Reboot to <button class="inline-button" onclick={bootloader}
+          ><span class="icon">restart_alt</span>Bootloader</button
+        >
+        {#if step >= 3}
+          <span class="icon ok" transition:fade>check_circle</span>
+        {/if}
+      </li>
+
+      <li class:faded={step < 3}>
+        Replace <button class="inline-button" onclick={getFileSystem}
+          ><span class="icon">deployed_code_update</span>CURRENT.UF2</button
+        >
+        on the new drive
+        {#if step >= 4}
+          <span class="icon ok" transition:fade>check_circle</span>
+        {/if}
+      </li>
     </ol>
   </section>
-  <section>
-    <h4>Via Serial</h4>
-    <p>WIP</p>
-  </section>
-  ading 0 Chordmaps.
 </div>
 
 <style lang="scss">
@@ -189,7 +258,32 @@
     }
   }
 
-  button {
+  button.inline-button {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    height: unset;
+    font-size: inherit;
+    color: var(--md-sys-color-primary);
+
+    .icon {
+      font-size: 1.2em;
+      translate: 0 0.1em;
+      padding-inline-end: 0.2em;
+    }
+  }
+
+  .icon.ok {
+    font-size: 1.2em;
+    translate: 0 0.1em;
+    --icon-fill: 1;
+  }
+
+  .faded {
+    opacity: 0.8;
+  }
+
+  button.update-button {
     overflow: hidden;
     position: relative;
     height: 42px;
@@ -250,26 +344,26 @@
     display: flex;
     padding: 0;
     gap: 8px;
+  }
 
-    a {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      grid-template-rows: 1fr;
-      border: 1px solid var(--md-sys-color-outline);
-      border-radius: 8px;
-      font-size: 0.9em;
-      height: auto;
+  a[download] {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 1fr;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 8px;
+    font-size: 0.9em;
+    height: auto;
 
-      .size {
-        font-size: 0.8em;
-        opacity: 0.8;
-      }
+    .size {
+      font-size: 0.8em;
+      opacity: 0.8;
+    }
 
-      .icon {
-        padding-inline-start: 0.4em;
-        grid-column: 2;
-        grid-row: 1 / span 2;
-      }
+    .icon {
+      padding-inline-start: 0.4em;
+      grid-column: 2;
+      grid-row: 1 / span 2;
     }
   }
 

@@ -1,5 +1,6 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
+  import type { Snippet } from "svelte";
+  import PageTransition from "./PageTransition.svelte";
   import Navigation from "./Navigation.svelte";
 
   let { children }: { children?: Snippet } = $props();
@@ -8,5 +9,9 @@
 <Navigation />
 
 {#if children}
-  {@render children()}
+  <PageTransition>
+    {#if children}
+      {@render children()}
+    {/if}
+  </PageTransition>
 {/if}

@@ -315,7 +315,7 @@
   }
 
   input[type="checkbox"] {
-    font-size: 12px;
+    font-size: 12px !important;
   }
 
   fieldset {

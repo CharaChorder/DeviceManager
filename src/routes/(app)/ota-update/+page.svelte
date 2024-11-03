@@ -4,15 +4,6 @@
 
   let { data } = $props();
 
-  let files: FileList | null = $state(null);
-
-  $effect(() => {
-    const file = files?.[0];
-    if (file && $serialPort) {
-      $serialPort.updateFirmware(file);
-    }
-  });
-
   let currentDevice = $derived(
     $serialPort
       ? `${$serialPort.device.toLowerCase()}_${$serialPort.chipset.toLowerCase()}`
@@ -33,8 +24,6 @@
 {#if !currentDevice}
   <aside transition:slide>Connect your device to see which one you need</aside>
 {/if}
-
-<input type="file" accept=".bin" bind:files />
 
 <style lang="scss">
   ul {

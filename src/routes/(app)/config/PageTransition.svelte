@@ -14,26 +14,27 @@
   let isNavigating = $state(false);
 
   const routeOrder = [
-    "/config",
-    "/learn",
-    "/docs",
-    "/editor",
-    "/chat",
-    "/plugin",
+    "/config/chords/",
+    "/config/layout/",
+    "/config/settings/",
   ];
 
-  function routeIndex(route: string | undefined): number {
-    return routeOrder.findIndex((it) => route?.startsWith(it));
-  }
-
   beforeNavigate((navigation) => {
-    const from = routeIndex(navigation.from?.url.pathname);
-    const to = routeIndex(navigation.to?.url.pathname);
-    if (from === -1 || to === -1 || from === to) return;
+    const from = navigation.from?.url.pathname;
+    const to = navigation.to?.url.pathname;
+    if (from === to) return;
     isNavigating = true;
 
-    inDirection = from > to ? -1 : 1;
-    outDirection = from > to ? 1 : -1;
+    if (!(from && to && routeOrder.includes(from) && routeOrder.includes(to))) {
+      inDirection = 0;
+      outDirection = 0;
+    } else {
+      const fromIndex = routeOrder.indexOf(from);
+      const toIndex = routeOrder.indexOf(to);
+
+      inDirection = fromIndex > toIndex ? -1 : 1;
+      outDirection = fromIndex > toIndex ? 1 : -1;
+    }
 
     animationDone = new Promise((resolve) => {
       outroEnd = resolve;
@@ -48,8 +49,8 @@
 
 {#if !isNavigating}
   <main
-    in:fly={{ y: inDirection * 24, duration: 150, easing: expoOut }}
-    out:fly={{ y: outDirection * 24, duration: 150, easing: expoIn }}
+    in:fly={{ x: inDirection * 24, duration: 150, easing: expoOut }}
+    out:fly={{ x: outDirection * 24, duration: 150, easing: expoIn }}
     onoutroend={outroEnd}
   >
     {@render children()}
@@ -59,5 +60,6 @@
 <style lang="scss">
   main {
     padding: 0;
+    width: 100%;
   }
 </style>

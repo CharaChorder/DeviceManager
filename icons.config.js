@@ -4,6 +4,7 @@ const config = {
     "node_modules/@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-full-normal.woff2",
   outputPath: "src/lib/assets/icons.min.woff2",
   icons: [
+    "deployed_code_update",
     "adjust",
     "add",
     "piano",

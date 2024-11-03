@@ -4,7 +4,8 @@
   import { expoIn, expoOut } from "svelte/easing";
   import type { Snippet } from "svelte";
 
-  let { children }: { children: Snippet } = $props();
+  let { children, routeOrder }: { children: Snippet; routeOrder: string[]; direction: } =
+    $props();
 
   let inDirection = $state(0);
   let outDirection = $state(0);
@@ -12,15 +13,6 @@
   let animationDone: Promise<void>;
 
   let isNavigating = $state(false);
-
-  const routeOrder = [
-    "/config",
-    "/learn",
-    "/docs",
-    "/editor",
-    "/chat",
-    "/plugin",
-  ];
 
   function routeIndex(route: string | undefined): number {
     return routeOrder.findIndex((it) => route?.startsWith(it));

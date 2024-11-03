@@ -74,6 +74,9 @@ importers:
       '@types/w3c-web-usb':
         specifier: ^1.0.10
         version: 1.0.10
+      '@types/wicg-file-system-access':
+        specifier: ^2023.10.5
+        version: 2023.10.5
       '@vite-pwa/sveltekit':
         specifier: ^0.6.0
         version: 0.6.0(@sveltejs/kit@2.5.18(@sveltejs/vite-plugin-svelte@3.1.1(svelte@5.0.0-next.221)(vite@5.3.5(@types/node@20.14.10)(sass@1.77.8)(terser@5.31.1)))(svelte@5.0.0-next.221)(vite@5.3.5(@types/node@20.14.10)(sass@1.77.8)(terser@5.31.1)))(vite-plugin-pwa@0.20.1(vite@5.3.5(@types/node@20.14.10)(sass@1.77.8)(terser@5.31.1))(workbox-build@7.1.1)(workbox-window@7.1.0))
@@ -1407,6 +1410,9 @@ packages:
 
   '@types/w3c-web-usb@1.0.10':
     resolution: {integrity: sha512-CHgUI5kTc/QLMP8hODUHhge0D4vx+9UiAwIGiT0sTy/B2XpdX1U5rJt6JSISgr6ikRT7vxV9EVAFeYZqUnl1gQ==}
+
+  '@types/wicg-file-system-access@2023.10.5':
+    resolution: {integrity: sha512-e9kZO9kCdLqT2h9Tw38oGv9UNzBBWaR1MzuAavxPcsV/7FJ3tWbU6RI3uB+yKIDPGLkGVbplS52ub0AcRLvrhA==}
 
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
@@ -5536,6 +5542,8 @@ snapshots:
   '@types/w3c-web-serial@1.0.6': {}
 
   '@types/w3c-web-usb@1.0.10': {}
+
+  '@types/wicg-file-system-access@2023.10.5': {}
 
   '@types/yauzl@2.10.3':
     dependencies:

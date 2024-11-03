@@ -53,11 +53,13 @@ export interface ProgressInfo {
 }
 export const syncProgress = writable<ProgressInfo | undefined>(undefined);
 
-export async function initSerial(manual = false) {
+export async function initSerial(manual = false, withSync = true) {
   const device = get(serialPort) ?? new CharaDevice();
   await device.init(manual);
   serialPort.set(device);
-  await sync();
+  if (withSync) {
+    await sync();
+  }
 }
 
 export async function sync() {
