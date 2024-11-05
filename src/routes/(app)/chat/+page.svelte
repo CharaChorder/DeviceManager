@@ -1,8 +1,16 @@
 <script lang="ts">
-  import { isLoggedIn, matrix } from "$lib/chat/chat";
+  import { initMatrixClient, isLoggedIn, matrix } from "$lib/chat/chat";
   import { flip } from "svelte/animate";
   import { slide } from "svelte/transition";
   import Login from "./Login.svelte";
+  import { onMount } from "svelte";
+  import { browser } from "$app/environment";
+
+  onMount(async () => {
+    if (browser) {
+      await initMatrixClient();
+    }
+  });
 
   let { children } = $props();
 

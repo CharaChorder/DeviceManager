@@ -29,7 +29,6 @@
   import { restoreFromFile } from "$lib/backup/backup";
   import { goto } from "$app/navigation";
   import { hotkeys } from "$lib/title";
-  import { initMatrixClient } from "$lib/chat/chat";
 
   const locale =
     ((browser && localStorage.getItem("locale")) as Locales) || detectLocale();
@@ -65,9 +64,6 @@
 
     if (browser && $userPreferences.autoConnect && (await canAutoConnect())) {
       await initSerial();
-    }
-    if (browser) {
-      await initMatrixClient();
     }
 
     if (data.importFile) {
