@@ -111,7 +111,7 @@
 </script>
 
 <svelte:head>
-  <!--{@html webManifestLink}-->
+  {@html webManifestLink}
   <title>{$LL.TITLE()}</title>
   <meta name="description" content={$LL.DESCRIPTION()} />
   <meta name="theme-color" content={data.themeColor} />

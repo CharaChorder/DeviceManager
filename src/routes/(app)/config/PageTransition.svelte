@@ -2,13 +2,13 @@
   import { fly } from "svelte/transition";
   import { afterNavigate, beforeNavigate } from "$app/navigation";
   import { expoIn, expoOut } from "svelte/easing";
-  import type { Snippet } from "svelte";
+  import { type Snippet } from "svelte";
 
   let { children }: { children: Snippet } = $props();
 
   let inDirection = $state(0);
   let outDirection = $state(0);
-  let outroEnd: undefined | (() => void) = $state(undefined);
+  let done: undefined | (() => void) = $state(undefined);
   let animationDone: Promise<void>;
 
   let isNavigating = $state(false);
@@ -18,6 +18,10 @@
     "/config/chords/",
     "/config/layout/",
   ];
+
+  function outroEnd() {
+    done?.();
+  }
 
   beforeNavigate((navigation) => {
     const from = navigation.from?.url.pathname;
@@ -37,7 +41,7 @@
     }
 
     animationDone = new Promise((resolve) => {
-      outroEnd = resolve;
+      done = resolve;
     });
   });
 
@@ -49,7 +53,12 @@
 
 {#if !isNavigating}
   <main
-    in:fly={{ y: inDirection * 24, duration: 150, easing: expoOut }}
+    in:fly={{
+      y: inDirection * 24,
+      duration: 150,
+      delay: 1, // flicker for some reason without this
+      easing: expoOut,
+    }}
     out:fly={{ y: outDirection * 24, duration: 150, easing: expoIn }}
     onoutroend={outroEnd}
   >

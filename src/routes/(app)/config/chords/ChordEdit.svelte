@@ -46,7 +46,7 @@
     id.splice(id.indexOf(0), 1);
     id.push(0);
     while ($chords.some((it) => JSON.stringify(it.id) === JSON.stringify(id))) {
-      id[id.length - 1]!++;
+      id[id.length - 1] = id[id.length - 1]! + 1;
     }
 
     changes.update((changes) => {

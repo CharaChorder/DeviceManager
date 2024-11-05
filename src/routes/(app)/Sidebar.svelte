@@ -1,14 +1,5 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
   import { page } from "$app/stores";
-  import { userPreferences } from "$lib/preferences";
-  import { onMount } from "svelte";
-
-  onMount(async () => {
-    if (browser && !$userPreferences.autoConnect) {
-      connectButton.click();
-    }
-  });
 
   const routes = [
     [
@@ -114,6 +105,7 @@
       justify-content: center;
       font-size: 24px;
       padding: 8px;
+      border-radius: 8px;
 
       transition: all 250ms ease;
     }

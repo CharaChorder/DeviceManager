@@ -155,30 +155,31 @@
       doc: examplePlugin,
     });
   });
-  let channels = $derived(
-    $serialPort
-      ? ({
-          getVersion: async (..._args: unknown[]) => $serialPort.version,
-          getDevice: async (..._args: unknown[]) => $serialPort.device,
-          commit: async (..._args: unknown[]) => {
-            if (
-              confirm(
-                "Perform a commit? Settings are already applied until the next reboot.\n\n" +
-                  "Excessive commits can lead to premature breakdowns, as the settings storage is only rated for 10,000-25,000 commits.\n\n" +
-                  "Click OK to perform the commit anyways.",
-              )
-            ) {
-              return $serialPort.commit();
-            }
-          },
-          ...Object.fromEntries(
-            charaMethods.map(
-              (it) => [it, $serialPort[it].bind($serialPort)] as const,
-            ),
-          ),
-        } satisfies Record<string, Function>)
-      : ({} as any),
-  );
+
+  let channels = $derived.by(() => {
+    if (!$serialPort) return {} as any;
+    return {
+      getVersion: (..._args: unknown[]) => Promise.resolve($serialPort.version),
+      getDevice: (..._args: unknown[]) => Promise.resolve($serialPort.device),
+      commit: (..._args: unknown[]) => {
+        if (
+          confirm(
+            "Perform a commit? Settings are already applied until the next reboot.\n\n" +
+              "Excessive commits can lead to premature breakdowns, as the settings storage is only rated for 10,000-25,000 commits.\n\n" +
+              "Click OK to perform the commit anyways.",
+          )
+        ) {
+          return Promise.resolve($serialPort.commit());
+        }
+        return Promise.resolve();
+      },
+      ...Object.fromEntries(
+        charaMethods.map(
+          (it) => [it, $serialPort[it].bind($serialPort)] as const,
+        ),
+      ),
+    } satisfies Record<string, Function>;
+  });
 
   async function onMessage(event: MessageEvent) {
     if (event.origin !== "null" || event.source !== frame.contentWindow) return;
