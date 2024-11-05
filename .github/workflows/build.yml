@@ -41,7 +41,7 @@ jobs:
           echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
       - name: Publish Stable
-        if: ${{ github.ref == 'refs/heads/v*' }}
+        if: ${{ github.ref == 'refs/tags/v*' }}
         run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/www/
 
       - name: Publish Branch
