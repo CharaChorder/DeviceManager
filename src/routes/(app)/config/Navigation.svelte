@@ -3,16 +3,14 @@
   import { canShare, triggerShare } from "$lib/share";
   import { action } from "$lib/title";
   import LL from "$i18n/i18n-svelte";
-  import ConfigTabs from "./ConfigTabs.svelte";
   import EditActions from "./EditActions.svelte";
+  import { sync, syncStatus } from "$lib/serial/connection";
 </script>
 
 <nav>
   <div class="actions">
     <EditActions />
   </div>
-
-  <ConfigTabs />
 
   <div class="actions">
     {#if $canShare}
@@ -40,12 +38,26 @@
 <style lang="scss">
   nav {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr 1fr;
 
     width: calc(min(100%, 28cm));
     margin-block: 8px;
     margin-inline: auto;
     padding-inline: 16px;
+  }
+
+  @keyframes syncing {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .syncing {
+    transform-origin: 50% 49%;
+    animation: syncing 1s linear infinite;
   }
 
   .title {

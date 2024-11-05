@@ -17,5 +17,11 @@
 <style lang="scss">
   p {
     margin-block: 0;
+
+    :global(kbd.icon) {
+      display: inline-flex;
+      font-size: inherit;
+      translate: 0 0.2em;
+    }
   }
 </style>

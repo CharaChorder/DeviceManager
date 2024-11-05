@@ -1,12 +1,7 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import { LL } from "$i18n/i18n-svelte";
-  import { popup } from "$lib/popup";
+  import { page } from "$app/stores";
   import { userPreferences } from "$lib/preferences";
-  import { serialPort, syncStatus } from "$lib/serial/connection";
-  import { action } from "$lib/title";
-  import BackupPopup from "./BackupPopup.svelte";
-  import ConnectionPopup from "./ConnectionPopup.svelte";
   import { onMount } from "svelte";
 
   onMount(async () => {
@@ -17,20 +12,43 @@
 
   const routes = [
     [
-      { href: "/config/chords/", icon: "dictionary", title: "Chords" },
+      {
+        href: "/config/settings/",
+        icon: "cable",
+        title: "Device",
+        primary: true,
+      },
+      { href: "/config/chords/", icon: "dictionary", title: "Library" },
       { href: "/config/layout/", icon: "keyboard", title: "Layout" },
-      { href: "/config/settings/", icon: "tune", title: "Config" },
     ],
     [
-      { href: "/learn", icon: "school", title: "Learn", wip: true },
-      { href: "/learn", icon: "description", title: "Docs" },
+      // { href: "/learn", icon: "school", title: "Learn", wip: true },
+      {
+        href: import.meta.env.VITE_LEARN_URL,
+        icon: "school",
+        title: "Learn",
+        external: true,
+      },
+      {
+        href: import.meta.env.VITE_DOCS_URL,
+        icon: "description",
+        title: "Docs",
+        external: true,
+      },
       { href: "/editor", icon: "edit_document", title: "Editor", wip: true },
     ],
-    [
+    /*[
       { href: "/chat", icon: "chat", title: "Chat", wip: true },
       { href: "/plugin", icon: "code", title: "Plugin", wip: true },
-    ],
-  ] satisfies { href: string; icon: string; title: string; wip?: boolean }[][];
+    ],*/
+  ] satisfies {
+    href: string;
+    icon: string;
+    title: string;
+    wip?: boolean;
+    external?: boolean;
+    primary?: boolean;
+  }[][];
 
   let connectButton: HTMLButtonElement;
 </script>
@@ -39,10 +57,18 @@
   <nav>
     {#each routes as group}
       <ul>
-        {#each group as { href, icon, title, wip }}
+        {#each group as { href, icon, title, wip, external }}
           <li>
-            <a class:wip {href}>
-              <div class="icon">{icon}</div>
+            <a
+              class:wip
+              {href}
+              rel={external ? "noreferrer" : undefined}
+              target={external ? "_blank" : undefined}
+              class:active={$page.url.pathname.startsWith(href)}
+            >
+              <div class="icon">
+                {icon}
+              </div>
               <div class="content">
                 {title}
               </div>
@@ -52,28 +78,6 @@
       </ul>
     {/each}
   </nav>
-  <ul class="sidebar-footer">
-    <li>
-      <button
-        bind:this={connectButton}
-        use:action={{ title: $LL.deviceManager.TITLE() }}
-        use:popup={ConnectionPopup}
-        class="icon connect"
-        class:error={$serialPort === undefined}
-      >
-        cable
-      </button>
-    </li>
-    <li>
-      <button
-        use:action={{ title: $LL.backup.TITLE() }}
-        use:popup={BackupPopup}
-        class="icon {$syncStatus}"
-      >
-        account_circle
-      </button>
-    </li>
-  </ul>
 </div>
 
 <style lang="scss">
@@ -109,12 +113,29 @@
       display: flex;
       justify-content: center;
       font-size: 24px;
+      padding: 8px;
+
+      transition: all 250ms ease;
     }
 
     > .content {
       display: flex;
       justify-content: center;
       align-items: center;
+      translate: 0 -8px;
+      transition: all 250ms ease;
+    }
+
+    &.active {
+      > .content {
+        translate: 0;
+      }
+
+      .icon {
+        background: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        border-radius: 50%;
+      }
     }
   }
 

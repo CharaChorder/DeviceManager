@@ -8,11 +8,25 @@
   import { loadLocaleAsync } from "$i18n/i18n-util.async";
   import { tick } from "svelte";
   import SyncOverlay from "./SyncOverlay.svelte";
-  import { serialPort } from "$lib/serial/connection";
+  import {
+    initSerial,
+    serialPort,
+    sync,
+    syncProgress,
+    syncStatus,
+  } from "$lib/serial/connection";
+  import { fade, slide } from "svelte/transition";
 
   let locale = $state(
     (browser && (localStorage.getItem("locale") as Locales)) || detectLocale(),
   );
+
+  let currentDevice = $derived(
+    $serialPort
+      ? `${$serialPort.device.toLowerCase()}_${$serialPort.chipset.toLowerCase()}`
+      : undefined,
+  );
+
   $effect(() => {
     if (!browser) return;
     localStorage.setItem("locale", locale);
@@ -33,6 +47,26 @@
     }
   }
 
+  async function connect() {
+    try {
+      await initSerial(true);
+    } catch (error) {
+      console.error(error);
+      alert(
+        "Connection failed. Is your device maybe pre-CCOS? Refer to the doc link in the bottom left for more information on your device.",
+      );
+    }
+  }
+
+  function disconnect(event: MouseEvent) {
+    if (event.shiftKey) {
+      sync();
+    } else {
+      $serialPort?.forget();
+      $serialPort = undefined;
+    }
+  }
+
   let languageSelect: HTMLSelectElement;
 </script>
 
@@ -40,39 +74,58 @@
   <ul>
     <li>
       <a
+        use:action={{ title: "Branch" }}
         href={import.meta.env.VITE_HOMEPAGE_URL}
         rel="noreferrer"
         target="_blank"><span class="icon">commit</span> v{version}</a
       >
     </li>
     <li>
-      <a href={import.meta.env.VITE_BUGS_URL} rel="noreferrer" target="_blank"
-        ><span class="icon">bug_report</span> Issues</a
+      <a
+        href="/firmware/{currentDevice ? `${currentDevice}/` : ''}"
+        use:action={{ title: "Updates" }}
       >
-    </li>
-    <li>
-      <a href={import.meta.env.VITE_DOCS_URL} rel="noreferrer" target="_blank"
-        ><span class="icon">description</span> Docs</a
-      >
+        CCOS {$serialPort?.version ?? "Updates"}
+      </a>
     </li>
   </ul>
-  <div>
+  <div class="sync-box">
     {#if !$serialPort}
-      <div class="warning">
-        <span class="icon">warning</span>{$LL.deviceManager.NO_DEVICE()}
-      </div>
+      <button class="warning" onclick={connect} transition:slide={{ axis: "x" }}
+        ><span class="icon">usb</span>{$LL.deviceManager.CONNECT()}</button
+      >
+    {:else}
+      <button
+        transition:slide={{ axis: "x" }}
+        onclick={disconnect}
+        use:action={{
+          title: "Disconnect<br><kbd class='icon'>shift</kbd> Sync",
+        }}
+        ><b
+          >{$serialPort.company}
+          {$serialPort.device}
+          {$serialPort.chipset}</b
+        ><span class="icon">usb_off</span></button
+      >
     {/if}
-    <SyncOverlay />
+
+    {#if $syncStatus !== "done"}
+      <progress
+        transition:fade
+        max={$syncProgress?.max ?? 1}
+        value={$syncProgress?.current ?? 1}
+      ></progress>
+    {/if}
   </div>
   <ul>
     <li>
-      <a href={import.meta.env.VITE_STORE_URL} rel="noreferrer" target="_blank"
-        ><span class="icon">shopping_bag</span> Store</a
+      <a href={import.meta.env.VITE_BUGS_URL} rel="noreferrer" target="_blank"
+        ><span class="icon">bug_report</span> Bugs</a
       >
     </li>
     <li>
-      <a href={import.meta.env.VITE_LEARN_URL} rel="noreferrer" target="_blank"
-        ><span class="icon">school</span> Train</a
+      <a href={import.meta.env.VITE_STORE_URL} rel="noreferrer" target="_blank"
+        ><span class="icon">shopping_bag</span> Store</a
       >
     </li>
     <li class="hide-forced-colors">
@@ -101,7 +154,7 @@
         </button>
       {/if}
     </li>
-    <li>
+    <!--<li>
       <div
         role="button"
         class="icon"
@@ -116,7 +169,7 @@
           {/each}
         </select>
       </div>
-    </li>
+    </li>-->
   </ul>
 </footer>
 
@@ -124,6 +177,37 @@
   select {
     position: absolute;
     opacity: 0;
+  }
+
+  .sync-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    button {
+      text-wrap: nowrap;
+    }
+  }
+
+  progress {
+    position: absolute;
+    z-index: -1;
+    bottom: 0;
+    left: 16px;
+    right: 16px;
+    overflow: hidden;
+    width: calc(100% - 32px);
+    height: 8px;
+    border-radius: 4px;
+  }
+
+  progress::-webkit-progress-bar {
+    background: var(--md-sys-color-background);
+  }
+
+  progress::-webkit-progress-value {
+    background: var(--md-sys-color-primary);
   }
 
   .warning {

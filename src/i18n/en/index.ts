@@ -13,11 +13,11 @@ const en = {
     TITLE: "Update your device",
   },
   backup: {
-    TITLE: "Local backup",
-    INDIVIDUAL: "Individual backups",
+    TITLE: "Backup",
+    AUTO_BACKUP: "Auto-backup",
     DISCLAIMER:
-      "A backup is made and stored in this browser, and always remains only on your computer.",
-    DOWNLOAD: "Download Everything",
+      "Whenever you connect this device to browser, a backup is made locally and kept only on your computer.",
+    DOWNLOAD: "Everything",
     RESTORE: "Restore",
   },
   sync: {
@@ -108,7 +108,7 @@ const en = {
   },
   configure: {
     chords: {
-      TITLE: "Chords",
+      TITLE: "Library",
       HOLD_KEYS: "Hold chord",
       NEW_CHORD: "New chord",
       DUPLICATE: "Chord already exists",
@@ -130,7 +130,7 @@ const en = {
       TITLE: "Layout",
     },
     settings: {
-      TITLE: "Settings",
+      TITLE: "Device",
     },
   },
   plugin: {

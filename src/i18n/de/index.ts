@@ -17,11 +17,11 @@ const de = {
     RELOAD: "Neu laden",
   },
   backup: {
-    TITLE: "Lokale Kopie",
-    INDIVIDUAL: "Einzeldateien",
+    TITLE: "Backup",
+    AUTO_BACKUP: "Auto-backup",
     DISCLAIMER:
       "Das Backup in diesem Browser gespeichert und bleibt nur auf diesem Computer.",
-    DOWNLOAD: "Alles herunterladen",
+    DOWNLOAD: "Alles",
     RESTORE: "Wiederherstellen",
   },
   modal: {
@@ -109,7 +109,7 @@ const de = {
   },
   configure: {
     chords: {
-      TITLE: "Akkorde",
+      TITLE: "Bibliothek",
       HOLD_KEYS: "Akkord halten",
       NEW_CHORD: "Neuer Akkord",
       DUPLICATE: "Akkord existiert bereits",
@@ -131,7 +131,7 @@ const de = {
       TITLE: "Layout",
     },
     settings: {
-      TITLE: "Einstellungen",
+      TITLE: "Gerät",
     },
   },
   plugin: {

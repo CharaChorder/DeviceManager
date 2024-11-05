@@ -4,6 +4,16 @@
   import { serialPort } from "$lib/serial/connection";
   import { setting } from "$lib/setting";
   import ResetPopup from "./ResetPopup.svelte";
+  import LL from "$i18n/i18n-svelte";
+  import {
+    createChordBackup,
+    createLayoutBackup,
+    createSettingsBackup,
+    downloadBackup,
+    downloadFile,
+    restoreBackup,
+  } from "$lib/backup/backup";
+  import { preference } from "$lib/preferences";
 </script>
 
 <svelte:head>
@@ -11,8 +21,67 @@
   <meta name="description" content="Change your device's settings" />
 </svelte:head>
 
-{#if $serialPort}
-  <section>
+<section>
+  <fieldset>
+    <legend>{$LL.backup.TITLE()}</legend>
+    <label
+      ><input
+        type="checkbox"
+        use:preference={"backup"}
+      />{$LL.backup.AUTO_BACKUP()}</label
+    >
+    <p class="disclaimer">
+      {$LL.backup.DISCLAIMER()}
+    </p>
+    <div class="row" style="margin-top: auto">
+      <button onclick={() => downloadFile(createChordBackup())}>
+        <span class="icon">piano</span>
+        {$LL.configure.chords.TITLE()}
+      </button>
+      <button onclick={() => downloadFile(createLayoutBackup())}>
+        <span class="icon">keyboard</span>
+        {$LL.configure.layout.TITLE()}
+      </button>
+      <button onclick={() => downloadFile(createSettingsBackup())}>
+        <span class="icon">settings</span>
+        Settings
+      </button>
+    </div>
+    <div class="row">
+      <button class="primary" onclick={downloadBackup}
+        ><span class="icon">download</span>{$LL.backup.DOWNLOAD()}</button
+      >
+      <label class="button"
+        ><input oninput={restoreBackup} type="file" /><span class="icon"
+          >settings_backup_restore</span
+        >{$LL.backup.RESTORE()}</label
+      >
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Device</legend>
+    <label
+      >{$LL.deviceManager.AUTO_CONNECT()}<input
+        type="checkbox"
+        use:preference={"autoConnect"}
+      /></label
+    >
+    {#if $serialPort}
+      <label
+        >Boot message<input type="checkbox" use:setting={{ id: 0x93 }} /></label
+      >
+      <label
+        >GTM Realtime Feedback<input
+          type="checkbox"
+          use:setting={{ id: 0x92 }}
+        /></label
+      >
+      <button class="outline" use:popup={ResetPopup}>Reset...</button>
+    {/if}
+  </fieldset>
+
+  {#if $serialPort}
     <fieldset>
       <legend
         ><label
@@ -231,20 +300,6 @@
       >
     </fieldset>
 
-    <fieldset>
-      <legend>Device</legend>
-      <label
-        >Boot message<input type="checkbox" use:setting={{ id: 0x93 }} /></label
-      >
-      <label
-        >GTM Realtime Feedback<input
-          type="checkbox"
-          use:setting={{ id: 0x92 }}
-        /></label
-      >
-      <button class="outline" use:popup={ResetPopup}>Reset...</button>
-    </fieldset>
-
     {#if $serialPort.device === "LITE"}
       <fieldset>
         <legend
@@ -275,8 +330,8 @@
         </select>
       </fieldset>
     {/if}
-  </section>
-{/if}
+  {/if}
+</section>
 
 <style lang="scss">
   section {
@@ -319,14 +374,17 @@
   }
 
   fieldset {
+    display: flex;
+    flex-direction: column;
+
     max-width: 400px;
     border: 1px solid var(--md-sys-color-outline);
     border-radius: 24px;
 
-    &:has(> legend input:not(:checked)) > :not(legend) {
+    /*&:has(> legend input:not(:checked)) > :not(legend) {
       pointer-events: none;
       opacity: 0.7;
-    }
+    }*/
 
     > label {
       position: relative;
@@ -428,5 +486,15 @@
       right: 0.25em;
       content: "•";
     }
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-evenly;
+    margin-block: 8px;
+  }
+
+  input[type="file"] {
+    display: none;
   }
 </style>

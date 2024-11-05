@@ -14,9 +14,9 @@
   let isNavigating = $state(false);
 
   const routeOrder = [
+    "/config/settings/",
     "/config/chords/",
     "/config/layout/",
-    "/config/settings/",
   ];
 
   beforeNavigate((navigation) => {
@@ -49,8 +49,8 @@
 
 {#if !isNavigating}
   <main
-    in:fly={{ x: inDirection * 24, duration: 150, easing: expoOut }}
-    out:fly={{ x: outDirection * 24, duration: 150, easing: expoIn }}
+    in:fly={{ y: inDirection * 24, duration: 150, easing: expoOut }}
+    out:fly={{ y: outDirection * 24, duration: 150, easing: expoIn }}
     onoutroend={outroEnd}
   >
     {@render children()}
