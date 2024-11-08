@@ -82,7 +82,7 @@
     </li>
     <li>
       <a
-        href="/firmware/{currentDevice ? `${currentDevice}/` : ''}"
+        href="/ccos/{currentDevice ? `${currentDevice}/` : ''}"
         use:action={{ title: "Updates" }}
       >
         CCOS {$serialPort?.version ?? "Updates"}
