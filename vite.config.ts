@@ -58,6 +58,7 @@ export default defineConfig({
                 "client/**/*.{js,css,ico,woff2,csv,png,webp,svg,webmanifest}",
                 "prerendered/**/*.html",
               ],
+              globIgnores: ["prerendered/pages/ccos/**/*"],
               ignoreURLParametersMatching: [/^import|redirectUrl|loginToken$/],
               maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
             },
