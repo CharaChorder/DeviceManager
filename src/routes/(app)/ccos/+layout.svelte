@@ -2,7 +2,7 @@
   let { children } = $props();
 </script>
 
-<h1><a href="/ccos">Firmware Updates</a></h1>
+<h1><a href="/firmware">Firmware Updates</a></h1>
 
 {@render children()}
 

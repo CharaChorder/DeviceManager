@@ -513,11 +513,11 @@ export class CharaDevice {
 
       const writer2 = this.port.writable!.getWriter();
       try {
-        await writer2.write(new TextEncoder().encode(`RST REBOOT\r\n`));
+        await writer2.write(new TextEncoder().encode(`RST RESTART\r\n`));
         serialLog.update((it) => {
           it.push({
             type: "input",
-            value: "RST REBOOT",
+            value: "RST RESTART",
           });
           return it;
         });

@@ -104,14 +104,16 @@
   }
 </script>
 
-<div>
+<div class="container">
   <h2>
-    Update <em
-      class="device"
+    <a class="inline-link" href="/ccos">CCOS</a> /
+    <a
+      href="/ccos/{data.device}"
+      class="device inline-link"
       class:correct-device={isCorrectDevice === true}
-      class:incorrect-device={isCorrectDevice === false}>{data.device}</em
+      class:incorrect-device={isCorrectDevice === false}>{data.device}</a
     >
-    to <em class="version">{data.version}</em>
+    / <em class="version">{data.version}</em>
   </h2>
 
   {#if data.ota && !data.device.endsWith("m0")}
@@ -127,8 +129,14 @@
       >
       {#if $serialPort && isCorrectDevice}
         <div transition:slide>
-          Your device is ready and compatible. Click the button to perform the
-          update.
+          Your
+          <b
+            >{$serialPort.company}
+            {$serialPort.device}
+            {$serialPort.chipset}</b
+          >
+          will be updated from <b class="version">{$serialPort.version}</b> to
+          <b class="version">{data.version}</b>
         </div>
       {:else if $serialPort && isCorrectDevice === false}
         <div class="error" transition:slide>
@@ -146,8 +154,6 @@
         </div>
       {/if}
     </section>
-
-    <hr />
 
     <h3>Manual Update</h3>
   {/if}
@@ -229,12 +235,20 @@
     transition: color 200ms ease;
   }
 
+  h3 {
+    margin-block-start: 4em;
+  }
+
   .primary {
     color: var(--md-sys-color-primary);
   }
 
   .error {
     color: var(--md-sys-color-error);
+  }
+
+  .container {
+    width: calc(min(100%, 16cm));
   }
 
   @keyframes rotate {
@@ -373,6 +387,11 @@
 
   .device {
     opacity: 0.6;
+  }
+
+  .inline-link {
+    display: inline;
+    padding: 0;
   }
 
   .correct-device {
