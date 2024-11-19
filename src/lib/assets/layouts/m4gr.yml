@@ -1,0 +1,24 @@
+name: M4GR
+col:
+  # Ring / Middle
+  - offset: [2, 0]
+    row:
+      - switch: { e: 23, n: 22, w: 21, s: 24 }
+      - switch: { e: 28, n: 27, w: 26, s: 29 }
+  - offset: [2, 0]
+    row:
+      - switch: { e: 38, n: 37, w: 36, s: 39 }
+      - switch: { e: 43, n: 42, w: 41, s: 44 }
+  # Pinkie / Index
+  - offset: [0, -3]
+    row:
+      - switch: { e: 18, n: 17, w: 16, s: 19 }
+      - offset: [4, 0]
+        switch: { e: 33, n: 32, w: 31, s: 34 }
+  # Thumbs
+  - row:
+      - offset: [0.5, 0.5]
+        switch: { e: 13, n: 12, w: 11, s: 14 }
+  - row:
+      - offset: [1.5, -0.25]
+        switch: { e: 8, n: 7, w: 6, s: 9 }

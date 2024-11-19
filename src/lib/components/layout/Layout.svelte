@@ -37,8 +37,8 @@
       import("$lib/assets/layouts/m4g.yml").then(
         (it) => it.default as VisualLayout,
       ),
-    M4G_RIGHT_HAND: () =>
-      import("$lib/assets/layouts/m4g_right_hand.yml").then(
+    M4GR: () =>
+      import("$lib/assets/layouts/m4gr.yml").then(
         (it) => it.default as VisualLayout,
       ),
   };

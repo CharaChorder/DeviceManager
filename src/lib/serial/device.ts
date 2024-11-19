@@ -26,7 +26,7 @@ const KEY_COUNTS = {
   LITE: 67,
   X: 256,
   M4G: 64,
-  M4G_RIGHT_HAND: 64,
+  M4GR: 64,
 } as const;
 
 if (
