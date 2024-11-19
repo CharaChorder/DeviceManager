@@ -27,9 +27,9 @@
         external: true,
       },
       { href: "/editor", icon: "edit_document", title: "Editor", wip: true },
+      { href: "https://chat.dev.charachorder.io", icon: "chat", title: "Chat", wip: true },
     ],
     /*[
-      { href: "/chat", icon: "chat", title: "Chat", wip: true },
       { href: "/plugin", icon: "code", title: "Plugin", wip: true },
     ],*/
   ] satisfies {
