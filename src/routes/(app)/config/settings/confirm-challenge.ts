@@ -1,12 +1,13 @@
 import type { Action } from "svelte/action";
 import ConfirmChallenge from "./ConfirmChallenge.svelte";
 import tippy from "tippy.js";
+import { mount, unmount } from "svelte";
 
 export const confirmChallenge: Action<
   HTMLElement,
   { onConfirm: () => void; challenge: string }
 > = (node, { onConfirm, challenge }) => {
-  let component: ConfirmChallenge | undefined;
+  let component: {} | undefined;
   let target: HTMLElement | undefined;
   const edit = tippy(node, {
     interactive: true,
@@ -15,15 +16,22 @@ export const confirmChallenge: Action<
       target = instance.popper.querySelector(".tippy-content") as HTMLElement;
       target.classList.add("active");
       if (component === undefined) {
-        component = new ConfirmChallenge({ target, props: { challenge } });
-        component.$on("confirm", () => {
-          edit.hide();
-          onConfirm();
+        component = mount(ConfirmChallenge, {
+          target,
+          props: {
+            challenge,
+            onconfirm() {
+              edit.hide();
+              onConfirm();
+            },
+          },
         });
       }
     },
     onHidden() {
-      component?.$destroy();
+      if (component) {
+        unmount(component);
+      }
       target?.classList.remove("active");
       component = undefined;
     },

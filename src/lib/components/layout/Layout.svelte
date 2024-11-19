@@ -37,6 +37,10 @@
       import("$lib/assets/layouts/m4g.yml").then(
         (it) => it.default as VisualLayout,
       ),
+    M4G_RIGHT_HAND: () =>
+      import("$lib/assets/layouts/m4g_right_hand.yml").then(
+        (it) => it.default as VisualLayout,
+      ),
   };
 </script>
 
@@ -70,6 +74,7 @@
 
     width: 100%;
     height: 100%;
+    max-height: 20cm;
   }
 
   fieldset {
