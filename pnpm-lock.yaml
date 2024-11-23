@@ -173,6 +173,9 @@ importers:
       vitest:
         specifier: ^2.1.4
         version: 2.1.4(@types/node@20.14.10)(jsdom@25.0.1)(sass@1.80.6)(terser@5.31.1)
+      web-serial-polyfill:
+        specifier: ^1.0.15
+        version: 1.0.15
       workbox-window:
         specifier: ^7.3.0
         version: 7.3.0
@@ -4059,6 +4062,9 @@ packages:
   w3c-xmlserializer@5.0.0:
     resolution: {integrity: sha512-o8qghlI8NZHU1lLPrpi2+Uq7abh4GGPpYANlalzWxyWteJOCsr/P+oPBA49TOLu5FTZO4d3F9MnWJfiMo4BkmA==}
     engines: {node: '>=18'}
+
+  web-serial-polyfill@1.0.15:
+    resolution: {integrity: sha512-usZN7kGRkEWr8DzRWxW+og55L1fHo4hNIwxCSCfWKpM+i0L+2AwzupMvkDFxnJNqUFOhLaD3PlgAOJxUOUrAoA==}
 
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
@@ -8335,6 +8341,8 @@ snapshots:
   w3c-xmlserializer@5.0.0:
     dependencies:
       xml-name-validator: 5.0.0
+
+  web-serial-polyfill@1.0.15: {}
 
   webidl-conversions@4.0.2: {}
 
