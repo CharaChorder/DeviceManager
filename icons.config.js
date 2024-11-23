@@ -110,6 +110,9 @@ const config = {
     "experiment",
     "code",
     "dictionary",
+    "developer_board",
+    "developer_board_off",
+    "memory",
   ],
   codePoints: {
     speed: "e9e4",

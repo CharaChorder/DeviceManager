@@ -2,6 +2,7 @@
   import { downloadBackup } from "$lib/backup/backup";
   import { initSerial, serialPort } from "$lib/serial/connection";
   import { fade, slide } from "svelte/transition";
+  import type { LoaderOptions, ESPLoader } from "esptool-js";
 
   let { data } = $props();
 
@@ -9,7 +10,12 @@
   let success = $state(false);
   let error = $state<Error | undefined>(undefined);
 
+  let terminalOutput = $state("");
+
   let step = $state(0);
+  let eraseAll = $state(false);
+
+  let espLoader;
 
   async function update() {
     working = true;
@@ -18,7 +24,9 @@
     const port = $serialPort!;
     $serialPort = undefined;
     try {
-      const file = await fetch(otaUrl!).then((it) => it.blob());
+      const file = await fetch(
+        `${data.meta.path}/${data.meta.update.ota!}`,
+      ).then((it) => it.blob());
 
       await port.updateFirmware(file);
 
@@ -36,18 +44,7 @@
       : undefined,
   );
   let isCorrectDevice = $derived(
-    currentDevice ? currentDevice === data.device : undefined,
-  );
-
-  let uf2Url = $derived(
-    data.uf2
-      ? `${import.meta.env.VITE_FIRMWARE_URL}${data.device}/${data.version}/${data.uf2.name}`
-      : undefined,
-  );
-  let otaUrl = $derived(
-    data.ota
-      ? `${import.meta.env.VITE_FIRMWARE_URL}${data.device}/${data.version}/${data.ota.name}`
-      : undefined,
+    currentDevice ? currentDevice === data.meta.target : undefined,
   );
 
   /**
@@ -84,10 +81,12 @@
   }
 
   async function getFileSystem() {
-    if (!uf2Url) return;
-    const uf2Promise = fetch(uf2Url).then((it) => it.blob());
+    if (!data.meta.update.uf2) return;
+    const uf2Promise = fetch(
+      `${data.meta.path}/${data.meta.update.uf2.name}`,
+    ).then((it) => it.blob());
     const handle = await window.showSaveFilePicker({
-      id: `${data.device}-update`,
+      id: `${data.meta.target}-update`,
       suggestedName: "CURRENT.UF2",
       excludeAcceptAllOption: true,
       types: [
@@ -102,21 +101,82 @@
     await uf2.stream().pipeTo(writable);
     step = 4;
   }
+
+  async function espBootloader() {
+    $serialPort?.forget();
+    const port = await navigator.serial.requestPort();
+    port.open({ baudRate: 1200 });
+  }
+
+  async function connectEsp(port: SerialPort): Promise<ESPLoader> {
+    const esptool = data.meta.update.esptool!;
+    const { Transport, ESPLoader } = await import("esptool-js");
+    const espLoader = new ESPLoader({
+      transport: new Transport(port),
+      baudrate: Number(esptool.baud),
+      romBaudrate: Number(esptool.baud),
+      terminal: {
+        clean: () => {
+          terminalOutput = "";
+        },
+        writeLine: (data) => {
+          terminalOutput += data + "\n";
+        },
+        write: (data) => {
+          terminalOutput += data;
+        },
+      },
+    } satisfies LoaderOptions);
+    await espLoader.connect(esptool.before);
+    await espLoader.runStub();
+
+    return espLoader;
+  }
+
+  async function flashImages() {
+    const port = await navigator.serial.requestPort();
+    try {
+      const esptool = data.meta.update.esptool!;
+      espLoader = await connectEsp(port);
+      const fileArray = await Promise.all(
+        Object.entries(esptool.files).map(([offset, name]) =>
+          fetch(`${data.meta.path}/${name}`)
+            .then((it) => it.blob())
+            .then((it) => it.text())
+            .then((it) => ({
+              address: Number(offset),
+              data: it,
+            })),
+        ),
+      );
+
+      await espLoader.writeFlash({
+        flashSize: esptool.flash_size,
+        flashMode: esptool.flash_mode,
+        flashFreq: esptool.flash_freq,
+        compress: true,
+        eraseAll,
+        fileArray,
+      });
+    } finally {
+      port.close();
+    }
+  }
 </script>
 
 <div class="container">
   <h2>
     <a class="inline-link" href="/ccos">CCOS</a> /
     <a
-      href="/ccos/{data.device}"
+      href="/ccos/{data.meta.target}"
       class="device inline-link"
       class:correct-device={isCorrectDevice === true}
-      class:incorrect-device={isCorrectDevice === false}>{data.device}</a
+      class:incorrect-device={isCorrectDevice === false}>{data.meta.target}</a
     >
-    / <em class="version">{data.version}</em>
+    / <em class="version">{data.meta.version}</em>
   </h2>
 
-  {#if data.ota && !data.device.endsWith("m0")}
+  {#if data.meta.update.ota && !data.meta.target.endsWith("m0")}
     {@const buttonError = error || (!success && isCorrectDevice === false)}
     <section>
       <button
@@ -136,7 +196,7 @@
             {$serialPort.chipset}</b
           >
           will be updated from <b class="version">{$serialPort.version}</b> to
-          <b class="version">{data.version}</b>
+          <b class="version">{data.meta.version}</b>
         </div>
       {:else if $serialPort && isCorrectDevice === false}
         <div class="error" transition:slide>
@@ -158,27 +218,6 @@
     <h3>Manual Update</h3>
   {/if}
 
-  <ul class="files">
-    {#if data.uf2}
-      <li>
-        <a target="_blank" download href={uf2Url}
-          >{data.uf2.name} <span class="icon">download</span><span class="size"
-            >{toByteUnit(data.uf2.size)}</span
-          ></a
-        >
-      </li>
-    {/if}
-    {#if data.ota}
-      <li>
-        <a target="_blank" download href={otaUrl}
-          >{data.ota.name} <span class="icon">download</span><span class="size"
-            >{toByteUnit(data.uf2.size)}</span
-          ></a
-        >
-      </li>
-    {/if}
-  </ul>
-
   {#if isCorrectDevice === false}
     <div transition:slide class="incorrect-device">
       These files are incompatible with your device
@@ -186,7 +225,6 @@
   {/if}
 
   <section>
-    <h4>UF2 Instructions</h4>
     <ol>
       <li>
         <button class="inline-button" onclick={connect}
@@ -227,6 +265,34 @@
       </li>
     </ol>
   </section>
+
+  {#if data.meta.update.esptool}
+    <section>
+      <h3>Factory Flash</h3>
+      <p>
+        If everything else fails, you can go through the same process that is
+        being used in the factory.
+      </p>
+      <p>
+        This will temporarily brick your device if the process is not done
+        completely or incorrectly.
+      </p>
+
+      <div class="esp-buttons">
+        <button onclick={espBootloader}
+          ><span class="icon">memory</span>ESP Bootloader</button
+        >
+        <button onclick={flashImages}
+          ><span class="icon">developer_board</span>Flash Images</button
+        >
+        <label
+          ><input type="checkbox" id="erase" bind:checked={eraseAll} />Erase All</label
+        >
+      </div>
+
+      <pre>{terminalOutput}</pre>
+    </section>
+  {/if}
 </div>
 
 <style lang="scss">
@@ -239,6 +305,10 @@
     margin-block-start: 4em;
   }
 
+  pre {
+    overflow: auto;
+  }
+
   .primary {
     color: var(--md-sys-color-primary);
   }
@@ -249,6 +319,7 @@
 
   .container {
     width: calc(min(100%, 16cm));
+    overflow: auto;
   }
 
   @keyframes rotate {
@@ -401,5 +472,9 @@
 
   .incorrect-device {
     color: var(--md-sys-color-error);
+  }
+
+  .esp-buttons {
+    display: flex;
   }
 </style>
