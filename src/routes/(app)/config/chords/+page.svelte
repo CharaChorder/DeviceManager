@@ -182,7 +182,7 @@
   function downloadVocabulary() {
     const vocabulary = new Set(
       $chords.map((it) =>
-        "phrase" in it ? plainPhrase(it.phrase, $osLayout).trim() : "",
+        "phrase" in it ? encodeChord(it, $osLayout).trim() : "",
       ),
     );
     vocabulary.delete("");
