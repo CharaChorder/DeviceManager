@@ -12,6 +12,21 @@ export interface VersionMeta {
     esptool: EspToolData | null;
   };
   files: string[];
+  spi_flash: SPIFlashInfo | null;
+}
+
+export interface SPIFlashInfo {
+  type: string;
+  size: string;
+  connection: SPIConnection;
+}
+
+export interface SPIConnection {
+  clk: number;
+  q: number;
+  d: number;
+  hd: number;
+  cs: number;
 }
 
 export interface EspToolData {

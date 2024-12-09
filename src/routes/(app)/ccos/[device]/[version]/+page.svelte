@@ -113,8 +113,9 @@
     const { Transport, ESPLoader } = await import("esptool-js");
     const espLoader = new ESPLoader({
       transport: new Transport(port),
-      baudrate: Number(esptool.baud),
-      romBaudrate: Number(esptool.baud),
+      baudrate: 9600, // Number(esptool.baud),
+      romBaudrate: 9600, // Number(esptool.baud),
+      debugLogging: true,
       terminal: {
         clean: () => {
           terminalOutput = "";
@@ -127,8 +128,10 @@
         },
       },
     } satisfies LoaderOptions);
-    await espLoader.connect(esptool.before);
-    await espLoader.runStub();
+    await espLoader.detectChip(esptool.before);
+    if (!espLoader.IS_STUB) {
+      await espLoader.runStub();
+    }
 
     return espLoader;
   }
@@ -158,6 +161,25 @@
         eraseAll,
         fileArray,
       });
+    } finally {
+      port.close();
+    }
+  }
+
+  async function eraseSPI() {
+    const port = await navigator.serial.requestPort();
+    try {
+      console.log(data.meta);
+      const spiFlash = data.meta.spi_flash!;
+      espLoader = await connectEsp(port);
+
+      /*espLoader.flashSpiAttach(
+        (spiFlash.connection.clk << 0) |
+          (spiFlash.connection.q << 8) |
+          (spiFlash.connection.d << 16) |
+          (spiFlash.connection.cs << 24),
+      );
+      espLoader.flashId();*/
     } finally {
       port.close();
     }
@@ -287,6 +309,9 @@
         >
         <label
           ><input type="checkbox" id="erase" bind:checked={eraseAll} />Erase All</label
+        >
+        <button onclick={eraseSPI}
+          ><span class="icon">developer_board</span>Erase SPI Flash</button
         >
       </div>
 

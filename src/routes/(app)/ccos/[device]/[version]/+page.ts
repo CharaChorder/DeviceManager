@@ -44,6 +44,7 @@ export const load = (async ({ fetch, params }) => {
         (entry) =>
           entry.type === "file" && (!meta?.files || entry.name in meta.files),
       ) as FileListing[],
+      spi_flash: meta?.spi_flash ?? undefined,
     },
   };
 }) satisfies PageLoad;

@@ -25,8 +25,8 @@ const KEY_COUNTS = {
   TWO: 90,
   LITE: 67,
   X: 256,
-  M4G: 64,
-  M4GR: 64,
+  M4G: 90,
+  M4GR: 90,
 } as const;
 
 if (
