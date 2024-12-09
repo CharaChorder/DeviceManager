@@ -43,7 +43,7 @@
     buildIndex($chords, $osLayout).then(searchIndex.set);
   });
 
-  function encodeChord(chord: ChordInfo, osLayout: Map<string, string>) {
+  function encodeChord(chord: ChordInfo, osLayout: Map<string, string>, onlyPhrase: boolean = false) {
     const plainPhrase: string[] = [""];
     const extraActions: string[] = [];
     const extraCodes: string[] = [];
@@ -102,6 +102,10 @@
         const result = osCode?.length === 1 ? osCode : info.id;
         return result ?? `0x${it.toString(16)}`;
       });
+
+    if (onlyPhrase) {
+      return plainPhrase.join();
+    }
 
     return [
       ...plainPhrase,
@@ -182,7 +186,7 @@
   function downloadVocabulary() {
     const vocabulary = new Set(
       $chords.map((it) =>
-        "phrase" in it ? plainPhrase(it.phrase, $osLayout).trim() : "",
+        "phrase" in it ? encodeChord(it, $osLayout, true).trim() : "",
       ),
     );
     vocabulary.delete("");
