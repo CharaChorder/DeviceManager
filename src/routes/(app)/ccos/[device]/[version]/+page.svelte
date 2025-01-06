@@ -290,7 +290,7 @@
 
   {#if data.meta.update.esptool}
     <section>
-      <h3>Factory Flash</h3>
+      <h3>Factory Flash (WIP)</h3>
       <p>
         If everything else fails, you can go through the same process that is
         being used in the factory.
