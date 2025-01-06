@@ -4,8 +4,8 @@
   "license": "AGPL-3.0-or-later",
   "private": true,
   "engines": {
-    "node": ">=18.16",
-    "pnpm": ">=8.6"
+    "node": ">=22.4",
+    "pnpm": ">=9.4"
   },
   "repository": {
     "type": "git",
