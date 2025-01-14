@@ -25,7 +25,7 @@
     $serialPort = undefined;
     try {
       const file = await fetch(
-        `${data.meta.path}/${data.meta.update.ota!}`,
+        `${data.meta.path}/${data.meta.update.ota?.name}`,
       ).then((it) => it.blob());
 
       await port.updateFirmware(file);
