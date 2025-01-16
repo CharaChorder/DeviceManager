@@ -8,10 +8,13 @@
     KeyboardEventHandler,
     MouseEventHandler,
   } from "svelte/elements";
+  import { type Writable } from "svelte/store";
 
   const { scale, margin, strokeWidth } = getContext<VisualLayoutConfig>(
     "visual-layout-config",
   );
+
+  const highlight = getContext<Writable<Set<number>> | undefined>("highlight");
 
   let {
     i,
@@ -35,6 +38,8 @@
 
 <g
   class="key-group"
+  class:highlight={$highlight?.has(key.id) === true}
+  class:faded={$highlight?.has(key.id) === false}
   {onclick}
   {onkeypress}
   {onfocusin}
@@ -131,12 +136,14 @@
     stroke-opacity: 0.3;
   }
 
+  g.faded,
   g:hover {
     cursor: default;
     opacity: 0.6;
     transition: opacity #{$transition} ease;
   }
 
+  g.highlight,
   g:focus-within {
     color: var(--md-sys-color-primary);
     outline: none;

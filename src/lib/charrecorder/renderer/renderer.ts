@@ -36,6 +36,7 @@ export class TextRenderer {
     );
     this.cursorNode.setAttribute("x", "0");
     this.cursorNode.setAttribute("y", "0");
+    this.cursorNode.setAttribute("class", "cursor");
     this.svg.appendChild(this.cursorNode);
   }
 

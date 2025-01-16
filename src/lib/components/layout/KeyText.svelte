@@ -11,6 +11,9 @@
   const { fontSize, margin, inactiveOpacity, inactiveScale, iconFontSize } =
     getContext<VisualLayoutConfig>("visual-layout-config");
   const activeLayer = getContext<Writable<number>>("active-layer");
+  const currentAction = getContext<Writable<Set<number>> | undefined>(
+    "highlight-action",
+  );
 
   let {
     key,
@@ -47,6 +50,7 @@
   ]}
   {@const hasIcon = !dynamicMapping && !!icon}
   <text
+    class:hidden={$currentAction?.has(actionId) === false}
     fill={isApplied ? "currentcolor" : "var(--md-sys-color-primary)"}
     font-weight={isApplied ? "" : "bold"}
     text-anchor="middle"
@@ -95,5 +99,9 @@
 
   text:focus-within {
     outline: none;
+  }
+
+  text.hidden {
+    opacity: 0.2;
   }
 </style>

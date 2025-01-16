@@ -134,9 +134,9 @@ export class CharaDevice {
       await this.port.close();
 
       this.version = new SemVer(
-        await this.send(1, "VERSION").then(([version]) => version),
+        await this.send(1, ["VERSION"]).then(([version]) => version),
       );
-      const [company, device, chipset] = await this.send(3, "ID");
+      const [company, device, chipset] = await this.send(3, ["ID"]);
       this.company = company as typeof this.company;
       this.device = device as typeof this.device;
       this.chipset = chipset as typeof this.chipset;
@@ -185,9 +185,12 @@ export class CharaDevice {
     });
   }
 
-  private async internalRead() {
+  private async internalRead(timeoutMs: number | undefined) {
     try {
-      const { value } = await timeout(this.reader.read(), 5000);
+      const { value } =
+        timeoutMs !== undefined
+          ? await timeout(this.reader.read(), timeoutMs)
+          : await this.reader.read();
       serialLog.update((it) => {
         it.push({
           type: "output",
@@ -278,14 +281,15 @@ export class CharaDevice {
    */
   async send<T extends number>(
     expectedLength: T,
-    ...command: string[]
+    command: string[],
+    timeout: number | undefined = 5000,
   ): Promise<LengthArray<string, T>> {
     return this.runWith(async (send, read) => {
       await send(...command);
       const commandString = command
         .join(" ")
         .replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-      const readResult = await read();
+      const readResult = await read(timeout);
       if (readResult === undefined) {
         console.error("No response");
         return Array(expectedLength).fill("NO_RESPONSE") as LengthArray<
@@ -307,7 +311,7 @@ export class CharaDevice {
   }
 
   async getChordCount(): Promise<number> {
-    const [count] = await this.send(1, "CML C0");
+    const [count] = await this.send(1, ["CML", "C0"]);
     return Number.parseInt(count);
   }
 
@@ -315,7 +319,11 @@ export class CharaDevice {
    * Retrieves a chord by index
    */
   async getChord(index: number | number[]): Promise<Chord> {
-    const [actions, phrase] = await this.send(2, `CML C1 ${index}`);
+    const [actions, phrase] = await this.send(2, [
+      "CML",
+      "C1",
+      index.toString(),
+    ]);
     return {
       actions: parseChordActions(actions),
       phrase: parsePhrase(phrase),
@@ -326,29 +334,30 @@ export class CharaDevice {
    * Retrieves the phrase for a set of actions
    */
   async getChordPhrase(actions: number[]): Promise<number[] | undefined> {
-    const [phrase] = await this.send(
-      1,
-      `CML C2 ${stringifyChordActions(actions)}`,
-    );
+    const [phrase] = await this.send(1, [
+      "CML",
+      "C2",
+      stringifyChordActions(actions),
+    ]);
     return phrase === "2" ? undefined : parsePhrase(phrase);
   }
 
   async setChord(chord: Chord) {
-    const [status] = await this.send(
-      1,
+    const [status] = await this.send(1, [
       "CML",
       "C3",
       stringifyChordActions(chord.actions),
       stringifyPhrase(chord.phrase),
-    );
+    ]);
     if (status !== "0") console.error(`Failed with status ${status}`);
   }
 
   async deleteChord(chord: Pick<Chord, "actions">) {
-    const status = await this.send(
-      1,
-      `CML C4 ${stringifyChordActions(chord.actions)}`,
-    );
+    const status = await this.send(1, [
+      "CML",
+      "C4",
+      stringifyChordActions(chord.actions),
+    ]);
     if (status?.at(-1) !== "2" && status?.at(-1) !== "0")
       throw new Error(`Failed with status ${status}`);
   }
@@ -360,7 +369,13 @@ export class CharaDevice {
    * @param action the assigned action id
    */
   async setLayoutKey(layer: number, id: number, action: number) {
-    const [status] = await this.send(1, `VAR B4 A${layer} ${id} ${action}`);
+    const [status] = await this.send(1, [
+      "VAR",
+      "B4",
+      `A${layer}`,
+      id.toString(),
+      action.toString(),
+    ]);
     if (status !== "0") throw new Error(`Failed with status ${status}`);
   }
 
@@ -371,7 +386,12 @@ export class CharaDevice {
    * @returns the assigned action id
    */
   async getLayoutKey(layer: number, id: number) {
-    const [position, status] = await this.send(2, `VAR B3 A${layer} ${id}`);
+    const [position, status] = await this.send(2, [
+      "VAR",
+      "B3",
+      `A${layer}`,
+      id.toString(),
+    ]);
     if (status !== "0") throw new Error(`Failed with status ${status}`);
     return Number(position);
   }
@@ -384,7 +404,7 @@ export class CharaDevice {
    * **This does not need to be called for chords**
    */
   async commit() {
-    const [status] = await this.send(1, "VAR B0");
+    const [status] = await this.send(1, ["VAR", "B0"]);
     if (status !== "0") throw new Error(`Failed with status ${status}`);
   }
 
@@ -395,10 +415,12 @@ export class CharaDevice {
    * To permanently store the settings, you *must* call commit.
    */
   async setSetting(id: number, value: number) {
-    const [status] = await this.send(
-      1,
-      `VAR B2 ${id.toString(16).toUpperCase()} ${value}`,
-    );
+    const [status] = await this.send(1, [
+      "VAR",
+      "B2",
+      id.toString(16).toUpperCase(),
+      value.toString(),
+    ]);
     if (status !== "0") throw new Error(`Failed with status ${status}`);
   }
 
@@ -406,10 +428,11 @@ export class CharaDevice {
    * Retrieves a setting from the device
    */
   async getSetting(id: number): Promise<number> {
-    const [value, status] = await this.send(
-      2,
-      `VAR B1 ${id.toString(16).toUpperCase()}`,
-    );
+    const [value, status] = await this.send(2, [
+      "VAR",
+      "B1",
+      id.toString(16).toUpperCase(),
+    ]);
     if (status !== "0")
       throw new Error(
         `Setting "0x${id.toString(16)}" doesn't exist (Status code ${status})`,
@@ -421,14 +444,14 @@ export class CharaDevice {
    * Reboots the device
    */
   async reboot() {
-    await this.send(0, "RST");
+    await this.send(0, ["RST"]);
   }
 
   /**
    * Reboots the device to the bootloader
    */
   async bootloader() {
-    await this.send(0, "RST BOOTLOADER");
+    await this.send(0, ["RST", "BOOTLOADER"]);
   }
 
   /**
@@ -437,7 +460,12 @@ export class CharaDevice {
   async reset(
     type: "FACTORY" | "PARAMS" | "KEYMAPS" | "STARTER" | "CLEARCML" | "FUNC",
   ) {
-    await this.send(0, `RST ${type}`);
+    await this.send(0, ["RST", type]);
+  }
+
+  async queryKey(): Promise<number> {
+    const [value] = await this.send(1, ["QRY", "KEY"], undefined);
+    return Number(value);
   }
 
   /**
@@ -446,7 +474,7 @@ export class CharaDevice {
    * This is useful for debugging when there is a suspected heap or stack issue.
    */
   async getRamBytesAvailable(): Promise<number> {
-    return Number(await this.send(1, "RAM").then(([bytes]) => bytes));
+    return Number(await this.send(1, ["RAM"]).then(([bytes]) => bytes));
   }
 
   async updateFirmware(file: File | Blob): Promise<void> {

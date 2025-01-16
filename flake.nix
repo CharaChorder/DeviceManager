@@ -14,7 +14,13 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        overlays = [ (import rust-overlay) ];
+        overlays = [
+          (import rust-overlay)
+          (final: prev: {
+            nodejs = prev.nodejs_22;
+            corepack = prev.corepack_22;
+          })
+        ];
         pkgs = import nixpkgs { inherit system overlays; };
         rust-bin = pkgs.rust-bin.stable.latest.default.override {
           extensions = [
@@ -46,8 +52,8 @@
         ];
         packages =
           (with pkgs; [
-            nodejs_22
-            nodePackages.pnpm
+            nodejs
+            pnpm
             rust-bin
             fontMin
           ])
