@@ -13,21 +13,22 @@
   import TrackText from "$lib/charrecorder/TrackText.svelte";
   import { browser } from "$app/environment";
 
-  function initialThresholds(): [slow: number, fast: number][] {
+  function viaLocalStorage<T>(key: string, initial: T) {
     try {
-      return JSON.parse(localStorage.getItem("mastery-thresholds") ?? "");
+      return JSON.parse(localStorage.getItem(key) ?? "");
     } catch {
-      return [
-        [1500, 1050],
-        [3000, 2500],
-        [5000, 3500],
-        [6000, 5000],
-      ];
+      return initial;
     }
   }
 
-  let masteryThresholds: [slow: number, fast: number][] =
-    $state(initialThresholds());
+  let masteryThresholds: [slow: number, fast: number][] = $state(
+    viaLocalStorage("mastery-thresholds", [
+      [1500, 1050],
+      [3000, 2500],
+      [5000, 3500],
+      [6000, 5000],
+    ]),
+  );
 
   let inputSentence = $derived(
     (browser && $page.url.searchParams.get("sentence")) || "Hello World",
@@ -46,6 +47,10 @@
   let wpm = $state(0);
   let chords: InferredChord[] = $state([]);
   let recorder = $state(new ReplayRecorder());
+  let idle = $state(true);
+  let idleTime = $state(viaLocalStorage("idle-timeout", 100));
+
+  let idleTimeout: ReturnType<typeof setTimeout> | null = null;
 
   let cooldown = $state(false);
 
@@ -57,6 +62,10 @@
     if (lastWPM > bestWPM) {
       bestWPM = lastWPM;
     }
+  });
+
+  $effect(() => {
+    localStorage.setItem("idle-timeout", idleTime.toString());
   });
 
   $effect(() => {
@@ -148,7 +157,7 @@
   function checkInput() {
     if (recorder.player.stepper.challenge.length === 0) return;
     const replay = recorder.finish(false);
-    const elapsed = replay.finish - replay.start!;
+    const elapsed = replay.finish - replay.start! - idleTime;
     if (elapsed < masteryThresholds[level]![0]) {
       lastWPM = wpm;
 
@@ -157,19 +166,22 @@
       wordStats.set(currentWord, prevStats.slice(-10));
     }
 
-    cooldown = true;
-    setTimeout(() => {
-      selectNextWord();
-      cooldown = false;
-    });
+    selectNextWord();
   }
 
   $effect(() => {
-    if (!cooldown && text && text === currentWord) checkInput();
+    if (idle && text && text.trim() === currentWord.trim()) checkInput();
   });
 
   function onkey(event: KeyboardEvent) {
+    if (idleTimeout) {
+      clearTimeout(idleTimeout);
+    }
+    idle = false;
     recorder.next(event);
+    idleTimeout = setTimeout(() => {
+      idle = true;
+    }, idleTime);
   }
 </script>
 
@@ -273,6 +285,7 @@
   </div>
   {#if devTools}
     <div>Dev Tools</div>
+    <label>Idle Time <input bind:value={idleTime} /></label>
     <table>
       <tbody>
         {#each masteryThresholds as _, i}
