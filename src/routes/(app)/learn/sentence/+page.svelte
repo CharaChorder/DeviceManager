@@ -4,14 +4,14 @@
   import CharRecorder from "$lib/charrecorder/CharRecorder.svelte";
   import { ReplayRecorder } from "$lib/charrecorder/core/recorder";
   import { shuffleInPlace } from "$lib/util/shuffle";
-  import TrackWpm from "$lib/charrecorder/TrackWpm.svelte";
-  import { fly } from "svelte/transition";
+  import { fade, fly, slide } from "svelte/transition";
   import TrackChords from "$lib/charrecorder/TrackChords.svelte";
   import ChordHud from "$lib/charrecorder/ChordHud.svelte";
   import type { InferredChord } from "$lib/charrecorder/core/types";
   import { onMount } from "svelte";
   import TrackText from "$lib/charrecorder/TrackText.svelte";
   import { browser } from "$app/environment";
+  import { expoIn, expoOut } from "svelte/easing";
 
   function viaLocalStorage<T>(key: string, initial: T) {
     try {
@@ -21,28 +21,42 @@
     }
   }
 
-  let masteryThresholds: [slow: number, fast: number][] = $state(
+  let masteryThresholds: [slow: number, fast: number, title: string][] = $state(
     viaLocalStorage("mastery-thresholds", [
-      [1500, 1050],
-      [3000, 2500],
-      [5000, 3500],
-      [6000, 5000],
+      [1500, 1050, "Words"],
+      [3000, 2500, "Pairs"],
+      [5000, 3500, "Trios"],
     ]),
   );
 
+  const avgWordLength = 5;
+
+  function reset() {
+    localStorage.removeItem("mastery-thresholds");
+    localStorage.removeItem("idle-timeout");
+    window.location.reload();
+  }
+
   let inputSentence = $derived(
     (browser && $page.url.searchParams.get("sentence")) || "Hello World",
+  );
+  let wpmTarget = $derived(
+    (browser && Number($page.url.searchParams.get("wpm"))) || 250,
   );
   let devTools = $derived(
     browser && $page.url.searchParams.get("dev") === "true",
   );
   let sentenceWords = $derived(inputSentence.split(" "));
+  let msPerChar = $derived((1 / ((wpmTarget / 60) * avgWordLength)) * 1000);
+  let totalMs = $derived(inputSentence.length * msPerChar);
+  let msPerWord = $derived(
+    (inputSentence.length * msPerChar) / inputSentence.split(" ").length,
+  );
   let currentWord = $state("");
   let wordStats = new SvelteMap<string, number[]>();
   let wordMastery = new SvelteMap<string, number>();
   let text = $state("");
   let level = $state(0);
-  let lastWPM = $state(0);
   let bestWPM = $state(0);
   let wpm = $state(0);
   let chords: InferredChord[] = $state([]);
@@ -59,8 +73,8 @@
   });
 
   $effect(() => {
-    if (lastWPM > bestWPM) {
-      bestWPM = lastWPM;
+    if (wpm > bestWPM) {
+      bestWPM = wpm;
     }
   });
 
@@ -107,8 +121,8 @@
   $effect(() => {
     for (const [word, speeds] of wordStats.entries()) {
       const level = word.split(" ").length - 1;
-      const masteryThreshold =
-        masteryThresholds[level] ?? masteryThresholds.at(-1)!;
+      const masteryThreshold = masteryThresholds[level];
+      if (masteryThreshold === undefined) continue;
       const averageSpeed = speeds.reduce((a, b) => a + b) / speeds.length;
       wordMastery.set(
         word,
@@ -125,15 +139,22 @@
     }
   });
 
-  let progress = $derived.by(() => {
-    return words.length > 0
-      ? words.reduce((a, word) => a + (wordMastery.get(word) ?? 0), 0) /
+  let progress = $derived(
+    level === masteryThresholds.length
+      ? Math.min(1, Math.max(0, bestWPM / wpmTarget))
+      : words.length > 0
+        ? words.reduce((a, word) => a + (wordMastery.get(word) ?? 0), 0) /
           words.length
-      : 0;
-  });
+        : 0,
+  );
+  let mastered = $derived(
+    words.length > 0
+      ? words.filter((it) => wordMastery.get(it) === 1).length / words.length
+      : 0,
+  );
 
   $effect(() => {
-    if (progress === 1 && level < masteryThresholds.length - 1) {
+    if (progress === 1 && level < masteryThresholds.length) {
       level++;
     }
   });
@@ -149,7 +170,6 @@
       nextWord = word;
       break;
     }
-    text = "";
     currentWord = nextWord;
     recorder = new ReplayRecorder(nextWord);
   }
@@ -159,18 +179,30 @@
     const replay = recorder.finish(false);
     const elapsed = replay.finish - replay.start! - idleTime;
     if (elapsed < masteryThresholds[level]![0]) {
-      lastWPM = wpm;
-
       const prevStats = wordStats.get(currentWord) ?? [];
       prevStats.push(elapsed);
       wordStats.set(currentWord, prevStats.slice(-10));
     }
 
-    selectNextWord();
+    text = "";
+    setTimeout(() => {
+      selectNextWord();
+    });
   }
 
   $effect(() => {
-    if (idle && text && text.trim() === currentWord.trim()) checkInput();
+    if (!idle || !text) return;
+    if (text.trim() !== currentWord.trim()) return;
+    if (level === masteryThresholds.length) {
+      const replay = recorder.finish();
+      const elapsed = replay.finish - replay.start!;
+      text = "";
+      recorder = new ReplayRecorder(currentWord);
+      console.log(elapsed, totalMs);
+      wpm = (totalMs / elapsed) * wpmTarget;
+    } else {
+      checkInput();
+    }
   });
 
   function onkey(event: KeyboardEvent) {
@@ -189,7 +221,7 @@
   <h1>Sentence Trainer</h1>
 
   <div class="levels">
-    {#each masteryThresholds as _, i}
+    {#each masteryThresholds as [, , title], i}
       <button
         class:active={level === i}
         class:mastered={i < level || progress === 1}
@@ -199,17 +231,42 @@
           selectNextWord();
         }}
       >
-        Level {i + 1}
+        {title}
       </button>
     {/each}
+    <button
+      class:active={level === masteryThresholds.length}
+      class:mastered={masteryThresholds.length < level || progress === 1}
+      class="threshold"
+      onclick={() => {
+        level = masteryThresholds.length;
+        selectNextWord();
+      }}
+    >
+      {wpmTarget} WPM
+    </button>
     {#each masteryThresholds as _, i}
       <div
         class="progress"
         style:--progress="{-100 *
           (1 - (level === i ? progress : i < level ? 1 : 0))}%"
+        style:--mastered="{-100 *
+          (1 - (level === i ? mastered : i < level ? 1 : 0))}%"
         class:active={level === i}
       ></div>
     {/each}
+    <div
+      class="progress"
+      style:--progress="-100%"
+      style:--mastered="{-100 *
+        (1 -
+          (level === masteryThresholds.length
+            ? progress
+            : masteryThresholds.length < level
+              ? 1
+              : 0))}%"
+      class:active={level === masteryThresholds.length}
+    ></div>
   </div>
   <div class="sentence">
     {#each sentenceWords as _, i}
@@ -253,6 +310,55 @@
       {/if}
     {/each}
   </div>
+  {#if level === masteryThresholds.length}
+    {@const maxDigits = 4}
+    {@const indices = Array.from({ length: maxDigits }, (_, i) => i)}
+    {@const wpmString = Math.floor(bestWPM).toString().padStart(maxDigits, " ")}
+    <div class="finish" transition:slide>
+      <div
+        class="wpm"
+        style:grid-template-columns="repeat({maxDigits}, 1ch) 1ch auto"
+        style:opacity={progress}
+        style:font-size="3rem"
+        style:color="var(--md-sys-color-{progress === 1
+          ? 'primary'
+          : 'on-background'})"
+        style:scale={(progress + 0.5) / 2}
+      >
+        {#each indices as i}
+          {@const char = wpmString[i]}
+          {#key char}
+            <div
+              style:grid-column={i + 1}
+              in:fly={{ y: 20, duration: 1000, easing: expoOut }}
+              out:fly={{ y: -20, duration: 1000, easing: expoOut }}
+            >
+              {char}
+            </div>
+          {/key}
+        {/each}
+        <div style:grid-column={maxDigits + 3} style:justify-self="start">
+          WPM
+        </div>
+      </div>
+      <div
+        class="wpm"
+        style:grid-template-columns="4ch 1ch auto"
+        style:font-size="1.5rem"
+      >
+        {#key wpm}
+          <div
+            style:grid-column={1}
+            style:justify-self="end"
+            transition:fade={{ duration: 200 }}
+          >
+            {Math.floor(wpm)}
+          </div>
+        {/key}
+        <div style:grid-column={3} style:justify-self="start">WPM</div>
+      </div>
+    </div>
+  {/if}
   <ChordHud {chords} />
   <div class="container">
     <div
@@ -262,30 +368,48 @@
       tabindex="0"
       role="textbox"
     >
-      {#if level === masteryThresholds.length - 1 && progress === 1}
-        <div class="finish" in:fly={{ y: -50, duration: 500 }}>
-          You have mastered this sentence!
+      {#key recorder}
+        <div class="input" transition:fade={{ duration: 200 }}>
+          <CharRecorder replay={recorder.player} cursor={true} keys={true}>
+            <TrackText bind:text />
+            <TrackChords bind:chords />
+          </CharRecorder>
         </div>
-      {:else}
-        {#key recorder}
-          <div
-            class="input"
-            out:fly={{ y: 50, duration: 200 }}
-            in:fly={{ y: -50, duration: 500 }}
-          >
-            <CharRecorder replay={recorder.player} cursor={true} keys={true}>
-              <TrackText bind:text />
-              <TrackWpm bind:wpm />
-              <TrackChords bind:chords />
-            </CharRecorder>
-          </div>
-        {/key}
-      {/if}
+      {/key}
     </div>
   </div>
   {#if devTools}
     <div>Dev Tools</div>
+    <button onclick={reset}>Reset</button>
     <label>Idle Time <input bind:value={idleTime} /></label>
+    <table>
+      <tbody>
+        <tr>
+          <th>Total</th>
+          <td
+            ><span style:color="var(--md-sys-color-tertiary)"
+              >{Math.round(totalMs)}</span
+            >ms</td
+          >
+        </tr>
+        <tr>
+          <th>Char</th>
+          <td
+            ><span style:color="var(--md-sys-color-tertiary)"
+              >{Math.round(msPerChar)}</span
+            >ms</td
+          >
+        </tr>
+        <tr>
+          <th>Word</th>
+          <td
+            ><span style:color="var(--md-sys-color-tertiary)"
+              >{Math.round(msPerWord)}</span
+            >ms</td
+          >
+        </tr>
+      </tbody>
+    </table>
     <table>
       <tbody>
         {#each masteryThresholds as _, i}
@@ -293,6 +417,7 @@
             <th>L{i + 1}</th>
             <td><input bind:value={masteryThresholds[i]![0]} /></td>
             <td><input bind:value={masteryThresholds[i]![1]} /></td>
+            <td><input bind:value={masteryThresholds[i]![2]} /></td>
           </tr>
         {/each}
       </tbody>
@@ -330,13 +455,22 @@
     }
   }
 
+  .wpm {
+    width: min-content;
+    display: grid;
+    transition: scale 0.2s ease;
+
+    * {
+      grid-row: 1;
+    }
+  }
+
   .finish {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
     font-weight: bold;
-    grid-row: 1;
-    grid-column: 1;
-    color: var(--md-sys-color-primary);
-    text-align: center;
-    font-size: 1.5rem;
+    justify-items: center;
+    align-items: center;
   }
 
   .sentence {
@@ -371,14 +505,24 @@
     overflow: hidden;
     grid-row: 2;
 
+    &::before,
     &::after {
+      position: absolute;
       content: "";
       display: block;
       height: 100%;
       width: 100%;
-      background: var(--md-sys-color-primary);
-      transform: translateX(var(--progress));
       transition: transform 0.2s;
+    }
+
+    &::before {
+      background: var(--md-sys-color-outline);
+      transform: translateX(var(--progress));
+    }
+
+    &::after {
+      background: var(--md-sys-color-primary);
+      transform: translateX(var(--mastered));
     }
   }
 
@@ -387,6 +531,7 @@
     justify-self: center;
     opacity: 0.5;
     transition: opacity 0.2s;
+    grid-row: 1;
 
     &.mastered,
     &.active {
