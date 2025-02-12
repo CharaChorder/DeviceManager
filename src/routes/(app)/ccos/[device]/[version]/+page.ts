@@ -1,6 +1,6 @@
 import type { PageLoad } from "./$types";
 import type { FileListing, Listing } from "../../listing";
-import type { VersionMeta } from "./meta";
+import type { VersionMeta } from "$lib/meta";
 
 export const load = (async ({ fetch, params }) => {
   const result = await fetch(
@@ -23,7 +23,7 @@ export const load = (async ({ fetch, params }) => {
       git_commit: meta?.git_commit ?? "",
       git_is_dirty: meta?.git_is_dirty ?? false,
       git_date: meta?.git_date ?? data[0]?.mtime ?? "",
-      public_build: meta?.public_build ?? !params.version.startsWith("."),
+      public_build: meta?.public_build ?? !params.version.includes("+"),
       development_mode: meta?.development_mode ?? 0,
       update: {
         uf2:

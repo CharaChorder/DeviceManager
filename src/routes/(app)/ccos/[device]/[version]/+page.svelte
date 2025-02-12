@@ -10,6 +10,8 @@
   let success = $state(false);
   let error = $state<Error | undefined>(undefined);
 
+  let unsafeUpdate = $state(false);
+
   let terminalOutput = $state("");
 
   let step = $state(0);
@@ -187,17 +189,6 @@
 </script>
 
 <div class="container">
-  <h2>
-    <a class="inline-link" href="/ccos">CCOS</a> /
-    <a
-      href="/ccos/{data.meta.target}"
-      class="device inline-link"
-      class:correct-device={isCorrectDevice === true}
-      class:incorrect-device={isCorrectDevice === false}>{data.meta.target}</a
-    >
-    / <em class="version">{data.meta.version}</em>
-  </h2>
-
   {#if data.meta.update.ota && !data.meta.target.endsWith("m0")}
     {@const buttonError = error || (!success && isCorrectDevice === false)}
     <section>
@@ -237,87 +228,92 @@
       {/if}
     </section>
 
-    <h3>Manual Update</h3>
+    <label class="unsafe-opt-in"
+      ><input type="checkbox" /> Unsafe recovery options</label
+    >
   {/if}
 
-  {#if isCorrectDevice === false}
-    <div transition:slide class="incorrect-device">
-      These files are incompatible with your device
-    </div>
-  {/if}
-
-  <section>
-    <ol>
-      <li>
-        <button class="inline-button" onclick={connect}
-          ><span class="icon">usb</span>Connect</button
-        >
-        your device
-        {#if step >= 1}
-          <span class="icon ok" transition:fade>check_circle</span>
-        {/if}
-      </li>
-
-      <li class:faded={step < 1}>
-        Make a <button class="inline-button" onclick={backup}
-          ><span class="icon">download</span>Backup</button
-        >
-        {#if step >= 2}
-          <span class="icon ok" transition:fade>check_circle</span>
-        {/if}
-      </li>
-
-      <li class:faded={step < 2}>
-        Reboot to <button class="inline-button" onclick={bootloader}
-          ><span class="icon">restart_alt</span>Bootloader</button
-        >
-        {#if step >= 3}
-          <span class="icon ok" transition:fade>check_circle</span>
-        {/if}
-      </li>
-
-      <li class:faded={step < 3}>
-        Replace <button class="inline-button" onclick={getFileSystem}
-          ><span class="icon">deployed_code_update</span>CURRENT.UF2</button
-        >
-        on the new drive
-        {#if step >= 4}
-          <span class="icon ok" transition:fade>check_circle</span>
-        {/if}
-      </li>
-    </ol>
-  </section>
-
-  {#if data.meta.update.esptool}
-    <section>
-      <h3>Factory Flash (WIP)</h3>
-      <p>
-        If everything else fails, you can go through the same process that is
-        being used in the factory.
-      </p>
-      <p>
-        This will temporarily brick your device if the process is not done
-        completely or incorrectly.
-      </p>
-
-      <div class="esp-buttons">
-        <button onclick={espBootloader}
-          ><span class="icon">memory</span>ESP Bootloader</button
-        >
-        <button onclick={flashImages}
-          ><span class="icon">developer_board</span>Flash Images</button
-        >
-        <label
-          ><input type="checkbox" id="erase" bind:checked={eraseAll} />Erase All</label
-        >
-        <button onclick={eraseSPI}
-          ><span class="icon">developer_board</span>Erase SPI Flash</button
-        >
+  <div class="unsafe-updates">
+    {#if isCorrectDevice === false}
+      <div transition:slide class="incorrect-device">
+        These files are incompatible with your device
       </div>
+    {/if}
 
-      <pre>{terminalOutput}</pre>
+    <section>
+      <ol>
+        <li>
+          <button class="inline-button" onclick={connect}
+            ><span class="icon">usb</span>Connect</button
+          >
+          your device
+          {#if step >= 1}
+            <span class="icon ok" transition:fade>check_circle</span>
+          {/if}
+        </li>
+
+        <li class:faded={step < 1}>
+          Make a <button class="inline-button" onclick={backup}
+            ><span class="icon">download</span>Backup</button
+          >
+          {#if step >= 2}
+            <span class="icon ok" transition:fade>check_circle</span>
+          {/if}
+        </li>
+
+        <li class:faded={step < 2}>
+          Reboot to <button class="inline-button" onclick={bootloader}
+            ><span class="icon">restart_alt</span>Bootloader</button
+          >
+          {#if step >= 3}
+            <span class="icon ok" transition:fade>check_circle</span>
+          {/if}
+        </li>
+
+        <li class:faded={step < 3}>
+          Replace <button class="inline-button" onclick={getFileSystem}
+            ><span class="icon">deployed_code_update</span>CURRENT.UF2</button
+          >
+          on the new drive
+          {#if step >= 4}
+            <span class="icon ok" transition:fade>check_circle</span>
+          {/if}
+        </li>
+      </ol>
     </section>
-  {/if}
+
+    {#if data.meta.update.esptool}
+      <section>
+        <h3>Factory Flash (WIP)</h3>
+        <p>
+          If everything else fails, you can go through the same process that is
+          being used in the factory.
+        </p>
+        <p>
+          This will temporarily brick your device if the process is not done
+          completely or incorrectly.
+        </p>
+
+        <div class="esp-buttons">
+          <button onclick={espBootloader}
+            ><span class="icon">memory</span>ESP Bootloader</button
+          >
+          <button onclick={flashImages}
+            ><span class="icon">developer_board</span>Flash Images</button
+          >
+          <label
+            ><input type="checkbox" id="erase" bind:checked={eraseAll} />Erase
+            All</label
+          >
+          <button onclick={eraseSPI}
+            ><span class="icon">developer_board</span>Erase SPI Flash</button
+          >
+        </div>
+
+        <pre>{terminalOutput}</pre>
+      </section>
+    {/if}
+  </div>
 </div>
 
 <style lang="scss">
@@ -332,6 +328,20 @@
 
   pre {
     overflow: auto;
+  }
+
+  .unsafe-opt-in {
+    margin-block: 1em;
+    opacity: 0.6;
+    font-size: 0.7em;
+
+    & + .unsafe-updates {
+      display: none;
+    }
+
+    &:has(input:checked) + .unsafe-updates {
+      display: block;
+    }
   }
 
   .primary {
