@@ -191,6 +191,14 @@
       onmouseout={() => (toolbarHover = false)}
       onblur={() => (toolbarHover = false)}
     >
+      {#if event.getType() === "m.room.message"}
+        {@const message = event.event.content?.["body"]}
+        <a
+          class="icon rocket"
+          href="/learn/sentence/?sentence={encodeURIComponent(message)}"
+          >rocket_launch</a
+        >
+      {/if}
       <button class="icon">add_reaction</button>
       <button class="icon">reply</button>
       {#if event.event.content?.["m.replay"]}
@@ -231,6 +239,21 @@
     word-wrap: break-word;
   }
 
+  @keyframes rocket {
+    0% {
+      transform: translate(0, 0);
+    }
+    90% {
+      transform: translate(4px, -4px);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+  .icon.rocket {
+    animation: rocket 2s;
+  }
+
   .toolbar {
     position: absolute;
     top: -26px;
@@ -242,6 +265,7 @@
     display: flex;
     z-index: 100;
 
+    a,
     button {
       font-size: 16px;
       width: 24px;
