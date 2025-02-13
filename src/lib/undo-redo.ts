@@ -107,57 +107,61 @@ export type ChordInfo = Chord &
     id: number[];
     deleted: boolean;
   };
-export const chords = derived([overlay, deviceChords], ([overlay, chords]) => {
-  const newChords = new Set(overlay.chords.keys());
+export const chords = derived(
+  [overlay, deviceChords, KEYMAP_CODES],
+  ([overlay, chords, codes]) => {
+    const newChords = new Set(overlay.chords.keys());
 
-  const changedChords = chords.map<ChordInfo>((chord) => {
-    const id = JSON.stringify(chord.actions);
-    if (overlay.chords.has(id)) {
-      newChords.delete(id);
-      const changedChord = overlay.chords.get(id)!;
-      return {
-        id: chord.actions,
-        // use the old phrase for stable editing
-        sortBy: chord.phrase.map((it) => KEYMAP_CODES.get(it)?.id ?? it).join(),
-        actions: changedChord.actions,
-        phrase: changedChord.phrase,
-        actionsChanged: id !== JSON.stringify(changedChord.actions),
-        phraseChanged:
-          JSON.stringify(chord.phrase) !== JSON.stringify(changedChord.phrase),
-        isApplied: false,
-        deleted: changedChord.deleted,
-      };
-    } else {
-      return {
-        id: chord.actions,
-        sortBy: chord.phrase.map((it) => KEYMAP_CODES.get(it)?.id ?? it).join(),
-        actions: chord.actions,
-        phrase: chord.phrase,
-        phraseChanged: false,
-        actionsChanged: false,
-        isApplied: true,
-        deleted: false,
-      };
-    }
-  });
-  for (const id of newChords) {
-    const chord = overlay.chords.get(id)!;
-    changedChords.push({
-      sortBy: "",
-      isApplied: false,
-      actionsChanged: true,
-      phraseChanged: false,
-      deleted: chord.deleted,
-      id: JSON.parse(id),
-      phrase: chord.phrase,
-      actions: chord.actions,
+    const changedChords = chords.map<ChordInfo>((chord) => {
+      const id = JSON.stringify(chord.actions);
+      if (overlay.chords.has(id)) {
+        newChords.delete(id);
+        const changedChord = overlay.chords.get(id)!;
+        return {
+          id: chord.actions,
+          // use the old phrase for stable editing
+          sortBy: chord.phrase.map((it) => codes.get(it)?.id ?? it).join(),
+          actions: changedChord.actions,
+          phrase: changedChord.phrase,
+          actionsChanged: id !== JSON.stringify(changedChord.actions),
+          phraseChanged:
+            JSON.stringify(chord.phrase) !==
+            JSON.stringify(changedChord.phrase),
+          isApplied: false,
+          deleted: changedChord.deleted,
+        };
+      } else {
+        return {
+          id: chord.actions,
+          sortBy: chord.phrase.map((it) => codes.get(it)?.id ?? it).join(),
+          actions: chord.actions,
+          phrase: chord.phrase,
+          phraseChanged: false,
+          actionsChanged: false,
+          isApplied: true,
+          deleted: false,
+        };
+      }
     });
-  }
+    for (const id of newChords) {
+      const chord = overlay.chords.get(id)!;
+      changedChords.push({
+        sortBy: "",
+        isApplied: false,
+        actionsChanged: true,
+        phraseChanged: false,
+        deleted: chord.deleted,
+        id: JSON.parse(id),
+        phrase: chord.phrase,
+        actions: chord.actions,
+      });
+    }
 
-  return changedChords.sort(({ sortBy: a }, { sortBy: b }) =>
-    a.localeCompare(b),
-  );
-});
+    return changedChords.sort(({ sortBy: a }, { sortBy: b }) =>
+      a.localeCompare(b),
+    );
+  },
+);
 
 export const chordHashes = derived(
   chords,

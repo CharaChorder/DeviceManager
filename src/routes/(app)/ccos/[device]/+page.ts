@@ -1,5 +1,5 @@
 import type { PageLoad } from "./$types";
-import type { DirectoryListing } from "../listing";
+import type { DirectoryListing } from "$lib/meta/types/listing";
 
 export const load = (async ({ fetch, params }) => {
   const result = await fetch(

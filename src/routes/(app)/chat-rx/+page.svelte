@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { initMatrixClient, isLoggedIn, matrix } from "$lib/chat/chat";
+  import { initMatrixClient, isLoggedIn, matrix } from "$lib/chat/chat-rx";
   import { flip } from "svelte/animate";
   import { slide } from "svelte/transition";
   import Login from "./Login.svelte";

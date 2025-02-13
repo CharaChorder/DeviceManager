@@ -38,7 +38,7 @@
     isApplied: true,
   }}
   {@const { code, icon, id, display, title, keyCode, variant } =
-    KEYMAP_CODES.get(actionId) ?? { code: actionId }}
+    $KEYMAP_CODES.get(actionId) ?? { code: actionId }}
   {@const dynamicMapping = keyCode && $osLayout.get(keyCode)}
   {@const tooltip =
     (title ?? id ?? `0x${code.toString(16)}`) +

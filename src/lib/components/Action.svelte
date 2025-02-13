@@ -11,7 +11,7 @@
 
   let info = $derived(
     typeof action === "number"
-      ? (KEYMAP_CODES.get(action) ?? { code: action })
+      ? ($KEYMAP_CODES.get(action) ?? { code: action })
       : action,
   );
   let dynamicMapping = $derived(info.keyCode && $osLayout.get(info.keyCode));

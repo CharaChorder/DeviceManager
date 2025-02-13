@@ -27,7 +27,7 @@
     $serialPort = undefined;
     try {
       const file = await fetch(
-        `${data.meta.path}/${data.meta.update.ota?.name}`,
+        `${data.meta.path}/${data.meta.update.ota}`,
       ).then((it) => it.blob());
 
       await port.updateFirmware(file);
@@ -46,7 +46,7 @@
       : undefined,
   );
   let isCorrectDevice = $derived(
-    currentDevice ? currentDevice === data.meta.target : undefined,
+    currentDevice ? currentDevice === data.meta.device : undefined,
   );
 
   /**
@@ -84,11 +84,11 @@
 
   async function getFileSystem() {
     if (!data.meta.update.uf2) return;
-    const uf2Promise = fetch(
-      `${data.meta.path}/${data.meta.update.uf2.name}`,
-    ).then((it) => it.blob());
+    const uf2Promise = fetch(`${data.meta.path}/${data.meta.update.uf2}`).then(
+      (it) => it.blob(),
+    );
     const handle = await window.showSaveFilePicker({
-      id: `${data.meta.target}-update`,
+      id: `${data.meta.device}-update`,
       suggestedName: "CURRENT.UF2",
       excludeAcceptAllOption: true,
       types: [
@@ -172,7 +172,7 @@
     const port = await navigator.serial.requestPort();
     try {
       console.log(data.meta);
-      const spiFlash = data.meta.spi_flash!;
+      const spiFlash = data.meta.spiFlash!;
       espLoader = await connectEsp(port);
 
       /*espLoader.flashSpiAttach(
@@ -189,7 +189,7 @@
 </script>
 
 <div class="container">
-  {#if data.meta.update.ota && !data.meta.target.endsWith("m0")}
+  {#if data.meta.update.ota && !data.meta.device.endsWith("m0")}
     {@const buttonError = error || (!success && isCorrectDevice === false)}
     <section>
       <button

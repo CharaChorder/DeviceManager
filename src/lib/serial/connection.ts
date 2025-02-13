@@ -6,6 +6,8 @@ import type { CharaLayout } from "$lib/serialization/layout";
 import { persistentWritable } from "$lib/storage";
 import { userPreferences } from "$lib/preferences";
 import settingInfo from "$lib/assets/settings.yml";
+import { getMeta } from "$lib/meta/meta-storage";
+import type { VersionMeta } from "$lib/meta/types/meta";
 
 export const serialPort = writable<CharaDevice | undefined>();
 
@@ -47,6 +49,8 @@ export const syncStatus: Writable<
   "done" | "error" | "downloading" | "uploading"
 > = writable("done");
 
+export const deviceMeta = writable<VersionMeta | undefined>(undefined);
+
 export interface ProgressInfo {
   max: number;
   current: number;
@@ -65,6 +69,12 @@ export async function initSerial(manual = false, withSync = true) {
 export async function sync() {
   const device = get(serialPort);
   if (!device) return;
+  getMeta(
+    `${device.device}_${device.chipset}`.toLowerCase(),
+    device.version.toString(),
+  ).then((meta) => {
+    deviceMeta.set(meta);
+  });
   const chordCount = await device.getChordCount();
   syncStatus.set("downloading");
 

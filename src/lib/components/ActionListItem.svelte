@@ -12,7 +12,7 @@
     $props();
 
   let key = $derived(
-    (typeof id === "number" ? KEYMAP_CODES.get(id) ?? id : id) as
+    (typeof id === "number" ? ($KEYMAP_CODES.get(id) ?? id) : id) as
       | number
       | KeyInfo,
   );

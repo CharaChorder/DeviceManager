@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
+  import { KEYMAP_CODES, type KeyInfo } from "$lib/serial/keymap-codes";
   import FlexSearch from "flexsearch";
   import LL from "$i18n/i18n-svelte";
   import { action } from "$lib/title";
@@ -40,16 +40,21 @@
   $effect(() => {
     abortIndexing?.();
     progress = 0;
-    buildIndex($chords, $osLayout).then(searchIndex.set);
+    buildIndex($chords, $osLayout, $KEYMAP_CODES).then(searchIndex.set);
   });
 
-  function encodeChord(chord: ChordInfo, osLayout: Map<string, string>, onlyPhrase: boolean = false) {
+  function encodeChord(
+    chord: ChordInfo,
+    osLayout: Map<string, string>,
+    codes: Map<number, KeyInfo>,
+    onlyPhrase: boolean = false,
+  ) {
     const plainPhrase: string[] = [""];
     const extraActions: string[] = [];
     const extraCodes: string[] = [];
 
     for (const actionCode of chord.phrase ?? []) {
-      const action = KEYMAP_CODES.get(actionCode);
+      const action = codes.get(actionCode);
       if (!action) {
         extraCodes.push(`0x${actionCode.toString(16)}`);
         continue;
@@ -96,7 +101,7 @@
     const input = chord.actions
       .slice(chord.actions.lastIndexOf(0) + 1)
       .map((it) => {
-        const info = KEYMAP_CODES.get(it);
+        const info = codes.get(it);
         if (!info) return `0x${it.toString(16)}`;
         const osCode = info.keyCode && osLayout.get(info.keyCode);
         const result = osCode?.length === 1 ? osCode : info.id;
@@ -118,6 +123,7 @@
   async function buildIndex(
     chords: ChordInfo[],
     osLayout: Map<string, string>,
+    codes: Map<number, KeyInfo>,
   ): Promise<FlexSearch.Index> {
     if (chords.length === 0 || !browser) return index;
     index = new FlexSearch.Index({
@@ -148,7 +154,7 @@
       progress = i;
 
       if ("phrase" in chord) {
-        await index.addAsync(i, encodeChord(chord, osLayout));
+        await index.addAsync(i, encodeChord(chord, osLayout, codes));
       }
     }
     return index;
@@ -186,7 +192,9 @@
   function downloadVocabulary() {
     const vocabulary = new Set(
       $chords.map((it) =>
-        "phrase" in it ? encodeChord(it, $osLayout, true).trim() : "",
+        "phrase" in it
+          ? encodeChord(it, $osLayout, $KEYMAP_CODES, true).trim()
+          : "",
       ),
     );
     vocabulary.delete("");

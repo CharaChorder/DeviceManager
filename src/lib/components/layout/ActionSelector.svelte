@@ -3,12 +3,14 @@
     KEYMAP_CATEGORIES,
     KEYMAP_CODES,
     KEYMAP_IDS,
+    type KeyInfo,
   } from "$lib/serial/keymap-codes";
   import FlexSearch from "flexsearch";
   import { onMount } from "svelte";
   import ActionListItem from "$lib/components/ActionListItem.svelte";
   import LL from "$i18n/i18n-svelte";
   import { action } from "$lib/title";
+  import { get } from "svelte/store";
 
   let {
     currentAction = undefined,
@@ -27,10 +29,13 @@
   });
 
   const index = new FlexSearch.Index({ tokenize: "full" });
-  createIndex();
 
-  async function createIndex() {
-    for (const [, action] of KEYMAP_CODES) {
+  $effect(() => {
+    createIndex($KEYMAP_CODES);
+  });
+
+  async function createIndex(codes: Map<number, KeyInfo>) {
+    for (const [, action] of codes) {
       await index?.addAsync(
         action.code,
         `${action.title || ""} ${action.variant || ""} ${action.category} ${action.id || ""} ${
@@ -42,7 +47,7 @@
 
   async function search() {
     results = (await index!.searchAsync(searchBox.value)) as number[];
-    exact = KEYMAP_IDS.get(searchBox.value)?.code;
+    exact = get(KEYMAP_IDS).get(searchBox.value)?.code;
     code = Number(searchBox.value);
   }
 
@@ -127,7 +132,7 @@
           bind:group={filter}
         /></label
       >
-      {#each KEYMAP_CATEGORIES as category}
+      {#each $KEYMAP_CATEGORIES as category}
         <label
           >{category.name}<input
             name="category"
@@ -167,7 +172,7 @@
       {#if filter !== undefined || results.length > 0}
         {@const resultValue =
           results.length === 0
-            ? Array.from(KEYMAP_CODES, ([it]) => it)
+            ? Array.from($KEYMAP_CODES, ([it]) => it)
             : results}
         {#each filter ? resultValue.filter( (it) => filter.has(it), ) : resultValue as id (id)}
           <li><ActionListItem {id} onclick={() => select(id)} /></li>
