@@ -8,7 +8,6 @@
   import TrackChords from "$lib/charrecorder/TrackChords.svelte";
   import ChordHud from "$lib/charrecorder/ChordHud.svelte";
   import type { InferredChord } from "$lib/charrecorder/core/types";
-  import { onMount } from "svelte";
   import TrackText from "$lib/charrecorder/TrackText.svelte";
   import { browser } from "$app/environment";
   import { expoOut } from "svelte/easing";

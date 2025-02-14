@@ -16,6 +16,7 @@
     syncStatus,
   } from "$lib/serial/connection";
   import { fade, slide } from "svelte/transition";
+  import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialog";
 
   let locale = $state(
     (browser && (localStorage.getItem("locale") as Locales)) || detectLocale(),
@@ -52,9 +53,7 @@
       await initSerial(true);
     } catch (error) {
       console.error(error);
-      alert(
-        "Connection failed. Is your device maybe pre-CCOS? Refer to the doc link in the bottom left for more information on your device.",
-      );
+      await showConnectionFailedDialog(String(error));
     }
   }
 

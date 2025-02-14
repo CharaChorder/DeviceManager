@@ -9,6 +9,7 @@ import {
   stringifyPhrase,
 } from "$lib/serial/chord";
 import { browser } from "$app/environment";
+import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialog";
 
 const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["ONE M0", { usbProductId: 32783, usbVendorId: 9114 }],
@@ -142,9 +143,8 @@ export class CharaDevice {
       this.chipset = chipset as typeof this.chipset;
       this.keyCount = KEY_COUNTS[this.device];
     } catch (e) {
-      alert(e);
       console.error(e);
-      throw e;
+      await showConnectionFailedDialog(String(e));
     }
   }
 
