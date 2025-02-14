@@ -5,7 +5,7 @@
   import { action } from "$lib/title";
   import { onDestroy, onMount, setContext, tick } from "svelte";
   import { changes, ChangeType, chords } from "$lib/undo-redo";
-  import type { ChordInfo } from "$lib/undo-redo";
+  import type { ChordChange, ChordInfo } from "$lib/undo-redo";
   import { derived, writable } from "svelte/store";
   import ChordEdit from "./ChordEdit.svelte";
   import { crossfade, fly } from "svelte/transition";
@@ -14,6 +14,8 @@
   import { expoOut } from "svelte/easing";
   import { osLayout } from "$lib/os-layout";
   import randomTips from "$lib/assets/random-tips/en.json";
+  import { deviceMeta } from "$lib/serial/connection";
+  import { restoreFromFile } from "$lib/backup/backup";
 
   const resultSize = 38;
   let results: HTMLElement;
@@ -182,12 +184,14 @@
       return;
     }
     changes.update((changes) => {
-      changes.push({
-        type: ChangeType.Chord,
-        id: actions,
-        actions,
-        phrase: [],
-      });
+      changes.push([
+        {
+          type: ChangeType.Chord,
+          id: actions,
+          actions,
+          phrase: [],
+        },
+      ]);
       return changes;
     });
   }
@@ -210,6 +214,21 @@
     a.download = "vocabulary.txt";
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  function clearChords() {
+    changes.update((changes) => {
+      changes.push(
+        $chords.map<ChordChange>((it) => ({
+          type: ChangeType.Chord,
+          id: it.id,
+          actions: it.actions,
+          phrase: it.phrase,
+          deleted: true,
+        })),
+      );
+      return changes;
+    });
   }
 
   const items = derived(
@@ -292,6 +311,17 @@
           "\n\nDid you know? " +
           randomTips[Math.floor(randomTips.length * Math.random())]}
       ></textarea>
+      <button onclick={clearChords}
+        ><span class="icon">delete_sweep</span>
+        Clear Chords</button
+      >
+      <div>
+        {#each Object.entries($deviceMeta?.factoryDefaults?.chords ?? {}) as [title, library]}
+          <button onclick={() => restoreFromFile(library)}
+            ><span class="icon">library_add</span>{title}</button
+          >
+        {/each}
+      </div>
       <button onclick={downloadVocabulary}
         ><span class="icon">download</span>
         {$LL.configure.chords.VOCABULARY()}</button

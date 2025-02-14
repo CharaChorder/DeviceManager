@@ -4,7 +4,6 @@
   import { action } from "$lib/title";
   import LL from "$i18n/i18n-svelte";
   import EditActions from "./EditActions.svelte";
-  import { sync, syncStatus } from "$lib/serial/connection";
 </script>
 
 <nav>

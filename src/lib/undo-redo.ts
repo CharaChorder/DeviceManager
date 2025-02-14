@@ -42,7 +42,7 @@ export interface ChangeInfo {
 
 export type Change = LayoutChange | ChordChange | SettingChange;
 
-export const changes = persistentWritable<Change[]>("changes", []);
+export const changes = persistentWritable<Change[][]>("changes", []);
 
 export interface Overlay {
   layout: [Map<number, number>, Map<number, number>, Map<number, number>];
@@ -57,21 +57,23 @@ export const overlay = derived(changes, (changes) => {
     settings: new Map(),
   };
 
-  for (const change of changes) {
-    switch (change.type) {
-      case ChangeType.Layout:
-        overlay.layout[change.layer]?.set(change.id, change.action);
-        break;
-      case ChangeType.Chord:
-        overlay.chords.set(JSON.stringify(change.id), {
-          actions: change.actions,
-          phrase: change.phrase,
-          deleted: change.deleted ?? false,
-        });
-        break;
-      case ChangeType.Setting:
-        overlay.settings.set(change.id, change.setting);
-        break;
+  for (const changeset of changes) {
+    for (const change of changeset) {
+      switch (change.type) {
+        case ChangeType.Layout:
+          overlay.layout[change.layer]?.set(change.id, change.action);
+          break;
+        case ChangeType.Chord:
+          overlay.chords.set(JSON.stringify(change.id), {
+            actions: change.actions,
+            phrase: change.phrase,
+            deleted: change.deleted ?? false,
+          });
+          break;
+        case ChangeType.Setting:
+          overlay.settings.set(change.id, change.setting);
+          break;
+      }
     }
   }
 

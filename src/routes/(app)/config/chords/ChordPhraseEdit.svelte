@@ -49,24 +49,28 @@
   function deleteAction(at: number, count = 1) {
     if (!(at in chord.phrase)) return;
     changes.update((changes) => {
-      changes.push({
-        type: ChangeType.Chord,
-        id: chord.id,
-        actions: chord.actions,
-        phrase: chord.phrase.toSpliced(at, count),
-      });
+      changes.push([
+        {
+          type: ChangeType.Chord,
+          id: chord.id,
+          actions: chord.actions,
+          phrase: chord.phrase.toSpliced(at, count),
+        },
+      ]);
       return changes;
     });
   }
 
   function insertAction(at: number, action: number) {
     changes.update((changes) => {
-      changes.push({
-        type: ChangeType.Chord,
-        id: chord.id,
-        actions: chord.actions,
-        phrase: chord.phrase.toSpliced(at, 0, action),
-      });
+      changes.push([
+        {
+          type: ChangeType.Chord,
+          id: chord.id,
+          actions: chord.actions,
+          phrase: chord.phrase.toSpliced(at, 0, action),
+        },
+      ]);
       return changes;
     });
   }

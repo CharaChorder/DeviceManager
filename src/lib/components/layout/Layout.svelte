@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { serialPort } from "$lib/serial/connection";
+  import { deviceMeta, serialPort } from "$lib/serial/connection";
   import { action } from "$lib/title";
   import GenericLayout from "$lib/components/layout/GenericLayout.svelte";
   import { getContext } from "svelte";
   import type { Writable } from "svelte/store";
   import type { VisualLayout } from "$lib/serialization/visual-layout";
-  import { fade } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
+  import { restoreFromFile } from "$lib/backup/backup";
 
   let device = $derived($serialPort?.device);
   const activeLayer = getContext<Writable<number>>("active-layer");
@@ -58,6 +59,16 @@
             {icon}
           </button>
         {/each}
+        {#if $deviceMeta?.factoryDefaults?.layout}
+          <button
+            use:action={{ title: "Reset Layout" }}
+            transition:fly={{ x: -8 }}
+            class="icon reset-layout"
+            onclick={() =>
+              restoreFromFile($deviceMeta!.factoryDefaults!.layout)}
+            >reset_wrench</button
+          >
+        {/if}
       </fieldset>
 
       <GenericLayout {visualLayout} />
@@ -113,7 +124,7 @@
     }
 
     &:first-child,
-    &:last-child {
+    &:nth-child(3) {
       aspect-ratio: unset;
       height: unset;
     }
@@ -124,10 +135,19 @@
       border-radius: 16px 0 0 16px;
     }
 
-    &:last-child {
+    &:nth-child(3) {
       margin-inline-start: -8px;
       padding-inline: 24px 4px;
       border-radius: 0 16px 16px 0;
+    }
+
+    &.reset-layout {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translate(100%, -50%);
+      background: none;
+      font-size: 24px;
     }
 
     &.active {

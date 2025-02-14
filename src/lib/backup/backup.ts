@@ -107,32 +107,32 @@ export function restoreFromFile(
       }
 
       changes.update((changes) => {
-        changes.push(
+        changes.push([
           ...getChangesFromChordFile(recent[0]),
           ...getChangesFromLayoutFile(recent[1]),
           ...getChangesFromSettingsFile(recent[2]),
-        );
+        ]);
         return changes;
       });
       break;
     }
     case "chords": {
       changes.update((changes) => {
-        changes.push(...getChangesFromChordFile(file));
+        changes.push(getChangesFromChordFile(file));
         return changes;
       });
       break;
     }
     case "layout": {
       changes.update((changes) => {
-        changes.push(...getChangesFromLayoutFile(file));
+        changes.push(getChangesFromLayoutFile(file));
         return changes;
       });
       break;
     }
     case "settings": {
       changes.update((changes) => {
-        changes.push(...getChangesFromSettingsFile(file));
+        changes.push(getChangesFromSettingsFile(file));
         return changes;
       });
       break;

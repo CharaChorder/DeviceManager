@@ -15,13 +15,15 @@
 
   function remove() {
     changes.update((changes) => {
-      changes.push({
-        type: ChangeType.Chord,
-        id: chord.id,
-        actions: chord.actions,
-        phrase: chord.phrase,
-        deleted: true,
-      });
+      changes.push([
+        {
+          type: ChangeType.Chord,
+          id: chord.id,
+          actions: chord.actions,
+          phrase: chord.phrase,
+          deleted: true,
+        },
+      ]);
       return changes;
     });
   }
@@ -35,9 +37,13 @@
 
   function restore() {
     changes.update((changes) =>
-      changes.filter(
-        (it) => !(it.type === ChangeType.Chord && isSameChord(it, chord)),
-      ),
+      changes
+        .map((it) =>
+          it.filter(
+            (it) => !(it.type === ChangeType.Chord && isSameChord(it, chord)),
+          ),
+        )
+        .filter((it) => it.length > 0),
     );
   }
 
@@ -50,12 +56,14 @@
     }
 
     changes.update((changes) => {
-      changes.push({
-        type: ChangeType.Chord,
-        id,
-        actions: [...chord.actions],
-        phrase: [...chord.phrase],
-      });
+      changes.push([
+        {
+          type: ChangeType.Chord,
+          id,
+          actions: [...chord.actions],
+          phrase: [...chord.phrase],
+        },
+      ]);
       return changes;
     });
 

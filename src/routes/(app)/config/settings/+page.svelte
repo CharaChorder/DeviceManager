@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
   import Action from "$lib/components/Action.svelte";
   import { popup } from "$lib/popup";
-  import { serialPort } from "$lib/serial/connection";
+  import { deviceMeta, serialPort } from "$lib/serial/connection";
   import { setting } from "$lib/setting";
   import ResetPopup from "./ResetPopup.svelte";
   import LL from "$i18n/i18n-svelte";
@@ -12,8 +12,11 @@
     downloadBackup,
     downloadFile,
     restoreBackup,
+    restoreFromFile,
   } from "$lib/backup/backup";
   import { preference } from "$lib/preferences";
+  import { action } from "$lib/title";
+  import { fly } from "svelte/transition";
 </script>
 
 <svelte:head>
@@ -77,7 +80,15 @@
           use:setting={{ id: 0x92 }}
         /></label
       >
-      <button class="outline" use:popup={ResetPopup}>Reset...</button>
+      {#if $deviceMeta?.factoryDefaults?.settings}
+        <button
+          use:action={{ title: "Reset Settings" }}
+          transition:fly={{ x: -8 }}
+          onclick={() => restoreFromFile($deviceMeta.factoryDefaults!.settings)}
+          ><span class="icon">reset_settings</span>Reset Settings</button
+        >
+      {/if}
+      <button class="outline" use:popup={ResetPopup}>Recovery...</button>
     {/if}
   </fieldset>
 

@@ -63,11 +63,13 @@ export const setting: Action<
     }
 
     changes.update((changes) => {
-      changes.push({
-        type: ChangeType.Setting,
-        id: id,
-        setting: value,
-      });
+      changes.push([
+        {
+          type: ChangeType.Setting,
+          id: id,
+          setting: value,
+        },
+      ]);
       return changes;
     });
   }

@@ -137,12 +137,14 @@
         },
         onselect(action) {
           changes.update((changes) => {
-            changes.push({
-              type: ChangeType.Layout,
-              id: keyInfo.id,
-              layer: get(activeLayer),
-              action,
-            });
+            changes.push([
+              {
+                type: ChangeType.Layout,
+                id: keyInfo.id,
+                layer: get(activeLayer),
+                action,
+              },
+            ]);
             return changes;
           });
           closed();

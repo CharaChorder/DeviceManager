@@ -61,12 +61,14 @@
     if (pressedKeys.size < 1) return;
     if (!chord) return onsubmit(makeChordInput(...pressedKeys));
     changes.update((changes) => {
-      changes.push({
-        type: ChangeType.Chord,
-        id: chord!.id,
-        actions: makeChordInput(...pressedKeys),
-        phrase: chord!.phrase,
-      });
+      changes.push([
+        {
+          type: ChangeType.Chord,
+          id: chord!.id,
+          actions: makeChordInput(...pressedKeys),
+          phrase: chord!.phrase,
+        },
+      ]);
       return changes;
     });
     return undefined;
@@ -76,12 +78,14 @@
     event.stopPropagation();
     selectAction(event, (action) => {
       changes.update((changes) => {
-        changes.push({
-          type: ChangeType.Chord,
-          id: chord!.id,
-          actions: makeChordInput(...chordActions!, action),
-          phrase: chord!.phrase,
-        });
+        changes.push([
+          {
+            type: ChangeType.Chord,
+            id: chord!.id,
+            actions: makeChordInput(...chordActions!, action),
+            phrase: chord!.phrase,
+          },
+        ]);
         return changes;
       });
     });
