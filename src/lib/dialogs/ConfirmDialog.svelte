@@ -1,13 +1,14 @@
 <script lang="ts">
   import Dialog from "$lib/dialogs/Dialog.svelte";
-  import ActionString from "$lib/components/ActionString.svelte";
+  import type { Chord } from "$lib/serial/chord";
+  import ChordActionEdit from "../../routes/(app)/config/chords/ChordActionEdit.svelte";
 
   let {
     title,
     message,
     abortTitle,
     confirmTitle,
-    actions = [],
+    chord,
     onabort,
     onconfirm,
   }: {
@@ -15,7 +16,7 @@
     message?: string;
     abortTitle: string;
     confirmTitle: string;
-    actions: number[];
+    chord: Chord & { deleted: boolean };
     onabort: () => void;
     onconfirm: () => void;
   } = $props();
@@ -26,7 +27,20 @@
   {#if message}
     <p>{@html message}</p>
   {/if}
-  <p><ActionString {actions} /></p>
+  <p>
+    <ChordActionEdit
+      chord={{
+        ...chord,
+        isApplied: false,
+        phraseChanged: false,
+        actionsChanged: false,
+        sortBy: "",
+        id: chord.actions,
+      }}
+      interactive={false}
+      onsubmit={() => {}}
+    />
+  </p>
   <div class="buttons">
     <button onclick={onabort}>{abortTitle}</button>
     <button class="primary" onclick={onconfirm}>{confirmTitle}</button>

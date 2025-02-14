@@ -13,7 +13,12 @@
   let {
     chord = undefined,
     onsubmit,
-  }: { chord?: ChordInfo; onsubmit: (actions: number[]) => void } = $props();
+    interactive = true,
+  }: {
+    chord?: ChordInfo;
+    interactive?: boolean;
+    onsubmit: (actions: number[]) => void;
+  } = $props();
 
   let pressedKeys = new SvelteSet<number>();
   let editing = $state(false);
@@ -129,6 +134,7 @@
   onkeydown={keydown}
   onkeyup={keyup}
   onblur={keyup}
+  disabled={!interactive}
 >
   {#if editing && pressedKeys.size === 0}
     <span>{$LL.configure.chords.HOLD_KEYS()}</span>

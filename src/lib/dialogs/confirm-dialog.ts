@@ -1,33 +1,34 @@
 import ConfirmDialog from "$lib/dialogs/ConfirmDialog.svelte";
+import { mount, unmount } from "svelte";
+import type { Chord } from "$lib/serial/chord";
 
 export async function askForConfirmation(
   title: string,
   message: string,
   confirmTitle: string,
   abortTitle: string,
-  actions: number[],
+  chord: Chord,
 ): Promise<boolean> {
-  const dialog = new ConfirmDialog({
+  let resolvePromise: (value: boolean) => void;
+  const resultPromise = new Promise<boolean>((resolve) => {
+    resolvePromise = resolve;
+  });
+
+  const dialog = mount(ConfirmDialog, {
     target: document.body,
     props: {
       title,
       message,
       confirmTitle,
       abortTitle,
-      actions,
+      chord,
+      onabort: () => resolvePromise(false),
+      onconfirm: () => resolvePromise(true),
     },
   });
 
-  let resolvePromise: (value: boolean) => void;
-  const resultPromise = new Promise<boolean>((resolve) => {
-    resolvePromise = resolve;
-  });
-
-  dialog.$on("abort", () => resolvePromise(false));
-  dialog.$on("confirm", () => resolvePromise(true));
-
   const result = await resultPromise;
-  dialog.$destroy();
+  unmount(dialog);
 
   return result;
 }

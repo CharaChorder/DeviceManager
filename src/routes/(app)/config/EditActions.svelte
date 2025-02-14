@@ -39,7 +39,7 @@
       });
     }
   }
-  let redoQueue: Change[] = $state([]);
+  let redoQueue: Change[][] = $state([]);
 
   async function save() {
     try {
@@ -47,10 +47,10 @@
       if (!port) return;
       $syncStatus = "uploading";
 
-      for (const [id, { actions, phrase, deleted }] of $overlay.chords) {
-        if (!deleted) {
-          if (id !== JSON.stringify(actions)) {
-            const existingChord = await port.getChordPhrase(actions);
+      for (const [id, chord] of $overlay.chords) {
+        if (!chord.deleted) {
+          if (id !== JSON.stringify(chord.actions)) {
+            const existingChord = await port.getChordPhrase(chord.actions);
             if (
               existingChord !== undefined &&
               !(await askForConfirmation(
@@ -58,26 +58,30 @@
                 $LL.configure.chords.conflict.DESCRIPTION(),
                 $LL.configure.chords.conflict.CONFIRM(),
                 $LL.configure.chords.conflict.ABORT(),
-                actions.slice(0, actions.lastIndexOf(0)),
+                chord,
               ))
             ) {
               changes.update((changes) =>
-                changes.filter(
-                  (it) =>
-                    !(
-                      it.type === ChangeType.Chord &&
-                      JSON.stringify(it.id) === id
+                changes
+                  .map((it) =>
+                    it.filter(
+                      (it) =>
+                        !(
+                          it.type === ChangeType.Chord &&
+                          JSON.stringify(it.id) === id
+                        ),
                     ),
-                ),
+                  )
+                  .filter((it) => it.length > 0),
               );
               continue;
             }
 
             await port.deleteChord({ actions: JSON.parse(id) });
           }
-          await port.setChord({ actions, phrase });
+          await port.setChord({ actions: chord.actions, phrase: chord.phrase });
         } else {
-          await port.deleteChord({ actions });
+          await port.deleteChord({ actions: chord.actions });
         }
       }
 
