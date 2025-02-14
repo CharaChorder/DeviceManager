@@ -13,7 +13,6 @@
       { href: "/config/layout/", icon: "keyboard", title: "Layout" },
     ],
     [
-      // { href: "/learn", icon: "school", title: "Learn", wip: true },
       {
         href: import.meta.env.VITE_LEARN_URL,
         icon: "school",
@@ -26,8 +25,17 @@
         title: "Docs",
         external: true,
       },
+      {
+        href: "https://voicebox.charachorder.io/",
+        icon: "text_to_speech",
+        title: "Voicebox",
+        external: true,
+      },
+    ],
+    [
       { href: "/editor", icon: "edit_document", title: "Editor", wip: true },
       { href: "/chat", icon: "chat", title: "Chat", wip: true },
+      { href: "/learn", icon: "school", title: "Learn", wip: true },
     ],
     /*[
       { href: "/plugin", icon: "code", title: "Plugin", wip: true },
