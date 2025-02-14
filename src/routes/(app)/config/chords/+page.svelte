@@ -50,52 +50,54 @@
     onlyPhrase: boolean = false,
   ) {
     const plainPhrase: string[] = [""];
-    const extraActions: string[] = [];
-    const extraCodes: string[] = [];
+    const tags = new Set<string>();
+    const extraActions = new Set<string>();
+    const extraCodes = new Set<string>();
 
     for (const actionCode of chord.phrase ?? []) {
       const action = codes.get(actionCode);
       if (!action) {
-        extraCodes.push(`0x${actionCode.toString(16)}`);
+        extraCodes.add(`0x${actionCode.toString(16)}`);
         continue;
       }
 
       const osCode = action.keyCode && osLayout.get(action.keyCode);
       const token = osCode?.length === 1 ? osCode : action.display || action.id;
       if (!token) {
-        extraCodes.push(`0x${action.code.toString(16)}`);
+        extraCodes.add(`0x${action.code.toString(16)}`);
         continue;
       }
 
-      if (/^\s$/.test(token) && plainPhrase.at(-1) !== "") {
+      if (
+        (token === "SPACE" || /^\s$/.test(token)) &&
+        plainPhrase.at(-1) !== ""
+      ) {
         plainPhrase.push("");
       } else if (token.length === 1) {
         plainPhrase[plainPhrase.length - 1] =
           plainPhrase[plainPhrase.length - 1] + token;
       } else {
-        extraActions.push(token);
+        extraActions.add(token);
       }
     }
 
     if (chord.phrase?.[0] === 298) {
-      plainPhrase.push("suffix");
+      tags.add("suffix");
     }
     if (
       ["ARROW_LT", "ARROW_RT", "ARROW_UP", "ARROW_DN"].some((it) =>
-        extraActions.includes(it),
+        extraActions.has(it),
       )
     ) {
-      plainPhrase.push("cursor warp");
+      tags.add("cursor warp");
     }
     if (
-      ["CTRL", "ALT", "GUI", "ENTER", "TAB"].some((it) =>
-        extraActions.includes(it),
-      )
+      ["CTRL", "ALT", "GUI", "ENTER", "TAB"].some((it) => extraActions.has(it))
     ) {
-      plainPhrase.push("macro");
+      tags.add("macro");
     }
     if (chord.actions[0] !== 0) {
-      plainPhrase.push("compound");
+      tags.add("compound");
     }
 
     const input = chord.actions
@@ -109,14 +111,15 @@
       });
 
     if (onlyPhrase) {
-      return plainPhrase.join();
+      return plainPhrase.join(" ");
     }
 
     return [
       ...plainPhrase,
       `+${input.join("+")}`,
-      ...new Set(extraActions),
-      ...new Set(extraCodes),
+      ...tags,
+      ...extraActions,
+      ...extraCodes,
     ].join(" ");
   }
 
