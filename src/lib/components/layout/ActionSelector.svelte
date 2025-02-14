@@ -87,7 +87,7 @@
 
   let searchBox: HTMLInputElement;
   let resultList: HTMLUListElement;
-  let filter = $state(new Set<number>());
+  let filter: Set<number> | undefined = $state(undefined);
 </script>
 
 <svelte:window on:keydown={keyboardNavigation} />
