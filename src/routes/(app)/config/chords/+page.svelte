@@ -156,7 +156,7 @@
       if (abort) return index;
 
       const chord = chords[i]!;
-      progress = i;
+      progress = i + 1;
 
       if ("phrase" in chord) {
         await index.addAsync(i, encodeChord(chord, osLayout, codes));
@@ -255,9 +255,9 @@
 <div class="search-container">
   <input
     type="search"
-    placeholder={$LL.configure.chords.search.PLACEHOLDER(progress + 1)}
+    placeholder={$LL.configure.chords.search.PLACEHOLDER(progress)}
     oninput={(event) => $searchIndex && search($searchIndex, event)}
-    class:loading={progress !== $chords.length - 1}
+    class:loading={progress !== $chords.length}
   />
   <div class="paginator">
     {#if $lastPage !== -1}
