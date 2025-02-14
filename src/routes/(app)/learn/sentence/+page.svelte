@@ -11,7 +11,8 @@
   import { onMount } from "svelte";
   import TrackText from "$lib/charrecorder/TrackText.svelte";
   import { browser } from "$app/environment";
-  import { expoIn, expoOut } from "svelte/easing";
+  import { expoOut } from "svelte/easing";
+  import { goto } from "$app/navigation";
 
   function viaLocalStorage<T>(key: string, initial: T) {
     try {
@@ -66,15 +67,15 @@
 
   let idleTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  let cooldown = $state(false);
-
-  onMount(() => {
-    selectNextWord();
-  });
-
   $effect(() => {
     if (wpm > bestWPM) {
       bestWPM = wpm;
+    }
+  });
+
+  $effect(() => {
+    if (browser && $page.url.searchParams) {
+      selectNextWord();
     }
   });
 
@@ -219,6 +220,15 @@
 
 <div>
   <h1>Sentence Trainer</h1>
+  <input
+    type="text"
+    value={inputSentence}
+    onchange={(it) => {
+      const params = new URLSearchParams(window.location.search);
+      params.set("sentence", (it.target as HTMLInputElement).value);
+      goto(`?${params.toString()}`);
+    }}
+  />
 
   <div class="levels">
     {#each masteryThresholds as [, , title], i}
@@ -576,5 +586,12 @@
     :global(.cursor) {
       opacity: 1;
     }
+  }
+
+  input[type="text"] {
+    background: none;
+    color: inherit;
+    font: inherit;
+    border: none;
   }
 </style>

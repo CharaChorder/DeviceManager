@@ -30,8 +30,6 @@
     return a + (b - a) * t;
   }
 
-  $inspect(chords);
-
   $effect(() => {
     const [chord] = chords;
     if (!chord) return;
