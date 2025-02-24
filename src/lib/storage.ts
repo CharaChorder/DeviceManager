@@ -17,7 +17,6 @@ export function persistentWritable<T>(
           : writable(value);
     } catch (e) {
       console.error(e);
-    } finally {
       store = writable(value);
     }
     store.subscribe((value) => {
