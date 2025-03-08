@@ -12,6 +12,35 @@
   import { browser } from "$app/environment";
   import { expoOut } from "svelte/easing";
   import { goto } from "$app/navigation";
+  import debounce from "lodash";
+  import { untrack } from "svelte";
+  import {
+    type PageParam,
+    SENTENCE_TRAINER_PAGE_PARAMS,
+  } from "./configuration";
+  import {
+    AVG_WORD_LENGTH,
+    MILLIS_IN_SECOND,
+    SECONDS_IN_MINUTE,
+  } from "./constants";
+  import { pickNextWord } from "./word-selector";
+
+  /**
+   * Resolves parameter from search URL or returns default
+   * @param param {@link PageParam} generic parameter that can be provided
+   * in search url
+   * @return Value of the parameter converted to its type or default value
+   * if parameter is not present in the URL.
+   */
+  function getParamOrDefault<T>(param: PageParam<T>): T {
+    if (browser) {
+      const value = $page.url.searchParams.get(param.key);
+      if (null !== value) {
+        return param.parse ? param.parse(value) : (value as unknown as T);
+      }
+    }
+    return param.default;
+  }
 
   function viaLocalStorage<T>(key: string, initial: T) {
     try {
@@ -29,28 +58,36 @@
     ]),
   );
 
-  const avgWordLength = 5;
-
   function reset() {
     localStorage.removeItem("mastery-thresholds");
     localStorage.removeItem("idle-timeout");
     window.location.reload();
   }
 
-  let inputSentence = $derived(
-    (browser && $page.url.searchParams.get("sentence")) || "Hello World",
+  const inputSentence = $derived(
+    getParamOrDefault(SENTENCE_TRAINER_PAGE_PARAMS.sentence),
   );
-  let wpmTarget = $derived(
-    (browser && Number($page.url.searchParams.get("wpm"))) || 250,
+
+  const wpmTarget = $derived(
+    getParamOrDefault(SENTENCE_TRAINER_PAGE_PARAMS.wpm),
   );
-  let devTools = $derived(
-    browser && $page.url.searchParams.get("dev") === "true",
+
+  const devTools = $derived(
+    getParamOrDefault(SENTENCE_TRAINER_PAGE_PARAMS.showDevTools),
   );
-  let sentenceWords = $derived(inputSentence.split(" "));
-  let msPerChar = $derived((1 / ((wpmTarget / 60) * avgWordLength)) * 1000);
-  let totalMs = $derived(inputSentence.length * msPerChar);
+
+  let chordInputContainer: HTMLDivElement | null = null;
+
+  let sentenceWords = $derived(inputSentence.trim().split(/\s+/));
+
+  let inputSentenceLength = $derived(inputSentence.length);
+  let msPerChar = $derived(
+    (1 / ((wpmTarget / SECONDS_IN_MINUTE) * AVG_WORD_LENGTH)) *
+      MILLIS_IN_SECOND,
+  );
+  let totalMs = $derived(inputSentenceLength * msPerChar);
   let msPerWord = $derived(
-    (inputSentence.length * msPerChar) / inputSentence.split(" ").length,
+    (inputSentenceLength * msPerChar) / sentenceWords.length,
   );
   let currentWord = $state("");
   let wordStats = new SvelteMap<string, number[]>();
@@ -90,7 +127,7 @@
   });
 
   let words = $derived.by(() => {
-    const words = inputSentence.trim().split(" ");
+    const words = sentenceWords;
     switch (level) {
       case 0: {
         shuffleInPlace(words);
@@ -160,18 +197,16 @@
   });
 
   function selectNextWord() {
-    const unmasteredWords = words
-      .map((it) => [it, wordMastery.get(it) ?? 0] as const)
-      .filter(([, it]) => it !== 1);
-    unmasteredWords.sort(([, a], [, b]) => a - b);
-    let nextWord = unmasteredWords[0]?.[0] ?? words[0] ?? "ERROR";
-    for (const [word] of unmasteredWords) {
-      if (word === currentWord || Math.random() > 0.5) continue;
-      nextWord = word;
-      break;
-    }
+    const nextWord = pickNextWord(
+      words,
+      wordMastery,
+      untrack(() => currentWord),
+    );
     currentWord = nextWord;
     recorder = new ReplayRecorder(nextWord);
+    if (chordInputContainer) {
+      chordInputContainer.focus();
+    }
   }
 
   function checkInput() {
@@ -215,19 +250,38 @@
       idle = true;
     }, idleTime);
   }
+
+  function updateSentence(event: Event) {
+    const params = new URLSearchParams(window.location.search);
+    params.set(
+      SENTENCE_TRAINER_PAGE_PARAMS.sentence.key,
+      (event.target as HTMLInputElement).value,
+    );
+    goto(`?${params.toString()}`);
+  }
+
+  const debouncedUpdateSentence = debounce.debounce(
+    updateSentence,
+    getParamOrDefault(SENTENCE_TRAINER_PAGE_PARAMS.textAreaDebounceInMillis),
+  );
+
+  function handleInputAreaKeyDown(event: KeyboardEvent) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); // Prevent default Enter behavior (like a newline)
+      debouncedUpdateSentence.cancel(); // Cancel any pending debounced update
+      updateSentence(event); // Update immediately
+    }
+  }
 </script>
 
 <div>
   <h1>Sentence Trainer</h1>
-  <input
-    type="text"
-    value={inputSentence}
-    onchange={(it) => {
-      const params = new URLSearchParams(window.location.search);
-      params.set("sentence", (it.target as HTMLInputElement).value);
-      goto(`?${params.toString()}`);
-    }}
-  />
+  <textarea
+    rows="7"
+    cols="80"
+    oninput={debouncedUpdateSentence}
+    onkeydown={handleInputAreaKeyDown}>{untrack(() => inputSentence)}</textarea
+  >
 
   <div class="levels">
     {#each masteryThresholds as [, , title], i}
@@ -371,6 +425,7 @@
   <ChordHud {chords} />
   <div class="container">
     <div
+      bind:this={chordInputContainer}
       class="input-section"
       onkeydown={onkey}
       onkeyup={onkey}
@@ -398,24 +453,24 @@
           <td
             ><span style:color="var(--md-sys-color-tertiary)"
               >{Math.round(totalMs)}</span
-            >ms</td
-          >
+            >ms
+          </td>
         </tr>
         <tr>
           <th>Char</th>
           <td
             ><span style:color="var(--md-sys-color-tertiary)"
               >{Math.round(msPerChar)}</span
-            >ms</td
-          >
+            >ms
+          </td>
         </tr>
         <tr>
           <th>Word</th>
           <td
             ><span style:color="var(--md-sys-color-tertiary)"
               >{Math.round(msPerWord)}</span
-            >ms</td
-          >
+            >ms
+          </td>
         </tr>
       </tbody>
     </table>
@@ -440,8 +495,9 @@
             <td
               style:color="var(--md-sys-color-{mastery === 1
                 ? 'primary'
-                : 'tertiary'})">{Math.round(mastery * 100)}%</td
-            >
+                : 'tertiary'})"
+              >{Math.round(mastery * 100)}%
+            </td>
             {#each stats as stat}
               <td>{stat}</td>
             {/each}
@@ -560,6 +616,7 @@
       opacity: 0;
     }
   }
+
   .input {
     display: flex;
     grid-row: 1;
@@ -577,6 +634,7 @@
 
   .input-section:focus-within {
     outline: none;
+
     .input {
       outline-color: var(--md-sys-color-primary);
       border-radius: 1rem;
