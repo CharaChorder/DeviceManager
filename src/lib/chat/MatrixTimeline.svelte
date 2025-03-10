@@ -177,9 +177,6 @@
 <style lang="scss">
   $border-radius: 16px;
 
-  h2 {
-    height: min-content;
-  }
 
   .input {
     border: 1px solid var(--md-sys-color-outline);
@@ -223,21 +220,6 @@
     width: 100%;
   }
 
-  .back-to-present {
-    position: fixed;
-    bottom: 0;
-  }
-
-  .scroll-controls {
-    position: sticky;
-    bottom: 0;
-    min-height: 16px;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      var(--md-sys-color-background)
-    );
-  }
 
   section {
     display: flex;

@@ -84,16 +84,6 @@
     border-right-width: 3px;
   }
 
-  .dynamic {
-    padding: 4px;
-    border-radius: 1px;
-    min-width: 8px;
-    background: var(--md-sys-color-surface-variant);
-
-    &.inline {
-      padding: 0px;
-    }
-  }
 
   .inline-kbd {
     margin-inline-end: 2px;
