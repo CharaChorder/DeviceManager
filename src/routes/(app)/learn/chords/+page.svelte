@@ -164,16 +164,16 @@
           <td
             ><input
               type="number"
-              value={$learnConfig[key] ?? value}
+              value={$learnConfig[key as keyof typeof learnConfigDefault] ?? value}
               step="0.1"
               oninput={(event) =>
-                ($learnConfigStored[key] = event.target.value)}
+                ($learnConfigStored[key as keyof typeof learnConfigDefault] = parseFloat((event.target as HTMLInputElement).value))}
             />
           </td>
           <td>
             <button
-              disabled={!$learnConfigStored[key]}
-              onclick={() => ($learnConfigStored[key] = undefined)}>⟲</button
+              disabled={!$learnConfigStored[key as keyof typeof learnConfigDefault]}
+              onclick={() => ($learnConfigStored[key as keyof typeof learnConfigDefault] = undefined)}>⟲</button
             >
           </td>
         </tr>

@@ -34,6 +34,7 @@
   );
 
   let svg: SVGSVGElement | undefined = $state();
+  let spanContainer: HTMLSpanElement | undefined = $state();
   let text: Text = (browser ? document.createTextNode("") : undefined)!;
 
   let textRenderer: TextRenderer | undefined = $state();
@@ -43,17 +44,57 @@
     textRenderer.showCursor = cursor;
   });
 
+  // Only single inner text node is allowed, provided text will override
+  // all existing text context if any.
+  function innerText(node: HTMLElement, text: Text) {
+    // Clear existing text if any.
+    node.textContent = "";
+
+    // Add the text node
+    node.appendChild(text);
+
+    return {
+      destroy() {
+        if (node.contains(text)) {
+          text.remove();
+        }
+      },
+    };
+  }
+
   $effect(() => {
-    if (!svg || !text) return;
+    if (!svg || !spanContainer) return;
+
+    // Create a wrapper div and ensure correct positioning
+    const container = svg.parentNode as HTMLElement;
+
+    // Ensure the span has text for initial measurement
+    if (!spanContainer.firstChild) {
+      spanContainer.appendChild(text);
+    }
+
     const player =
       replay instanceof ReplayPlayer ? replay : new ReplayPlayer(replay);
     replayPlayer = player;
 
-    const renderer = new TextRenderer(svg.parentNode as HTMLElement, svg, text);
+    // Initialize renderer with span as the container
+    const renderer = new TextRenderer(spanContainer, svg, text);
+
     const apply = () => {
-      text.textContent =
+      const newText =
         finalText ??
         (player.stepper.text.map((token) => token.text).join("") || "n");
+
+      if (text.textContent !== newText) {
+        text.textContent = newText;
+      }
+      // Force dimensions update before rendering
+      if (spanContainer && svg) {
+        const bounds = spanContainer.getBoundingClientRect();
+        svg.setAttribute("width", bounds.width.toString());
+        svg.setAttribute("height", bounds.height.toString());
+      }
+
       renderer.text = player.stepper.text;
       renderer.cursor = player.stepper.cursor;
       if (keys) {
@@ -74,42 +115,45 @@
       player?.destroy();
     };
   });
-
-  export function innerText(node: HTMLElement, text: Text) {
-    node.appendChild(text);
-    return {
-      destroy() {
-        text.remove();
-      },
-    };
-  }
 </script>
 
-{#key replay}
-  <svg bind:this={svg}></svg>
-  {#if browser}
-    <span use:innerText={text}></span>
-  {:else if !(replay instanceof ReplayPlayer)}
-    {finalText}
-  {/if}
-{/key}
+<!-- Wrapper to ensure proper positioning -->
+<div class="char-recorder-wrapper">
+  {#key replay}
+    <!-- Text container for measurements -->
+    <span bind:this={spanContainer} class="text-container" use:innerText={text}>
+    </span>
 
-{#if children}
-  {@render children()}
-{/if}
+    <!-- SVG overlaid on the text -->
+    <svg bind:this={svg} class="svg-overlay"> </svg>
+  {/key}
+
+  {#if children}
+    {@render children()}
+  {/if}
+</div>
 
 <style>
-  :global(*):has(svg) {
+  .char-recorder-wrapper {
     position: relative;
+    width: 100%;
+    display: block;
+    text-align: left;
   }
 
-  span {
-    opacity: 0;
+  .text-container {
+    position: relative;
+    display: inline-block;
     white-space: pre-wrap;
     overflow-wrap: break-word;
+    min-height: 1.5em;
+    visibility: hidden;
+    text-align: left;
+    padding-left: 0;
+    margin-left: 0;
   }
 
-  svg {
+  .svg-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -119,22 +163,22 @@
     user-select: none;
   }
 
-  svg > :global(text) {
+  .svg-overlay :global(text) {
     font-family: inherit;
     font-size: inherit;
     fill: currentColor;
     dominant-baseline: middle;
   }
 
-  svg > :global(text[incorrect]) {
+  .svg-overlay :global(text[incorrect]) {
     fill: red;
   }
 
-  svg > :global(rect) {
+  .svg-overlay :global(rect) {
     fill: currentcolor;
   }
 
-  svg > :global(.animated) {
+  .svg-overlay :global(.animated) {
     transition: transform 100ms ease;
   }
 </style>

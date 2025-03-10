@@ -12,7 +12,7 @@
   import { browser } from "$app/environment";
   import { expoOut } from "svelte/easing";
   import { goto } from "$app/navigation";
-  import debounce from "lodash";
+  import debounce from "lodash/debounce";
   import { untrack } from "svelte";
   import {
     type PageParam,
@@ -64,6 +64,10 @@
     window.location.reload();
   }
 
+  // Extracting searchParams from $page for further use in effects which
+  // should only be triggered on acutal page parameters changes.
+  const pageSearchParams = $derived($page.url.searchParams.toString());
+
   const inputSentence = $derived(
     getParamOrDefault(SENTENCE_TRAINER_PAGE_PARAMS.sentence),
   );
@@ -110,8 +114,11 @@
   });
 
   $effect(() => {
-    if (browser && $page.url.searchParams) {
-      selectNextWord();
+    if (browser && pageSearchParams) {
+      // This effect should only trigger when URL parameters change.
+      // Using untrack to prevent this effect from reacting to wordMastery changes,
+      // ensuring we only select a new word when the page parameters actually change.
+      untrack(() => selectNextWord());
     }
   });
 
@@ -200,6 +207,9 @@
     const nextWord = pickNextWord(
       words,
       wordMastery,
+      // As `selectNextWord` can be called without `untrack`, we need
+      // to break infinite loop of reading and writing `currentWord` within
+      // the same effect.
       untrack(() => currentWord),
     );
     currentWord = nextWord;
@@ -250,7 +260,6 @@
       idle = true;
     }, idleTime);
   }
-
   function updateSentence(event: Event) {
     const params = new URLSearchParams(window.location.search);
     params.set(
@@ -260,7 +269,7 @@
     goto(`?${params.toString()}`);
   }
 
-  const debouncedUpdateSentence = debounce.debounce(
+  const debouncedUpdateSentence = debounce(
     updateSentence,
     getParamOrDefault(SENTENCE_TRAINER_PAGE_PARAMS.textAreaDebounceInMillis),
   );
@@ -272,6 +281,11 @@
       updateSentence(event); // Update immediately
     }
   }
+
+  function handleBlur(event: FocusEvent) {
+    debouncedUpdateSentence.cancel(); // Cancel any pending debounced update
+    updateSentence(event); // Update immediately on blur
+  }
 </script>
 
 <div>
@@ -280,11 +294,12 @@
     rows="7"
     cols="80"
     oninput={debouncedUpdateSentence}
-    onkeydown={handleInputAreaKeyDown}>{untrack(() => inputSentence)}</textarea
+    onkeydown={handleInputAreaKeyDown}
+    onblur={handleBlur}>{untrack(() => inputSentence)}</textarea
   >
 
   <div class="levels">
-    {#each masteryThresholds as [, , title], i}
+    {#each masteryThresholds as [_unused1, _unused2, title], i}
       <button
         class:active={level === i}
         class:mastered={i < level || progress === 1}
@@ -479,9 +494,21 @@
         {#each masteryThresholds as _, i}
           <tr>
             <th>L{i + 1}</th>
-            <td><input bind:value={masteryThresholds[i]![0]} /></td>
-            <td><input bind:value={masteryThresholds[i]![1]} /></td>
-            <td><input bind:value={masteryThresholds[i]![2]} /></td>
+            <td>
+              {#if masteryThresholds[i]}
+                <input type="text" bind:value={masteryThresholds[i][0]} />
+              {/if}
+            </td>
+            <td>
+              {#if masteryThresholds[i]}
+                <input type="text" bind:value={masteryThresholds[i][1]} />
+              {/if}
+            </td>
+            <td>
+              {#if masteryThresholds[i]}
+                <input type="text" bind:value={masteryThresholds[i][2]} />
+              {/if}
+            </td>
           </tr>
         {/each}
       </tbody>

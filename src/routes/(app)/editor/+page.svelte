@@ -31,13 +31,12 @@
   function clear() {
     recorder = new ReplayRecorder();
   }
-
   function runReplay() {
-    replay = recorder.finish();
+    replay = recorder.finish() as Replay;
   }
 
   function save() {
-    const replay = recorder.finish();
+    const replay = recorder.finish() as Replay;
     const blob = new Blob([JSON.stringify(replay)], {
       type: "application/json",
     });

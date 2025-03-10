@@ -13,13 +13,17 @@
         <a
           href={$matrixClient.getSsoLoginUrl(`${window.location.origin}/chat/`)}
         >
-          {#each flow.identity_providers as idp}
-            {#if idp.icon}
-              <img src={$matrixClient.mxcUrlToHttp(idp.icon)} alt={idp.name} />
-            {:else}
-              {idp.name}
-            {/if}
-          {/each}
+          {#if 'identity_providers' in flow && flow.identity_providers}
+            {#each flow.identity_providers as idp}
+              {#if idp.icon}
+                <img src={$matrixClient.mxcUrlToHttp(idp.icon)} alt={idp.name} />
+              {:else}
+                {idp.name}
+              {/if}
+            {/each}
+          {:else}
+            Login with SSO
+          {/if}
         </a>
       {:else if flow.type === "m.login.password"}
         <form onsubmit={passwordLogin}>

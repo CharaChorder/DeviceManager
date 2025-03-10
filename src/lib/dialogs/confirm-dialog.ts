@@ -21,7 +21,7 @@ export async function askForConfirmation(
       message,
       confirmTitle,
       abortTitle,
-      chord,
+      chord: { ...chord, deleted: false },
       onabort: () => resolvePromise(false),
       onconfirm: () => resolvePromise(true),
     },

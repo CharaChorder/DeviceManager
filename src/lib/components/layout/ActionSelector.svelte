@@ -174,7 +174,7 @@
           results.length === 0
             ? Array.from($KEYMAP_CODES, ([it]) => it)
             : results}
-        {#each filter ? resultValue.filter( (it) => filter.has(it), ) : resultValue as id (id)}
+        {#each (filter ?? false) ? resultValue.filter((it) => filter!.has(it)) : resultValue as id (id)}
           <li><ActionListItem {id} onclick={() => select(id)} /></li>
         {/each}
       {/if}

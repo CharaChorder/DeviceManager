@@ -11,6 +11,7 @@
   import { serialPort } from "$lib/serial/connection";
 
   let hasStarted = $state(false);
+  let isProcessingKey = false;
 
   setContext<VisualLayoutConfig>("visual-layout-config", {
     scale: 50,
@@ -42,8 +43,12 @@
         if (layout[layer] === undefined) {
           continue;
         }
-        for (let key = 0; key <= layout[layer].length; key++) {
-          if (layout[layer][key]?.action === currentAction) {
+        const currentLayer = layout[layer];
+        if (currentLayer === undefined) {
+          continue;
+        }
+        for (let key = 0; key <= currentLayer.length; key++) {
+          if (currentLayer[key]?.action === currentAction) {
             result.push({ layer, key });
           }
         }
@@ -76,13 +81,32 @@
     if (nextAction !== undefined) {
       currentAction.set(nextAction);
       currentLayer.set($expected[0]?.layer ?? 0);
-      const key = await $serialPort?.queryKey();
-      if ($expected.some(({ key: expectedKey }) => expectedKey === key)) {
-        console.log("Correct", key);
-      } else {
-        console.log("Incorrect", key);
+    }
+  }
+
+  async function handleKeyPress() {
+    if (!hasStarted || !$serialPort || isProcessingKey) return;
+    
+    try {
+      isProcessingKey = true;
+      const key = await $serialPort.queryKey();
+      
+      if (key !== null && key !== undefined) {
+        console.log("Key pressed:", key);
+        
+        if ($expected.some(({ key: expectedKey }) => expectedKey === key)) {
+          console.log("Correct", key);
+          // Move to next action after correct key press
+          next();
+        } else {
+          console.log("Incorrect", key);
+          // Don't move to next action on incorrect press
+        }
       }
-      next();
+    } catch (error) {
+      console.error("Error processing key press:", error);
+    } finally {
+      isProcessingKey = false;
     }
   }
 
@@ -90,7 +114,21 @@
     if ($serialPort && $layout[0]?.[0] && !hasStarted) {
       hasStarted = true;
       next();
+      
+      // Set up event listener for key presses with a less aggressive polling rate
+      const interval = setInterval(() => {
+        if ($serialPort) {
+          handleKeyPress().catch(err => console.error("Error in key handling:", err));
+        } else {
+          clearInterval(interval);
+        }
+      }, 100); // Check every 100ms instead of 20ms
+      
+      return () => clearInterval(interval);
     }
+    
+    // Add a return for the other code path
+    return undefined;
   });
 </script>
 
@@ -114,11 +152,11 @@
     font-size: 24px;
   }
 
-  .input {
-    width: 100%;
-    height: 100px;
-    border: 1px solid black;
-  }
+  //   .input {
+  //   width: 100%;
+  //   height: 100px;
+  //   border: 1px solid black;
+  // }
 
   section {
     display: flex;

@@ -12,6 +12,12 @@
       {
         "ignorePseudoClasses": ["global"]
       }
+    ],
+    "property-no-unknown": [
+      true,
+      {
+        "ignoreProperties": ["dominant-baseline"]
+      }
     ]
   }
 }
