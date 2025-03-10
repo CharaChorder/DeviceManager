@@ -165,11 +165,6 @@
     }
   }
 
-  .room {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
 
   .timeline {
     flex-grow: 1;

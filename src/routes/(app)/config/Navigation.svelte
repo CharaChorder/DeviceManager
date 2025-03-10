@@ -45,31 +45,6 @@
     padding-inline: 16px;
   }
 
-  @keyframes syncing {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  .syncing {
-    transform-origin: 50% 49%;
-    animation: syncing 1s linear infinite;
-  }
-
-  .title {
-    display: flex;
-    align-items: center;
-
-    margin-block: 0;
-
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--md-sys-color-primary);
-    text-decoration: none;
-  }
 
   .icon {
     cursor: pointer;
@@ -91,11 +66,6 @@
     border-radius: 50%;
 
     transition: all 250ms ease;
-
-    &.error {
-      color: var(--md-sys-color-on-error);
-      background: var(--md-sys-color-error);
-    }
   }
 
   .actions {

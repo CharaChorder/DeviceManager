@@ -317,11 +317,6 @@
 </div>
 
 <style lang="scss">
-  h2 > em {
-    font-style: normal;
-    transition: color 200ms ease;
-  }
-
   h3 {
     margin-block-start: 4em;
   }
@@ -452,58 +447,12 @@
     }
   }
 
-  hr {
-    color: var(--md-sys-color-outline);
-    margin-block: 3em;
-    margin-inline: 5em;
-    border-style: dashed;
-  }
-
-  .files {
-    list-style: none;
-    display: flex;
-    padding: 0;
-    gap: 8px;
-  }
-
-  a[download] {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: 1fr;
-    border: 1px solid var(--md-sys-color-outline);
-    border-radius: 8px;
-    font-size: 0.9em;
-    height: auto;
-
-    .size {
-      font-size: 0.8em;
-      opacity: 0.8;
-    }
-
-    .icon {
-      padding-inline-start: 0.4em;
-      grid-column: 2;
-      grid-row: 1 / span 2;
-    }
-  }
 
   .version {
     color: var(--md-sys-color-secondary);
   }
 
-  .device {
-    opacity: 0.6;
-  }
 
-  .inline-link {
-    display: inline;
-    padding: 0;
-  }
-
-  .correct-device {
-    color: var(--md-sys-color-primary);
-    opacity: 1;
-  }
 
   .incorrect-device {
     color: var(--md-sys-color-error);
