@@ -19,6 +19,8 @@ button {
 
   font-family: inherit;
   font-weight: 600;
+  border-radius: 32px;
+  transition: all 250ms ease;
 
   @media not (forced-colors: active) {
     color: currentcolor;
@@ -36,10 +38,6 @@ button {
     color: ButtonText;
   }
 
-  border-radius: 32px;
-
-  transition: all 250ms ease;
-
   &.icon {
     display: inline-flex;
 
@@ -48,7 +46,6 @@ button {
     padding-inline: 0;
 
     font-size: 24px;
-
     border-radius: 50%;
 
     @media (forced-colors: active) {

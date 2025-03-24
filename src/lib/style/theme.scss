@@ -1,13 +1,13 @@
-@import "./reset";
+@use "reset";
 
-@import "./form/button";
-@import "./form/toggle";
-@import "./form/checkbox";
+@use "form/button";
+@use "form/toggle";
+@use "form/checkbox";
 
-@import "./kbd";
-@import "./print";
+@use "kbd";
+@use "print";
 
-@import "./elements/h1";
+@use "elements/h1";
 
 body {
   overflow: hidden;
