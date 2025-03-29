@@ -24,6 +24,7 @@
 
   let abortIndexing: (() => void) | undefined;
   let progress = $state(0);
+  let totalChords = $state(0);
 
   onMount(() => {
     resizeObserver = new ResizeObserver(() => {
@@ -42,6 +43,7 @@
   $effect(() => {
     abortIndexing?.();
     progress = 0;
+    totalChords = $chords.length;
     buildIndex($chords, $osLayout, $KEYMAP_CODES).then(searchIndex.set);
   });
 
@@ -148,20 +150,21 @@
         });
       },
     });
+    
     let abort = false;
     abortIndexing = () => {
       abort = true;
     };
+    
     for (let i = 0; i < chords.length; i++) {
       if (abort) return index;
-
       const chord = chords[i]!;
       progress = i + 1;
-
       if ("phrase" in chord) {
         await index.addAsync(i, encodeChord(chord, osLayout, codes));
       }
     }
+    
     return index;
   }
 
@@ -255,9 +258,9 @@
 <div class="search-container">
   <input
     type="search"
-    placeholder={$LL.configure.chords.search.PLACEHOLDER(progress)}
+    placeholder={$LL.configure.chords.search.PLACEHOLDER(totalChords)}
     oninput={(event) => $searchIndex && search($searchIndex, event)}
-    class:loading={progress !== $chords.length}
+    class:loading={progress !== totalChords}
   />
   <div class="paginator">
     {#if $lastPage !== -1}
