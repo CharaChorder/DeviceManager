@@ -50,6 +50,11 @@
     }
   }
 
+  // Delay to ensure cursor is visible after focus is set.
+  // it is a workaround for conflict between goto call on sentence update
+  // and cursor focus when next word is selected.
+  const CURSOR_FOCUS_DELAY_MS = 10;
+
   let masteryThresholds: [slow: number, fast: number, title: string][] = $state(
     viaLocalStorage("mastery-thresholds", [
       [1500, 1050, "Words"],
@@ -66,7 +71,7 @@
 
   // Extracting searchParams from $page for further use in effects which
   // should only be triggered on acutal page parameters changes.
-  const pageSearchParams = $derived($page.url.searchParams.toString());
+  const pageSearchParams = $derived(browser ? $page.url.searchParams.toString() : '');
 
   const inputSentence = $derived(
     getParamOrDefault(SENTENCE_TRAINER_PAGE_PARAMS.sentence),
@@ -214,9 +219,9 @@
     );
     currentWord = nextWord;
     recorder = new ReplayRecorder(nextWord);
-    if (chordInputContainer) {
-      chordInputContainer.focus();
-    }
+    setTimeout(() => {
+      chordInputContainer?.focus();
+    }, CURSOR_FOCUS_DELAY_MS);
   }
 
   function checkInput() {
