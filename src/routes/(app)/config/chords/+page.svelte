@@ -152,16 +152,18 @@
     abortIndexing = () => {
       abort = true;
     };
-    for (let i = 0; i < chords.length; i++) {
-      if (abort) return index;
-
-      const chord = chords[i]!;
-      progress = i + 1;
-
+    const promises = chords.map((chord, i) => {
+      if (abort) return Promise.resolve();
+      
       if ("phrase" in chord) {
-        await index.addAsync(i, encodeChord(chord, osLayout, codes));
+        return index.addAsync(i, encodeChord(chord, osLayout, codes));
       }
-    }
+      return Promise.resolve();
+    }).filter(Boolean);
+    
+    if (abort) return index;
+    await Promise.all(promises);
+    progress = chords.length;
     return index;
   }
 
