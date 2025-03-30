@@ -131,6 +131,7 @@
     codes: Map<number, KeyInfo>,
   ): Promise<FlexSearch.Index> {
     if (chords.length === 0 || !browser) return index;
+    
     index = new FlexSearch.Index({
       tokenize: "full",
       encode(phrase: string) {
@@ -148,20 +149,36 @@
         });
       },
     });
+    
     let abort = false;
     abortIndexing = () => {
       abort = true;
     };
-    for (let i = 0; i < chords.length; i++) {
+    
+    const batchSize = 200;
+    const batches = Math.ceil(chords.length / batchSize);
+    
+    for (let b = 0; b < batches; b++) {
       if (abort) return index;
-
-      const chord = chords[i]!;
-      progress = i + 1;
-
-      if ("phrase" in chord) {
-        await index.addAsync(i, encodeChord(chord, osLayout, codes));
-      }
+      
+      const start = b * batchSize;
+      const end = Math.min((b + 1) * batchSize, chords.length);
+      const batch = chords.slice(start, end);
+      
+      const promises = batch.map((chord, i) => {
+        const chordIndex = start + i;
+        progress = chordIndex + 1;
+        
+        if ("phrase" in chord) {
+          const encodedChord = encodeChord(chord, osLayout, codes);
+          return index.addAsync(chordIndex, encodedChord);
+        }
+        return Promise.resolve();
+      });
+      
+      await Promise.all(promises);
     }
+    
     return index;
   }
 
