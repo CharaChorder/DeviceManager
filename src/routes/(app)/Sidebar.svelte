@@ -40,14 +40,14 @@
     /*[
       { href: "/plugin", icon: "code", title: "Plugin", wip: true },
     ],*/
-  ] satisfies {
+  ] satisfies Array<Array<{
     href: string;
     icon: string;
     title: string;
     wip?: boolean;
     external?: boolean;
     primary?: boolean;
-  }[][];
+  }>>;
 
   let connectButton: HTMLButtonElement;
 </script>
@@ -56,7 +56,16 @@
   <nav>
     {#each routes as group}
       <ul>
-        {#each group as { href, icon, title, wip, external }}
+        {#each group as route}
+          {@const routeWithDefaults = route as { 
+            href: string; 
+            icon: string; 
+            title: string; 
+            wip?: boolean; 
+            external?: boolean; 
+            primary?: boolean; 
+          }}
+          {@const { href, icon, title, wip = false, external = false } = routeWithDefaults}
           <li>
             <a
               class:wip

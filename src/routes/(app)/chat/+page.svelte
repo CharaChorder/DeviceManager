@@ -76,7 +76,7 @@
       await store.startup();
       await cryptoStore.startup();
       await $matrixClient.startClient();
-      $matrixClient.once("sync", function (state, prevState, res) {
+      $matrixClient.once("sync" as any, function (_state: any, _prevState: any, _res: any) {
         ready = true;
       });
     }
@@ -133,13 +133,17 @@
         <a
           href={$matrixClient.getSsoLoginUrl(`${window.location.origin}/chat/`)}
         >
-          {#each flow.identity_providers as idp}
-            {#if idp.icon}
-              <img src={$matrixClient.mxcUrlToHttp(idp.icon)} alt={idp.name} />
-            {:else}
-              {idp.name}
-            {/if}
-          {/each}
+          {#if 'identity_providers' in flow && flow.identity_providers}
+            {#each flow.identity_providers as idp}
+              {#if idp.icon}
+                <img src={$matrixClient.mxcUrlToHttp(idp.icon)} alt={idp.name} />
+              {:else}
+                {idp.name}
+              {/if}
+            {/each}
+          {:else}
+            Login with SSO
+          {/if}
         </a>
       {:else if flow.type === "m.login.password"}
         <!-- TODO: unambigous sso
@@ -165,11 +169,11 @@
     }
   }
 
-  .room {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
+  //   .room {
+  //   display: flex;
+  //   flex-direction: column;
+  //   flex-grow: 1;
+  // }
 
   .timeline {
     flex-grow: 1;

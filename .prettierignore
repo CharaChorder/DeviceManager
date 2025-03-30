@@ -7,6 +7,8 @@ node_modules
 .env.*
 !.env.example
 /src-tauri/target
+/openssl*
+/src/i18n/i18n*
 
 # Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml

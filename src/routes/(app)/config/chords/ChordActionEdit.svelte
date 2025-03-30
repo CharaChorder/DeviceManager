@@ -157,7 +157,13 @@
     actions={editing ? [...pressedKeys].sort(compare) : (chordActions ?? [])}
   />
   <sup>•</sup>
-  <div role="button" class="icon add" onclick={addSpecial}>add_circle</div>
+  <span 
+    role="button" 
+    tabindex="0" 
+    class="icon add" 
+    onclick={addSpecial}
+    onkeydown={e => e.key === 'Enter' && e.currentTarget.click()}
+  >add_circle</span>
 </button>
 
 <style lang="scss">

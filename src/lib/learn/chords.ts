@@ -2,7 +2,7 @@ import { osLayout } from "$lib/os-layout";
 import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
 import { persistentWritable } from "$lib/storage";
 import { type ChordInfo, chords } from "$lib/undo-redo";
-import { derived } from "svelte/store";
+import { derived, get } from "svelte/store";
 
 export const words = derived(
   [chords, osLayout],
@@ -11,9 +11,10 @@ export const words = derived(
       chords
         .map((chord) => ({
           chord,
-          output: chord.phrase.map((action) =>
-            layout.get(KEYMAP_CODES.get(action)?.keyCode ?? ""),
-          ),
+          output: chord.phrase.map((action) => {
+            const keyCode = get(KEYMAP_CODES).get(action)?.keyCode ?? "";
+            return layout.get(keyCode);
+          }),
         }))
         .filter(({ output }) => output.every((it) => !!it))
         .map(({ chord, output }) => [output.join("").trim(), chord] as const),

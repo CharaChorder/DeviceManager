@@ -35,3 +35,9 @@ way to subset variable woff2 fonts with ligatures.
 
 In other words, either have python as a development dependency or
 serve a 3.5MB icons font of which 99.5% is completely unused.
+
+To generate the icons use the following command:
+
+```shell
+npm run minify-icons
+```

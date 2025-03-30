@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api";
+import { mount, unmount } from 'svelte';
 import TauriSerialDialog from "$lib/serial/TauriSerialDialog.svelte";
 
 export type TauriSerialPort = Pick<
@@ -63,15 +64,18 @@ navigator.serial = {
         : ports,
     );
 
-    const dialog = new TauriSerialDialog({
-      target: document.body,
-      props: { ports },
+    return new Promise<SerialPort>((resolve, reject) => {
+      const dialog = mount(TauriSerialDialog, {
+        target: document.body,
+        props: { 
+          ports,
+          onconfirm: (port: SerialPort | undefined) => {
+            unmount(dialog);
+            if (port) resolve(port);
+            else reject(new Error('No port selected'));
+          }
+        }
+      });
     });
-    const port = await new Promise<SerialPort>((resolve) =>
-      // @ts-expect-error polyfill
-      dialog.$on("confirm", resolve),
-    );
-    dialog.$destroy();
-    return port;
   },
 };

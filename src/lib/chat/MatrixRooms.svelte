@@ -31,7 +31,7 @@
     <div>Loading...</div>
   {:then rooms}
     {#each rooms.chunk as room}
-      <button class="room" onclick={() => ($currentRoomId = room.roomId)}>
+      <button class="room" onclick={() => ($currentRoomId = room.room_id)}>
         <div>#</div>
         <div>{room.name}</div>
       </button>

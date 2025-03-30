@@ -11,7 +11,7 @@
   import LL from "$i18n/i18n-svelte";
   import { KEYMAP_IDS } from "$lib/serial/keymap-codes";
 
-  export let changes: Change[] = [
+  const { changes = [
     { type: ChangeType.Layout, layer: 0, id: 1, action: 1 },
     { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
     { type: ChangeType.Layout, layer: 1, id: 1, action: 1 },
@@ -35,66 +35,69 @@
     {
       type: ChangeType.Chord,
       id: [
-        KEYMAP_IDS.get("y")!.code,
-        KEYMAP_IDS.get("r")!.code,
-        KEYMAP_IDS.get("t")!.code,
+        $KEYMAP_IDS.get("y")!.code,
+        $KEYMAP_IDS.get("r")!.code,
+        $KEYMAP_IDS.get("t")!.code,
       ],
       actions: [
-        KEYMAP_IDS.get("y")!.code,
-        KEYMAP_IDS.get("r")!.code,
-        KEYMAP_IDS.get("t")!.code,
+        $KEYMAP_IDS.get("y")!.code,
+        $KEYMAP_IDS.get("r")!.code,
+        $KEYMAP_IDS.get("t")!.code,
       ],
       phrase: [55, 63, 37, 36],
     },
     {
       type: ChangeType.Chord,
       id: [
-        KEYMAP_IDS.get("y")!.code,
-        KEYMAP_IDS.get("r")!.code,
-        KEYMAP_IDS.get("t")!.code,
+        $KEYMAP_IDS.get("y")!.code,
+        $KEYMAP_IDS.get("r")!.code,
+        $KEYMAP_IDS.get("t")!.code,
       ],
       actions: [
-        KEYMAP_IDS.get("y")!.code,
-        KEYMAP_IDS.get("r")!.code,
-        KEYMAP_IDS.get("t")!.code,
+        $KEYMAP_IDS.get("y")!.code,
+        $KEYMAP_IDS.get("r")!.code,
+        $KEYMAP_IDS.get("t")!.code,
       ],
       phrase: [],
     },
-  ];
+  ] as Change[] } = $props();
 
-  $: existingChords = new Set($chords.map((it) => JSON.stringify(it.id)));
+  const existingChords = $derived(new Set($chords.map((it) => JSON.stringify(it.id))));
 
-  $: layoutChanges = Array.from(
+  const layoutChanges = $derived(Array.from(
     { length: 3 },
     (_, i) =>
       changes.filter(
-        (it) => it.type === ChangeType.Layout && it.layer === i,
+        (it: Change) => it.type === ChangeType.Layout && it.layer === i,
       ) as LayoutChange[],
-  );
-  $: settingChanges = changes.filter(
-    (it) => it.type === ChangeType.Setting,
-  ) as SettingChange[];
-  $: chordChanges = {
+  ));
+  
+  const settingChanges = $derived(changes.filter(
+    (it: Change) => it.type === ChangeType.Setting,
+  ) as SettingChange[]);
+  
+  const chordChanges = $derived({
     added: changes.filter(
-      (it) =>
+      (it: Change) =>
         it.type === ChangeType.Chord &&
         it.phrase.length > 0 &&
         !existingChords.has(JSON.stringify(it.id)),
     ) as ChordChange[],
     changed: changes.filter(
-      (it) =>
+      (it: Change) =>
         it.type === ChangeType.Chord &&
         it.phrase.length > 0 &&
         existingChords.has(JSON.stringify(it.id)),
     ) as ChordChange[],
     deleted: changes.filter(
-      (it) => it.type === ChangeType.Chord && it.phrase.length === 0,
+      (it: Change) => it.type === ChangeType.Chord && it.phrase.length === 0,
     ) as ChordChange[],
-  };
-  $: totalChordChanges = Object.values(chordChanges).reduce(
+  });
+  
+  const totalChordChanges = $derived(Object.values(chordChanges).reduce(
     (acc, curr) => acc + curr.length,
     0,
-  );
+  ));
 </script>
 
 <Dialog>

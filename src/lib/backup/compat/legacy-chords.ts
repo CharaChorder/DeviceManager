@@ -1,5 +1,6 @@
 import { KEYMAP_IDS } from "$lib/serial/keymap-codes";
 import type { CharaChordFile } from "$lib/share/chara-file";
+import { get } from "svelte/store";
 
 const SPECIAL_KEYS = new Map<string, string>([[" ", "SPACE"]]);
 
@@ -15,12 +16,12 @@ export function csvChordsToJson(csv: string): CharaChordFile {
         return [
           input!
             .split("+")
-            .map((it) => KEYMAP_IDS.get(it.trim())?.code ?? 0)
+            .map((it) => get(KEYMAP_IDS).get(it.trim())?.code ?? 0)
             .sort((a, b) => a - b),
           output!
             .trim()
             .split("")
-            .map((it) => KEYMAP_IDS.get(SPECIAL_KEYS.get(it) ?? it)?.code ?? 0),
+            .map((it) => get(KEYMAP_IDS).get(SPECIAL_KEYS.get(it) ?? it)?.code ?? 0),
         ];
       }),
   };
