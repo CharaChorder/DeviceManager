@@ -65,7 +65,7 @@
             openssl_3
             glib
             gtk3
-            libsoup
+            libsoup_2_4
             webkitgtk
             librsvg
             # serial plugin
@@ -76,7 +76,7 @@
         devShell = pkgs.mkShell {
           buildInputs = packages;
           shellHook = ''
-            export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
+            #export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
           '';
         };
       }
