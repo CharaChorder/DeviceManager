@@ -1,6 +1,10 @@
 name: Build
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   build:
@@ -41,10 +45,11 @@ jobs:
           echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
       - name: Publish Stable
-        if: ${{ github.ref == 'refs/tags/v*' }}
+        if: ${{ github.ref == 'refs/tags/v*' && !github.event.pull_request.head.repo.fork }}
         run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/www/
 
       - name: Publish Branch
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/ref/${GITHUB_REF##*/}
       - name: Publish Commit
         run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/ref/${{ github.sha }}
