@@ -17,7 +17,7 @@ export async function getMeta(
   try {
     if (!browser) return fetchMeta(device, version, fetch);
 
-    const dbRequest = indexedDB.open("version-meta", 2);
+    const dbRequest = indexedDB.open("version-meta", 3);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       dbRequest.onsuccess = () => resolve(dbRequest.result);
       dbRequest.onerror = () => reject(dbRequest.error);
@@ -116,7 +116,7 @@ async function fetchMeta(
           .then((it) => (it as any).default)
           .then((settings: SettingsMeta[]) => {
             if (!device.startsWith("lite_")) {
-              settings = settings.filter((it) => it.name === "leds");
+              settings = settings.filter((it) => it.name !== "leds");
             }
             return settings;
           })),
