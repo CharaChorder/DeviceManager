@@ -1,4 +1,4 @@
-import type { RawVersionMeta, VersionMeta } from "./types/meta";
+import type { RawVersionMeta, SettingsMeta, VersionMeta } from "./types/meta";
 import type { Listing } from "./types/listing";
 import type { KeymapCategory } from "./types/actions";
 import { browser } from "$app/environment";
@@ -9,7 +9,7 @@ export async function getMeta(
   device: string,
   version: string,
   fetch: typeof window.fetch = window.fetch,
-): Promise<VersionMeta | undefined> {
+): Promise<VersionMeta> {
   while (lock) await lock;
   let resolveLock!: () => void;
   lock = new Promise((resolve) => (resolveLock = resolve));
@@ -17,15 +17,19 @@ export async function getMeta(
   try {
     if (!browser) return fetchMeta(device, version, fetch);
 
-    const dbRequest = indexedDB.open("version-meta", 1);
+    const dbRequest = indexedDB.open("version-meta", 2);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       dbRequest.onsuccess = () => resolve(dbRequest.result);
       dbRequest.onerror = () => reject(dbRequest.error);
       dbRequest.onupgradeneeded = () => {
         const db = dbRequest.result;
+        if (db.objectStoreNames.contains("meta")) {
+          db.deleteObjectStore("meta");
+        }
         db.createObjectStore("meta", { keyPath: ["device", "version"] });
       };
     });
+    console.log("upgrading version meta db");
 
     try {
       const readTransaction = db.transaction(["meta"], "readonly");
@@ -39,7 +43,6 @@ export async function getMeta(
       if (item) return item;
 
       const meta = await fetchMeta(device, version);
-      if (!meta) return undefined;
 
       const putTransaction = db.transaction(["meta"], "readwrite");
       const putStore = putTransaction.objectStore("meta");
@@ -60,7 +63,7 @@ export async function getMeta(
     resolveLock();
     lock = undefined;
   }
-  return undefined;
+  return fetchMeta(device, version, fetch);
 }
 
 async function fetchMeta(
@@ -69,7 +72,9 @@ async function fetchMeta(
   fetch: typeof window.fetch = window.fetch,
 ): Promise<VersionMeta> {
   const path = `${import.meta.env.VITE_FIRMWARE_URL}/${device}/${version}`;
-  const files: Listing[] = await fetch(`${path}/`).then((res) => res.json());
+  const files: Listing[] = await fetch(`${path}/`)
+    .then((res) => res.json())
+    .catch(() => []);
   const meta: Partial<RawVersionMeta> | undefined = files.some(
     (entry) => entry.type === "file" && entry.name === "meta.json",
   )
@@ -105,6 +110,16 @@ async function fetchMeta(
           ),
         }
       : undefined,
+    settings: await (meta?.settings
+      ? fetch(`${path}/${meta.settings}`).then((it) => it.json())
+      : import("$lib/assets/settings.yml")
+          .then((it) => (it as any).default)
+          .then((settings: SettingsMeta[]) => {
+            if (!device.startsWith("lite_")) {
+              settings = settings.filter((it) => it.name === "leds");
+            }
+            return settings;
+          })),
     actions: await (meta?.actions
       ? fetch(`${path}/${meta.actions}`).then((it) => it.json())
       : Promise.all<KeymapCategory[]>(

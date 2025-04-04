@@ -5,6 +5,23 @@ import type {
 } from "$lib/share/chara-file";
 import type { KeymapCategory } from "./actions";
 
+export interface SettingsMeta {
+  name: string;
+  description?: string;
+  items: SettingsItemMeta[];
+}
+
+export interface SettingsItemMeta {
+  id: number;
+  description?: string;
+  enum?: string[];
+  range: [number, number];
+  step?: number;
+  unit?: string;
+  inverse?: number;
+  scale?: number;
+}
+
 export interface RawVersionMeta {
   version: string;
   target: string;
@@ -14,6 +31,7 @@ export interface RawVersionMeta {
   public_build: boolean;
   development_mode: number;
   actions: string;
+  settings: string;
   factory_defaults: {
     layout: string;
     settings: string;
@@ -38,6 +56,7 @@ export interface VersionMeta {
   dirty: boolean;
   developmentBuild: boolean;
   actions: KeymapCategory[];
+  settings: SettingsMeta[];
   factoryDefaults?: {
     layout: CharaLayoutFile;
     settings: CharaSettingsFile;

@@ -1,118 +1,154 @@
-settings:
-  0x1:
-    title: Enable Serial Header
-    description: boolean 0 or 1, default is 0
-  0x2:
-    title: Enable Serial Logging
-    description: boolean 0 or 1, default is 0
-  0x3:
-    title: Enable Serial Debugging
-    description: boolean 0 or 1, default is 0
-  0x4:
-    title: Enable Serial Raw
-    description: boolean 0 or 1, default is 0
-  0x5:
-    title: Enable Serial Chord
-    description: boolean 0 or 1, default is 0
-  0x6:
-    title: Enable Serial Keyboard
-    description: boolean 0 or 1, default is 0
-  0x7:
-    title: Enable Serial Mouse
-    description: boolean 0 or 1, default is 0
-  0x11:
-    title: Enable USB HID Keyboard
-    description: boolean 0 or 1, default is 1
-  0x12:
-    title: Enable Character Entry
-    description: boolean 0 or 1
-  0x13:
-    title: GUI-CTRL Swap Mode
-    description: boolean 0 or 1; 1 swaps keymap 0 and 1. (CCL only)
-  0x14:
-    title: Key Scan Duration
-    description: scan rate described in milliseconds; default is 2ms = 500Hz
-  0x15:
-    title: Key Debounce Press Duration
-    description: debounce time in milliseconds; default is 7ms on the One and 20ms on the Lite
-  0x16:
-    title: Key Debounce Release Duration
-    description: debounce time in milliseconds; default is 7ms on the One and 20ms on the Lite
-  0x17:
-    title: Keyboard Output Character Microsecond Delays
-    description: delay time in microseconds (one delay for press and again for release); default is 480us; max is 10240us; increments of 40us
-  0x21:
-    title: Enable USB HID Mouse
-    description: boolean 0 or 1; default is 1
-  0x22:
-    title: Slow Mouse Speed
-    description: pixels to move at the mouse poll rate; default for CC1 is 5 = 250px/s
-  0x23:
-    title: Fast Mouse Speed
-    description: pixels to move at the mouse poll rate; default for CC1 is 25 = 1250px/s
-  0x24:
-    title: Enable Active Mouse
-    description: boolean 0 or 1; moves mouse back and forth every 60s
-  0x25:
-    title: Mouse Scroll Speed
-    description: default is 1; polls at 1/4th the rate of the mouse move updates
-  0x26:
-    title: Mouse Poll Duration
-    description: poll rate described in milliseconds; default is 20ms = 50Hz
-  0x31:
-    title: Enable Chording
-    description: boolean 0 or 1
-  0x32:
-    title: Enable Chording Character Counter Timeout
-    description: boolean 0 or 1; default is 1
-  0x33:
-    title: Chording Character Counter Timeout Timer
-    description: 0-255 deciseconds; default is 40 or 4.0 seconds
-  0x34:
-    title: Chord Detection Press Tolerance(ms)
-    description: 1-50 milliseconds
-  0x35:
-    title: Chord Detection Release Tolerance(ms)
-    description: 1-50 milliseconds
-  0x41:
-    title: Enable Spurring
-    description: boolean 0 or 1; default is 1
-  0x42:
-    title: Enable Spurring Character Counter Timeout
-    description: boolean 0 or 1; default is 1
-  0x43:
-    title: Spurring Character Counter Timeout Timer
-    description: 0-255 seconds; default is 240
-  0x51:
-    title: Enable Arpeggiates
-    description: boolean 0 or 1; default is 1
-  0x54:
-    title: Arpeggiate Tolerance
-    description: in milliseconds; default 800ms
-  0x61:
-    title: Enable Compound Chording (coming soon)
-    description: boolean 0 or 1; default is 0
-  0x64:
-    title: Compound Tolerance
-    description: in milliseconds; default 1500ms
-  0x81:
-    title: LED Brightness
-    description: 0-50 (CCL only); default is 5, which draws around 100 mA of current
-  0x82:
-    title: LED Color Code
-    description: Color Codes to be listed (CCL only)
-  0x83:
-    title: Enable LED Key Highlight (coming soon)
-    description: boolean 0 or 1 (CCL only)
-  0x84:
-    title: Enable LEDs
-    description: boolean 0 or 1; default is 1 (CCL only)
-  0x91:
-    title: Operating System
-    description: Operating system codes listed below
-  0x92:
-    title: Enable Realtime Feedback
-    description: boolean 0 or 1; default is 1
-  0x93:
-    title: Enable CharaChorder Ready on startup
-    description: boolean 0 or 1; default is 1
+- name: spurring
+  description: |
+    "Chording only" mode which tells your device to output chords on a press
+    rather than a press & release. It also enables you to jump from one
+    chord to another without releasing everything and can be activated in
+    GTM or by chording both mirror keys. It can provide significant speed
+    gains with chording, but also takes away the flexibility of character
+    entry.
+  items:
+    - id: 0x41
+      name: enable
+      range: [0, 1]
+    - id: 0x43
+      name: character counter timeout
+      range: [0, 240000]
+      step: 1000
+      scale: 0.001
+      unit: s
+- name: arpeggiates
+  description: |
+    Allows chord modifiers to be hit after instead of with a chord,
+    and enables select keys to be placed before auto-spaces.
+  items:
+    - id: 0x51
+      name: enable
+      range: [0, 1]
+    - id: 0x54
+      name: timeout
+      range: [0, 2550]
+      step: 10
+      unit: ms
+- name: keyboard
+  items:
+    - id: 0x11
+      name: enable
+      range: [0, 1]
+    - id: 0x12
+      name: character entry
+      range: [0, 1]
+    - id: 0x13
+      name: command option swap
+      range: [0, 1]
+      description: |
+        Swaps ⌥ and ⌘ to make transitioning between Mac and other systems easier.
+    - id: 0x14
+      name: poll rate
+      range: [0, 255]
+      unit: Hz
+      inverse: 1000
+    - id: 0x15
+      name: debounce press
+      range: [0, 255]
+      unit: ms
+    - id: 0x16
+      name: debounce release
+      range: [0, 255]
+      unit: ms
+    - id: 0x17
+      name: output delay
+      range: [0, 10200]
+      step: 40
+      unit: µs
+- name: mouse
+  items:
+    - id: 0x21
+      name: enable
+      range: [0, 1]
+    - id: 0x22
+      name: slow speed
+      range: [0, 255]
+      unit: px
+    - id: 0x23
+      name: fast speed
+      range: [0, 255]
+      unit: px
+    - id: 0x24
+      name: caffeine
+      range: [0, 1]
+      description: |
+        Keeps computer alive by moving the mouse back and forth one pixel every 60s
+    - id: 0x25
+      name: scroll speed
+      range: [0, 255]
+      unit: pg
+    - id: 0x26
+      name: poll rate
+      range: [0, 255]
+      unit: Hz
+      inverse: 1000
+- name: chording
+  items:
+    - id: 0x31
+      name: enable
+      range: [0, 1]
+    - id: 0x33
+      name: auto delete timeout
+      range: [0, 25500]
+      step: 100
+    - id: 0x34
+      name: press tolerance
+      description: |
+        Scales with the number of chord inputs.
+      range: [0, 255]
+      unit: ms
+    - id: 0x35
+      name: release tolerance
+      description: |
+        Scales with the number of chord inputs.
+      range: [0, 255]
+      unit: ms
+- name: leds
+  items:
+    - id: 0x84
+      name: enable
+      range: [0, 1]
+    - id: 0x81
+      name: brightness
+      range: [0, 50]
+    - id: 0x82
+      name: base color code
+      enum:
+        white: 0
+        red: 1
+        orange: 2
+        yellow: 3
+        charteuse: 4
+        green: 5
+        spring green: 6
+        cyan: 7
+        azure: 8
+        blue: 9
+        violet: 10
+        magenta: 11
+        rose: 12
+        rainbow: 13
+    - id: 0x83
+      name: highlight
+      range: [0, 1]
+- name: misc
+  items:
+    - id: 0x91
+      name: operating system
+      enum:
+        windows: 0
+        mac: 1
+        linux: 2
+        ios: 3
+        android: 4
+    - id: 0x92
+      name: GTM realtime feedback
+      range: [0, 1]
+    - id: 0x93
+      name: startup message
+      range: [0, 1]

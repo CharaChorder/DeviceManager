@@ -5,7 +5,6 @@ import type { Writable } from "svelte/store";
 import type { CharaLayout } from "$lib/serialization/layout";
 import { persistentWritable } from "$lib/storage";
 import { userPreferences } from "$lib/preferences";
-import settingInfo from "$lib/assets/settings.yml";
 import { getMeta } from "$lib/meta/meta-storage";
 import type { VersionMeta } from "$lib/meta/types/meta";
 
@@ -69,19 +68,19 @@ export async function initSerial(manual = false, withSync = true) {
 export async function sync() {
   const device = get(serialPort);
   if (!device) return;
-  getMeta(
+  syncStatus.set("downloading");
+  const meta = await getMeta(
     `${device.device}_${device.chipset}`.toLowerCase(),
     device.version.toString(),
-  ).then((meta) => {
-    deviceMeta.set(meta);
-  });
+  );
+  deviceMeta.set(meta);
   const chordCount = await device.getChordCount();
-  syncStatus.set("downloading");
 
-  const max =
-    Object.keys(settingInfo["settings"]).length +
-    device.keyCount * 3 +
-    chordCount;
+  const maxSettings = meta.settings
+    .map((it) => it.items.length)
+    .reduce((a, b) => a + b, 0);
+
+  const max = maxSettings + device.keyCount * 3 + chordCount;
   let current = 0;
   syncProgress.set({ max, current });
   function progressTick() {
@@ -90,12 +89,12 @@ export async function sync() {
   }
 
   const parsedSettings: number[] = [];
-  for (const key in settingInfo["settings"]) {
-    try {
-      parsedSettings[Number.parseInt(key)] = await device.getSetting(
-        Number.parseInt(key),
-      );
-    } catch {}
+  for (const category of meta.settings) {
+    for (const setting of category.items) {
+      try {
+        parsedSettings[setting.id] = await device.getSetting(setting.id);
+      } catch {}
+    }
     progressTick();
   }
   deviceSettings.set(parsedSettings);
