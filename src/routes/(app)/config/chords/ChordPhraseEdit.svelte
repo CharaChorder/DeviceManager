@@ -18,11 +18,11 @@
   });
 
   function keypress(event: KeyboardEvent) {
-    if (event.key === "ArrowUp") {
+    if (!event.shiftKey && event.key === "ArrowUp") {
       addSpecial(event);
-    } else if (event.key === "ArrowLeft") {
+    } else if (!event.shiftKey && event.key === "ArrowLeft") {
       moveCursor(cursorPosition - 1);
-    } else if (event.key === "ArrowRight") {
+    } else if (!event.shiftKey && event.key === "ArrowRight") {
       moveCursor(cursorPosition + 1);
     } else if (event.key === "Backspace") {
       deleteAction(cursorPosition - 1);
