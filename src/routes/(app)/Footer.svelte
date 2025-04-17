@@ -173,10 +173,6 @@
 </footer>
 
 <style lang="scss">
-  select {
-    position: absolute;
-    opacity: 0;
-  }
 
   .sync-box {
     display: flex;

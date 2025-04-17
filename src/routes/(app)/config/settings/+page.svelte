@@ -221,20 +221,6 @@
 
       font-size: 14px;
 
-      > input[type="number"] {
-        border-radius: 16px 4px 4px 16px;
-        height: 24px;
-        text-align: center;
-
-        &:last-child:not(:only-child) {
-          border-radius: 4px 16px 16px 4px;
-        }
-
-        &:only-child {
-          border-radius: 16px;
-        }
-      }
-
       &:has(input[type="number"]) {
         cursor: text;
 
@@ -285,16 +271,6 @@
 
       &:focus {
         outline: none;
-      }
-    }
-
-    ul,
-    p {
-      font-size: 10px;
-
-      :global(kbd) {
-        font-size: 12px;
-        height: 18px;
       }
     }
   }
