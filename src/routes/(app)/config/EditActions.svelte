@@ -53,7 +53,7 @@
       );
       const settingChanges = $overlay.settings.size;
       const chordChanges = $overlay.chords.size;
-      const needsCommit = settingChanges > 0 && layoutChanges > 0;
+      const needsCommit = settingChanges > 0 || layoutChanges > 0;
       const progressMax = layoutChanges + settingChanges + chordChanges;
 
       let progressCurrent = 0;
