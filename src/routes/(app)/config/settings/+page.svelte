@@ -132,7 +132,11 @@
                     type="number"
                     min={settingValue(item.range[0], item)}
                     max={settingValue(item.range[1], item)}
-                    step={settingValue(item.step, item)}
+                    step={item.inverse !== undefined ||
+                    item.scale !== undefined ||
+                    item.step === undefined
+                      ? undefined
+                      : settingValue(item.step, item)}
                     use:setting={{
                       id: item.id,
                       inverse: item.inverse,

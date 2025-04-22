@@ -13,6 +13,7 @@
   let unsafeUpdate = $state(false);
 
   let terminalOutput = $state("");
+  let progress = $state(0);
 
   let step = $state(0);
   let eraseAll = $state(false);
@@ -28,9 +29,11 @@
     try {
       const file = await fetch(
         `${data.meta.path}/${data.meta.update.ota}`,
-      ).then((it) => it.blob());
+      ).then((it) => it.arrayBuffer());
 
-      await port.updateFirmware(file);
+      await port.updateFirmware(file, (transferred, total) => {
+        progress = transferred / total;
+      });
 
       success = true;
     } catch (e) {
@@ -194,7 +197,9 @@
     <section>
       <button
         class="update-button"
-        class:working
+        class:working={working && (progress <= 0 || progress >= 1)}
+        class:progress={working && progress > 0 && progress < 1}
+        style:--progress="{progress * 100}%"
         class:primary={!buttonError}
         class:error={buttonError}
         disabled={working || $serialPort === undefined || !isCorrectDevice}
@@ -422,6 +427,7 @@
       background: none;
     }
 
+    &.progress,
     &.working {
       border-color: transparent;
     }
@@ -445,14 +451,22 @@
       height: 30%;
       width: 120%;
     }
-  }
 
+    &.progress::after {
+      z-index: -2;
+      position: absolute;
+      left: 0;
+      content: "";
+      background: var(--md-sys-color-primary);
+      opacity: 0.2;
+      height: 100%;
+      width: var(--progress);
+    }
+  }
 
   .version {
     color: var(--md-sys-color-secondary);
   }
-
-
 
   .incorrect-device {
     color: var(--md-sys-color-error);

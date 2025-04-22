@@ -49,6 +49,8 @@ export const setting: Action<
     if (isNumeric) {
       value = Number(node.value);
       if (Number.isNaN(value)) return;
+      if (min !== undefined) value = Math.max(min, value);
+      if (max !== undefined) value = Math.min(max, value);
       value = Math.floor(
         inverse !== undefined
           ? inverse / value
@@ -56,8 +58,6 @@ export const setting: Action<
             ? value / scale
             : value,
       );
-      if (min !== undefined) value = Math.max(min, value);
-      if (max !== undefined) value = Math.min(max, value);
     } else {
       value = node.checked ? 1 : 0;
     }

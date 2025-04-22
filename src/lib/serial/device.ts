@@ -477,10 +477,14 @@ export class CharaDevice {
     return Number(await this.send(1, ["RAM"]).then(([bytes]) => bytes));
   }
 
-  async updateFirmware(file: File | Blob): Promise<void> {
+  async updateFirmware(
+    file: ArrayBuffer,
+    progress: (transferred: number, total: number) => void,
+  ): Promise<void> {
     while (this.lock) {
       await this.lock;
     }
+
     let resolveLock: (result: true) => void;
     this.lock = new Promise<true>((resolve) => {
       resolveLock = resolve;
@@ -510,46 +514,46 @@ export class CharaDevice {
           });
           return it;
         });
-      } finally {
-        writer.releaseLock();
-      }
 
-      // Wait for the device to be ready
-      const signal = await this.reader.read();
-      serialLog.update((it) => {
-        it.push({
-          type: "output",
-          value: signal.value!.trim(),
+        // Wait for the device to be ready
+        const signal = await this.reader.read();
+        serialLog.update((it) => {
+          it.push({
+            type: "output",
+            value: signal.value!.trim(),
+          });
+          return it;
         });
-        return it;
-      });
 
-      await file.stream().pipeTo(this.port.writable!);
+        const chunkSize = 128;
+        for (let i = 0; i < file.byteLength; i += chunkSize) {
+          const chunk = file.slice(i, i + chunkSize);
+          await writer.write(new Uint8Array(chunk));
+          progress(i + chunk.byteLength, file.byteLength);
+        }
 
-      serialLog.update((it) => {
-        it.push({
-          type: "input",
-          value: `...${file.size} bytes`,
+        serialLog.update((it) => {
+          it.push({
+            type: "input",
+            value: `...${file.byteLength} bytes`,
+          });
+          return it;
         });
-        return it;
-      });
 
-      const result = (await this.reader.read()).value!.trim();
-      serialLog.update((it) => {
-        it.push({
-          type: "output",
-          value: result!,
+        const result = (await this.reader.read()).value!.trim();
+        serialLog.update((it) => {
+          it.push({
+            type: "output",
+            value: result!,
+          });
+          return it;
         });
-        return it;
-      });
 
-      if (result !== "OTA OK") {
-        throw new Error(result);
-      }
+        if (result !== "OTA OK") {
+          throw new Error(result);
+        }
 
-      const writer2 = this.port.writable!.getWriter();
-      try {
-        await writer2.write(new TextEncoder().encode(`RST RESTART\r\n`));
+        await writer.write(new TextEncoder().encode(`RST RESTART\r\n`));
         serialLog.update((it) => {
           it.push({
             type: "input",
@@ -558,7 +562,7 @@ export class CharaDevice {
           return it;
         });
       } finally {
-        writer2.releaseLock();
+        writer.releaseLock();
       }
 
       await this.suspend();
