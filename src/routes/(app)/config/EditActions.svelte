@@ -47,6 +47,22 @@
       if (!port) return;
       $syncStatus = "uploading";
 
+      const layoutChanges = $overlay.layout.reduce(
+        (acc, layer) => acc + layer.size,
+        0,
+      );
+      const settingChanges = $overlay.settings.size;
+      const chordChanges = $overlay.chords.size;
+      const needsCommit = settingChanges > 0 && layoutChanges > 0;
+      const progressMax = layoutChanges + settingChanges + chordChanges;
+
+      let progressCurrent = 0;
+
+      syncProgress.set({
+        max: progressMax,
+        current: progressCurrent,
+      });
+
       for (const [id, chord] of $overlay.chords) {
         if (!chord.deleted) {
           if (id !== JSON.stringify(chord.actions)) {
@@ -83,16 +99,28 @@
         } else {
           await port.deleteChord({ actions: chord.actions });
         }
+        syncProgress.set({
+          max: progressMax,
+          current: progressCurrent++,
+        });
       }
 
       for (const [layer, actions] of $overlay.layout.entries()) {
         for (const [id, action] of actions) {
           await port.setLayoutKey(layer + 1, id, action);
+          syncProgress.set({
+            max: progressMax,
+            current: progressCurrent++,
+          });
         }
       }
 
       for (const [id, setting] of $overlay.settings) {
         await port.setSetting(id, setting);
+        syncProgress.set({
+          max: progressMax,
+          current: progressCurrent++,
+        });
       }
 
       // Yes, this is a completely arbitrary and unnecessary delay.
@@ -102,24 +130,9 @@
       // would be if they click it every time they change a setting.
       // Because of that, we don't need to show a fearmongering message such as
       // "Your device will break after you click this 10,000 times!"
-      const virtualWriteTime = 1000;
-      const startStamp = performance.now();
-      await new Promise<void>((resolve) => {
-        function animate() {
-          const delta = performance.now() - startStamp;
-          syncProgress.set({
-            max: virtualWriteTime,
-            current: delta,
-          });
-          if (delta >= virtualWriteTime) {
-            resolve();
-          } else {
-            requestAnimationFrame(animate);
-          }
-        }
-        requestAnimationFrame(animate);
-      });
-      await port.commit();
+      if (needsCommit) {
+        await port.commit();
+      }
 
       $deviceLayout = $layout.map((layer) =>
         layer.map<number>(({ action }) => action),

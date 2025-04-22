@@ -54,5 +54,6 @@
 
   progress::-webkit-progress-value {
     background: var(--md-sys-color-primary);
+    transition: width 2s ease;
   }
 </style>
