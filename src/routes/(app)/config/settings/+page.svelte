@@ -117,43 +117,49 @@
         {/if}
         {#each category.items as item}
           {#if item.name !== "enable"}
-            <label
-              >{#if item.enum}
-                <select use:setting={{ id: item.id }}>
-                  {#each item.enum as name, value}
-                    <option {value}>{titlecase(name)}</option>
-                  {/each}
-                </select>
-              {:else if item.range[0] === 0 && item.range[1] === 1}
-                <input type="checkbox" use:setting={{ id: item.id }} />
-              {:else}
-                <span class="unit"
-                  ><input
-                    type="number"
-                    min={settingValue(item.range[0], item)}
-                    max={settingValue(item.range[1], item)}
-                    step={item.inverse !== undefined ||
-                    item.scale !== undefined ||
-                    item.step === undefined
-                      ? undefined
-                      : settingValue(item.step, item)}
-                    use:setting={{
-                      id: item.id,
-                      inverse: item.inverse,
-                      scale: item.scale,
-                    }}
-                  />{item.unit}</span
-                >
-              {/if}
-              {#if item.description}
-                <span
-                  >{titlecase(item.name)}
-                  <p>{item.description}</p></span
-                >
-              {:else}
-                {titlecase(item.name)}
-              {/if}
-            </label>
+            {#if item.unit === "H"}
+              <label
+                ><input type="color" use:setting={{ id: item.id }} /> Color</label
+              >
+            {:else if item.unit !== "S" && item.unit !== "B"}
+              <label
+                >{#if item.enum}
+                  <select use:setting={{ id: item.id }}>
+                    {#each item.enum as name, value}
+                      <option {value}>{titlecase(name)}</option>
+                    {/each}
+                  </select>
+                {:else if item.range[0] === 0 && item.range[1] === 1}
+                  <input type="checkbox" use:setting={{ id: item.id }} />
+                {:else}
+                  <span class="unit"
+                    ><input
+                      type="number"
+                      min={settingValue(item.range[0], item)}
+                      max={settingValue(item.range[1], item)}
+                      step={item.inverse !== undefined ||
+                      item.scale !== undefined ||
+                      item.step === undefined
+                        ? undefined
+                        : settingValue(item.step, item)}
+                      use:setting={{
+                        id: item.id,
+                        inverse: item.inverse,
+                        scale: item.scale,
+                      }}
+                    />{item.unit}</span
+                  >
+                {/if}
+                {#if item.description}
+                  <span
+                    >{titlecase(item.name)}
+                    <p>{item.description}</p></span
+                  >
+                {:else}
+                  {titlecase(item.name)}
+                {/if}
+              </label>
+            {/if}
           {/if}
         {/each}
       </fieldset>
