@@ -114,7 +114,6 @@
     font-size: 24px;
   }
 
-
   section {
     display: flex;
     flex-direction: column;

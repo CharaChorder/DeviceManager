@@ -10,7 +10,10 @@ export const SENTENCE_TRAINER_PAGE_PARAMS: {
   showDevTools: PageParam<boolean>;
   textAreaDebounceInMillis: PageParam<number>;
 } = {
-  sentence: { key: "sentence", default: "This text has been typed at the speed of thought" },
+  sentence: {
+    key: "sentence",
+    default: "This text has been typed at the speed of thought",
+  },
   wpm: {
     key: "wpm",
     default: 250,

@@ -165,7 +165,6 @@
     }
   }
 
-
   .timeline {
     flex-grow: 1;
   }

@@ -45,7 +45,6 @@
     padding-inline: 16px;
   }
 
-
   .icon {
     cursor: pointer;
 
