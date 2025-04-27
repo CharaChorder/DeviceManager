@@ -4,7 +4,7 @@
   import { expoIn, expoOut } from "svelte/easing";
   import type { Snippet } from "svelte";
 
-  let { children, routeOrder }: { children: Snippet; routeOrder: string[]; direction: } =
+  let { children, routeOrder }: { children: Snippet; routeOrder: string[] } =
     $props();
 
   let inDirection = $state(0);
