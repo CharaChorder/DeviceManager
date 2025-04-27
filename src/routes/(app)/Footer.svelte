@@ -173,7 +173,6 @@
 </footer>
 
 <style lang="scss">
-
   .sync-box {
     display: flex;
     align-items: center;

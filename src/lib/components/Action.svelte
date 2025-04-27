@@ -84,7 +84,6 @@
     border-right-width: 3px;
   }
 
-
   .inline-kbd {
     margin-inline-end: 2px;
   }

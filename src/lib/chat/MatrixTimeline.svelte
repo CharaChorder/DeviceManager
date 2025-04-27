@@ -177,7 +177,6 @@
 <style lang="scss">
   $border-radius: 16px;
 
-
   .input {
     border: 1px solid var(--md-sys-color-outline);
     flex-grow: 1;
@@ -219,7 +218,6 @@
     flex-grow: 1;
     width: 100%;
   }
-
 
   section {
     display: flex;
