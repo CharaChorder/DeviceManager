@@ -29,6 +29,7 @@
   });
 
   const index = new FlexSearch.Index({ tokenize: "full" });
+  const KEY_CODES_SET = new Set($KEYMAP_CODES.keys());
 
   $effect(() => {
     createIndex($KEYMAP_CODES);
@@ -46,7 +47,8 @@
   }
 
   async function search() {
-    results = (await index!.searchAsync(searchBox.value)) as number[];
+    activeSearch = searchBox.value !== undefined && searchBox.value.length > 0;
+    inputSearchHits = index!.search(searchBox.value) as number[];
     exact = get(KEYMAP_IDS).get(searchBox.value)?.code;
     code = Number(searchBox.value);
   }
@@ -81,13 +83,21 @@
     event.preventDefault();
   }
 
-  let results: number[] = $state([]);
+  let inputSearchHits: number[] = $state([]);
+  let activeSearch: boolean = $state(false);
   let exact: number | undefined = $state(undefined);
   let code: number = $state(Number.NaN);
 
   let searchBox: HTMLInputElement;
   let resultList: HTMLUListElement;
-  let filter: Set<number> | undefined = $state(undefined);
+  // The default tab is "ALL", hence it is a valid state initialization.
+  let allowedKeyCodesForTab: Set<number> = $state(KEY_CODES_SET);
+  let inputSearchHitsForTab: number[] = $derived(
+    activeSearch
+      ? inputSearchHits.filter((keyCode) => allowedKeyCodesForTab.has(keyCode))
+      : // When no search input is provided, we show all codes for the tab.
+        Array.from(allowedKeyCodesForTab),
+  );
 </script>
 
 <svelte:window on:keydown={keyboardNavigation} />
@@ -106,7 +116,7 @@
         type="search"
         bind:this={searchBox}
         oninput={search}
-        onkeypress={(event) => {
+        onkeydown={(event) => {
           if (event.key === "Enter") {
             select(exact);
           }
@@ -128,8 +138,8 @@
           checked
           name="category"
           type="radio"
-          value={undefined}
-          bind:group={filter}
+          value={KEY_CODES_SET}
+          bind:group={allowedKeyCodesForTab}
         /></label
       >
       {#each $KEYMAP_CATEGORIES as category}
@@ -138,7 +148,7 @@
             name="category"
             type="radio"
             value={new Set(Object.keys(category.actions).map(Number))}
-            bind:group={filter}
+            bind:group={allowedKeyCodesForTab}
           /></label
         >
       {/each}
@@ -169,15 +179,9 @@
           <li>Action code is out of range</li>
         {/if}
       {/if}
-      {#if filter !== undefined || results.length > 0}
-        {@const resultValue =
-          results.length === 0
-            ? Array.from($KEYMAP_CODES, ([it]) => it)
-            : results}
-        {#each filter ? resultValue.filter( (it) => filter.has(it), ) : resultValue as id (id)}
-          <li><ActionListItem {id} onclick={() => select(id)} /></li>
-        {/each}
-      {/if}
+      {#each inputSearchHitsForTab as id (id)}
+        <li><ActionListItem {id} onclick={() => select(id)} /></li>
+      {/each}
     </ul>
   </div>
 </dialog>
