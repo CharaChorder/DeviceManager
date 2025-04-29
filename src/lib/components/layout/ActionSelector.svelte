@@ -29,7 +29,6 @@
   });
 
   const index = new FlexSearch.Index({ tokenize: "full" });
-  const KEY_CODES_SET = new Set($KEYMAP_CODES.keys());
 
   $effect(() => {
     createIndex($KEYMAP_CODES);
@@ -90,8 +89,9 @@
 
   let searchBox: HTMLInputElement;
   let resultList: HTMLUListElement;
+  let KEY_CODES_SET = $derived(new Set($KEYMAP_CODES.keys()));
   // The default tab is "ALL", hence it is a valid state initialization.
-  let allowedKeyCodesForTab: Set<number> = $state(KEY_CODES_SET);
+  let allowedKeyCodesForTab: Set<number> = $derived(KEY_CODES_SET);
   let inputSearchHitsForTab: number[] = $derived(
     activeSearch
       ? inputSearchHits.filter((keyCode) => allowedKeyCodesForTab.has(keyCode))
