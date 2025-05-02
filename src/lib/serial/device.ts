@@ -13,12 +13,13 @@ import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialo
 
 const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["ONE M0", { usbProductId: 32783, usbVendorId: 9114 }],
-  ["TWO S3 (pre-production)", { usbProductId: 0x8252, usbVendorId: 0x303a }], // TODO: remove this after everyone has migrated
+  ["TWO S3 (pre-production)", { usbProductId: 0x8252, usbVendorId: 0x303a }],
   ["TWO S3", { usbProductId: 0x8253, usbVendorId: 0x303a }],
-  ["LITE S2", { usbProductId: 33070, usbVendorId: 12346 }],
+  ["LITE S2", { usbProductId: 0x812e, usbVendorId: 0x303a }],
   ["LITE M0", { usbProductId: 32796, usbVendorId: 9114 }],
-  ["X", { usbProductId: 33163, usbVendorId: 12346 }],
-  ["M4G S3", { usbProductId: 4097, usbVendorId: 12346 }],
+  ["X", { usbProductId: 0x818b, usbVendorId: 0x303a }],
+  ["M4G S3 (pre-production)", { usbProductId: 0x1001, usbVendorId: 0x303a }],
+  ["M4G S3 (pre-production)", { usbProductId: 0x829a, usbVendorId: 0x303a }],
 ]);
 
 const KEY_COUNTS = {
