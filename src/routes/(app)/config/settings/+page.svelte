@@ -40,100 +40,52 @@
 </svelte:head>
 
 <section>
-  <fieldset>
-    <legend>{$LL.backup.TITLE()}</legend>
-    <label
-      ><input
-        type="checkbox"
-        use:preference={"backup"}
-      />{$LL.backup.AUTO_BACKUP()}</label
-    >
-    <p class="disclaimer">
-      {$LL.backup.DISCLAIMER()}
-    </p>
-    <div class="row" style="margin-top: auto">
-      <button onclick={() => downloadFile(createChordBackup())}>
-        <span class="icon">piano</span>
-        {$LL.configure.chords.TITLE()}
-      </button>
-      <button onclick={() => downloadFile(createLayoutBackup())}>
-        <span class="icon">keyboard</span>
-        {$LL.configure.layout.TITLE()}
-      </button>
-      <button onclick={() => downloadFile(createSettingsBackup())}>
-        <span class="icon">settings</span>
-        Settings
-      </button>
-    </div>
-    <div class="row">
-      <button class="primary" onclick={downloadBackup}
-        ><span class="icon">download</span>{$LL.backup.DOWNLOAD()}</button
-      >
-      <label class="button"
-        ><input oninput={restoreBackup} type="file" /><span class="icon"
-          >settings_backup_restore</span
-        >{$LL.backup.RESTORE()}</label
-      >
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Device</legend>
+  <nav>
+    {#if $deviceMeta}
+      {#each $deviceMeta?.settings as category}
+        <a href={`#${category.name}`}>{titlecase(category.name)}</a>
+      {/each}
+    {/if}
+    <a href="#backup">Backup</a>
+  </nav>
+  <div class="content">
     <label
       >{$LL.deviceManager.AUTO_CONNECT()}<input
         type="checkbox"
         use:preference={"autoConnect"}
       /></label
     >
-    {#if $serialPort}
-      {#if $deviceMeta?.factoryDefaults?.settings}
-        <button
-          use:action={{ title: "Reset Settings" }}
-          transition:fly={{ x: -8 }}
-          onclick={() => restoreFromFile($deviceMeta.factoryDefaults!.settings)}
-          ><span class="icon">reset_settings</span>Reset Settings</button
-        >
-      {/if}
-      <button class="outline" use:popup={ResetPopup}>Recovery...</button>
-    {/if}
-  </fieldset>
-  {#if $deviceMeta}
-    {#each $deviceMeta.settings as category}
-      <fieldset>
-        <legend>
-          {#if category.items[0]?.name === "enable"}
-            <label
-              ><input
-                type="checkbox"
-                use:setting={{ id: category.items[0].id }}
-              />{titlecase(category.name)}</label
-            >
-          {:else}
+    {#if $deviceMeta}
+      {#each $deviceMeta.settings as category}
+        <fieldset id={category.name}>
+          <legend>
             {titlecase(category.name)}
+          </legend>
+          {#if category.description}
+            <p>{category.description}</p>
           {/if}
-        </legend>
-        {#if category.description}
-          <p>{category.description}</p>
-        {/if}
-        {#each category.items as item}
-          {#if item.name !== "enable"}
+          {#each category.items as item}
             {#if item.unit === "H"}
               <label
                 ><input type="color" use:setting={{ id: item.id }} /> Color</label
               >
             {:else if item.unit !== "S" && item.unit !== "B"}
-              <label
+              <label class:enable-item={item.name === "enable"}
                 >{#if item.enum}
-                  <select use:setting={{ id: item.id }}>
+                  <select class="value" use:setting={{ id: item.id }}>
                     {#each item.enum as name, value}
                       <option {value}>{titlecase(name)}</option>
                     {/each}
                   </select>
                 {:else if item.range[0] === 0 && item.range[1] === 1}
-                  <input type="checkbox" use:setting={{ id: item.id }} />
+                  <input
+                    class="value"
+                    type="checkbox"
+                    use:setting={{ id: item.id }}
+                  />
                 {:else}
-                  <span class="unit"
-                    ><input
+                  <div class="value unit">
+                    <input
                       type="number"
                       min={settingValue(item.range[0], item)}
                       max={settingValue(item.range[1], item)}
@@ -147,60 +99,94 @@
                         inverse: item.inverse,
                         scale: item.scale,
                       }}
-                    />{item.unit}</span
-                  >
+                    />{item.unit}
+                  </div>
                 {/if}
+                <div class="title">{titlecase(item.name)}</div>
                 {#if item.description}
-                  <span
-                    >{titlecase(item.name)}
-                    <p>{item.description}</p></span
-                  >
-                {:else}
-                  {titlecase(item.name)}
+                  <div class="description">{item.description}</div>
                 {/if}
               </label>
             {/if}
-          {/if}
-        {/each}
-      </fieldset>
-    {/each}
-  {/if}
+          {/each}
+        </fieldset>
+      {/each}
+    {/if}
+
+    <fieldset>
+      <legend>{$LL.backup.TITLE()}</legend>
+      <label
+        ><input
+          type="checkbox"
+          use:preference={"backup"}
+        />{$LL.backup.AUTO_BACKUP()}</label
+      >
+      <p class="disclaimer">
+        {$LL.backup.DISCLAIMER()}
+      </p>
+      <div class="row" style="margin-top: auto">
+        <button onclick={() => downloadFile(createChordBackup())}>
+          <span class="icon">piano</span>
+          {$LL.configure.chords.TITLE()}
+        </button>
+        <button onclick={() => downloadFile(createLayoutBackup())}>
+          <span class="icon">keyboard</span>
+          {$LL.configure.layout.TITLE()}
+        </button>
+        <button onclick={() => downloadFile(createSettingsBackup())}>
+          <span class="icon">settings</span>
+          Settings
+        </button>
+      </div>
+      <div class="row">
+        <button class="primary" onclick={downloadBackup}
+          ><span class="icon">download</span>{$LL.backup.DOWNLOAD()}</button
+        >
+        <label class="button"
+          ><input oninput={restoreBackup} type="file" /><span class="icon"
+            >settings_backup_restore</span
+          >{$LL.backup.RESTORE()}</label
+        >
+      </div>
+    </fieldset>
+
+    <div class="footer">
+      {#if $serialPort}
+        {#if $deviceMeta?.factoryDefaults?.settings}
+          <button
+            use:action={{ title: "Reset Settings" }}
+            transition:fly={{ x: -8 }}
+            onclick={() =>
+              restoreFromFile($deviceMeta.factoryDefaults!.settings)}
+            ><span class="icon">reset_settings</span>Reset Settings</button
+          >
+        {/if}
+        <button use:popup={ResetPopup}>Recovery...</button>
+      {/if}
+    </div>
+  </div>
 </section>
 
 <style lang="scss">
   section {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .content {
     overflow-y: auto;
-    display: flex;
-    flex-flow: row wrap;
-    gap: 16px;
-    justify-content: center;
-
-    margin-block: auto;
-    padding-block-end: 48px;
+    scroll-behavior: smooth;
+    max-width: 20cm;
   }
 
-  button.outline {
-    border: 1px solid currentcolor;
-    border-radius: 8px;
-    height: 2em;
-    margin-block: 2em;
-    margin-inline: auto;
-  }
-
-  legend,
-  legend > label {
-    font-size: 24px;
+  legend {
+    color: var(--md-sys-color-primary);
+    font-size: 32px;
     font-weight: bold;
     position: relative;
-    padding: 0 16px;
-  }
-
-  legend:has(label) {
     padding: 0;
-  }
-
-  legend:not(:has(label)) {
-    opacity: 0.8;
   }
 
   input[type="checkbox"] {
@@ -210,22 +196,28 @@
   fieldset {
     display: flex;
     flex-direction: column;
+    position: relative;
 
-    max-width: 400px;
-    border: 1px solid var(--md-sys-color-outline);
-    border-radius: 24px;
+    width: 100%;
+    margin-inline: 0;
+    border: none;
+    margin-block-end: 32px;
 
-    /*&:has(> legend input:not(:checked)) > :not(legend) {
-      pointer-events: none;
-      opacity: 0.7;
-    }*/
+    > p {
+      padding-inline-start: 16px;
+    }
 
     > label {
+      appearance: none;
       position: relative;
       display: flex;
-      gap: 16px;
+      flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
+      height: auto;
+      font-weight: normal;
+      padding: 8px;
+      width: fit-content;
 
       margin-block: 4px;
 
@@ -238,6 +230,26 @@
           filter: none;
         }
       }
+
+      &.enable-item {
+        background: var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface-variant);
+        margin-inline-start: 8px;
+        padding-inline-end: 16px;
+        padding-inline-start: 8px;
+      }
+    }
+
+    .title {
+      margin-inline-start: 16px;
+      font-weight: 600;
+    }
+
+    .description {
+      width: 100%;
+      font-size: 12px;
+      white-space: normal;
+      text-wrap: wrap;
     }
 
     .unit {
@@ -285,6 +297,16 @@
     }
   }
 
+  select {
+    appearance: none;
+    background: var(--md-sys-color-secondary);
+    border: none;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+  }
+
   // stylelint-disable-next-line
   label:global(:has(.pending-changes)) {
     color: var(--md-sys-color-primary);
@@ -302,9 +324,15 @@
     display: flex;
     justify-content: space-evenly;
     margin-block: 8px;
+    width: fit-content;
   }
 
   input[type="file"] {
     display: none;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: flex-end;
   }
 </style>
