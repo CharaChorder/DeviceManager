@@ -319,11 +319,56 @@
       </section>
     {/if}
   </div>
+
+  <section class="changelog">
+    <h2>Changelog</h2>
+    {#if data.meta.changelog.features}
+      <h3>Features</h3>
+      <ul>
+        {#each data.meta.changelog.features as feature}
+          <li>
+            <b>{@html feature.summary}</b>
+            {@html feature.description}
+          </li>
+        {/each}
+      </ul>
+    {/if}
+    {#if data.meta.changelog.fixes}
+      <h3>Fixes</h3>
+      <ul>
+        {#each data.meta.changelog.fixes as fix}
+          <li>
+            <b>{@html fix.summary}</b>
+            {@html fix.description}
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  </section>
 </div>
 
 <style lang="scss">
-  h3 {
-    margin-block-start: 4em;
+  .changelog:empty {
+    display: none;
+  }
+
+  .changelog ul {
+    list-style: none;
+    padding-inline-start: 0em;
+  }
+
+  .changelog li {
+    margin-block: 0.2em;
+    padding: 0.5em 1em;
+  }
+
+  .changelog b {
+    display: inline-block;
+    color: var(--md-sys-color-on-tertiary-container);
+    background: var(--md-sys-color-tertiary-container);
+    padding: 0.2em 0.5em;
+    border-radius: 8px;
+    translate: -0.5em -0.2em;
   }
 
   pre {

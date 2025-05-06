@@ -22,6 +22,16 @@ export interface SettingsItemMeta {
   scale?: number;
 }
 
+export interface ChangelogEntry {
+  summary: string;
+  description: string;
+}
+
+export interface Changelog {
+  features: ChangelogEntry[];
+  fixes: ChangelogEntry[];
+}
+
 export interface RawVersionMeta {
   version: string;
   target: string;
@@ -32,6 +42,7 @@ export interface RawVersionMeta {
   development_mode: number;
   actions: string;
   settings: string;
+  changelog: string;
   factory_defaults: {
     layout: string;
     settings: string;
@@ -57,6 +68,7 @@ export interface VersionMeta {
   developmentBuild: boolean;
   actions: KeymapCategory[];
   settings: SettingsMeta[];
+  changelog: Changelog;
   factoryDefaults?: {
     layout: CharaLayoutFile;
     settings: CharaSettingsFile;

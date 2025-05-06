@@ -17,7 +17,7 @@ export async function getMeta(
   try {
     if (!browser) return fetchMeta(device, version, fetch);
 
-    const dbRequest = indexedDB.open("version-meta", 3);
+    const dbRequest = indexedDB.open("version-meta", 4);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       dbRequest.onsuccess = () => resolve(dbRequest.result);
       dbRequest.onerror = () => reject(dbRequest.error);
@@ -120,6 +120,9 @@ async function fetchMeta(
             }
             return settings;
           })),
+    changelog: await (meta?.changelog
+      ? fetch(`${path}/${meta.changelog}`).then((it) => it.json())
+      : {}),
     actions: await (meta?.actions
       ? fetch(`${path}/${meta.actions}`).then((it) => it.json())
       : Promise.all<KeymapCategory[]>(
