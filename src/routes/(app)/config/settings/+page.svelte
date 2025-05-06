@@ -113,7 +113,7 @@
       {/each}
     {/if}
 
-    <fieldset>
+    <fieldset id="backup">
       <legend>{$LL.backup.TITLE()}</legend>
       <label
         ><input
