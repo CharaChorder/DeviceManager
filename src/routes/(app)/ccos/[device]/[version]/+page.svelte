@@ -287,7 +287,7 @@
       </ol>
     </section>
 
-    {#if data.meta.update.esptool}
+    {#if false && data.meta.update.esptool}
       <section>
         <h3>Factory Flash (WIP)</h3>
         <p>
