@@ -188,7 +188,7 @@
     const query = (event.target as HTMLInputElement).value;
     searchFilter.set(
       query && searchIndex
-        ? ((await index.searchAsync(query)) as number[])
+        ? (index.search(query) as number[])
         : undefined,
     );
     page = 0;

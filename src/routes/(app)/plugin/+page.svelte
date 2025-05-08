@@ -80,7 +80,7 @@
   ];
 
   const actionsCompletion: Completion[] = Array.from(
-    KEYMAP_CODES,
+    $KEYMAP_CODES,
     ([id, info]) => {
       const isValidIdentifier =
         info.id && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(info.id);
@@ -195,7 +195,7 @@
   function runPlugin() {
     frame.contentWindow?.postMessage(
       {
-        actionCodes: KEYMAP_CODES,
+        actionCodes: $KEYMAP_CODES,
         script: editorView.state.doc.toString(),
         charaChannels: Object.keys(channels),
       } satisfies ChannelCharaEventData,
