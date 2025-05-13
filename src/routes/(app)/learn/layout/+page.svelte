@@ -42,8 +42,10 @@
         if (layout[layer] === undefined) {
           continue;
         }
-        for (let key = 0; key <= layout[layer].length; key++) {
-          if (layout[layer][key]?.action === currentAction) {
+        // Null assertion is justified as we skip iteration otherwise.
+        const layerLayout = layout[layer]!;
+        for (let key = 0; key <= layerLayout.length; key++) {
+          if (layerLayout[key]?.action === currentAction) {
             result.push({ layer, key });
           }
         }
