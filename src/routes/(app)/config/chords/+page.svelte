@@ -183,9 +183,11 @@
   }
 
   const searchFilter = writable<number[] | undefined>(undefined);
+  let currentSearchQuery = $state("");
 
   async function search(index: FlexSearch.Index, event: Event) {
     const query = (event.target as HTMLInputElement).value;
+    currentSearchQuery = query;
     searchFilter.set(
       query && searchIndex
         ? ((await index.searchAsync(query)) as number[])
@@ -193,6 +195,13 @@
     );
     page = 0;
   }
+
+  // Re-run search when chords change to fix stale indices
+  $effect(() => {
+    if (currentSearchQuery && $searchIndex) {
+      search($searchIndex, { target: { value: currentSearchQuery } } as any);
+    }
+  });
 
   function insertChord(actions: number[]) {
     const id = JSON.stringify(actions);
@@ -273,6 +282,7 @@
   <input
     type="search"
     placeholder={$LL.configure.chords.search.PLACEHOLDER(progress)}
+    value={currentSearchQuery}
     oninput={(event) => $searchIndex && search($searchIndex, event)}
     class:loading={progress !== $chords.length}
   />
