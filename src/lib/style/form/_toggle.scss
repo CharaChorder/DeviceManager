@@ -27,11 +27,11 @@ label:has(input[type="checkbox"]) {
 
     width: $width;
     height: $height;
+    border-radius: calc($height / 2);
 
     font-size: inherit;
     color: inherit;
 
-    border-radius: calc($height / 2);
     outline: $border solid currentcolor;
     outline-offset: calc(-1 * $border);
 
@@ -46,8 +46,8 @@ label:has(input[type="checkbox"]) {
 
       width: $diameter;
       height: $diameter;
-
       border-radius: calc($radius);
+
       outline-color: inherit;
       outline-style: solid;
       outline-width: $radius;
@@ -60,6 +60,87 @@ label:has(input[type="checkbox"]) {
       translate: calc($width - 2 * $diameter - $padding / 2) 0;
       outline-width: calc($width - ($height - $border) + $padding);
       outline-offset: calc($padding / 2);
+    }
+  }
+
+  &:has(span.icon) {
+    $line-width: 10%;
+    $side: calc(($line-width * 2) / sqrt(2));
+    $mid: calc($side / 2);
+
+    > input[type="checkbox"] {
+      display: none;
+    }
+
+    > span.icon {
+      position: relative;
+
+      display: block;
+
+      width: 1em;
+      height: 1em;
+
+      font-size: inherit;
+
+      clip-path: polygon(
+        0% $side,
+        $mid $mid,
+        calc(100% - $mid) calc(100% - $mid),
+        calc(100% - $side) 100%,
+        0% 100%,
+        0% $side,
+        $side 0%,
+        100% calc(100% - $side),
+        calc(100% - $side) 100%,
+        calc(100% - $side) 100%,
+        100% calc(100% - $side),
+        100% calc(100% - $side),
+        100% 0%,
+        $side 0%
+      );
+
+      transition: all 250ms ease;
+
+      &::before {
+        content: "";
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 0) rotate(45deg);
+
+        display: block;
+
+        width: calc(100% * sqrt(2));
+        height: $line-width;
+
+        background-color: currentcolor;
+
+        transition: all 250ms ease;
+      }
+    }
+
+    &:has(:checked) > span.icon {
+      clip-path: polygon(
+        0% $side,
+        $mid $mid,
+        calc(100% - $mid) calc(100% - $mid),
+        calc(100% - $side) 100%,
+        0% 100%,
+        0% $side,
+        $side 0%,
+        100% calc(100% - $side),
+        calc(100% - $side) 100%,
+        0% $side,
+        $side 0%,
+        100% calc(100% - $side),
+        100% 0%,
+        $side 0%
+      );
+
+      &::before {
+        transform: translate(-50%, 0) rotate(45deg) translateX(-100%);
+      }
     }
   }
 }

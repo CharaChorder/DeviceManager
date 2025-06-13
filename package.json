@@ -72,6 +72,7 @@
     "prettier-plugin-svelte": "^3.3.3",
     "rxjs": "^7.8.2",
     "sass": "^1.86.0",
+    "semver": "^7.7.2",
     "socket.io-client": "^4.8.1",
     "stylelint": "^16.17.0",
     "stylelint-config-clean-order": "^7.0.0",

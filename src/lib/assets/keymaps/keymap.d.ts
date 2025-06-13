@@ -16,4 +16,7 @@ export interface ActionInfo {
   variant: "left" | "right";
   variantOf: number;
   keyCode: string;
+  printable?: boolean;
+  separator?: boolean;
+  breaking?: boolean;
 }

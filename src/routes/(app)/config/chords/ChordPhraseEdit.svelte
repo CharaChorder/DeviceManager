@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
   import { onMount, tick } from "svelte";
   import { changes, ChangeType } from "$lib/undo-redo";
   import type { ChordInfo } from "$lib/undo-redo";
@@ -6,10 +7,15 @@
   import ActionString from "$lib/components/ActionString.svelte";
   import { selectAction } from "./action-selector";
   import { inputToAction } from "./input-converter";
-  import { serialPort } from "$lib/serial/connection";
+  import { deviceMeta, serialPort } from "$lib/serial/connection";
   import { get } from "svelte/store";
+  import { action } from "$lib/title";
+  import semverGte from "semver/functions/gte";
 
   let { chord }: { chord: ChordInfo } = $props();
+
+  const JOIN_ACTION = 574;
+  const NO_CONCATENATOR_ACTION = 256;
 
   onMount(() => {
     if (chord.phrase.length === 0) {
@@ -102,35 +108,137 @@
     );
   }
 
+  function resolveAutospace(autospace: boolean) {
+    if (autospace) {
+      if (chord.phrase.at(-1) === JOIN_ACTION) {
+        if (
+          chord.phrase.every(
+            (action, i, arr) =>
+              $KEYMAP_CODES.get(action)?.printable || i === arr.length - 1,
+          )
+        ) {
+          deleteAction(chord.phrase.length - 1);
+        } else {
+          return;
+        }
+      } else {
+        if (isPrintable) {
+          return;
+        } else if (chord.phrase.at(-1) === NO_CONCATENATOR_ACTION) {
+          deleteAction(chord.phrase.length - 1);
+        } else {
+          insertAction(chord.phrase.length, JOIN_ACTION);
+        }
+      }
+    } else {
+      if (chord.phrase.at(-1) === JOIN_ACTION) {
+        deleteAction(chord.phrase.length - 1);
+      } else {
+        if (chord.phrase.at(-1) === NO_CONCATENATOR_ACTION) {
+          if (
+            chord.phrase.every(
+              (action, i, arr) =>
+                $KEYMAP_CODES.get(action)?.printable || i === arr.length - 1,
+            )
+          ) {
+            return;
+          } else {
+            deleteAction(chord.phrase.length - 1);
+          }
+        } else {
+          insertAction(chord.phrase.length, NO_CONCATENATOR_ACTION);
+        }
+      }
+    }
+  }
+
   let button: HTMLButtonElement | undefined = $state();
   let box: HTMLDivElement | undefined = $state();
   let cursorPosition = 0;
   let cursorOffset = $state(0);
 
   let hasFocus = $state(false);
+
+  let isPrintable = $derived(
+    chord.phrase.every(
+      (action) => $KEYMAP_CODES.get(action)?.printable === true,
+    ),
+  );
+  let supportsAutospace = $derived(
+    semverGte($deviceMeta?.version ?? "0.0.0", "2.1.0"),
+  );
+  let hasAutospace = $derived(
+    isPrintable || chord.phrase.at(-1) === JOIN_ACTION,
+  );
+
+  let displayPhrase = $derived(
+    chord.phrase.filter(
+      (it, i, arr) =>
+        !(
+          (i === 0 && it === JOIN_ACTION) ||
+          (i === arr.length - 1 &&
+            (it === JOIN_ACTION || it === NO_CONCATENATOR_ACTION))
+        ),
+    ),
+  );
 </script>
 
-<div
-  onkeydown={keypress}
-  onmousedown={clickCursor}
-  role="textbox"
-  tabindex="0"
-  bind:this={box}
-  class:edited={!chord.deleted && chord.phraseChanged}
-  onfocusin={() => (hasFocus = true)}
-  onfocusout={(event) => {
-    if (event.relatedTarget !== button) hasFocus = false;
-  }}
->
-  {#if hasFocus}
-    <div transition:scale class="cursor" style:translate="{cursorOffset}px 0">
-      <button class="icon" bind:this={button} onclick={addSpecial}>add</button>
-    </div>
-  {:else}
-    <div></div>
-    <!-- placeholder for cursor placement -->
+<div class="wrapper" class:edited={!chord.deleted && chord.phraseChanged}>
+  {#if supportsAutospace}
+    <label
+      class="auto-space-edit"
+      use:action={{ title: "Remove previous concatenator" }}
+      ><span class="icon">join_inner</span><input
+        checked={chord.phrase[0] === JOIN_ACTION}
+        onchange={(event) => {
+          const autospace = hasAutospace;
+          if ((event.target as HTMLInputElement).checked) {
+            if (chord.phrase[0] !== JOIN_ACTION) {
+              insertAction(0, JOIN_ACTION);
+            }
+          } else {
+            if (chord.phrase[0] === JOIN_ACTION) {
+              deleteAction(0, 1);
+            }
+          }
+          tick().then(() => resolveAutospace(autospace));
+        }}
+        type="checkbox"
+      /></label
+    >
   {/if}
-  <ActionString actions={chord.phrase} />
+  <div
+    onkeydown={keypress}
+    onmousedown={clickCursor}
+    role="textbox"
+    tabindex="0"
+    bind:this={box}
+    onfocusin={() => (hasFocus = true)}
+    onfocusout={(event) => {
+      if (event.relatedTarget !== button) hasFocus = false;
+    }}
+  >
+    {#if hasFocus}
+      <div transition:scale class="cursor" style:translate="{cursorOffset}px 0">
+        <button class="icon" bind:this={button} onclick={addSpecial}>add</button
+        >
+      </div>
+    {:else}
+      <div></div>
+      <!-- placeholder for cursor placement -->
+    {/if}
+    <ActionString actions={displayPhrase} />
+  </div>
+  {#if supportsAutospace}
+    <label class="auto-space-edit" use:action={{ title: "Add concatenator" }}
+      ><span class="icon">space_bar</span><input
+        checked={hasAutospace}
+        onchange={(event) =>
+          resolveAutospace((event.target as HTMLInputElement).checked)}
+        type="checkbox"
+      /></label
+    >
+  {/if}
   <sup>•</sup>
 </div>
 
@@ -177,16 +285,34 @@
     }
   }
 
-  [role="textbox"] {
-    cursor: text;
+  .auto-space-edit {
+    padding-inline: 0;
+    font-size: 1.3em;
+    margin-inline: 8px;
+    background: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+    height: 1em;
+    border-radius: 4px;
 
-    position: relative;
+    &:first-of-type:not(:has(:checked)),
+    &:last-of-type:has(:checked) {
+      opacity: 0;
+    }
+  }
 
+  .wrapper:hover .auto-space-edit {
+    opacity: 1;
+  }
+
+  .wrapper {
     display: flex;
     align-items: center;
 
-    height: 1em;
+    position: relative;
+
     padding-block: 4px;
+
+    height: 1em;
 
     &::after,
     &::before {
@@ -195,7 +321,7 @@
       position: absolute;
       bottom: -4px;
 
-      width: 100%;
+      width: calc(100% - 8px);
       height: 1px;
 
       opacity: 0;
@@ -215,13 +341,23 @@
       opacity: 0.3;
     }
 
+    &:has(> :focus-within)::after {
+      scale: 1;
+      opacity: 1;
+    }
+  }
+
+  [role="textbox"] {
+    cursor: text;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    white-space: pre;
+
     &:focus-within {
       outline: none;
-
-      &::after {
-        scale: 1;
-        opacity: 1;
-      }
     }
   }
 </style>
