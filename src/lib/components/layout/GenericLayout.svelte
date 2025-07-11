@@ -125,9 +125,9 @@
     if (!keyInfo) return;
     const clickedGroup = groupParent.children.item(index) as SVGGElement;
     const nextAction =
-      get(layout)[get(activeProfile)][get(activeLayer)]?.[keyInfo.id];
+      get(layout)[get(activeProfile)]![get(activeLayer)]?.[keyInfo.id];
     const currentAction =
-      get(deviceLayout)[get(activeProfile)][get(activeLayer)]?.[keyInfo.id];
+      get(deviceLayout)[get(activeProfile)]![get(activeLayer)]?.[keyInfo.id];
     const component = mount(ActionSelector, {
       target: document.body,
       props: {
@@ -143,6 +143,7 @@
                 type: ChangeType.Layout,
                 id: keyInfo.id,
                 layer: get(activeLayer),
+                profile: get(activeProfile),
                 action,
               },
             ]);

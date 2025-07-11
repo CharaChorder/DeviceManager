@@ -3,6 +3,7 @@ import { changes, ChangeType, settings } from "$lib/undo-redo";
 import { activeProfile } from "./serial/connection";
 import { combineLatest, map } from "rxjs";
 import { fromReadable } from "./util/from-readable";
+import { get } from "svelte/store";
 
 /**
  * https://gist.github.com/mjackson/5311256
@@ -168,6 +169,7 @@ export const setting: Action<
             type: ChangeType.Setting,
             id: id + i,
             setting: value,
+            profile: get(activeProfile),
           })),
         );
         return changes;
@@ -183,6 +185,7 @@ export const setting: Action<
           type: ChangeType.Setting,
           id: id,
           setting: value,
+          profile: get(activeProfile),
         },
       ]);
       return changes;

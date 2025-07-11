@@ -140,8 +140,7 @@ export class CharaDevice {
       this.version = await this.send(1, ["VERSION"]).then(
         ([version]) => version,
       );
-      // TODO: beta.3
-      if (semverGte(this.version, "2.2.0-beta.3")) {
+      if (semverGte(this.version, "2.2.0-beta.4")) {
         this.profileCount = 3;
       }
       const [company, device, chipset] = await this.send(3, ["ID"]);
