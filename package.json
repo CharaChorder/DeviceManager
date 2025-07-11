@@ -53,6 +53,7 @@
     "@tauri-apps/api": "^1.6.0",
     "@tauri-apps/cli": "^1.6.0",
     "@types/dom-view-transitions": "^1.0.6",
+    "@types/semver": "^7.7.0",
     "@types/w3c-web-serial": "^1.0.8",
     "@types/w3c-web-usb": "^1.0.10",
     "@types/wicg-file-system-access": "^2023.10.5",

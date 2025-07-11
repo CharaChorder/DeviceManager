@@ -17,7 +17,7 @@ const en = {
     AUTO_BACKUP: "Auto-backup",
     DISCLAIMER:
       "Whenever you connect this device to browser, a backup is made locally and kept only on your computer.",
-    DOWNLOAD: "Everything",
+    DOWNLOAD: "Full profile",
     RESTORE: "Restore",
   },
   sync: {

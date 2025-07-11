@@ -1,0 +1,36 @@
+label:has(input[type="radio"]) {
+  cursor: pointer;
+
+  z-index: 1;
+
+  aspect-ratio: unset;
+  height: 1.5em;
+  padding-inline: 12px;
+  border: none;
+  border-radius: 0;
+
+  font-size: 16px;
+  color: var(--md-sys-color-on-surface-variant);
+
+  background: var(--md-sys-color-surface-variant);
+
+  transition: all 250ms ease;
+
+  > input[type="radio"] {
+    display: none;
+  }
+
+  &:first-child {
+    border-radius: 16px 0 0 16px;
+  }
+
+  &:last-child {
+    border-radius: 0 16px 16px 0;
+  }
+
+  &:has(:checked) {
+    font-weight: 900;
+    color: var(--md-sys-color-on-tertiary);
+    background: var(--md-sys-color-tertiary);
+  }
+}

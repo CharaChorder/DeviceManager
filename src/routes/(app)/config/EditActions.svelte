@@ -48,10 +48,14 @@
       $syncStatus = "uploading";
 
       const layoutChanges = $overlay.layout.reduce(
-        (acc, layer) => acc + layer.size,
+        (acc, profile) =>
+          acc + profile.reduce((acc, layer) => acc + layer.size, 0),
         0,
       );
-      const settingChanges = $overlay.settings.size;
+      const settingChanges = $overlay.settings.reduce(
+        (acc, profile) => acc + profile.size,
+        0,
+      );
       const chordChanges = $overlay.chords.size;
       const needsCommit = settingChanges > 0 || layoutChanges > 0;
       const progressMax = layoutChanges + settingChanges + chordChanges;
@@ -62,6 +66,8 @@
         max: progressMax,
         current: progressCurrent,
       });
+
+      console.log($overlay);
 
       for (const [id, chord] of $overlay.chords) {
         if (!chord.deleted) {
@@ -105,22 +111,31 @@
         });
       }
 
-      for (const [layer, actions] of $overlay.layout.entries()) {
-        for (const [id, action] of actions) {
-          await port.setLayoutKey(layer + 1, id, action);
+      for (const [profile, layout] of $overlay.layout.entries()) {
+        if (layout === undefined) continue;
+        for (const [layer, actions] of layout.entries()) {
+          if (actions === undefined) continue;
+          for (const [id, action] of actions) {
+            if (action === undefined) continue;
+            await port.setLayoutKey(profile, layer + 1, id, action);
+            syncProgress.set({
+              max: progressMax,
+              current: progressCurrent++,
+            });
+          }
+        }
+      }
+
+      for (const [profile, settings] of $overlay.settings.entries()) {
+        if (settings === undefined) continue;
+        for (const [id, setting] of settings.entries()) {
+          if (setting === undefined) continue;
+          await port.setSetting(profile, id, setting);
           syncProgress.set({
             max: progressMax,
             current: progressCurrent++,
           });
         }
-      }
-
-      for (const [id, setting] of $overlay.settings) {
-        await port.setSetting(id, setting);
-        syncProgress.set({
-          max: progressMax,
-          current: progressCurrent++,
-        });
       }
 
       // Yes, this is a completely arbitrary and unnecessary delay.
@@ -134,13 +149,15 @@
         await port.commit();
       }
 
-      $deviceLayout = $layout.map((layer) =>
-        layer.map<number>(({ action }) => action),
-      ) as [number[], number[], number[]];
+      $deviceLayout = $layout.map((profile) =>
+        profile.map((layer) => layer.map<number>(({ action }) => action)),
+      );
       $deviceChords = $chords
         .filter(({ deleted }) => !deleted)
         .map(({ actions, phrase }) => ({ actions, phrase }));
-      $deviceSettings = $settings.map(({ value }) => value);
+      $deviceSettings = $settings.map((profile) =>
+        profile.map(({ value }) => value),
+      );
       $changes = [];
     } catch (e) {
       alert(e);

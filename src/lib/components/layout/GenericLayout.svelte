@@ -8,17 +8,16 @@
   import { dev } from "$app/environment";
   import ActionSelector from "$lib/components/layout/ActionSelector.svelte";
   import { get } from "svelte/store";
-  import type { Writable } from "svelte/store";
   import KeyboardKey from "$lib/components/layout/KeyboardKey.svelte";
   import { getContext, mount, unmount } from "svelte";
   import type { VisualLayoutConfig } from "./visual-layout.js";
   import { changes, ChangeType, layout } from "$lib/undo-redo";
   import { fly } from "svelte/transition";
   import { expoOut } from "svelte/easing";
+  import { activeLayer, activeProfile } from "$lib/serial/connection";
 
   const { scale, margin, strokeWidth, fontSize, iconFontSize } =
     getContext<VisualLayoutConfig>("visual-layout-config");
-  const activeLayer = getContext<Writable<number>>("active-layer");
 
   if (dev) {
     // you have absolutely no idea what a difference this makes for performance
@@ -125,8 +124,10 @@
     const keyInfo = layoutInfo.keys[index];
     if (!keyInfo) return;
     const clickedGroup = groupParent.children.item(index) as SVGGElement;
-    const nextAction = get(layout)[get(activeLayer)]?.[keyInfo.id];
-    const currentAction = get(deviceLayout)[get(activeLayer)]?.[keyInfo.id];
+    const nextAction =
+      get(layout)[get(activeProfile)][get(activeLayer)]?.[keyInfo.id];
+    const currentAction =
+      get(deviceLayout)[get(activeProfile)][get(activeLayer)]?.[keyInfo.id];
     const component = mount(ActionSelector, {
       target: document.body,
       props: {

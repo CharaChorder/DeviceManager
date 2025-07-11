@@ -14,7 +14,7 @@ import {
   settings,
 } from "$lib/undo-redo.js";
 import { get } from "svelte/store";
-import { serialPort } from "../serial/connection";
+import { activeProfile, serialPort } from "../serial/connection";
 import { csvLayoutToJson, isCsvLayout } from "$lib/backup/compat/legacy-layout";
 import { isCsvChords, csvChordsToJson } from "./compat/legacy-chords";
 
@@ -50,11 +50,9 @@ export function createLayoutBackup(): CharaLayoutFile {
     charaVersion: 1,
     type: "layout",
     device: get(serialPort)?.device,
-    layout: get(layout).map((it) => it.map((it) => it.action)) as [
-      number[],
-      number[],
-      number[],
-    ],
+    layout: (get(layout)[get(activeProfile)]?.map((it) =>
+      it.map((it) => it.action),
+    ) ?? []) as [number[], number[], number[]],
   };
 }
 
@@ -70,7 +68,7 @@ export function createSettingsBackup(): CharaSettingsFile {
   return {
     charaVersion: 1,
     type: "settings",
-    settings: get(settings).map((it) => it.value),
+    settings: get(settings)[get(activeProfile)]?.map((it) => it.value) ?? [],
   };
 }
 
@@ -97,9 +95,11 @@ export function restoreFromFile(
       const recent = file.history[0];
       if (!recent) return;
       let backupDevice = recent[1].device;
-      if (backupDevice === "TWO") backupDevice = "ONE";
+      if (backupDevice === "TWO" || backupDevice === "M4G")
+        backupDevice = "ONE";
       let currentDevice = get(serialPort)?.device;
-      if (currentDevice === "TWO") currentDevice = "ONE";
+      if (currentDevice === "TWO" || backupDevice === "M4G")
+        currentDevice = "ONE";
 
       if (backupDevice !== currentDevice) {
         alert("Backup is incompatible with this device");
@@ -167,12 +167,13 @@ export function getChangesFromChordFile(file: CharaChordFile) {
 export function getChangesFromSettingsFile(file: CharaSettingsFile) {
   const changes: Change[] = [];
   for (const [id, value] of file.settings.entries()) {
-    const setting = get(settings)[id];
+    const setting = get(settings)[get(activeProfile)]?.[id];
     if (setting !== undefined && setting.value !== value) {
       changes.push({
         type: ChangeType.Setting,
         id,
         setting: value,
+        profile: get(activeProfile),
       });
     }
   }
@@ -183,12 +184,13 @@ export function getChangesFromLayoutFile(file: CharaLayoutFile) {
   const changes: Change[] = [];
   for (const [layer, keys] of file.layout.entries()) {
     for (const [id, action] of keys.entries()) {
-      if (get(layout)[layer]?.[id]?.action !== action) {
+      if (get(layout)[get(activeProfile)]?.[layer]?.[id]?.action !== action) {
         changes.push({
           type: ChangeType.Layout,
           layer,
           id,
           action,
+          profile: get(activeProfile),
         });
       }
     }

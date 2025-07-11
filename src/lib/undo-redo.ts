@@ -19,6 +19,7 @@ export interface LayoutChange {
   id: number;
   layer: number;
   action: number;
+  profile?: number;
 }
 
 export interface ChordChange {
@@ -33,6 +34,7 @@ export interface SettingChange {
   type: ChangeType.Setting;
   id: number;
   setting: number;
+  profile?: number;
 }
 
 export interface ChangeInfo {
@@ -45,23 +47,29 @@ export type Change = LayoutChange | ChordChange | SettingChange;
 export const changes = persistentWritable<Change[][]>("changes", []);
 
 export interface Overlay {
-  layout: [Map<number, number>, Map<number, number>, Map<number, number>];
+  layout: Array<Array<Map<number, number> | undefined> | undefined>;
   chords: Map<string, Chord & { deleted: boolean }>;
-  settings: Map<number, number>;
+  settings: Array<Map<number, number> | undefined>;
 }
 
 export const overlay = derived(changes, (changes) => {
   const overlay: Overlay = {
-    layout: [new Map(), new Map(), new Map()],
+    layout: [],
     chords: new Map(),
-    settings: new Map(),
+    settings: [],
   };
 
   for (const changeset of changes) {
     for (const change of changeset) {
       switch (change.type) {
         case ChangeType.Layout:
-          overlay.layout[change.layer]?.set(change.id, change.action);
+          change.profile ??= 0;
+          overlay.layout[change.profile] ??= [];
+          overlay.layout[change.profile]![change.layer] ??= new Map();
+          overlay.layout[change.profile]![change.layer]!.set(
+            change.id,
+            change.action,
+          );
           break;
         case ChangeType.Chord:
           overlay.chords.set(JSON.stringify(change.id), {
@@ -71,7 +79,9 @@ export const overlay = derived(changes, (changes) => {
           });
           break;
         case ChangeType.Setting:
-          overlay.settings.set(change.id, change.setting);
+          change.profile ??= 0;
+          overlay.settings[change.profile] ??= new Map();
+          overlay.settings[change.profile]!.set(change.id, change.setting);
           break;
       }
     }
@@ -82,21 +92,25 @@ export const overlay = derived(changes, (changes) => {
 
 export const settings = derived(
   [overlay, deviceSettings],
-  ([overlay, settings]) =>
-    settings.map<{ value: number } & ChangeInfo>((value, id) => ({
-      value: overlay.settings.get(id) ?? value,
-      isApplied: !overlay.settings.has(id),
-    })),
+  ([overlay, profiles]) =>
+    profiles.map((settings, profile) =>
+      settings.map<{ value: number } & ChangeInfo>((value, id) => ({
+        value: overlay.settings[profile]?.get(id) ?? value,
+        isApplied: !overlay.settings[profile]?.has(id),
+      })),
+    ),
 );
 
 export type KeyInfo = { action: number } & ChangeInfo;
-export const layout = derived([overlay, deviceLayout], ([overlay, layout]) =>
-  layout.map(
-    (actions, layer) =>
-      actions.map<KeyInfo>((action, id) => ({
-        action: overlay.layout[layer]?.get(id) ?? action,
-        isApplied: !overlay.layout[layer]?.has(id),
-      })) as [KeyInfo, KeyInfo, KeyInfo],
+export const layout = derived([overlay, deviceLayout], ([overlay, profiles]) =>
+  profiles.map((layout, profile) =>
+    layout.map(
+      (actions, layer) =>
+        actions.map<KeyInfo>((action, id) => ({
+          action: overlay.layout[profile]?.[layer]?.get(id) ?? action,
+          isApplied: !overlay.layout[profile]?.[layer]?.has(id),
+        })) as [KeyInfo, KeyInfo, KeyInfo],
+    ),
   ),
 );
 

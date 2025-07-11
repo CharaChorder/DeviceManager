@@ -2,6 +2,7 @@
   import { fly } from "svelte/transition";
   import { canShare, triggerShare } from "$lib/share";
   import { action } from "$lib/title";
+  import { activeProfile, serialPort } from "$lib/serial/connection";
   import LL from "$i18n/i18n-svelte";
   import EditActions from "./EditActions.svelte";
 </script>
@@ -9,6 +10,23 @@
 <nav>
   <div class="actions">
     <EditActions />
+  </div>
+
+  <div class="profiles">
+    {#if $serialPort}
+      {#if $serialPort.profileCount > 1}
+        {#each Array.from({ length: $serialPort.profileCount }, (_, i) => i) as profile}
+          <label
+            ><input
+              type="radio"
+              name="profile"
+              checked={profile == $activeProfile}
+              onclick={() => ($activeProfile = profile)}
+            />{String.fromCodePoint("A".codePointAt(0)! + profile)}</label
+          >
+        {/each}
+      {/if}
+    {/if}
   </div>
 
   <div class="actions">
@@ -37,7 +55,7 @@
 <style lang="scss">
   nav {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr auto 1fr;
 
     width: calc(min(100%, 28cm));
     margin-block: 8px;
@@ -74,6 +92,13 @@
     &:last-child {
       justify-content: flex-end;
     }
+  }
+
+  .profiles {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
   }
 
   :disabled {

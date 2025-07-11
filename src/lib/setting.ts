@@ -1,5 +1,8 @@
 import type { Action } from "svelte/action";
 import { changes, ChangeType, settings } from "$lib/undo-redo";
+import { activeProfile } from "./serial/connection";
+import { combineLatest, map } from "rxjs";
+import { fromReadable } from "./util/from-readable";
 
 /**
  * https://gist.github.com/mjackson/5311256
@@ -103,37 +106,42 @@ export const setting: Action<
     ? Number(node.getAttribute("max"))
     : undefined;
 
-  const unsubscribe = settings.subscribe(async (settings) => {
-    if (id in settings) {
-      const { value, isApplied } = settings[id]!;
-      if (isNumeric) {
-        node.value = (
-          inverse !== undefined
-            ? inverse / value
-            : scale !== undefined
-              ? scale * value
-              : value
-        ).toString();
-      } else if (isColor) {
-        const rgb = hsvToRgb(
-          settings[id]!.value,
-          settings[id + 1]!.value,
-          settings[id + 2]!.value,
-        );
-        node.value = `#${rgb.map((c) => c.toString(16).padStart(2, "0")).join("")}`;
+  const subscription = combineLatest([
+    fromReadable(settings),
+    fromReadable(activeProfile),
+  ])
+    .pipe(map(([settings, profile]) => settings[profile]!))
+    .subscribe(async (settings) => {
+      if (id in settings) {
+        const { value, isApplied } = settings[id]!;
+        if (isNumeric) {
+          node.value = (
+            inverse !== undefined
+              ? inverse / value
+              : scale !== undefined
+                ? scale * value
+                : value
+          ).toString();
+        } else if (isColor) {
+          const rgb = hsvToRgb(
+            settings[id]!.value,
+            settings[id + 1]!.value,
+            settings[id + 2]!.value,
+          );
+          node.value = `#${rgb.map((c) => c.toString(16).padStart(2, "0")).join("")}`;
+        } else {
+          node.checked = value !== 0;
+        }
+        if (isApplied) {
+          node.classList.remove("pending-changes");
+        } else {
+          node.classList.add("pending-changes");
+        }
+        node.removeAttribute("disabled");
       } else {
-        node.checked = value !== 0;
+        node.setAttribute("disabled", "");
       }
-      if (isApplied) {
-        node.classList.remove("pending-changes");
-      } else {
-        node.classList.add("pending-changes");
-      }
-      node.removeAttribute("disabled");
-    } else {
-      node.setAttribute("disabled", "");
-    }
-  });
+    });
 
   async function listener() {
     let value: number;
@@ -186,7 +194,7 @@ export const setting: Action<
   return {
     destroy() {
       node.removeEventListener("change", listener);
-      unsubscribe();
+      subscription.unsubscribe();
     },
   };
 };

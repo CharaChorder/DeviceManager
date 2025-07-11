@@ -6,7 +6,6 @@
   import { charaFileToUriComponent } from "$lib/share/share-url";
   import SharePopup from "../SharePopup.svelte";
   import type { VisualLayoutConfig } from "$lib/components/layout/visual-layout";
-  import { writable } from "svelte/store";
   import { layout } from "$lib/undo-redo";
 
   async function shareLayout(event: Event) {
@@ -49,8 +48,6 @@
     fontSize: 9,
     iconFontSize: 14,
   });
-
-  setContext("active-layer", writable(0));
 </script>
 
 <svelte:head>

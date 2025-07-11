@@ -2,20 +2,10 @@
   import { deviceMeta, serialPort } from "$lib/serial/connection";
   import { action } from "$lib/title";
   import GenericLayout from "$lib/components/layout/GenericLayout.svelte";
-  import { getContext } from "svelte";
-  import type { Writable } from "svelte/store";
+  import { activeProfile, activeLayer } from "$lib/serial/connection";
   import type { VisualLayout } from "$lib/serialization/visual-layout";
   import { fade, fly } from "svelte/transition";
   import { restoreFromFile } from "$lib/backup/backup";
-
-  let device = $derived($serialPort?.device);
-  const activeLayer = getContext<Writable<number>>("active-layer");
-
-  const layers = [
-    ["Numeric Layer", "123", 1],
-    ["Primary Layer", "abc", 0],
-    ["Function Layer", "function", 2],
-  ] as const;
 
   const layouts = {
     ONE: () =>
@@ -46,19 +36,25 @@
 </script>
 
 <div class="container">
-  {#if device}
-    {#await layouts[device]() then visualLayout}
+  {#if $serialPort}
+    {#await layouts[$serialPort.device]() then visualLayout}
       <fieldset transition:fade>
-        {#each layers as [title, icon, value]}
-          <button
-            class="icon"
-            use:action={{ title, shortcut: `alt+${value + 1}` }}
-            onclick={() => ($activeLayer = value)}
-            class:active={$activeLayer === value}
-          >
-            {icon}
-          </button>
-        {/each}
+        <div class="layers">
+          {#each Array.from({ length: $serialPort.layerCount }, (_, i) => i) as layer}
+            <label>
+              <input
+                type="radio"
+                onclick={() => ($activeLayer = layer)}
+                name="layer"
+                value={layer}
+                checked={$activeLayer === layer}
+              />
+              {String.fromCodePoint(
+                "A".codePointAt(0)! + $activeProfile,
+              )}{layer + 1}
+            </label>
+          {/each}
+        </div>
         {#if $deviceMeta?.factoryDefaults?.layout}
           <button
             use:action={{ title: "Reset Layout" }}
@@ -100,60 +96,13 @@
     border: none;
   }
 
-  button.icon {
-    cursor: pointer;
+  .layers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    z-index: 1;
+    margin-inline: auto;
 
-    font-size: 24px;
-    color: var(--md-sys-color-on-surface-variant);
-
-    background: var(--md-sys-color-surface-variant);
-    border: none;
-
-    transition: all 250ms ease;
-
-    &:nth-child(2) {
-      z-index: 2;
-
-      aspect-ratio: 1;
-
-      font-size: 32px;
-
-      border-radius: 50%;
-    }
-
-    &:first-child,
-    &:nth-child(3) {
-      aspect-ratio: unset;
-      height: unset;
-    }
-
-    &:first-child {
-      margin-inline-end: -8px;
-      padding-inline: 4px 24px;
-      border-radius: 16px 0 0 16px;
-    }
-
-    &:nth-child(3) {
-      margin-inline-start: -8px;
-      padding-inline: 24px 4px;
-      border-radius: 0 16px 16px 0;
-    }
-
-    &.reset-layout {
-      position: absolute;
-      top: 50%;
-      right: 0;
-      transform: translate(100%, -50%);
-      background: none;
-      font-size: 24px;
-    }
-
-    &.active {
-      font-weight: 900;
-      color: var(--md-sys-color-on-tertiary);
-      background: var(--md-sys-color-tertiary);
-    }
+    gap: 2px;
   }
 </style>

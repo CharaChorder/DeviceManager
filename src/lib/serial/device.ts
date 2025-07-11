@@ -1,7 +1,6 @@
 import { LineBreakTransformer } from "$lib/serial/line-break-transformer";
 import { serialLog } from "$lib/serial/connection";
 import type { Chord } from "$lib/serial/chord";
-import { SemVer } from "$lib/serial/sem-ver";
 import {
   parseChordActions,
   parsePhrase,
@@ -10,6 +9,7 @@ import {
 } from "$lib/serial/chord";
 import { browser } from "$app/environment";
 import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialog";
+import semverGte from "semver/functions/gte";
 
 const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["ONE M0", { usbProductId: 32783, usbVendorId: 9114 }],
@@ -100,11 +100,13 @@ export class CharaDevice {
   private readonly suspendDebounce = 100;
   private suspendDebounceId?: number;
 
-  version!: SemVer;
+  version!: string;
   company!: "CHARACHORDER" | "FORGE";
   device!: "ONE" | "TWO" | "LITE" | "X" | "M4G";
   chipset!: "M0" | "S2" | "S3";
   keyCount!: 90 | 67 | 256;
+  layerCount = 3;
+  profileCount = 1;
 
   get portInfo() {
     return this.port.getInfo();
@@ -135,9 +137,13 @@ export class CharaDevice {
       });
       await this.port.close();
 
-      this.version = new SemVer(
-        await this.send(1, ["VERSION"]).then(([version]) => version),
+      this.version = await this.send(1, ["VERSION"]).then(
+        ([version]) => version,
       );
+      // TODO: beta.3
+      if (semverGte(this.version, "2.2.0-beta.3")) {
+        this.profileCount = 3;
+      }
       const [company, device, chipset] = await this.send(3, ["ID"]);
       this.company = company as typeof this.company;
       this.device = device as typeof this.device;
@@ -369,11 +375,16 @@ export class CharaDevice {
    * @param id id of the key, refer to the individual device for where each key is
    * @param action the assigned action id
    */
-  async setLayoutKey(layer: number, id: number, action: number) {
+  async setLayoutKey(
+    profile: number,
+    layer: number,
+    id: number,
+    action: number,
+  ) {
     const [status] = await this.send(1, [
       "VAR",
       "B4",
-      `A${layer}`,
+      `${String.fromCodePoint("A".codePointAt(0)! + profile)}${layer}`,
       id.toString(),
       action.toString(),
     ]);
@@ -386,11 +397,11 @@ export class CharaDevice {
    * @param id id of the key, refer to the individual device for where each key is
    * @returns the assigned action id
    */
-  async getLayoutKey(layer: number, id: number) {
+  async getLayoutKey(profile: number, layer: number, id: number) {
     const [position, status] = await this.send(2, [
       "VAR",
       "B3",
-      `A${layer}`,
+      `${String.fromCodePoint("A".codePointAt(0)! + profile)}${layer}`,
       id.toString(),
     ]);
     if (status !== "0") throw new Error(`Failed with status ${status}`);
@@ -415,11 +426,11 @@ export class CharaDevice {
    * Settings are applied until the next reboot or loss of power.
    * To permanently store the settings, you *must* call commit.
    */
-  async setSetting(id: number, value: number) {
+  async setSetting(profile: number, id: number, value: number) {
     const [status] = await this.send(1, [
       "VAR",
       "B2",
-      id.toString(16).toUpperCase(),
+      (id + profile * 0x100).toString(16).toUpperCase(),
       value.toString(),
     ]);
     if (status !== "0") throw new Error(`Failed with status ${status}`);
@@ -428,11 +439,11 @@ export class CharaDevice {
   /**
    * Retrieves a setting from the device
    */
-  async getSetting(id: number): Promise<number> {
+  async getSetting(profile: number, id: number): Promise<number> {
     const [value, status] = await this.send(2, [
       "VAR",
       "B1",
-      id.toString(16).toUpperCase(),
+      (id + profile * 0x100).toString(16).toUpperCase(),
     ]);
     if (status !== "0")
       throw new Error(

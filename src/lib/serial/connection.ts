@@ -29,20 +29,23 @@ export const deviceChords = persistentWritable<Chord[]>(
 /**
  * Layout as read from the device
  */
-export const deviceLayout = persistentWritable<CharaLayout>(
-  "layout",
-  [[], [], []],
+export const deviceLayout = persistentWritable<CharaLayout[]>(
+  "layout-profiles",
+  [],
   () => get(userPreferences).backup,
 );
 
 /**
  * Settings as read from the device
  */
-export const deviceSettings = persistentWritable<number[]>(
-  "device-settings",
+export const deviceSettings = persistentWritable<number[][]>(
+  "settings-profiles",
   [],
   () => get(userPreferences).backup,
 );
+
+export const activeProfile = persistentWritable<number>("active-profile", 0);
+export const activeLayer = persistentWritable<number>("active-profile", 0);
 
 export const syncStatus: Writable<
   "done" | "error" | "downloading" | "uploading"
@@ -80,30 +83,49 @@ export async function sync() {
     .map((it) => it.items.length)
     .reduce((a, b) => a + b, 0);
 
-  const max = maxSettings + device.keyCount * 3 + chordCount;
+  const max =
+    (maxSettings + device.keyCount * device.layerCount) * device.profileCount +
+    chordCount;
   let current = 0;
+  activeProfile.update((it) => Math.min(it, device.profileCount - 1));
+  activeLayer.update((it) => Math.min(it, device.layerCount - 1));
   syncProgress.set({ max, current });
   function progressTick() {
     current++;
     syncProgress.set({ max, current });
   }
 
-  const parsedSettings: number[] = [];
-  for (const category of meta.settings) {
-    for (const setting of category.items) {
-      try {
-        parsedSettings[setting.id] = await device.getSetting(setting.id);
-      } catch {}
+  const parsedSettings: number[][] = Array.from(
+    { length: device.profileCount },
+    () => [],
+  );
+  for (const [profile, settings] of parsedSettings.entries()) {
+    for (const category of meta.settings) {
+      for (const setting of category.items) {
+        try {
+          settings[setting.id] = await device.getSetting(profile, setting.id);
+        } catch {}
+      }
+      progressTick();
     }
-    progressTick();
   }
   deviceSettings.set(parsedSettings);
 
-  const parsedLayout: CharaLayout = [[], [], []];
-  for (let layer = 1; layer <= 3; layer++) {
-    for (let i = 0; i < device.keyCount; i++) {
-      parsedLayout[layer - 1]![i] = await device.getLayoutKey(layer, i);
-      progressTick();
+  const parsedLayout: CharaLayout[] = Array.from(
+    { length: device.profileCount },
+    () =>
+      Array.from({ length: device.layerCount }, () =>
+        Array.from({ length: device.keyCount }, () => 0),
+      ),
+  );
+  for (const [profile, layout] of parsedLayout.entries()) {
+    for (const [layer, keys] of layout.entries()) {
+      for (let i = 0; i < keys.length; i++) {
+        try {
+          keys[i] = await device.getLayoutKey(profile, layer + 1, i);
+        } catch {}
+        progressTick();
+      }
     }
   }
   deviceLayout.set(parsedLayout);

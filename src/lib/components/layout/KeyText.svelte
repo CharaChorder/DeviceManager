@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { getContext } from "svelte";
   import type { Writable } from "svelte/store";
   import type { VisualLayoutConfig } from "$lib/components/layout/visual-layout";
   import type { CompiledLayoutKey } from "$lib/serialization/visual-layout";
@@ -7,10 +6,11 @@
   import { osLayout } from "$lib/os-layout.js";
   import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
   import { action } from "$lib/title";
+  import { activeProfile, activeLayer } from "$lib/serial/connection";
+  import { getContext } from "svelte";
 
   const { fontSize, margin, inactiveOpacity, inactiveScale, iconFontSize } =
     getContext<VisualLayoutConfig>("visual-layout-config");
-  const activeLayer = getContext<Writable<number>>("active-layer");
   const currentAction = getContext<Writable<Set<number>> | undefined>(
     "highlight-action",
   );
@@ -33,7 +33,9 @@
 </script>
 
 {#each positions as position, layer}
-  {@const { action: actionId, isApplied } = $layout[layer]?.[key.id] ?? {
+  {@const { action: actionId, isApplied } = $layout[$activeProfile]?.[layer]?.[
+    key.id
+  ] ?? {
     action: 0,
     isApplied: true,
   }}

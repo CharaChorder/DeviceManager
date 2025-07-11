@@ -21,7 +21,7 @@ const de = {
     AUTO_BACKUP: "Auto-backup",
     DISCLAIMER:
       "Das Backup in diesem Browser gespeichert und bleibt nur auf diesem Computer.",
-    DOWNLOAD: "Alles",
+    DOWNLOAD: "Komplettes Profil",
     RESTORE: "Wiederherstellen",
   },
   modal: {
