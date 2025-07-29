@@ -5,6 +5,9 @@ import Tooltip from "$lib/components/Tooltip.svelte";
 
 export const hotkeys = new Map<string, HTMLElement>();
 
+/**
+ * @deprecated Use `tooltip` instead.
+ */
 export const action: Action<Element, { title?: string; shortcut?: string }> = (
   node: Element,
   { title, shortcut },

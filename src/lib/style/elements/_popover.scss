@@ -4,13 +4,15 @@ $translate: translateY(8px);
 [popover] {
   position: absolute;
   inset: unset;
-  transform: $translate;
 
   margin: 0;
   padding: 8px;
   border: 1px solid var(--md-sys-color-outline);
   border-radius: 8px;
 
+  font-family: "Noto Sans Mono", monospace;
+  font-size: initial;
+  font-weight: initial;
   color: var(--md-sys-color-on-surface);
 
   opacity: 0;
@@ -18,12 +20,14 @@ $translate: translateY(8px);
 
   transition:
     transform $animation-duration ease,
-    opacity $animation-duration ease,
+    opacity $animation-duration linear,
     overlay $animation-duration allow-discrete,
     display $animation-duration allow-discrete;
 
-  position-area: bottom span-right;
+  position-area: bottom span-all;
   position-try-fallbacks:
+    top span-all,
+    bottom span-right,
     top span-right,
     bottom span-left,
     top span-left;
@@ -43,9 +47,21 @@ $translate: translateY(8px);
   }
 }
 
+[popover="auto"] {
+  transform: $translate;
+}
+
+[popover="hint"] {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
 @starting-style {
   [popover]:popover-open {
-    transform: $translate;
     opacity: 0;
+  }
+
+  [popover="auto"] {
+    transform: $translate;
   }
 }

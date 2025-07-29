@@ -1,8 +1,8 @@
 <script lang="ts">
   import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
   import type { KeyInfo } from "$lib/serial/keymap-codes";
-  import { action as title } from "$lib/title";
   import { osLayout } from "$lib/os-layout";
+  import { tooltip } from "$lib/hover-popover";
 
   let {
     action,
@@ -16,42 +16,49 @@
   );
   let dynamicMapping = $derived(info.keyCode && $osLayout.get(info.keyCode));
 
-  let tooltip = $derived(
-    `&lt;${info.id ?? `0x${info.code.toString(16)}`}&gt; ` +
-      (info.title ?? "") +
-      (info.variant === "left"
-        ? " (left)"
-        : info.variant === "right"
-          ? " (right)"
-          : ""),
-  );
+  let popover: HTMLElement | undefined = $state(undefined);
 </script>
+
+{#snippet popoverSnippet()}
+<div bind:this={popover} popover="hint">
+&lt;{info.id ?? `0x${info.code.toString(16)}`}&gt;
+{#if info.title} 
+{info.title}
+{/if}
+  {#if info.variant === "left"}
+    (Left)
+  {:else if info.variant === "right"}
+    (Right)
+  {/if}
+</div>
+{/snippet}
 
 {#if display === "keys"}
   <kbd
     class:icon={!!info.icon}
     class:left={info.variant === "left"}
     class:right={info.variant === "right"}
-    use:title={{ title: tooltip }}
+    {@attach tooltip(popover)}
   >
     {dynamicMapping ??
       info.icon ??
       info.display ??
       info.id ??
       `0x${info.code.toString(16)}`}
+    {@render popoverSnippet()}
   </kbd>
 {:else if display === "inline-keys"}
   {#if !info.icon && dynamicMapping?.length === 1}
     <span
-      use:title={{ title: tooltip }}
+    {@attach tooltip(popover)}
       class:left={info.variant === "left"}
-      class:right={info.variant === "right"}>{dynamicMapping}</span
+      class:right={info.variant === "right"}>{dynamicMapping}{@render popoverSnippet()}</span
     >
   {:else if !info.icon && info.id?.length === 1}
     <span
-      use:title={{ title: tooltip }}
+    {@attach tooltip(popover)}
       class:left={info.variant === "left"}
-      class:right={info.variant === "right"}>{info.id}</span
+      class:right={info.variant === "right"}>{info.id}{@render popoverSnippet()}</span
     >
   {:else}
     <kbd
@@ -59,13 +66,13 @@
       class:left={info.variant === "left"}
       class:right={info.variant === "right"}
       class:icon={!!info.icon}
-      use:title={{ title: tooltip }}
+    {@attach tooltip(popover)}
     >
       {dynamicMapping ??
         info.icon ??
         info.display ??
         info.id ??
-        `0x${info.code.toString(16)}`}</kbd
+        `0x${info.code.toString(16)}`}{@render popoverSnippet()}</kbd
     >
   {/if}
 {/if}

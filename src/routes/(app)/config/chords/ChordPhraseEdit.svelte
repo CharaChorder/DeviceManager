@@ -183,7 +183,13 @@
   );
 </script>
 
-<div class="wrapper" class:edited={!chord.deleted && chord.phraseChanged}>
+<div
+  class="wrapper"
+  class:edited={!chord.deleted && chord.phraseChanged}
+  onclick={() => {
+    box.focus();
+  }}
+>
   {#if supportsAutospace}
     <label
       class="auto-space-edit"
