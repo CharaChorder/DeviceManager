@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { confirmChallenge } from "./confirm-challenge";
   import { serialPort } from "$lib/serial/connection";
 
   const options = [
@@ -17,26 +16,71 @@
 </script>
 
 <h3>Reset Device</h3>
+<p>Resetting might take <b>up to 2 Minutes</b>.</p>
 {#each options as category, i}
   {#if i > 0}
     <hr />
   {/if}
   {#each category as [command, description]}
-    <button
-      class="error"
-      use:confirmChallenge={{
-        onConfirm() {
-          $serialPort?.reset(command);
-          $serialPort = undefined;
-        },
-        challenge: description,
-      }}>{description}...</button
+    <form
+      onsubmit={(event) => {
+        event.preventDefault();
+        $serialPort?.reset(command);
+        $serialPort = undefined;
+      }}
     >
+      <input
+        type="text"
+        placeholder={description}
+        required
+        pattern="^{description}$"
+      />
+      <button class="icon" type="submit">send</button>
+    </form>
   {/each}
 {/each}
 
 <style lang="scss">
   hr {
     opacity: 0.25;
+  }
+
+  p {
+    width: 22ch;
+  }
+
+  button.icon {
+    font-size: 20px;
+    opacity: 0.5;
+  }
+
+  form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  input[type="text"] {
+    color: inherit;
+    font-family: inherit;
+    background: none;
+    border: none;
+    border-bottom: 1px solid transparent;
+    width: fit-content;
+
+    &:focus {
+      outline: none;
+      border-color: var(--md-sys-color-outline);
+    }
+  }
+
+  input[type="text"]:valid {
+    color: var(--md-sys-color-error);
+
+    & + button {
+      color: var(--md-sys-color-error);
+      opacity: 1;
+    }
   }
 </style>

@@ -1,0 +1,51 @@
+$animation-duration: 150ms;
+$translate: translateY(8px);
+
+[popover] {
+  position: absolute;
+  inset: unset;
+  transform: $translate;
+
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 8px;
+
+  color: var(--md-sys-color-on-surface);
+
+  opacity: 0;
+  background: var(--md-sys-color-surface);
+
+  transition:
+    transform $animation-duration ease,
+    opacity $animation-duration ease,
+    overlay $animation-duration allow-discrete,
+    display $animation-duration allow-discrete;
+
+  position-area: bottom span-right;
+  position-try-fallbacks:
+    top span-right,
+    bottom span-left,
+    top span-left;
+
+  position-visibility: no-overflow;
+
+  &:popover-open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  > h1:first-child,
+  h2:first-child,
+  h3:first-child {
+    margin-top: 0;
+    text-align: center;
+  }
+}
+
+@starting-style {
+  [popover]:popover-open {
+    transform: $translate;
+    opacity: 0;
+  }
+}

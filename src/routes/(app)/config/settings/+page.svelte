@@ -161,7 +161,10 @@
             ><span class="icon">reset_settings</span>Reset Settings</button
           >
         {/if}
-        <button use:popup={ResetPopup}>Recovery...</button>
+        <button popovertarget="reset-device" popovertargetaction="toggle"
+          >Recovery...</button
+        >
+        <div id="reset-device" popover="auto"><ResetPopup /></div>
       {/if}
     </div>
   </div>
