@@ -69,5 +69,8 @@ export function hashChord(actions: number[]) {
   for (let i = 0; i < 16; i++) {
     hash = Math.imul(hash ^ view.getUint8(i), 16777619);
   }
+  if ((hash & 0xff) === 0xff) {
+    hash ^= 0xff;
+  }
   return hash & 0x3fff_ffff;
 }
