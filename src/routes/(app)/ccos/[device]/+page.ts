@@ -1,5 +1,6 @@
 import type { PageLoad } from "./$types";
 import type { DirectoryListing } from "$lib/meta/types/listing";
+import { compare } from "semver";
 
 export const load = (async ({ fetch, params }) => {
   const result = await fetch(
@@ -9,7 +10,7 @@ export const load = (async ({ fetch, params }) => {
 
   return {
     versions: (data as DirectoryListing[]).sort((a, b) =>
-      b.name.localeCompare(a.name),
+      compare(b.name, a.name),
     ),
     device: params.device,
   };
