@@ -176,9 +176,9 @@
   }
 
   .add {
-    font-size: 18px;
-    height: 20px;
     opacity: 0;
+    height: 20px;
+    font-size: 18px;
     --icon-fill: 1;
   }
 
@@ -187,13 +187,12 @@
   }
 
   .chord {
-    position: relative;
-
     display: inline-flex;
+    position: relative;
     gap: 4px;
+    margin-inline: 4px;
 
     height: 32px;
-    margin-inline: 4px;
 
     &:focus-within {
       outline: none;
@@ -201,22 +200,21 @@
   }
 
   .chord::after {
-    content: "";
-
     position: absolute;
     top: 50%;
     transform-origin: center left;
     translate: -20px 0;
     scale: 0 1;
 
-    width: calc(100% - 60px);
-    height: 1px;
-
-    background: currentcolor;
-
     transition:
       scale 250ms ease,
       color 250ms ease;
+
+    background: currentcolor;
+
+    width: calc(100% - 60px);
+    height: 1px;
+    content: "";
   }
 
   .edited {

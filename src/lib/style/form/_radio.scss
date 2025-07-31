@@ -1,20 +1,19 @@
 label:has(input[type="radio"]) {
-  cursor: pointer;
-
   z-index: 1;
 
-  aspect-ratio: unset;
-  height: 1.5em;
-  padding-inline: 12px;
+  transition: all 250ms ease;
+  cursor: pointer;
   border: none;
   border-radius: 0;
 
-  font-size: 16px;
+  background: var(--md-sys-color-surface-variant);
+  padding-inline: 12px;
+
+  aspect-ratio: unset;
+  height: 1.5em;
   color: var(--md-sys-color-on-surface-variant);
 
-  background: var(--md-sys-color-surface-variant);
-
-  transition: all 250ms ease;
+  font-size: 16px;
 
   > input[type="radio"] {
     display: none;
@@ -29,8 +28,8 @@ label:has(input[type="radio"]) {
   }
 
   &:has(:checked) {
-    font-weight: 900;
-    color: var(--md-sys-color-on-tertiary);
     background: var(--md-sys-color-tertiary);
+    color: var(--md-sys-color-on-tertiary);
+    font-weight: 900;
   }
 }

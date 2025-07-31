@@ -1,18 +1,18 @@
 kbd {
   display: inline-flex;
-  align-items: center;
   justify-content: center;
-
-  height: 20px;
+  align-items: center;
   margin-block: 6px;
-  padding: 4px;
-
-  font-size: 14px;
-  font-weight: normal;
-  color: currentcolor;
 
   border: 1px solid currentcolor;
   border-radius: 4px;
+  padding: 4px;
+
+  height: 20px;
+  color: currentcolor;
+  font-weight: normal;
+
+  font-size: 14px;
 
   &.icon {
     padding: 2px;
@@ -21,8 +21,8 @@ kbd {
 
   &:has(> kbd) {
     gap: 4px;
-    padding: 0;
     border: none;
+    padding: 0;
   }
 
   > kbd {

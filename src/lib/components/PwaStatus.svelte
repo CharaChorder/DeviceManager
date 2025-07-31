@@ -16,8 +16,8 @@
 <style lang="scss">
   button {
     cursor: pointer;
-    color: var(--md-sys-color-on-background);
-    background: transparent;
     border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-background);
   }
 </style>

@@ -53,17 +53,17 @@
 
   .room {
     display: flex;
-    align-items: center;
     justify-content: flex-start;
+    align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    padding-block: 2px;
-    min-height: 0;
-    height: unset;
-    padding-inline: 16px;
-    padding-block: 4px;
     border-radius: 8px;
+    padding-inline: 16px;
+    padding-block: 2px;
+    padding-block: 4px;
     width: 100%;
+    height: unset;
+    min-height: 0;
 
     &.active {
       background: var(--md-sys-color-primary-container);

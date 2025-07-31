@@ -28,8 +28,8 @@
 <style lang="scss">
   ul {
     display: flex;
-    list-style: none;
     gap: 8px;
+    list-style: none;
   }
 
   li {
@@ -38,13 +38,13 @@
   }
 
   a {
-    outline: 1px solid var(--md-sys-color-outline);
-    border-radius: 8px;
     transition:
       background-color 200ms ease,
       color 200ms ease,
       outline-offset 200ms ease,
       outline-color 200ms ease;
+    outline: 1px solid var(--md-sys-color-outline);
+    border-radius: 8px;
   }
 
   @keyframes highlight {
@@ -71,9 +71,9 @@
   }
 
   .highlight {
-    outline-width: 2px;
-    outline-color: var(--md-sys-color-primary);
     animation: wiggle 500ms ease 2 alternate;
+    outline-color: var(--md-sys-color-primary);
+    outline-width: 2px;
     background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary-container);
   }

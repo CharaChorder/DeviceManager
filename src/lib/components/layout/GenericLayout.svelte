@@ -219,9 +219,9 @@
 
 <style lang="scss">
   svg {
-    overflow: visible;
     grid-area: "d";
     width: calc(min(100%, 35cm));
     max-height: calc(100% - 170px);
+    overflow: visible;
   }
 </style>

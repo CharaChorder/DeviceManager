@@ -97,8 +97,8 @@
   }
 
   .correct-device {
-    color: var(--md-sys-color-primary);
     opacity: 1;
+    color: var(--md-sys-color-primary);
   }
 
   .incorrect-device {

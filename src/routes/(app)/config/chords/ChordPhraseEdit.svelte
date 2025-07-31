@@ -260,26 +260,26 @@
     transform: translateX(-50%);
     translate: 0 0;
 
-    width: 2px;
-    height: 100%;
+    transition: translate 50ms ease;
 
     background: var(--md-sys-color-on-secondary-container);
 
-    transition: translate 50ms ease;
+    width: 2px;
+    height: 100%;
 
     button {
       position: absolute;
       top: -24px;
       left: 0;
-
-      height: 24px;
-      padding: 0;
-
-      color: var(--md-sys-color-on-secondary-container);
-
-      background: var(--md-sys-color-secondary-container);
       border: 2px solid currentcolor;
       border-radius: 12px 12px 12px 0;
+
+      background: var(--md-sys-color-secondary-container);
+      padding: 0;
+
+      height: 24px;
+
+      color: var(--md-sys-color-on-secondary-container);
     }
   }
 
@@ -292,13 +292,13 @@
   }
 
   .auto-space-edit {
-    padding-inline: 0;
-    font-size: 1.3em;
     margin-inline: 8px;
-    background: var(--md-sys-color-tertiary-container);
-    color: var(--md-sys-color-on-tertiary-container);
-    height: 1em;
     border-radius: 4px;
+    background: var(--md-sys-color-tertiary-container);
+    padding-inline: 0;
+    height: 1em;
+    color: var(--md-sys-color-on-tertiary-container);
+    font-size: 1.3em;
 
     &:first-of-type:not(:has(:checked)),
     &:last-of-type:has(:checked) {
@@ -312,9 +312,9 @@
 
   .wrapper {
     display: flex;
-    align-items: center;
 
     position: relative;
+    align-items: center;
 
     padding-block: 4px;
 
@@ -322,20 +322,19 @@
 
     &::after,
     &::before {
-      content: "";
-
       position: absolute;
       bottom: -4px;
 
-      width: calc(100% - 8px);
-      height: 1px;
-
       opacity: 0;
-      background: currentcolor;
 
       transition:
         opacity 150ms ease,
         scale 250ms ease;
+      background: currentcolor;
+
+      width: calc(100% - 8px);
+      height: 1px;
+      content: "";
     }
 
     &::after {
@@ -354,12 +353,11 @@
   }
 
   [role="textbox"] {
-    cursor: text;
+    display: flex;
 
     position: relative;
-
-    display: flex;
     align-items: center;
+    cursor: text;
     white-space: pre;
 
     &:focus-within {

@@ -131,14 +131,13 @@
 
 <style lang="scss">
   .layout {
-    width: 100vw;
-    height: 100vh;
-
     display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: auto 1fr;
     grid-template-areas:
       "sidebar main"
       "sidebar footer";
-    grid-template-columns: auto 1fr;
-    grid-template-rows: 1fr;
+    width: 100vw;
+    height: 100vh;
   }
 </style>

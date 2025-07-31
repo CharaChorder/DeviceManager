@@ -33,63 +33,61 @@
 
 <style lang="scss">
   form {
+    display: flex;
     position: relative;
+    flex-direction: column;
 
     contain: strict;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+
+    border-radius: 16px;
 
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    color: var(--md-sys-color-on-secondary);
+    font-size: 0.75rem;
 
     font-family: "Noto Sans Mono", monospace;
-    font-size: 0.75rem;
-    color: var(--md-sys-color-on-secondary);
-
-    border-radius: 16px;
   }
 
   fieldset::before {
-    content: "$";
-
     position: absolute;
     bottom: 8px;
     left: 8px;
+    content: "$";
 
     font-weight: 900;
   }
 
   input {
-    width: 100%;
+    appearance: none;
     margin-block-start: -16px;
+    border: none;
+    background: var(--md-sys-color-secondary);
     padding: 8px;
-    padding-block-start: 24px;
     padding-inline-start: calc(8px + 1.5ch);
+    padding-block-start: 24px;
+    width: 100%;
+    color: var(--md-sys-color-on-secondary);
+    font-weight: 600;
 
     font-family: "Noto Sans Mono", monospace;
-    font-weight: 600;
-    color: var(--md-sys-color-on-secondary);
-
-    appearance: none;
-    background: var(--md-sys-color-secondary);
-    border: none;
   }
 
   .io {
     --scrollbar-color: var(--md-sys-color-secondary);
+    flex: 1;
 
     z-index: 1;
+    border-radius: 0 0 16px 16px;
 
-    overflow-y: auto;
-    flex: 1;
+    background: var(--md-sys-color-secondary-container);
 
     padding: 12px;
 
-    color: var(--md-sys-color-on-secondary-container);
+    overflow-y: auto;
 
-    background: var(--md-sys-color-secondary-container);
-    border-radius: 0 0 16px 16px;
+    color: var(--md-sys-color-on-secondary-container);
   }
 
   :focus-visible {
@@ -99,9 +97,9 @@
   fieldset {
     all: unset;
 
-    position: relative;
-
     display: block;
+
+    position: relative;
 
     opacity: 0.8;
 
@@ -113,16 +111,16 @@
   }
 
   .anchor {
-    overflow-anchor: auto;
     height: 1px;
+    overflow-anchor: auto;
   }
 
   code,
   samp,
   p {
     display: block;
-    overflow-anchor: none;
     margin-block: 0.15rem;
+    overflow-anchor: none;
   }
 
   p {
@@ -130,24 +128,24 @@
     justify-content: center;
 
     margin-block-end: 1rem;
+    border-radius: 8px;
+
+    background: var(--md-sys-color-secondary);
     padding: 0.25rem;
 
     color: var(--md-sys-color-on-secondary);
-
-    background: var(--md-sys-color-secondary);
-    border-radius: 8px;
   }
 
   code::before {
-    content: "> ";
     margin-block-end: 0.25rem;
-    font-weight: 900;
+    content: "> ";
     color: var(--md-sys-color-primary);
+    font-weight: 900;
   }
 
   ::selection {
-    color: var(--md-sys-color-background);
     background: var(--md-sys-color-on-background);
+    color: var(--md-sys-color-background);
   }
 
   @keyframes blink {

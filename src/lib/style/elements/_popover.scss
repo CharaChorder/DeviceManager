@@ -3,26 +3,26 @@ $translate: translateY(8px);
 
 [popover] {
   position: absolute;
-  inset: unset;
-
-  margin: 0;
-  padding: 8px;
-  border: 1px solid var(--md-sys-color-outline);
-  border-radius: 8px;
-
-  font-family: "Noto Sans Mono", monospace;
-  font-size: initial;
-  font-weight: initial;
-  color: var(--md-sys-color-on-surface);
 
   opacity: 0;
-  background: var(--md-sys-color-surface);
 
   transition:
     transform $animation-duration ease,
     opacity $animation-duration linear,
     overlay $animation-duration allow-discrete,
     display $animation-duration allow-discrete;
+
+  margin: 0;
+  inset: unset;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 8px;
+  background: var(--md-sys-color-surface);
+  padding: 8px;
+  color: var(--md-sys-color-on-surface);
+  font-weight: initial;
+  font-size: initial;
+
+  font-family: "Noto Sans Mono", monospace;
 
   position-area: bottom span-all;
   position-try-fallbacks:

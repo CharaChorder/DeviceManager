@@ -9,11 +9,11 @@
 
 <style lang="scss">
   ul {
-    margin: 16px;
     display: flex;
     gap: 16px;
-    list-style-type: none;
+    margin: 16px;
     padding: 0;
+    list-style-type: none;
   }
 
   a {

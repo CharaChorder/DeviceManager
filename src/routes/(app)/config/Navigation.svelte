@@ -56,33 +56,32 @@
   nav {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
+    margin-inline: auto;
+    margin-block: 8px;
+    padding-inline: 16px;
 
     width: calc(min(100%, 28cm));
-    margin-block: 8px;
-    margin-inline: auto;
-    padding-inline: 16px;
   }
 
   .icon {
-    cursor: pointer;
+    display: flex;
 
     position: relative;
-
-    display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
-    aspect-ratio: 1;
-    padding: 0;
-
-    color: inherit;
-    text-decoration: none;
-
-    background: transparent;
+    transition: all 250ms ease;
+    cursor: pointer;
     border: none;
     border-radius: 50%;
 
-    transition: all 250ms ease;
+    background: transparent;
+    padding: 0;
+
+    aspect-ratio: 1;
+
+    color: inherit;
+    text-decoration: none;
   }
 
   .actions {
@@ -96,13 +95,13 @@
 
   .profiles {
     display: flex;
-    gap: 2px;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    gap: 2px;
   }
 
   :disabled {
-    pointer-events: none;
     opacity: 0.5;
+    pointer-events: none;
   }
 </style>

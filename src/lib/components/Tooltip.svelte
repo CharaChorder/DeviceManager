@@ -20,8 +20,8 @@
 
     :global(kbd.icon) {
       display: inline-flex;
-      font-size: inherit;
       translate: 0 0.2em;
+      font-size: inherit;
     }
   }
 </style>

@@ -83,9 +83,9 @@
 
 <style lang="scss">
   h1 {
+    color: var(--md-sys-color-error);
     font-size: 2em;
     text-align: center;
-    color: var(--md-sys-color-error);
   }
 
   .buttons {
@@ -100,7 +100,7 @@
 
   a {
     display: inline;
-    color: var(--md-sys-color-primary);
     padding: 0;
+    color: var(--md-sys-color-primary);
   }
 </style>

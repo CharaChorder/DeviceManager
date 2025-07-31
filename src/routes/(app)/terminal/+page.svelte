@@ -8,15 +8,15 @@
 
 <style lang="scss">
   section {
-    contain: size;
-    overflow: hidden;
     display: flex;
-    flex-direction: column;
     flex-grow: 1;
+    flex-direction: column;
     gap: 16px;
+    contain: size;
+    margin-block-end: 48px;
 
     width: calc(min(100%, 28cm));
     height: 100%;
-    margin-block-end: 48px;
+    overflow: hidden;
   }
 </style>

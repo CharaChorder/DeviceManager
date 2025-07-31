@@ -81,15 +81,15 @@
 
 <style lang="scss">
   .sidebar {
-    margin: 8px;
-    padding-inline-end: 8px;
-    width: 64px;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 
     grid-area: sidebar;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 8px;
     border-right: 1px solid var(--md-sys-color-outline);
+    padding-inline-end: 8px;
+    width: 64px;
   }
 
   li {
@@ -104,18 +104,18 @@
     font-size: 12px;
 
     &.wip {
-      color: var(--md-sys-color-error);
       opacity: 0.5;
+      color: var(--md-sys-color-error);
     }
 
     .icon {
       display: flex;
       justify-content: center;
-      font-size: 24px;
-      padding: 8px;
-      border-radius: 8px;
 
       transition: all 250ms ease;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 24px;
     }
 
     > .content {
@@ -132,24 +132,24 @@
       }
 
       .icon {
+        border-radius: 50%;
         background: var(--md-sys-color-primary);
         color: var(--md-sys-color-on-primary);
-        border-radius: 50%;
       }
     }
   }
 
   ul {
-    list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
   ul + ul::before {
-    content: "";
     display: block;
-    height: 1px;
-    background: var(--md-sys-color-outline);
     margin: 16px 0;
+    background: var(--md-sys-color-outline);
+    height: 1px;
+    content: "";
   }
 </style>

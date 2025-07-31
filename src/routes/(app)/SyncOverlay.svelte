@@ -33,8 +33,8 @@
   .container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
   }
 
   div {
@@ -42,10 +42,10 @@
   }
 
   progress {
-    overflow: hidden;
+    border-radius: 4px;
     width: 100%;
     height: 8px;
-    border-radius: 4px;
+    overflow: hidden;
   }
 
   progress::-webkit-progress-bar {
@@ -53,7 +53,7 @@
   }
 
   progress::-webkit-progress-value {
-    background: var(--md-sys-color-primary);
     transition: width 2s ease;
+    background: var(--md-sys-color-primary);
   }
 </style>

@@ -102,21 +102,21 @@
     left: 0;
     transition: opacity 0.1s;
     padding: 16px;
-    padding-left: 0;
     padding-bottom: 5em;
+    padding-left: 0;
   }
 
   .toolbar {
+    display: flex;
     position: fixed;
+    right: 0;
     bottom: 0;
     left: 0;
-    right: 0;
-    padding-right: 16px;
-    display: flex;
     flex-direction: row;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     backdrop-filter: blur(10px);
+    padding-right: 16px;
 
     > div {
       display: flex;

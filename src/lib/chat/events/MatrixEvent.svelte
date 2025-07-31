@@ -255,21 +255,21 @@
   }
 
   .toolbar {
+    display: flex;
     position: absolute;
     top: -26px;
     right: 0;
-    background: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
-    padding: 4px;
-    border-radius: 4px;
-    display: flex;
     z-index: 100;
+    border-radius: 4px;
+    background: var(--md-sys-color-secondary-container);
+    padding: 4px;
+    color: var(--md-sys-color-on-secondary-container);
 
     a,
     button {
-      font-size: 16px;
       width: 24px;
       height: 24px;
+      font-size: 16px;
     }
   }
 
@@ -289,10 +289,10 @@
   }
 
   .dot {
+    animation: bounce 1s infinite;
+    border-radius: 50%;
     width: 6px;
     height: 6px;
-    border-radius: 50%;
-    animation: bounce 1s infinite;
   }
 
   .sender,
@@ -302,10 +302,10 @@
 
   .avatar {
     grid-area: avatar;
+    translate: 0 2px;
+    border-radius: 50%;
     width: 32px;
     height: 32px;
-    border-radius: 50%;
-    translate: 0 2px;
   }
 
   div.avatar {
@@ -322,18 +322,18 @@
   }
 
   .reactions {
-    grid-area: reactions;
-    margin-top: 2px;
     display: flex;
+    grid-area: reactions;
     gap: 4px;
+    margin-top: 2px;
   }
 
   .reaction {
-    border: 1px solid var(--md-sys-color-outline);
-    padding: 6px;
-    border-radius: 6px;
-    height: 24px;
     display: flex;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 6px;
+    padding: 6px;
+    height: 24px;
     font-size: 12px;
 
     > .count {
@@ -344,16 +344,16 @@
   .event {
     display: grid;
     position: relative;
-    padding-inline: 0.5em;
-    margin-inline: 0.5em;
-    padding-block: 0.25em;
-    border-radius: 4px;
+    grid-template-columns: 32px 1fr auto;
 
     grid-template-areas:
       "avatar sender date"
       "avatar content content"
       "none reactions reactions";
-    grid-template-columns: 32px 1fr auto;
+    margin-inline: 0.5em;
+    border-radius: 4px;
+    padding-inline: 0.5em;
+    padding-block: 0.25em;
   }
 
   .content {
@@ -370,12 +370,12 @@
 
   .backdrop {
     position: absolute;
-    inset: 0;
-    z-index: -1;
     opacity: 0.25;
-
-    background: var(--md-sys-color-surface-variant);
+    z-index: -1;
+    inset: 0;
 
     border-radius: 8px;
+
+    background: var(--md-sys-color-surface-variant);
   }
 </style>

@@ -38,21 +38,21 @@
   }
 
   ul {
-    list-style: none;
     padding: 0;
+    list-style: none;
   }
 
   li {
-    height: 2em;
-    overflow: hidden;
     transition:
       height 200ms ease,
       opacity 200ms ease;
+    height: 2em;
+    overflow: hidden;
   }
 
   label {
-    padding: 0;
     opacity: 0.6;
+    padding: 0;
   }
 
   .title {
@@ -64,8 +64,8 @@
       margin-block-end: 0;
 
       em {
-        font-style: normal;
         color: var(--md-sys-color-primary);
+        font-style: normal;
       }
     }
   }
@@ -73,13 +73,13 @@
   time {
     opacity: 0.5;
     &:before {
-      content: "•";
       padding-inline: 0.4ch;
+      content: "•";
     }
   }
 
   div.title:has(input:not(:checked)) ~ ul .pre-release {
-    height: 0;
     opacity: 0;
+    height: 0;
   }
 </style>

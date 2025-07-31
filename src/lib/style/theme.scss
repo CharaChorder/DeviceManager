@@ -11,26 +11,26 @@
 @use "elements/popover";
 
 body {
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  margin: 0;
+
+  background: var(--md-sys-color-background);
 
   width: 100vw;
   height: 100vh;
-  margin: 0;
-
-  font-family: "Noto Sans Mono", monospace;
+  overflow: hidden;
   color: var(--md-sys-color-on-background);
 
-  background: var(--md-sys-color-background);
+  font-family: "Noto Sans Mono", monospace;
 }
 
 main {
-  contain: strict;
   display: flex;
-  flex-direction: column;
   flex-grow: 1;
+  flex-direction: column;
   align-items: center;
+  contain: strict;
 
   padding-inline: 16px;
 }

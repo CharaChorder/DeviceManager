@@ -133,11 +133,11 @@
   .separator {
     display: inline-flex;
 
-    width: 1px;
-    height: 24px;
-
     opacity: 0.2;
     background: currentcolor;
+
+    width: 1px;
+    height: 24px;
   }
 
   button {
@@ -153,12 +153,12 @@
   }
 
   .table-buttons {
-    opacity: 0;
-    transition: opacity 75ms ease;
     position: absolute;
     top: 0;
     right: 0;
     transform: translate(100%, -50%);
+    opacity: 0;
+    transition: opacity 75ms ease;
     background: var(--md-sys-color-surface-variant);
   }
 

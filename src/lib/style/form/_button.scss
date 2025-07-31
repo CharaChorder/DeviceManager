@@ -5,31 +5,30 @@ a {
 a,
 label:has(input),
 button {
-  cursor: pointer;
-
   display: flex;
-  gap: 4px;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  gap: 4px;
+  transition: all 250ms ease;
+  cursor: pointer;
+  border-radius: 32px;
+  padding-inline: 16px;
+  padding-block: 8px;
 
   width: max-content;
   height: 48px;
-  padding-block: 8px;
-  padding-inline: 16px;
+  font-weight: 600;
 
   font-family: inherit;
-  font-weight: 600;
-  border-radius: 32px;
-  transition: all 250ms ease;
 
   @media not (forced-colors: active) {
-    color: currentcolor;
-    background: transparent;
     border: none;
+    background: transparent;
+    color: currentcolor;
 
     &.primary {
-      color: var(--md-sys-color-on-primary);
       background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
     }
   }
 
@@ -40,17 +39,17 @@ button {
 
   &.icon {
     display: inline-flex;
+    border-radius: 50%;
+    padding-inline: 0;
+    padding-block: 0;
 
     aspect-ratio: 1;
-    padding-block: 0;
-    padding-inline: 0;
 
     font-size: 24px;
-    border-radius: 50%;
 
     @media (forced-colors: active) {
-      padding: 2px;
       margin: 2px;
+      padding: 2px;
     }
   }
 
@@ -88,8 +87,8 @@ button {
     }
     &.active,
     &:active {
-      color: SelectedItemText;
       background: SelectedItem;
+      color: SelectedItemText;
     }
   }
 }

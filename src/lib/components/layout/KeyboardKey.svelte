@@ -113,14 +113,14 @@
   $transition: 200ms;
 
   rect {
-    transform-origin: center;
     transform-box: fill-box;
+    transform-origin: center;
   }
 
   path,
   g {
-    transform-origin: top left;
     transform-box: fill-box;
+    transform-origin: top left;
   }
 
   path,
@@ -138,15 +138,15 @@
 
   g.faded,
   g:hover {
-    cursor: default;
     opacity: 0.6;
     transition: opacity #{$transition} ease;
+    cursor: default;
   }
 
   g.highlight,
   g:focus-within {
-    color: var(--md-sys-color-primary);
     outline: none;
+    color: var(--md-sys-color-primary);
 
     > path,
     > rect {

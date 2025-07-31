@@ -55,8 +55,8 @@
 
   .layout {
     display: flex;
-    height: 100%;
     width: 100%;
+    height: 100%;
   }
 
   hr {
@@ -65,20 +65,20 @@
   }
 
   ul {
-    list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
   button,
   a {
     display: flex;
-    align-items: center;
     justify-content: center;
-    overflow: hidden;
+    align-items: center;
+    background: var(--md-sys-color-surface-variant);
     width: 56px;
     height: 56px;
-    background: var(--md-sys-color-surface-variant);
+    overflow: hidden;
   }
 
   .chats {
@@ -86,7 +86,7 @@
   }
 
   .space {
-    font-size: 20px;
     margin-bottom: 8px;
+    font-size: 20px;
   }
 </style>

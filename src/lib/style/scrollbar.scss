@@ -1,14 +1,14 @@
 @media not (forced-colors: active) {
   ::-webkit-scrollbar {
-    width: 8px;
-    background: transparent;
     border-radius: 4px;
+    background: transparent;
+    width: 8px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-color, white);
-    border-radius: 4px;
     transition: all 250ms ease;
+    border-radius: 4px;
+    background: var(--scrollbar-color, white);
 
     &:hover {
       filter: brightness(120%);

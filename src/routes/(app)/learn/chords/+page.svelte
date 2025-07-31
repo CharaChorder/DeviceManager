@@ -186,22 +186,21 @@
   @use "sass:math";
 
   input {
-    background: none;
-    font: inherit;
-    color: inherit;
     border: none;
+    background: none;
     width: 5ch;
+    color: inherit;
+    font: inherit;
     text-align: right;
   }
 
   div {
-    min-width: 20ch;
-    padding: 1ch;
-
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    padding: 1ch;
+    min-width: 20ch;
   }
 
   .stats {

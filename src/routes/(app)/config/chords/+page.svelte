@@ -360,8 +360,8 @@
 <style lang="scss">
   .search-container {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
   }
 
   .paginator {
@@ -386,14 +386,14 @@
   textarea {
     flex: 1;
     transition: outline-color 250ms ease;
-    background: none;
-    color: inherit;
-    border: 1px dashed var(--md-sys-color-outline);
+    margin: 2px;
     outline: 2px solid transparent;
     outline-offset: -1px;
-    margin: 2px;
-    padding: 8px;
+    border: 1px dashed var(--md-sys-color-outline);
     border-radius: 4px;
+    background: none;
+    padding: 8px;
+    color: inherit;
 
     &:focus {
       outline-color: var(--md-sys-color-primary);
@@ -413,34 +413,33 @@
   }
 
   input[type="search"] {
-    width: 512px;
+    transition: all 250ms ease;
     margin-block-start: 16px;
-    padding-block: 8px;
-    padding-inline: 16px;
-
-    font-size: 16px;
-    color: inherit;
-
-    background: none;
     border: 0 solid var(--md-sys-color-surface-variant);
     border-bottom-width: 1px;
 
-    transition: all 250ms ease;
+    background: none;
+    padding-inline: 16px;
+    padding-block: 8px;
+    width: 512px;
+    color: inherit;
+
+    font-size: 16px;
 
     @media (prefers-contrast: more) {
-      border-color: var(--md-sys-color-outline);
       border-style: dashed;
+      border-color: var(--md-sys-color-outline);
     }
 
     &::placeholder {
-      color: var(--md-sys-color-on-surface-variant);
       opacity: 0.8;
+      color: var(--md-sys-color-on-surface-variant);
     }
 
     &:focus {
-      border-color: var(--md-sys-color-primary);
-      border-style: solid;
       outline: none;
+      border-style: solid;
+      border-color: var(--md-sys-color-primary);
     }
 
     &.loading {
@@ -449,25 +448,25 @@
   }
 
   section {
-    position: relative;
     display: flex;
-
-    overflow: hidden;
-
-    height: 100%;
-    padding-inline: 8px;
+    position: relative;
 
     border-radius: 16px;
+    padding-inline: 8px;
+
+    height: 100%;
+
+    overflow: hidden;
   }
 
   .results {
-    height: 100%;
     min-width: min(90vw, 16.5cm);
+    height: 100%;
   }
 
   table {
+    transition: all 1s ease;
     height: fit-content;
     overflow-y: hidden;
-    transition: all 1s ease;
   }
 </style>

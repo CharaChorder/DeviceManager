@@ -113,15 +113,15 @@
     position: absolute;
     top: 0;
     left: 0;
-    font-family: inherit;
-    font-size: inherit;
     color: inherit;
+    font-size: inherit;
+    font-family: inherit;
     user-select: none;
   }
 
   svg > :global(text) {
-    font-family: inherit;
     font-size: inherit;
+    font-family: inherit;
     fill: currentColor;
     dominant-baseline: middle;
   }

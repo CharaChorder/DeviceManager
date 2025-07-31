@@ -50,8 +50,8 @@
   }
 
   button.icon {
-    font-size: 20px;
     opacity: 0.5;
+    font-size: 20px;
   }
 
   form {
@@ -62,12 +62,12 @@
   }
 
   input[type="text"] {
-    color: inherit;
-    font-family: inherit;
-    background: none;
     border: none;
     border-bottom: 1px solid transparent;
+    background: none;
     width: fit-content;
+    color: inherit;
+    font-family: inherit;
 
     &:focus {
       outline: none;
@@ -79,8 +79,8 @@
     color: var(--md-sys-color-error);
 
     & + button {
-      color: var(--md-sys-color-error);
       opacity: 1;
+      color: var(--md-sys-color-error);
     }
   }
 </style>

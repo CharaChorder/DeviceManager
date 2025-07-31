@@ -83,15 +83,15 @@
   $transition: 200ms;
 
   text {
-    will-change: translate, scale;
-    user-select: none;
-    transform-origin: center;
     transform-box: fill-box;
+    transform-origin: center;
     transition:
       fill #{$focus-transition} ease,
       opacity #{$transition} ease,
       translate #{$transition} ease,
       scale #{$transition} ease;
+    will-change: translate, scale;
+    user-select: none;
 
     @media (prefers-contrast: more) {
       --inactive-opacity: 0.8;

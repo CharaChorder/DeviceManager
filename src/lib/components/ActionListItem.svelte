@@ -48,33 +48,33 @@
 <style lang="scss">
   button {
     display: flex;
-    gap: 4px;
     align-items: center;
+    gap: 4px;
+    margin: 0;
+    border-radius: 8px;
+    padding: 8px;
 
     width: 100%;
     height: auto;
-    margin: 0;
-    padding: 8px;
 
     font-family: "Noto Sans Mono", monospace;
-    border-radius: 8px;
 
     @media not (forced-colors: active) {
-      color: inherit;
-
-      background: transparent;
       border: none;
 
+      background: transparent;
+      color: inherit;
+
       &:focus-visible {
-        color: var(--md-sys-color-on-surface-variant);
-        background: var(--md-sys-color-surface-variant);
         outline: none;
+        background: var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface-variant);
       }
     }
 
     @media (forced-colors: active) {
-      border: 1px solid ButtonBorder;
       margin-block: 4px;
+      border: 1px solid ButtonBorder;
 
       &:hover {
         color: ActiveText;
@@ -86,8 +86,8 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    align-items: flex-start;
     justify-content: flex-start;
+    align-items: flex-start;
 
     text-align: start;
   }

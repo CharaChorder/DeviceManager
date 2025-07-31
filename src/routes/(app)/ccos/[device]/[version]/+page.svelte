@@ -353,8 +353,8 @@
   }
 
   .changelog ul {
-    list-style: none;
     padding-inline-start: 0em;
+    list-style: none;
   }
 
   .changelog li {
@@ -364,11 +364,11 @@
 
   .changelog b {
     display: inline-block;
-    color: var(--md-sys-color-on-tertiary-container);
+    translate: -0.5em -0.2em;
+    border-radius: 8px;
     background: var(--md-sys-color-tertiary-container);
     padding: 0.2em 0.5em;
-    border-radius: 8px;
-    translate: -0.5em -0.2em;
+    color: var(--md-sys-color-on-tertiary-container);
   }
 
   pre {
@@ -376,8 +376,8 @@
   }
 
   .unsafe-opt-in {
-    margin-block: 1em;
     opacity: 0.6;
+    margin-block: 1em;
     font-size: 0.7em;
 
     & + .unsafe-updates {
@@ -425,22 +425,22 @@
 
   button.inline-button {
     display: inline;
-    padding: 0;
     margin: 0;
+    padding: 0;
     height: unset;
-    font-size: inherit;
     color: var(--md-sys-color-primary);
+    font-size: inherit;
 
     .icon {
-      font-size: 1.2em;
       translate: 0 0.1em;
       padding-inline-end: 0.2em;
+      font-size: 1.2em;
     }
   }
 
   .icon.ok {
-    font-size: 1.2em;
     translate: 0 0.1em;
+    font-size: 1.2em;
     --icon-fill: 1;
   }
 
@@ -449,17 +449,7 @@
   }
 
   button.update-button {
-    overflow: hidden;
     position: relative;
-    height: 42px;
-
-    border: 2px solid currentcolor;
-    border-radius: 8px;
-
-    outline: 2px dashed currentcolor;
-    outline-offset: 4px;
-
-    background: var(--md-sys-color-background);
     transition:
       border 200ms ease,
       color 200ms ease;
@@ -467,9 +457,19 @@
     margin: 6px;
     margin-block: 16px;
 
+    outline: 2px dashed currentcolor;
+    outline-offset: 4px;
+
+    border: 2px solid currentcolor;
+    border-radius: 8px;
+
+    background: var(--md-sys-color-background);
+    height: 42px;
+    overflow: hidden;
+
     &.primary {
-      color: var(--md-sys-color-primary);
       background: none;
+      color: var(--md-sys-color-primary);
     }
 
     &.progress,
@@ -478,34 +478,34 @@
     }
 
     &.working::before {
-      z-index: -1;
       position: absolute;
+      z-index: -1;
+      border-radius: 8px;
       background: var(--md-sys-color-background);
       width: calc(100% - 4px);
       height: calc(100% - 4px);
-      border-radius: 8px;
       content: "";
     }
 
     &.working::after {
-      z-index: -2;
       position: absolute;
-      content: "";
-      background: var(--md-sys-color-primary);
+      z-index: -2;
       animation: rotate 1s ease-out forwards infinite;
-      height: 30%;
+      background: var(--md-sys-color-primary);
       width: 120%;
+      height: 30%;
+      content: "";
     }
 
     &.progress::after {
-      z-index: -2;
       position: absolute;
       left: 0;
-      content: "";
-      background: var(--md-sys-color-primary);
       opacity: 0.2;
-      height: 100%;
+      z-index: -2;
+      background: var(--md-sys-color-primary);
       width: var(--progress);
+      height: 100%;
+      content: "";
     }
   }
 

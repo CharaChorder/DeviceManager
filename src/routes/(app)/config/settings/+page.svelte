@@ -179,17 +179,17 @@
   }
 
   .content {
+    max-width: 20cm;
     overflow-y: auto;
     scroll-behavior: smooth;
-    max-width: 20cm;
   }
 
   legend {
-    color: var(--md-sys-color-primary);
-    font-size: 32px;
-    font-weight: bold;
     position: relative;
     padding: 0;
+    color: var(--md-sys-color-primary);
+    font-weight: bold;
+    font-size: 32px;
   }
 
   input[type="checkbox"] {
@@ -198,31 +198,31 @@
 
   fieldset {
     display: flex;
-    flex-direction: column;
     position: relative;
+    flex-direction: column;
+    margin-inline: 0;
+    margin-block-end: 32px;
+    border: none;
 
     width: 100%;
-    margin-inline: 0;
-    border: none;
-    margin-block-end: 32px;
 
     > p {
       padding-inline-start: 16px;
     }
 
     > label {
-      appearance: none;
-      position: relative;
       display: flex;
+      position: relative;
       flex-wrap: wrap;
-      align-items: center;
       justify-content: flex-start;
-      height: auto;
-      font-weight: normal;
-      padding: 8px;
-      width: fit-content;
+      align-items: center;
+      appearance: none;
 
       margin-block: 4px;
+      padding: 8px;
+      width: fit-content;
+      height: auto;
+      font-weight: normal;
 
       font-size: 14px;
 
@@ -235,11 +235,11 @@
       }
 
       &.enable-item {
-        background: var(--md-sys-color-surface-variant);
-        color: var(--md-sys-color-on-surface-variant);
         margin-inline-start: 8px;
-        padding-inline-end: 16px;
+        background: var(--md-sys-color-surface-variant);
         padding-inline-start: 8px;
+        padding-inline-end: 16px;
+        color: var(--md-sys-color-on-surface-variant);
       }
     }
 
@@ -251,40 +251,40 @@
     .description {
       width: 100%;
       font-size: 12px;
-      white-space: normal;
       text-wrap: wrap;
+      white-space: normal;
     }
 
     .unit {
-      overflow: hidden;
       display: flex;
-      gap: 4px;
-      align-items: center;
       justify-content: flex-start;
-
-      width: 67px;
-      padding-inline-end: auto;
-
-      font-size: 12px;
-      font-weight: bold;
+      align-items: center;
+      gap: 4px;
+      border-radius: 16px;
 
       background: var(--md-sys-color-secondary-container);
-      border-radius: 16px;
+      padding-inline-end: auto;
+
+      width: 67px;
+      overflow: hidden;
+      font-weight: bold;
+
+      font-size: 12px;
     }
 
     input[type="number"] {
       display: flex;
+      border: none;
+
+      background: var(--md-sys-color-secondary);
+      padding-block: 4px;
 
       width: 5ch;
       height: 100%;
-      padding-block: 4px;
+      color: var(--md-sys-color-on-secondary);
 
       font-family: "Noto Sans Mono", monospace;
-      color: var(--md-sys-color-on-secondary);
       text-align: end;
-
-      background: var(--md-sys-color-secondary);
-      border: none;
 
       &::-webkit-inner-spin-button {
         display: none;
@@ -302,10 +302,10 @@
 
   select {
     appearance: none;
-    background: var(--md-sys-color-secondary);
     border: none;
-    padding: 4px 8px;
     border-radius: 8px;
+    background: var(--md-sys-color-secondary);
+    padding: 4px 8px;
     font: inherit;
     font-size: 12px;
   }
@@ -316,10 +316,10 @@
 
     &::before {
       position: absolute;
-      font-size: 16px;
       top: 0.5em;
       right: 0.25em;
       content: "•";
+      font-size: 16px;
     }
   }
 

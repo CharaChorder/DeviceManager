@@ -175,9 +175,9 @@
 <style lang="scss">
   .sync-box {
     display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
+    justify-content: center;
+    align-items: center;
 
     button {
       text-wrap: nowrap;
@@ -186,14 +186,14 @@
 
   progress {
     position: absolute;
-    z-index: -1;
+    right: 16px;
     bottom: 0;
     left: 16px;
-    right: 16px;
-    overflow: hidden;
+    z-index: -1;
+    border-radius: 4px;
     width: calc(100% - 32px);
     height: 8px;
-    border-radius: 4px;
+    overflow: hidden;
   }
 
   progress::-webkit-progress-bar {
@@ -205,31 +205,31 @@
   }
 
   .warning {
-    color: var(--md-sys-color-error);
-    gap: 8px;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--md-sys-color-error);
   }
 
   input[type="color"] {
-    cursor: pointer;
-
-    overflow: hidden;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+    border: none;
+    border-radius: 50%;
+
+    background: transparent;
+    padding: 0;
 
     inline-size: 20px;
     block-size: 20px;
-    margin: 0;
-    padding: 0;
+
+    overflow: hidden;
 
     color: inherit;
-
-    background: transparent;
-    border: none;
-    border-radius: 50%;
 
     &::-webkit-color-swatch-wrapper {
       padding: 0;
@@ -242,16 +242,16 @@
 
   footer {
     display: grid;
-    align-items: center;
-    justify-content: center;
     grid-template-columns: 1fr auto 1fr;
+    justify-content: center;
+    align-items: center;
 
-    width: 100%;
+    opacity: 0.4;
     padding: 8px;
     padding-inline-end: 16px;
     padding-block-start: 0;
 
-    opacity: 0.4;
+    width: 100%;
 
     @media (prefers-contrast: more) {
       opacity: 0.8;
@@ -264,8 +264,8 @@
 
   ul {
     display: flex;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
 
     margin: 0;
     padding: 0;
@@ -288,13 +288,13 @@
 
   a {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+
+    padding-inline: 12px;
 
     font-size: 12px;
     text-decoration: none;
-
-    padding-inline: 12px;
   }
 
   .icon {

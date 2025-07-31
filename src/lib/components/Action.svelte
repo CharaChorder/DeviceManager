@@ -20,17 +20,17 @@
 </script>
 
 {#snippet popoverSnippet()}
-<div bind:this={popover} popover="hint">
-&lt;{info.id ?? `0x${info.code.toString(16)}`}&gt;
-{#if info.title} 
-{info.title}
-{/if}
-  {#if info.variant === "left"}
-    (Left)
-  {:else if info.variant === "right"}
-    (Right)
-  {/if}
-</div>
+  <div bind:this={popover} popover="hint">
+    &lt;{info.id ?? `0x${info.code.toString(16)}`}&gt;
+    {#if info.title}
+      {info.title}
+    {/if}
+    {#if info.variant === "left"}
+      (Left)
+    {:else if info.variant === "right"}
+      (Right)
+    {/if}
+  </div>
 {/snippet}
 
 {#if display === "keys"}
@@ -50,15 +50,17 @@
 {:else if display === "inline-keys"}
   {#if !info.icon && dynamicMapping?.length === 1}
     <span
-    {@attach tooltip(popover)}
+      {@attach tooltip(popover)}
       class:left={info.variant === "left"}
-      class:right={info.variant === "right"}>{dynamicMapping}{@render popoverSnippet()}</span
+      class:right={info.variant === "right"}
+      >{dynamicMapping}{@render popoverSnippet()}</span
     >
   {:else if !info.icon && info.id?.length === 1}
     <span
-    {@attach tooltip(popover)}
+      {@attach tooltip(popover)}
       class:left={info.variant === "left"}
-      class:right={info.variant === "right"}>{info.id}{@render popoverSnippet()}</span
+      class:right={info.variant === "right"}
+      >{info.id}{@render popoverSnippet()}</span
     >
   {:else}
     <kbd
@@ -66,7 +68,7 @@
       class:left={info.variant === "left"}
       class:right={info.variant === "right"}
       class:icon={!!info.icon}
-    {@attach tooltip(popover)}
+      {@attach tooltip(popover)}
     >
       {dynamicMapping ??
         info.icon ??
@@ -79,9 +81,9 @@
 
 <style lang="scss">
   kbd:not(.inline-kbd) {
-    height: 24px;
-    padding-block: auto;
     transition: color 250ms ease;
+    padding-block: auto;
+    height: 24px;
   }
 
   .left {

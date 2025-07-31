@@ -3,57 +3,55 @@ $border: 2px;
 $height: 1.5em;
 
 label:has(input[type="checkbox"]) {
-  cursor: pointer;
-  user-select: none;
-
   display: flex;
-  gap: $padding;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  gap: $padding;
+  cursor: pointer;
 
   font-size: 12px;
+  user-select: none;
 
   input[type="checkbox"] {
     $width: calc($height * (5 / 3));
     $diameter: calc($height - ((2 * $padding) + (2 * $border)));
     $radius: calc($diameter / 2);
-
-    cursor: pointer;
+    display: flex;
 
     position: relative;
 
-    overflow: hidden;
-    display: flex;
-
-    width: $width;
-    height: $height;
-    border-radius: calc($height / 2);
-
-    font-size: inherit;
-    color: inherit;
+    cursor: pointer;
 
     outline: $border solid currentcolor;
     outline-offset: calc(-1 * $border);
+    border-radius: calc($height / 2);
+
+    width: $width;
+    height: $height;
+
+    overflow: hidden;
+    color: inherit;
+
+    font-size: inherit;
 
     &::after {
-      content: "";
+      display: block;
 
       position: absolute;
       top: calc($padding + $border);
       left: calc($padding + $border);
 
-      display: block;
-
-      width: $diameter;
-      height: $diameter;
-      border-radius: calc($radius);
+      transition: all 250ms ease;
 
       outline-color: inherit;
       outline-style: solid;
       outline-width: $radius;
       outline-offset: calc(-1 * $radius);
+      border-radius: calc($radius);
 
-      transition: all 250ms ease;
+      width: $diameter;
+      height: $diameter;
+      content: "";
     }
 
     &:checked::after {
@@ -73,14 +71,8 @@ label:has(input[type="checkbox"]) {
     }
 
     > span.icon {
-      position: relative;
-
       display: block;
-
-      width: 1em;
-      height: 1em;
-
-      font-size: inherit;
+      position: relative;
 
       clip-path: polygon(
         0% $side,
@@ -101,22 +93,26 @@ label:has(input[type="checkbox"]) {
 
       transition: all 250ms ease;
 
+      width: 1em;
+      height: 1em;
+
+      font-size: inherit;
+
       &::before {
-        content: "";
+        display: block;
 
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, 0) rotate(45deg);
 
-        display: block;
-
-        width: calc(100% * sqrt(2));
-        height: $line-width;
+        transition: all 250ms ease;
 
         background-color: currentcolor;
 
-        transition: all 250ms ease;
+        width: calc(100% * sqrt(2));
+        height: $line-width;
+        content: "";
       }
     }
 

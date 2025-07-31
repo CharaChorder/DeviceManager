@@ -76,8 +76,8 @@
   .container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
     width: 100%;
     height: 100%;
@@ -85,24 +85,23 @@
   }
 
   fieldset {
-    position: relative;
-
     display: flex;
-    align-items: center;
+    position: relative;
     justify-content: center;
-
-    padding: 8px;
+    align-items: center;
 
     border: none;
+
+    padding: 8px;
   }
 
   .layers {
     display: flex;
-    align-items: center;
     justify-content: center;
-
-    margin-inline: auto;
+    align-items: center;
 
     gap: 2px;
+
+    margin-inline: auto;
   }
 </style>

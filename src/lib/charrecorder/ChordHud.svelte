@@ -83,24 +83,24 @@
 
 <style>
   section {
+    display: grid;
     position: relative;
     margin: 1em;
     margin-bottom: 0;
-    display: grid;
     height: 3em;
     font-size: 2em;
   }
 
   .rating {
-    font-weight: bold;
     font-style: italic;
+    font-weight: bold;
     text-transform: uppercase;
   }
 
   .tile {
+    border-radius: 0.1em;
     width: 100%;
     height: 0.2em;
-    border-radius: 0.1em;
   }
 
   kbd {
@@ -112,19 +112,19 @@
   }
 
   .chord {
-    will-change: transform, opacity, scale;
+    display: flex;
     position: absolute;
     top: 0;
     left: 50%;
-    display: flex;
     flex-direction: column;
-    margin-inline-end: 1em;
-    padding-inline: 0.1em;
     justify-content: center;
     align-items: center;
     transition:
       opacity 0.3s ease,
       translate 0.3s ease,
       scale 0.3s ease;
+    will-change: transform, opacity, scale;
+    margin-inline-end: 1em;
+    padding-inline: 0.1em;
   }
 </style>

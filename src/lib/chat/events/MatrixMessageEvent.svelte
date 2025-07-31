@@ -39,9 +39,9 @@
   }
 
   img {
+    border-radius: 8px;
     max-width: 100%;
     max-height: 16em;
-    border-radius: 8px;
   }
 
   .content {

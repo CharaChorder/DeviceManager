@@ -238,23 +238,22 @@
   }
 
   button {
-    cursor: pointer;
-
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
 
-    width: min-content;
+    background: var(--md-sys-color-primary);
     padding-inline-start: 0;
     padding-inline-end: 8px;
 
-    font-size: 14px;
-    font-weight: bold;
+    width: min-content;
     color: var(--md-sys-color-on-primary);
+    font-weight: bold;
 
-    background: var(--md-sys-color-primary);
-    border: none;
-    border-radius: 4px;
+    font-size: 14px;
   }
 
   .editor-root {

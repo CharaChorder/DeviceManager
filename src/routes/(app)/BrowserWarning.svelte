@@ -26,16 +26,16 @@
   dialog {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    border: none;
+
+    background: var(--md-sys-color-error);
 
     width: 100vw;
     height: 100vh;
 
     color: var(--md-sys-color-on-error);
-
-    background: var(--md-sys-color-error);
-    border: none;
 
     > * {
       max-width: 20cm;
@@ -54,8 +54,8 @@
 
   div > p {
     display: flex;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
     list-style: none;
   }
 

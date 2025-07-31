@@ -178,17 +178,17 @@
   $border-radius: 16px;
 
   .input {
-    border: 1px solid var(--md-sys-color-outline);
     flex-grow: 1;
     cursor: text;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: $border-radius;
     padding: 0.5em;
     font-size: 1rem;
-    border-radius: $border-radius;
 
     text-wrap: wrap;
     white-space: pre-wrap;
-    overflow-wrap: break-word;
     word-break: break-word;
+    overflow-wrap: break-word;
 
     &:focus-visible {
       outline: none;
@@ -197,9 +197,9 @@
 
   .input-box {
     display: flex;
+    flex-shrink: 0;
     gap: 4px;
     padding-block: 8px;
-    flex-shrink: 0;
     width: 100%;
   }
 
@@ -209,23 +209,23 @@
   }
 
   .timeline {
-    contain: content;
-    height: auto;
     display: flex;
-    flex-direction: column-reverse;
-    overflow-y: scroll;
-    overflow-x: hidden;
     flex-grow: 1;
+    flex-direction: column-reverse;
+    contain: content;
     width: 100%;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
   }
 
   section {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     justify-content: flex-end;
 
     width: 100%;
     height: 100%;
+    overflow: hidden;
   }
 </style>

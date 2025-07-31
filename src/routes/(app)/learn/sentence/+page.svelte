@@ -526,9 +526,9 @@
   }
 
   .wpm {
-    width: min-content;
     display: grid;
     transition: scale 0.2s ease;
+    width: min-content;
 
     * {
       grid-row: 1;
@@ -538,25 +538,25 @@
   .finish {
     display: grid;
     grid-template-rows: repeat(2, 1fr);
-    font-weight: bold;
-    justify-items: center;
     align-items: center;
+    justify-items: center;
+    font-weight: bold;
   }
 
   .sentence {
     display: grid;
-    width: min-content;
-    gap: 4px 1ch;
     grid-template-rows: repeat(4, auto);
+    gap: 4px 1ch;
     margin-block: 1rem;
+    width: min-content;
 
     .word,
     .arch {
       transition: opacity 0.2s ease;
 
       &.mastered {
-        color: var(--md-sys-color-primary);
         border-color: var(--md-sys-color-primary);
+        color: var(--md-sys-color-primary);
       }
     }
 
@@ -568,40 +568,40 @@
 
   .progress {
     position: relative;
-    height: 1rem;
-    width: auto;
-    background: var(--md-sys-color-outline-variant);
-    border: none;
-    overflow: hidden;
     grid-row: 2;
+    border: none;
+    background: var(--md-sys-color-outline-variant);
+    width: auto;
+    height: 1rem;
+    overflow: hidden;
 
     &::before,
     &::after {
-      position: absolute;
-      content: "";
       display: block;
-      height: 100%;
-      width: 100%;
+      position: absolute;
       transition: transform 0.2s;
+      width: 100%;
+      height: 100%;
+      content: "";
     }
 
     &::before {
-      background: var(--md-sys-color-outline);
       transform: translateX(var(--progress));
+      background: var(--md-sys-color-outline);
     }
 
     &::after {
-      background: var(--md-sys-color-primary);
       transform: translateX(var(--mastered));
+      background: var(--md-sys-color-primary);
     }
   }
 
   .threshold {
-    width: auto;
+    grid-row: 1;
     justify-self: center;
     opacity: 0.5;
     transition: opacity 0.2s;
-    grid-row: 1;
+    width: auto;
 
     &.mastered,
     &.active {
@@ -626,15 +626,15 @@
     display: flex;
     grid-row: 1;
     grid-column: 1;
-    font-size: 1.5rem;
-    padding: 1rem;
-    max-width: 16cm;
-    outline: 2px dashed transparent;
-    border-radius: 0.25rem;
-    margin-block: 1rem;
     transition:
       outline 0.2s ease,
       border-radius 0.2s ease;
+    margin-block: 1rem;
+    outline: 2px dashed transparent;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    max-width: 16cm;
+    font-size: 1.5rem;
   }
 
   .input-section:focus-within {

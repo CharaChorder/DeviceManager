@@ -189,18 +189,17 @@
     border: none;
 
     label {
-      height: unset;
-      padding-block: 2px;
+      border: 1px solid currentcolor;
+      border-radius: 6px;
       padding-inline: 4px;
+      padding-block: 2px;
+      height: unset;
 
       font-size: 14px;
 
-      border: 1px solid currentcolor;
-      border-radius: 6px;
-
       &:has(:checked) {
-        color: var(--md-sys-color-on-secondary);
         background: var(--md-sys-color-secondary);
+        color: var(--md-sys-color-on-secondary);
       }
 
       input {
@@ -211,34 +210,33 @@
 
   dialog {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
-    width: 100%;
-    height: 100%;
+    border: none;
 
     background: rgba(0 0 0 / 60%);
 
-    border: none;
+    width: 100%;
+    height: 100%;
   }
 
   aside {
-    pointer-events: none;
+    opacity: 0.4;
 
     margin: 8px;
-
-    opacity: 0.4;
     border: 1px dashed var(--md-sys-color-outline);
     border-radius: 8px;
+    pointer-events: none;
 
     > h3 {
-      width: fit-content;
+      margin-inline-start: 16px;
       margin-block-start: -13px;
       margin-block-end: 0;
-      margin-inline-start: 16px;
-      padding-inline: 8px;
 
       background: var(--md-sys-color-background);
+      padding-inline: 8px;
+      width: fit-content;
     }
 
     @media (prefers-contrast: more) {
@@ -253,26 +251,26 @@
 
   .search-row {
     display: flex;
-    gap: 4px;
     align-items: center;
+    gap: 4px;
     margin-inline: 16px;
   }
 
   .content {
-    position: relative;
-    transform-origin: top left;
-
-    overflow: hidden;
     display: flex;
+    position: relative;
     flex-direction: column;
+    transform-origin: top left;
+    border-radius: 16px;
+
+    background: var(--md-sys-color-background);
 
     width: calc(min(30cm, 90%));
     height: calc(min(100% - 128px, 90%));
 
-    color: var(--md-sys-color-on-background);
+    overflow: hidden;
 
-    background: var(--md-sys-color-background);
-    border-radius: 16px;
+    color: var(--md-sys-color-on-background);
 
     @media (forced-colors: active) {
       border: 1px solid CanvasText;
@@ -280,39 +278,38 @@
   }
 
   input[type="search"] {
-    width: 100%;
-    height: 64px;
+    transition: all 250ms ease;
     margin-block-end: 8px;
-    padding-inline: 16px;
-
-    font-family: inherit;
-    font-size: 16px;
-    color: currentcolor;
-
-    background: none;
     border: none;
     border-bottom: 1px solid var(--md-sys-color-surface-variant);
 
-    transition: all 250ms ease;
+    background: none;
+    padding-inline: 16px;
+    width: 100%;
+    height: 64px;
+    color: currentcolor;
+    font-size: 16px;
+
+    font-family: inherit;
 
     &:focus {
-      border-bottom: 1px solid var(--md-sys-color-primary);
       outline: none;
+      border-bottom: 1px solid var(--md-sys-color-primary);
     }
   }
 
   ul {
     --scrollbar-color: var(--md-sys-color-surface-variant);
 
-    scrollbar-gutter: both-edges stable;
-
-    overflow-y: auto;
-
     box-sizing: border-box;
-    height: 100%;
     margin: 0;
     padding: 0;
     padding-inline: 4px;
+    height: 100%;
+
+    overflow-y: auto;
+
+    scrollbar-gutter: both-edges stable;
   }
 
   li {
@@ -322,27 +319,27 @@
   .exact {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-
-    width: 100%;
+    align-items: center;
     margin-block-start: 8px;
 
     border: 1px solid var(--md-sys-color-primary);
     border-radius: 8px;
 
+    width: 100%;
+
     > i {
       display: flex;
-      gap: 4px;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      gap: 4px;
+      border-radius: 0 0 8px 8px;
+
+      background: var(--md-sys-color-primary);
 
       padding-inline: 6px;
 
       color: var(--md-sys-color-on-primary);
-
-      background: var(--md-sys-color-primary);
-      border-radius: 0 0 8px 8px;
     }
 
     @media (forced-colors: active) {

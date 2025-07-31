@@ -1,10 +1,10 @@
 $padding: 16px;
 
 .tippy-box[data-theme~="surface-variant"] {
-  color: var(--md-sys-color-on-surface-variant);
-  background-color: var(--md-sys-color-surface-variant);
   filter: drop-shadow(0 0 12px #000a);
   border-radius: calc(24px + $padding);
+  background-color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
 
   .tippy-content {
     padding: $padding;
@@ -24,10 +24,10 @@ $padding: 16px;
   }
 
   @media (forced-colors: active) {
-    color: CanvasText;
-    background-color: Canvas;
     filter: none;
     border: 1px solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
 
     > .tippy-arrow {
       display: none;
@@ -36,16 +36,16 @@ $padding: 16px;
 }
 
 .tippy-box[data-theme~="tooltip"] {
-  color: var(--md-sys-color-on-background);
-  background-color: var(--md-sys-color-background);
   border: 1px solid var(--md-sys-color-outline);
   border-radius: 8px;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
 }
 
 .tippy-box[data-theme~="search-completion"] {
-  overflow: hidden;
   filter: none;
   border-radius: 0 0 16px 16px;
+  overflow: hidden;
 
   .tippy-content {
     padding: 0;

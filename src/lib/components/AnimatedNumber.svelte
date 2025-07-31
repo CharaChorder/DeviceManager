@@ -29,15 +29,15 @@
 
 <style lang="scss">
   .digits {
-    position: relative;
     display: inline-block;
+    position: relative;
     transition: width 500ms ease;
   }
 
   .digit-wrapper {
     display: inline-grid;
-    height: 1em;
     width: 1ch;
+    height: 1em;
   }
 
   .digit {

@@ -193,19 +193,19 @@
 <style lang="scss">
   .click-me {
     display: flex;
-    align-items: center;
     justify-content: center;
-    height: fit-content;
+    align-items: center;
     margin-inline: 8px;
-    padding-block: 2px;
-    padding-inline-start: 8px;
-    padding-inline-end: 12px;
-    font-family: inherit;
-    font-weight: bold;
-    color: var(--md-sys-color-primary);
-    border: 2px solid var(--md-sys-color-primary);
-    border-radius: 18px;
     outline: 2px dashed var(--md-sys-color-primary);
     outline-offset: 2px;
+    border: 2px solid var(--md-sys-color-primary);
+    border-radius: 18px;
+    padding-inline-start: 8px;
+    padding-inline-end: 12px;
+    padding-block: 2px;
+    height: fit-content;
+    color: var(--md-sys-color-primary);
+    font-weight: bold;
+    font-family: inherit;
   }
 </style>
