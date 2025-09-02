@@ -29,6 +29,7 @@ const KEY_COUNTS = {
   X: 256,
   M4G: 90,
   M4GR: 90,
+  T4G: 7,
 } as const;
 
 if (

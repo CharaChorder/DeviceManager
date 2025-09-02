@@ -32,6 +32,10 @@
       import("$lib/assets/layouts/m4gr.yml").then(
         (it) => it.default as VisualLayout,
       ),
+    T4G: () =>
+      import("$lib/assets/layouts/t4g.yml").then(
+        (it) => it.default as VisualLayout,
+      ),
   };
 </script>
 
