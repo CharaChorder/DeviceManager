@@ -2,6 +2,7 @@
   import { downloadBackup } from "$lib/backup/backup";
   import { initSerial, serialPort } from "$lib/serial/connection";
   import { fade, slide } from "svelte/transition";
+  import { lt as semverLt } from "semver";
   import type { LoaderOptions, ESPLoader } from "esptool-js";
 
   let { data } = $props();
@@ -9,6 +10,10 @@
   let working = $state(false);
   let success = $state(false);
   let error = $state<Error | undefined>(undefined);
+
+  let isTooOld = $derived(
+    $serialPort ? semverLt($serialPort.version, "2.0.0") : false,
+  );
 
   let unsafeUpdate = $state(false);
 
@@ -202,10 +207,18 @@
         style:--progress="{progress * 100}%"
         class:primary={!buttonError}
         class:error={buttonError}
-        disabled={working || $serialPort === undefined || !isCorrectDevice}
+        disabled={isTooOld ||
+          working ||
+          $serialPort === undefined ||
+          !isCorrectDevice}
         onclick={update}>Apply Update</button
       >
-      {#if $serialPort && isCorrectDevice}
+      {#if isTooOld}
+        <div class="error" transition:slide>
+          Your device's firmware is too old to be updated via OTA. Follow the
+          instruction below to update it manually.
+        </div>
+      {:else if $serialPort && isCorrectDevice}
         <div transition:slide>
           Your
           <b
@@ -233,9 +246,11 @@
       {/if}
     </section>
 
-    <label class="unsafe-opt-in"
-      ><input type="checkbox" /> Unsafe recovery options</label
-    >
+    {#if !isTooOld}
+      <label class="unsafe-opt-in"
+        ><input type="checkbox" /> Unsafe recovery options</label
+      >
+    {/if}
   {/if}
 
   <div class="unsafe-updates">
