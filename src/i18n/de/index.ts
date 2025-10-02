@@ -18,9 +18,9 @@ const de = {
   },
   backup: {
     TITLE: "Backup",
-    AUTO_BACKUP: "Auto-backup",
+    AUTO_BACKUP: "Beschleunigtes Verbinden",
     DISCLAIMER:
-      "Das Backup in diesem Browser gespeichert und bleibt nur auf diesem Computer.",
+      "<b>Nicht auf öffentlichen oder geteilten Computern einschalten.</b> Gerätedaten werden für schnelleren Zugriff lokal zwischengespeichert.",
     DOWNLOAD: "Komplettes Profil",
     RESTORE: "Wiederherstellen",
   },

@@ -41,6 +41,7 @@
 
 <section>
   <nav>
+    <a href="#connection">Connection</a>
     {#if $deviceMeta}
       {#each $deviceMeta?.settings as category}
         <a href={`#${category.name}`}>{titlecase(category.name)}</a>
@@ -49,12 +50,19 @@
     <a href="#backup">Backup</a>
   </nav>
   <div class="content">
-    <label
-      >{$LL.deviceManager.AUTO_CONNECT()}<input
-        type="checkbox"
-        use:preference={"autoConnect"}
-      /></label
-    >
+    <fieldset id="connection">
+      <legend>Connection</legend>
+      <label
+        ><input type="checkbox" use:preference={"autoConnect"} />
+        <div class="title">{$LL.deviceManager.AUTO_CONNECT()}</div>
+      </label>
+
+      <label
+        ><input type="checkbox" use:preference={"backup"} />
+        <div class="title">{@html $LL.backup.AUTO_BACKUP()}</div>
+        <div class="description">{@html $LL.backup.DISCLAIMER()}</div>
+      </label>
+    </fieldset>
     {#if $deviceMeta}
       {#each $deviceMeta.settings as category}
         <fieldset id={category.name}>
@@ -115,15 +123,6 @@
 
     <fieldset id="backup">
       <legend>{$LL.backup.TITLE()}</legend>
-      <label
-        ><input
-          type="checkbox"
-          use:preference={"backup"}
-        />{$LL.backup.AUTO_BACKUP()}</label
-      >
-      <p class="disclaimer">
-        {$LL.backup.DISCLAIMER()}
-      </p>
       <div class="row" style="margin-top: auto">
         <button onclick={() => downloadFile(createChordBackup())}>
           <span class="icon">piano</span>

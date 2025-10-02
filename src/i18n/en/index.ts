@@ -14,9 +14,9 @@ const en = {
   },
   backup: {
     TITLE: "Backup",
-    AUTO_BACKUP: "Auto-backup",
+    AUTO_BACKUP: "Fast Connect",
     DISCLAIMER:
-      "Whenever you connect this device to browser, a backup is made locally and kept only on your computer.",
+      "<b>Turn off if using a shared or public computer.</b> Caches your device's data locally for quick access next time you connect.",
     DOWNLOAD: "Full profile",
     RESTORE: "Restore",
   },
