@@ -98,7 +98,7 @@ export function restoreFromFile(
       if (backupDevice === "TWO" || backupDevice === "M4G")
         backupDevice = "ONE";
       let currentDevice = get(serialPort)?.device;
-      if (currentDevice === "TWO" || backupDevice === "M4G")
+      if (currentDevice === "TWO" || currentDevice === "M4G")
         currentDevice = "ONE";
 
       if (backupDevice !== currentDevice) {
