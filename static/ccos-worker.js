@@ -33,6 +33,7 @@ const ccosFsPath = "/CCOS";
 
 /** @type {any} */
 let ccos;
+let startTime = 0;
 
 const semaphore = new AsyncSemaphore();
 
@@ -40,10 +41,17 @@ const semaphore = new AsyncSemaphore();
  * @param {MessageEvent<CCOSInEvent>} event
  */
 self.addEventListener("message", async (event) => {
+  if (event.data instanceof Uint8Array) {
+    await semaphore.run(() => serialWrite(event.data));
+    return;
+  }
   switch (event.data.type) {
     case "init": {
       const url = event.data.url;
       await semaphore.run(() => init(url));
+      /** @type {CCOSReadyEvent} */
+      const readyMsg = { type: "ready" };
+      self.postMessage(readyMsg);
       break;
     }
     case "press": {
@@ -55,9 +63,6 @@ self.addEventListener("message", async (event) => {
       const code = event.data.code;
       await semaphore.run(() => keyRelease(code));
       break;
-    }
-    case "serial": {
-      await semaphore.run(() => serialWrite(event.data.data));
     }
   }
 });
@@ -108,37 +113,44 @@ async function init(url) {
      * @param {number} data
      */
     (data) => {
-      /** @type {CCOSInEvent}) */
-      const msg = { type: "serial", data };
-      self.postMessage(msg);
+      const array = new Uint8Array([data]);
+      self.postMessage(array, { transfer: [array.buffer] });
     },
     "vi",
   );
 
-  ccos._init(onReport, onSerial);
+  startTime = performance.now();
+  await ccos.ccall(
+    "init",
+    "void",
+    ["string", "number", "number"],
+    [ccosFsPath, onReport, onSerial],
+    { async: true },
+  );
 
   async function update() {
     if (ccos) {
-      await semaphore.run(() => ccos.update());
+      await semaphore.run(() => {
+        ccos.update(performance.now());
+      });
     }
     requestAnimationFrame(update);
   }
-  update();
 
-  /** @type {CCOSReadyEvent} */
-  const readyMsg = { type: "ready" };
-  self.postMessage(readyMsg);
+  requestAnimationFrame(update);
 }
 
 /**
- * @param {number} data
+ * @param {Uint8Array} data
  */
 async function serialWrite(data) {
   if (!ccos) {
     console.warn("Serial write ignored, CCOS is not initialized.");
     return;
   }
-  await ccos.serialWrite(data);
+  for (let i = 0; i < data.length; i++) {
+    await ccos.serialWrite(data[i]);
+  }
 }
 
 /**

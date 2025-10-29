@@ -11,7 +11,7 @@ import { browser } from "$app/environment";
 import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialog";
 import semverGte from "semver/functions/gte";
 
-const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
+export const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["ONE M0", { usbProductId: 32783, usbVendorId: 9114 }],
   ["TWO S3 (pre-production)", { usbProductId: 0x8252, usbVendorId: 0x303a }],
   ["TWO S3", { usbProductId: 0x8253, usbVendorId: 0x303a }],
@@ -23,6 +23,42 @@ const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["T4G S2", { usbProductId: 0x82f2, usbVendorId: 0x303a }],
 ]);
 
+const DEVICE_ALIASES = new Map<string, Set<string>>([
+  ["CC1", new Set(["ONE M0", "one_m0"])],
+  ["CC2", new Set(["TWO S3", "two_s3", "TWO S3 (pre-production)"])],
+  ["Lite (S2)", new Set(["LITE S2", "lite_s2"])],
+  ["Lite (M0)", new Set(["LITE M0", "lite_m0"])],
+  ["CCX", new Set(["X", "ccx"])],
+  ["M4G", new Set(["M4G S3", "m4g_s3", "M4G S3 (pre-production)"])],
+  ["M4G (right)", new Set(["M4GR S3", "m4gr_s3"])],
+  ["T4G", new Set(["T4G S2", "t4g_s2"])],
+]);
+
+export function getName(alias: string): string {
+  for (const [name, aliases] of DEVICE_ALIASES.entries()) {
+    if (aliases.has(alias)) {
+      return name;
+    }
+  }
+  return alias;
+}
+
+export function getPortName(port: SerialPort): string {
+  const { usbProductId, usbVendorId } = port.getInfo();
+  console.log(port.getInfo());
+  for (const [name, filter] of PORT_FILTERS.entries()) {
+    if (
+      filter.usbProductId === usbProductId &&
+      filter.usbVendorId === usbVendorId
+    ) {
+      return getName(name);
+    }
+  }
+  return `Unknown Device (0x${usbVendorId?.toString(
+    16,
+  )}/0x${usbProductId?.toString(16)})`;
+}
+
 const KEY_COUNTS = {
   ONE: 90,
   TWO: 90,
@@ -31,6 +67,7 @@ const KEY_COUNTS = {
   M4G: 90,
   M4GR: 90,
   T4G: 7,
+  ZERO: 256,
 } as const;
 
 if (
@@ -88,8 +125,12 @@ async function timeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]).finally(() => clearTimeout(timer));
 }
 
+export type SerialPortLike = Pick<
+  SerialPort,
+  "readable" | "writable" | "open" | "close" | "getInfo" | "forget"
+>;
+
 export class CharaDevice {
-  private port!: SerialPort;
   private reader!: ReadableStreamDefaultReader<string>;
 
   private readonly abortController1 = new AbortController();
@@ -114,18 +155,13 @@ export class CharaDevice {
     return this.port.getInfo();
   }
 
-  constructor(private readonly baudRate = 115200) {}
+  constructor(
+    private readonly port: SerialPortLike,
+    private readonly baudRate = 115200,
+  ) {}
 
-  async init(manual = false) {
+  async init() {
     try {
-      const ports = await getViablePorts();
-      this.port =
-        !manual && ports.length === 1
-          ? ports[0]!
-          : await navigator.serial.requestPort({
-              filters: [...PORT_FILTERS.values()],
-            });
-
       await this.port.open({ baudRate: this.baudRate });
       const info = this.port.getInfo();
       serialLog.update((it) => {
@@ -240,6 +276,10 @@ export class CharaDevice {
 
   async forget() {
     await this.port.forget();
+  }
+
+  async close() {
+    await this.port.close();
   }
 
   /**

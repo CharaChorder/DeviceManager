@@ -321,7 +321,7 @@
                 ><td></td><td></td></tr
               >
             {/if}
-            {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord] (JSON.stringify(chord?.id))}
+            {#each $items.slice(page * $pageSize - (page === 0 ? 0 : 1), (page + 1) * $pageSize - 1) as [chord]}
               {#if chord}
                 <ChordEdit {chord} onduplicate={() => (page = 0)} />
               {/if}

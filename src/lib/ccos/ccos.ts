@@ -1,6 +1,7 @@
 import { getMeta } from "$lib/meta/meta-storage";
-import { connectable, from, multicast, Subject } from "rxjs";
+import type { SerialPortLike } from "$lib/serial/device";
 import type {
+  CCOSInEvent,
   CCOSInitEvent,
   CCOSKeyPressEvent,
   CCOSKeyReleaseEvent,
@@ -8,7 +9,7 @@ import type {
 } from "./ccos-events";
 import { KEYCODE_TO_SCANCODE, SCANCODE_TO_KEYCODE } from "./ccos-interop";
 
-const device = ".zero_wasm";
+const device = "zero_wasm";
 
 class CCOSKeyboardEvent extends KeyboardEvent {
   constructor(...params: ConstructorParameters<typeof KeyboardEvent>) {
@@ -22,14 +23,17 @@ const MASK_ALT = 0b0100_0100;
 const MASK_ALT_GRAPH = 0b0000_0100;
 const MASK_GUI = 0b1000_1000;
 
-export class CCOS {
+export class CCOS implements SerialPortLike {
   private readonly currKeys = new Set<number>();
 
   private readonly layout = new Map<string, string>();
 
   private readonly worker = new Worker("/ccos-worker.js", { type: "module" });
 
-  private ready = false;
+  private resolveReady!: () => void;
+  private ready = new Promise<void>((resolve) => {
+    this.resolveReady = resolve;
+  });
 
   private lastEvent?: KeyboardEvent;
 
@@ -109,31 +113,27 @@ export class CCOS {
     this.currKeys.delete(0);
   }
 
-  private outStream = new Subject<number>();
+  private controller?: ReadableStreamDefaultController<Uint8Array>;
 
-  private readonly buffer: number[] = [];
-  private readonly outStream = new WritableStream<number>({
-    start(controller) {},
-  });
-
-  readonly readable = connectable()
-  readonly writable = new WritableStream<string>();
+  readable!: ReadableStream<Uint8Array>;
+  writable!: WritableStream<Uint8Array>;
 
   constructor(url: string) {
     this.worker.addEventListener(
       "message",
       (event: MessageEvent<CCOSOutEvent>) => {
+        if (event.data instanceof Uint8Array) {
+          this.controller?.enqueue(event.data);
+          return;
+        }
+        console.log("CCOS worker message", event.data);
         switch (event.data.type) {
           case "ready": {
-            this.ready = true;
+            this.resolveReady();
             break;
           }
           case "report": {
             this.onReport(event.data.modifiers, event.data.keys);
-            break;
-          }
-          case "serial": {
-            this.outStream.next(event.data.data);
             break;
           }
         }
@@ -152,7 +152,29 @@ export class CCOS {
     } satisfies CCOSInitEvent);
   }
 
-  async destroy() {
+  getInfo(): SerialPortInfo {
+    return {};
+  }
+
+  async open(_options: SerialOptions) {
+    this.readable = new ReadableStream<Uint8Array>({
+      start: (controller) => {
+        this.controller = controller;
+      },
+    });
+    this.writable = new WritableStream<Uint8Array>({
+      write: (chunk) => {
+        this.worker.postMessage(chunk, [chunk.buffer]);
+      },
+    });
+    return this.ready;
+  }
+  async close() {
+    await this.ready;
+  }
+  async forget() {
+    await this.ready;
+    this.close();
     this.worker.terminate();
   }
 
@@ -198,7 +220,7 @@ export class CCOS {
 }
 
 export async function fetchCCOS(
-  version = ".test",
+  version = ".2.2.0-beta.12+266bdda",
   fetch: typeof window.fetch = window.fetch,
 ): Promise<CCOS | undefined> {
   const meta = await getMeta(device, version, fetch);

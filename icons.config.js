@@ -75,6 +75,7 @@ const config = {
     "light_mode",
     "palette",
     "translate",
+    "smart_toy",
     "play_arrow",
     "extension",
     "upload_file",

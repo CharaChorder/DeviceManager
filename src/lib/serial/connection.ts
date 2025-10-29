@@ -1,5 +1,5 @@
 import { get, writable } from "svelte/store";
-import { CharaDevice } from "$lib/serial/device";
+import { CharaDevice, type SerialPortLike } from "$lib/serial/device";
 import type { Chord } from "$lib/serial/chord";
 import type { Writable } from "svelte/store";
 import type { CharaLayout } from "$lib/serialization/layout";
@@ -9,6 +9,10 @@ import { getMeta } from "$lib/meta/meta-storage";
 import type { VersionMeta } from "$lib/meta/types/meta";
 
 export const serialPort = writable<CharaDevice | undefined>();
+
+navigator.serial?.addEventListener("disconnect", async (event) => {
+  serialPort.set(undefined);
+});
 
 export interface SerialLogEntry {
   type: "input" | "output" | "system";
@@ -59,9 +63,13 @@ export interface ProgressInfo {
 }
 export const syncProgress = writable<ProgressInfo | undefined>(undefined);
 
-export async function initSerial(manual = false, withSync = true) {
-  const device = get(serialPort) ?? new CharaDevice();
-  await device.init(manual);
+export async function initSerial(port: SerialPortLike, withSync: boolean) {
+  const prev = get(serialPort);
+  try {
+    prev?.close();
+  } catch {}
+  const device = new CharaDevice(port);
+  await device.init();
   serialPort.set(device);
   if (withSync) {
     await sync();

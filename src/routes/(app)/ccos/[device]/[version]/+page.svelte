@@ -72,7 +72,8 @@
 
   async function connect() {
     try {
-      await initSerial(true, false);
+      const port = await navigator.serial.requestPort();
+      await initSerial(port!, true);
       step = 1;
     } catch (e) {
       error = e as Error;
@@ -197,6 +198,10 @@
 </script>
 
 <div class="container">
+  {#if data.meta.update.js && data.meta.update.wasm}
+    <button>Add Virtual Device</button>
+  {/if}
+
   {#if data.meta.update.ota && !data.meta.device.endsWith("m0")}
     {@const buttonError = error || (!success && isCorrectDevice === false)}
     <section>
@@ -260,47 +265,49 @@
       </div>
     {/if}
 
-    <section>
-      <ol>
-        <li>
-          <button class="inline-button" onclick={connect}
-            ><span class="icon">usb</span>Connect</button
-          >
-          your device
-          {#if step >= 1}
-            <span class="icon ok" transition:fade>check_circle</span>
-          {/if}
-        </li>
+    {#if data.meta.update.uf2}
+      <section>
+        <ol>
+          <li>
+            <button class="inline-button" onclick={connect}
+              ><span class="icon">usb</span>Connect</button
+            >
+            your device
+            {#if step >= 1}
+              <span class="icon ok" transition:fade>check_circle</span>
+            {/if}
+          </li>
 
-        <li class:faded={step < 1}>
-          Make a <button class="inline-button" onclick={backup}
-            ><span class="icon">download</span>Backup</button
-          >
-          {#if step >= 2}
-            <span class="icon ok" transition:fade>check_circle</span>
-          {/if}
-        </li>
+          <li class:faded={step < 1}>
+            Make a <button class="inline-button" onclick={backup}
+              ><span class="icon">download</span>Backup</button
+            >
+            {#if step >= 2}
+              <span class="icon ok" transition:fade>check_circle</span>
+            {/if}
+          </li>
 
-        <li class:faded={step < 2}>
-          Reboot to <button class="inline-button" onclick={bootloader}
-            ><span class="icon">restart_alt</span>Bootloader</button
-          >
-          {#if step >= 3}
-            <span class="icon ok" transition:fade>check_circle</span>
-          {/if}
-        </li>
+          <li class:faded={step < 2}>
+            Reboot to <button class="inline-button" onclick={bootloader}
+              ><span class="icon">restart_alt</span>Bootloader</button
+            >
+            {#if step >= 3}
+              <span class="icon ok" transition:fade>check_circle</span>
+            {/if}
+          </li>
 
-        <li class:faded={step < 3}>
-          Replace <button class="inline-button" onclick={getFileSystem}
-            ><span class="icon">deployed_code_update</span>CURRENT.UF2</button
-          >
-          on the new drive
-          {#if step >= 4}
-            <span class="icon ok" transition:fade>check_circle</span>
-          {/if}
-        </li>
-      </ol>
-    </section>
+          <li class:faded={step < 3}>
+            Replace <button class="inline-button" onclick={getFileSystem}
+              ><span class="icon">deployed_code_update</span>CURRENT.UF2</button
+            >
+            on the new drive
+            {#if step >= 4}
+              <span class="icon ok" transition:fade>check_circle</span>
+            {/if}
+          </li>
+        </ol>
+      </section>
+    {/if}
 
     {#if false && data.meta.update.esptool}
       <section>

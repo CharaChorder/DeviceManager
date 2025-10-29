@@ -11,7 +11,7 @@
     argbFromHex,
     themeFromSourceColor,
   } from "@material/material-color-utilities";
-  import { canAutoConnect } from "$lib/serial/device";
+  import { canAutoConnect, getViablePorts } from "$lib/serial/device";
   import { initSerial } from "$lib/serial/connection";
   import type { LayoutData } from "./$types";
   import { browser } from "$app/environment";
@@ -63,7 +63,8 @@
     }
 
     if (browser && $userPreferences.autoConnect && (await canAutoConnect())) {
-      await initSerial();
+      const [port] = await getViablePorts();
+      await initSerial(port!, true);
     }
 
     if (data.importFile) {

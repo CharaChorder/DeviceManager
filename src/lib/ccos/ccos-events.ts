@@ -15,7 +15,7 @@ export interface CCOSKeyReleaseEvent {
 
 export interface CCOSSerialEvent {
   type: "serial";
-  data: number;
+  data: Uint8Array;
 }
 
 export type CCOSInEvent =

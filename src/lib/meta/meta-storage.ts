@@ -17,7 +17,7 @@ export async function getMeta(
   try {
     if (!browser) return fetchMeta(device, version, fetch);
 
-    const dbRequest = indexedDB.open("version-meta", 4);
+    const dbRequest = indexedDB.open("version-meta", 5);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       dbRequest.onsuccess = () => resolve(dbRequest.result);
       dbRequest.onerror = () => reject(dbRequest.error);
@@ -144,6 +144,10 @@ async function fetchMeta(
         )?.name ??
         undefined,
       esptool: meta?.update?.esptool ?? undefined,
+      js: meta?.update?.js ?? undefined,
+      wasm: meta?.update?.wasm ?? undefined,
+      dll: meta?.update?.dll ?? undefined,
+      so: meta?.update?.so ?? undefined,
     },
     spiFlash: meta?.spi_flash ?? undefined,
   };

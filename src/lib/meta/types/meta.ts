@@ -52,6 +52,10 @@ export interface RawVersionMeta {
     ota: string | null;
     uf2: string | null;
     esptool: EspToolData | null;
+    js: string | null;
+    wasm: string | null;
+    dll: string | null;
+    so: string | null;
   };
   files: string[];
   spi_flash: SPIFlashInfo | null;
@@ -78,6 +82,10 @@ export interface VersionMeta {
     ota?: string;
     uf2?: string;
     esptool?: EspToolData;
+    js?: string;
+    wasm?: string;
+    dll?: string;
+    so?: string;
   };
   spiFlash?: SPIFlashInfo;
 }

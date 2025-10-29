@@ -7,16 +7,14 @@
   import { detectLocale, locales } from "$i18n/i18n-util";
   import { loadLocaleAsync } from "$i18n/i18n-util.async";
   import { tick } from "svelte";
-  import SyncOverlay from "./SyncOverlay.svelte";
   import {
-    initSerial,
     serialPort,
     sync,
     syncProgress,
     syncStatus,
   } from "$lib/serial/connection";
   import { fade, slide } from "svelte/transition";
-  import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialog";
+  import ConnectPopup from "./ConnectPopup.svelte";
 
   let locale = $state(
     (browser && (localStorage.getItem("locale") as Locales)) || detectLocale(),
@@ -48,20 +46,11 @@
     }
   }
 
-  async function connect() {
-    try {
-      await initSerial(true);
-    } catch (error) {
-      console.error(error);
-      await showConnectionFailedDialog(String(error));
-    }
-  }
-
   function disconnect(event: MouseEvent) {
     if (event.shiftKey) {
       sync();
     } else {
-      $serialPort?.forget();
+      $serialPort?.close();
       $serialPort = undefined;
     }
   }
@@ -90,9 +79,15 @@
   </ul>
   <div class="sync-box">
     {#if !$serialPort}
-      <button class="warning" onclick={connect} transition:slide={{ axis: "x" }}
+      <button
+        class="warning"
+        popovertarget="connect-popup"
+        transition:slide={{ axis: "x" }}
         ><span class="icon">usb</span>{$LL.deviceManager.CONNECT()}</button
       >
+      <div popover id="connect-popup">
+        <ConnectPopup />
+      </div>
     {:else}
       <button
         transition:slide={{ axis: "x" }}
