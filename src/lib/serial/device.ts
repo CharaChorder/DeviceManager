@@ -145,7 +145,7 @@ export class CharaDevice {
 
   version!: string;
   company!: "CHARACHORDER" | "FORGE";
-  device!: "ONE" | "TWO" | "LITE" | "X" | "M4G";
+  device!: "ONE" | "TWO" | "LITE" | "X" | "M4G" | "ENGINE" | "ZERO";
   chipset!: "M0" | "S2" | "S3";
   keyCount!: 90 | 67 | 256;
   layerCount = 3;

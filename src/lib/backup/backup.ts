@@ -97,9 +97,13 @@ export function restoreFromFile(
       let backupDevice = recent[1].device;
       if (backupDevice === "TWO" || backupDevice === "M4G")
         backupDevice = "ONE";
+      else if (backupDevice === "ZERO" || backupDevice === "ENGINE")
+        backupDevice = "X";
       let currentDevice = get(serialPort)?.device;
       if (currentDevice === "TWO" || currentDevice === "M4G")
         currentDevice = "ONE";
+      else if (currentDevice === "ZERO" || currentDevice === "ENGINE")
+        currentDevice = "X";
 
       if (backupDevice !== currentDevice) {
         alert("Backup is incompatible with this device");
