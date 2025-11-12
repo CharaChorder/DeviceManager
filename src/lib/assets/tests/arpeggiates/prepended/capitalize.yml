@@ -1,0 +1,80 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[a, b]]
+        output: [a, b, c]
+    settings:
+      arpeggiates:
+        enable: 1
+      chording:
+        concatenation style: prepended
+    idle: true
+
+  - press: [a, b]
+    keys: [a, b]
+  - release: [a, b]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [a]
+  - keys: [b]
+  - keys: [c]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [a, b]
+    keys: [a, b]
+  - release: [a, b]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [SPACE]
+  - keys: [a]
+  - keys: [b]
+  - keys: [c]
+  - keys: []
+    idle: true
+
+  - press: [LEFT_SHIFT]
+    modifiers:
+      lshift: true
+  - release: [LEFT_SHIFT]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [SPACE]
+  - keys: [a]
+    modifiers:
+      lshift: true
+  - keys: [b]
+  - keys: [c]
+  - keys: []
+    idle: true
+
+  - press: [x]
+    keys: [x]
+  - release: [x]
+  - step: 16
+    keys: []
+    idle: true
+
+  - press: [LEFT_SHIFT]
+    modifiers:
+      lshift: true
+  - release: [LEFT_SHIFT]
+  - step: 16
+    keys: []
+    idle: true

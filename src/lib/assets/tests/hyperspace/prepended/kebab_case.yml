@@ -1,0 +1,85 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[h, y]]
+        output: [CAPTURE, "-", CAPTURE]
+      - input: [[t, s, e]]
+        output: [t, e, s, t]
+    settings:
+      chording:
+        concatenation style: prepended
+    idle: true
+
+  - press: [s, e, t]
+    keys: [e, s, t]
+  - release: [s, e, t]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [t]
+  - keys: [e]
+  - keys: [s]
+  - keys: [t]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [h, y]
+    keys: [h, y]
+  - release: [h, y]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [s, e, t]
+    keys: [e, s, t]
+  - release: [s, e, t]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: ["-"]
+  - keys: [t]
+  - keys: [e]
+  - keys: [s]
+  - keys: [t]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [s, e, t]
+    keys: [e, s, t]
+  - release: [s, e, t]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: ["-"]
+  - keys: [t]
+  - keys: [e]
+  - keys: [s]
+  - keys: [t]
+  - keys: []
+    idle: true

@@ -1,0 +1,25 @@
+test:
+  - remap:
+      A1:
+        - [d, DUP]
+    idle: true
+
+  - press: [a]
+    keys: [a]
+  - release: [a]
+  - step: 16
+    keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [a]
+    keys: [a]
+  - press: [d]
+    keys: []
+  - keys: [a]
+  - release: [a, d]
+  - step: 16
+    keys: []
+    idle: true

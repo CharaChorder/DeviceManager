@@ -1,0 +1,67 @@
+test:
+  - clearChords: true
+    remap:
+      A1:
+        - [d, DUP]
+    addChords:
+      - input: [[h, z]]
+        output: [t, h, e]
+      - input: [[m, o, h, DUP, a, y]]
+        output: [m, o, t, i, v, a, t, i, o, n]
+    settings:
+      chording:
+        detection method: smart
+        concatenation style: prepended
+      autocorrect:
+        maximum attempts: 0
+    idle: true
+
+  - press: [x]
+  - release: [x]
+  - step: 16
+    keys: [x]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [h, z]
+  - release: [h, z]
+  - step: 16
+    keys: [t]
+  - keys: [h]
+  - keys: [e]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [d]
+  - press: [m, h, a, y]
+  - release: [d, m, h, a, y]
+  - step: 16
+    keys: [e, a, h, m, y]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [d]
+  - press: [m, o, h, a, y]
+  - release: [d, m, o, h, a, y]
+  - step: 16
+    keys: [m]
+  - keys: [o]
+  - keys: [t]
+  - keys: [i]
+  - keys: [v]
+  - keys: [a]
+  - keys: [t]
+  - keys: [i]
+  - keys: [o]
+  - keys: [n]
+  - keys: []
+    idle: true

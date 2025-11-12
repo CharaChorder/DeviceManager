@@ -1,0 +1,36 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[c, p]]
+        output: [CAPITALIZE]
+      - input: [[a, b]]
+        output: [a, b, c]
+    idle: true
+
+  - press: [c, p]
+    keys: [c, p]
+  - release: [c, p]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+    idle: true
+
+  - press: [a, b]
+    keys: [a, b]
+  - release: [a, b]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [a]
+    modifiers:
+      lshift: true
+  - keys: [b]
+  - keys: [c]
+  - keys: [SPACE]
+  - keys: []
+    idle: true

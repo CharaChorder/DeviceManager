@@ -1,0 +1,28 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[t, h, e]]
+        output: [t, h, e]
+    settings:
+      keyboard:
+        debounce press: 4
+        debounce release: 5
+    idle: true
+
+  - press: [t]
+    keys: [t]
+  - release: [t]
+  - press: [a]
+    keys: [t, a]
+  - release: [a]
+  - keys: [a]
+  - press: [t]
+  - keys: []
+  - step: 1
+  - step: 1
+  - keys: [t]
+  - release: [t]
+  - step: 1
+  - step: 1
+  - keys: []
+    idle: true

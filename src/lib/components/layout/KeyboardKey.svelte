@@ -103,6 +103,7 @@
         [-rotY, -rotX],
         [-rotX, -rotY],
         [rotX, rotY],
+        [rotY, rotX],
       ]}
     />
   {/if}

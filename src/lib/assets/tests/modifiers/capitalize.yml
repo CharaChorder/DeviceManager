@@ -1,0 +1,28 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[a, b]]
+        output: [a, b, c]
+    idle: true
+
+  - press: [LEFT_SHIFT]
+    modifiers:
+      lshift: true
+  - press: [LEFT_SHIFT, a, b]
+    modifiers:
+      lshift: true
+    keys: [a, b]
+  - release: [LEFT_SHIFT, a, b]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [a]
+    modifiers:
+      lshift: true
+  - keys: [b]
+  - keys: [c]
+  - keys: [SPACE]
+  - keys: []
+    idle: true

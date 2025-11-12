@@ -178,13 +178,16 @@ export class CharaDevice {
       this.version = await this.send(1, ["VERSION"]).then(
         ([version]) => version,
       );
-      if (semverGte(this.version, "2.2.0-beta.4")) {
-        this.profileCount = 3;
-      }
       const [company, device, chipset] = await this.send(3, ["ID"]);
       this.company = company as typeof this.company;
       this.device = device as typeof this.device;
       this.chipset = chipset as typeof this.chipset;
+      if (semverGte(this.version, "2.2.0-beta.4")) {
+        this.profileCount = this.chipset === "M0" ? 2 : 3;
+      }
+      if (semverGte(this.version, "2.2.0-beta.20")) {
+        this.layerCount = this.chipset === "M0" ? 3 : 4;
+      }
       this.keyCount = KEY_COUNTS[this.device];
     } catch (e) {
       console.error(e);

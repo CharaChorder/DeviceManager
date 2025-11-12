@@ -1,0 +1,27 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[t]]
+        output: [t, e, s, t]
+    idle: true
+
+  - press: [t]
+    keys: [t]
+  - release: [t]
+  - step: 16
+    keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [t]
+    keys: [t]
+  - press: [LEFT_SHIFT]
+    keys: [t]
+    modifiers:
+      lshift: true
+  - release: [LEFT_SHIFT, t]
+  - step: 16
+    keys: []
+    idle: true

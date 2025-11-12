@@ -1,0 +1,65 @@
+test:
+  - clearChords: true
+    remap:
+      A1:
+        - [q, QUICKFIX]
+    addChords:
+      - input: [[t, s, e]]
+        output: [t, e, s, t]
+      - input: [[t, s]]
+        output: [s, e, t]
+    settings:
+      chording:
+        detection method: smart
+    idle: true
+
+  - press: [s, e, t]
+  - release: [s, e, t]
+  - step: 16
+    keys: [t]
+  - keys: [e]
+  - keys: [s]
+  - keys: [t]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [s, t]
+  - release: [s, t]
+  - step: 16
+    keys: [s]
+  - keys: [e]
+  - keys: [t]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [q]
+  - release: [q]
+    step: 16
+    keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+    idle: true
+
+  - press: [s, e, t]
+  - release: [s, e, t]
+  - step: 16
+    keys: [t]
+  - keys: [e]
+  - keys: [s]
+  - keys: [t]
+  - keys: [SPACE]
+  - keys: []
+    idle: true

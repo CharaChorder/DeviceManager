@@ -69,7 +69,7 @@
     style:rotate="{rotate}deg"
     use:action={{ title: tooltip }}
   >
-    {#if code !== 0}
+    {#if code !== 0 && code != 1023}
       {dynamicMapping || icon || display || id || `0x${code.toString(16)}`}
     {/if}
     {#if !isApplied}

@@ -1,0 +1,23 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[t, s, e]]
+        output: [t, e, s, t, KSC_00]
+    idle: true
+
+  - press: [s, e, t]
+    keys: [e, s, t]
+  - release: [s, e, t]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [t]
+  - keys: [e]
+  - keys: [s]
+  - keys: [t]
+  - keys: []
+    idle: true

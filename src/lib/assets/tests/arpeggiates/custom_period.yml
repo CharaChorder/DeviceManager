@@ -1,0 +1,65 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[a, b]]
+        output: [a, b, c]
+      - input: [[ARPEGGIATE, .]]
+        output: [JOIN, ., CAPITALIZE, JOIN]
+    settings:
+      arpeggiates:
+        enable: 1
+      autocorrect:
+        maximum attempts: 0
+    idle: true
+
+  - press: [.]
+    keys: [.]
+  - release: [.]
+  - step: 16
+    keys: []
+    idle: true
+
+  - press: [a, b]
+    keys: [a, b]
+  - release: [a, b]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [a]
+  - keys: [b]
+  - keys: [c]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
+
+  - press: [.]
+    keys: [.]
+  - release: [.]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [.]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
+
+  - press: [a, b]
+    keys: [a, b]
+  - release: [a, b]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [a]
+    modifiers:
+      lshift: true
+  - keys: [b]
+  - keys: [c]
+  - keys: [SPACE]
+  - keys: []
+    idle: true

@@ -1,0 +1,103 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[a, a]]
+        output: [b, c]
+      - input: [[a, a, a, a, a]]
+        output: [d, e]
+    settings:
+      chording:
+        tap dance tolerance: 175
+      autocorrect:
+        maximum attempts: 0
+    idle: true
+
+  - press: [a]
+    keys: [a]
+  - release: [a]
+  - step: 16
+    keys: []
+    idle: true
+
+  - step: 180
+    idle: true
+
+  - press: [a]
+    keys: [a]
+  - release: [a]
+  - step: 16
+    keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [a]
+    keys: [a]
+  - release: [a]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [b]
+  - keys: [c]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [a]
+    keys: [a]
+  - release: [a]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [a]
+  - keys: []
+  - keys: [a]
+  - keys: []
+  - keys: [a]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [a]
+    keys: [a]
+  - release: [a]
+  - step: 16
+    keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [a]
+    keys: [a]
+  - release: [a]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [d]
+  - keys: [e]
+  - keys: [SPACE]
+  - keys: []
+    idle: true

@@ -1,0 +1,35 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[c, p]]
+        output: [CAPITALIZE, KSC_00]
+      - input: [[a, b]]
+        output: [JOIN, a, b, c, KSC_00]
+    idle: true
+
+  - press: [c, p]
+    keys: [c, p]
+  - release: [c, p]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: []
+    idle: true
+
+  - press: [a, b]
+    keys: [a, b]
+  - release: [a, b]
+  - step: 16
+    keys: []
+  - keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [a]
+    modifiers:
+      lshift: true
+  - keys: [b]
+  - keys: [c]
+  - keys: []
+    idle: true

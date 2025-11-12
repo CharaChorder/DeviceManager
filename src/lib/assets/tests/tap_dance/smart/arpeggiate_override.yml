@@ -1,0 +1,88 @@
+test:
+  - clearChords: true
+    addChords:
+      - input: [[t, s]]
+        output: [t, e, s, t]
+      - input: [[ARPEGGIATE, .]]
+        output: [JOIN, ., CAPITALIZE, JOIN]
+      - input: [[., .]]
+        output: [JOIN, ., KSC_00]
+      - input: [[., ., .]]
+        output: [JOIN, ., ., ., CAPITALIZE, JOIN]
+    settings:
+      chording:
+        tap dance tolerance: 175
+        detection method: smart
+      autocorrect:
+        maximum attempts: 0
+      arpeggiates:
+        enable: 1
+    idle: true
+
+  - press: [t, s]
+  - release: [t, s]
+  - step: 16
+    keys: [t]
+  - keys: [e]
+  - keys: [s]
+  - keys: [t]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [.]
+  - release: [.]
+  - step: 16
+    keys: [BKSP]
+  - keys: [.]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [.]
+  - release: [.]
+  - step: 16
+    keys: [BKSP]
+  - keys: []
+  - keys: [BKSP]
+  - keys: [.]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [.]
+  - release: [.]
+  - step: 16
+    keys: [BKSP]
+  - keys: [.]
+  - keys: []
+  - keys: [.]
+  - keys: []
+  - keys: [.]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
+
+  - step: 16
+    idle: true
+
+  - press: [t, s]
+  - release: [t, s]
+  - step: 16
+    keys: [t]
+    modifiers:
+      lshift: true
+  - keys: [e]
+  - keys: [s]
+  - keys: [t]
+  - keys: [SPACE]
+  - keys: []
+    idle: true
