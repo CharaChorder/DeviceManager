@@ -11,6 +11,7 @@
   import { get } from "svelte/store";
   import { action } from "$lib/title";
   import semverGte from "semver/functions/gte";
+  import Action from "$lib/components/Action.svelte";
 
   let { chord }: { chord: ChordInfo } = $props();
 
@@ -27,14 +28,14 @@
     if (!event.shiftKey && event.key === "ArrowUp") {
       addSpecial(event);
     } else if (!event.shiftKey && event.key === "ArrowLeft") {
-      moveCursor(cursorPosition - 1);
+      moveCursor(cursorPosition - 1, true);
     } else if (!event.shiftKey && event.key === "ArrowRight") {
-      moveCursor(cursorPosition + 1);
+      moveCursor(cursorPosition + 1, true);
     } else if (event.key === "Backspace") {
-      deleteAction(cursorPosition - 1);
-      moveCursor(cursorPosition - 1);
+      deleteAction(cursorPosition - 1, 1, true);
+      moveCursor(cursorPosition - 1, true);
     } else if (event.key === "Delete") {
-      deleteAction(cursorPosition);
+      deleteAction(cursorPosition, 1, true);
     } else {
       if (event.key === "Shift") return;
       const action = inputToAction(event, get(serialPort)?.device === "X");
@@ -45,14 +46,24 @@
     }
   }
 
-  function moveCursor(to: number) {
+  function moveCursor(to: number, user = false) {
     if (!box) return;
-    cursorPosition = Math.max(0, Math.min(to, chord.phrase.length));
+    cursorPosition = Math.max(
+      user ? chord.phrase.findIndex((it, i, arr) => !isHidden(it, i, arr)) : 0,
+      Math.min(
+        to,
+        user
+          ? chord.phrase.findLastIndex((it, i, arr) => !isHidden(it, i, arr)) +
+              1 || chord.phrase.length
+          : chord.phrase.length,
+      ),
+    );
     const item = box.children.item(cursorPosition) as HTMLElement;
     cursorOffset = item.offsetLeft + item.offsetWidth;
   }
 
-  function deleteAction(at: number, count = 1) {
+  function deleteAction(at: number, count = 1, user = false) {
+    if (user && isHidden(chord.phrase[at]!, at, chord.phrase)) return;
     if (!(at in chord.phrase)) return;
     changes.update((changes) => {
       changes.push([
@@ -89,12 +100,12 @@
     for (const child of box.children) {
       const { offsetLeft, offsetWidth } = child as HTMLElement;
       if (distance < offsetLeft + offsetWidth / 2) {
-        moveCursor(i - 1);
+        moveCursor(i - 1, true);
         return;
       }
       i++;
     }
-    moveCursor(i - 1);
+    moveCursor(i - 1, true);
   }
 
   function addSpecial(event: MouseEvent | KeyboardEvent) {
@@ -118,6 +129,7 @@
           )
         ) {
           deleteAction(chord.phrase.length - 1);
+          moveCursor(cursorPosition, true);
         } else {
           return;
         }
@@ -126,13 +138,16 @@
           return;
         } else if (chord.phrase.at(-1) === NO_CONCATENATOR_ACTION) {
           deleteAction(chord.phrase.length - 1);
+          moveCursor(cursorPosition, true);
         } else {
           insertAction(chord.phrase.length, JOIN_ACTION);
+          moveCursor(cursorPosition, true);
         }
       }
     } else {
       if (chord.phrase.at(-1) === JOIN_ACTION) {
         deleteAction(chord.phrase.length - 1);
+        moveCursor(cursorPosition, true);
       } else {
         if (chord.phrase.at(-1) === NO_CONCATENATOR_ACTION) {
           if (
@@ -144,9 +159,11 @@
             return;
           } else {
             deleteAction(chord.phrase.length - 1);
+            moveCursor(cursorPosition, true);
           }
         } else {
           insertAction(chord.phrase.length, NO_CONCATENATOR_ACTION);
+          moveCursor(cursorPosition, true);
         }
       }
     }
@@ -171,16 +188,13 @@
     isPrintable || chord.phrase.at(-1) === JOIN_ACTION,
   );
 
-  let displayPhrase = $derived(
-    chord.phrase.filter(
-      (it, i, arr) =>
-        !(
-          (i === 0 && it === JOIN_ACTION) ||
-          (i === arr.length - 1 &&
-            (it === JOIN_ACTION || it === NO_CONCATENATOR_ACTION))
-        ),
-    ),
-  );
+  function isHidden(action: number, index: number, array: number[]) {
+    return (
+      (index === 0 && action === JOIN_ACTION) ||
+      (index === array.length - 1 &&
+        (action === JOIN_ACTION || action === NO_CONCATENATOR_ACTION))
+    );
+  }
 </script>
 
 <div
@@ -196,18 +210,22 @@
       use:action={{ title: "Remove previous concatenator" }}
       ><span class="icon">join_inner</span><input
         checked={chord.phrase[0] === JOIN_ACTION}
-        onchange={(event) => {
+        onchange={async (event) => {
           const autospace = hasAutospace;
           if ((event.target as HTMLInputElement).checked) {
             if (chord.phrase[0] !== JOIN_ACTION) {
               insertAction(0, JOIN_ACTION);
+              moveCursor(cursorPosition + 1, true);
             }
           } else {
             if (chord.phrase[0] === JOIN_ACTION) {
               deleteAction(0, 1);
+              await tick();
+              moveCursor(cursorPosition - 1, true);
             }
           }
-          tick().then(() => resolveAutospace(autospace));
+          await tick();
+          resolveAutospace(autospace);
         }}
         type="checkbox"
       /></label
@@ -233,7 +251,13 @@
       <div></div>
       <!-- placeholder for cursor placement -->
     {/if}
-    <ActionString actions={displayPhrase} />
+    {#each chord.phrase as action, i}
+      {#if isHidden(action, i, chord.phrase)}
+        <span style:display="none"></span>
+      {:else}
+        <Action display="inline-keys" {action} />
+      {/if}
+    {/each}
   </div>
   {#if supportsAutospace}
     <label class="auto-space-edit" use:action={{ title: "Add concatenator" }}
