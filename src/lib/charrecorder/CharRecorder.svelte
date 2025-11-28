@@ -10,14 +10,18 @@
     replay,
     cursor = false,
     keys = false,
+    paused = false,
     children,
     ondone,
+    ontick,
   }: {
     replay: ReplayPlayer | Replay;
     cursor?: boolean;
     keys?: boolean;
+    paused?: boolean;
     children?: Snippet;
     ondone?: () => void;
+    ontick?: (time: number) => void;
   } = $props();
 
   let replayPlayer: ReplayPlayer | undefined = $state();
@@ -45,6 +49,10 @@
 
   $effect(() => {
     if (!svg || !text) return;
+    if (paused) {
+      text.textContent = finalText ?? "";
+      return;
+    }
     const player =
       replay instanceof ReplayPlayer ? replay : new ReplayPlayer(replay);
     replayPlayer = player;
@@ -63,6 +71,7 @@
     const unsubscribePlayer = player.subscribe(apply);
     textRenderer = renderer;
 
+    player.onTick = ontick;
     player.onDone = ondone;
     player.start();
     apply();
@@ -70,8 +79,11 @@
       renderer.animated = true;
     });
     return () => {
+      textRenderer = undefined;
+      replayPlayer = undefined;
       unsubscribePlayer();
-      player?.destroy();
+      player.destroy();
+      renderer.destroy();
     };
   });
 
@@ -88,7 +100,7 @@
 {#key replay}
   <svg bind:this={svg}></svg>
   {#if browser}
-    <span use:innerText={text}></span>
+    <span use:innerText={text} style:opacity={paused ? 1 : 0}></span>
   {:else if !(replay instanceof ReplayPlayer)}
     {finalText}
   {/if}
@@ -104,7 +116,6 @@
   }
 
   span {
-    opacity: 0;
     white-space: pre-wrap;
     overflow-wrap: break-word;
   }

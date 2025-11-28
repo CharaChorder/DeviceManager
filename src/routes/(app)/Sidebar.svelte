@@ -1,7 +1,8 @@
 <script lang="ts">
   import { page } from "$app/stores";
+  import { deviceMeta } from "$lib/serial/connection";
 
-  const routes = [
+  let routes = $derived([
     [
       {
         href: "/config/settings/",
@@ -11,6 +12,9 @@
       },
       { href: "/config/chords/", icon: "dictionary", title: "Library" },
       { href: "/config/layout/", icon: "keyboard", title: "Layout" },
+      ...($deviceMeta?.recipes
+        ? [{ href: "/recipes", icon: "skillet", title: "Cookbook" }]
+        : []),
     ],
     [
       {
@@ -47,7 +51,7 @@
     wip?: boolean;
     external?: boolean;
     primary?: boolean;
-  }[][];
+  }[][]);
 
   let connectButton: HTMLButtonElement;
 </script>

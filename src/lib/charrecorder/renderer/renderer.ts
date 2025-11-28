@@ -279,6 +279,18 @@ export class TextRenderer {
     }
   }
 
+  destroy() {
+    this.cursorNode.remove();
+    for (const node of this.nodes.values()) {
+      node.remove();
+    }
+    for (const node of this.heldNodes.values()) {
+      node.remove();
+    }
+    this.nodes.clear();
+    this.heldNodes.clear();
+  }
+
   private isShiny(char: TextToken, index: number) {
     return (
       this.shiny?.includes(index) ||

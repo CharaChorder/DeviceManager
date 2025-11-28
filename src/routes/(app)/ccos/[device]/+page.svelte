@@ -19,12 +19,7 @@
     {#each data.versions as version}
       {@const isPrerelease = version.name.includes("-")}
       <li class:pre-release={isPrerelease}>
-        <a href="./{version.name}/"
-          >{version.name}
-          <time datetime={version.mtime}
-            >{new Date(version.mtime).toLocaleDateString()}</time
-          ></a
-        >
+        <a href="./{version.name}/">{version.name}</a>
       </li>
     {/each}
   </ul>
@@ -67,14 +62,6 @@
         color: var(--md-sys-color-primary);
         font-style: normal;
       }
-    }
-  }
-
-  time {
-    opacity: 0.5;
-    &:before {
-      padding-inline: 0.4ch;
-      content: "•";
     }
   }
 

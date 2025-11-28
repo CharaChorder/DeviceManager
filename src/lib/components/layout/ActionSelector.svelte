@@ -133,14 +133,16 @@
         /></label
       >
       {#each $KEYMAP_CATEGORIES as category}
-        <label
-          >{category.name}<input
-            name="category"
-            type="radio"
-            value={new Set(Object.keys(category.actions).map(Number))}
-            bind:group={filter}
-          /></label
-        >
+        {#if category.name !== "Internal"}
+          <label
+            >{category.name}<input
+              name="category"
+              type="radio"
+              value={new Set(Object.keys(category.actions).map(Number))}
+              bind:group={filter}
+            /></label
+          >
+        {/if}
       {/each}
     </fieldset>
     {#if currentAction !== undefined}

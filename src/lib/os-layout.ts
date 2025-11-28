@@ -11,6 +11,7 @@ async function updateLayout() {
     layout.size !== currentLayout.size ||
     [...layout.keys()].some((key) => layout.get(key) !== currentLayout.get(key))
   ) {
+    console.log(layout);
     osLayout.set(layout);
   }
 }

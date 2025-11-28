@@ -344,6 +344,15 @@
 
   <section class="changelog">
     <h2>Changelog</h2>
+
+    <time datetime={data.meta.date.toISOString()}
+      >Published {data.meta.date.toLocaleDateString()}</time
+    >
+
+    {#if data.meta.recipes}
+      <p>Includes {data.meta.recipes.length} recipes</p>
+    {/if}
+
     {#if data.meta.changelog.features}
       <h3>Features</h3>
       <ul>

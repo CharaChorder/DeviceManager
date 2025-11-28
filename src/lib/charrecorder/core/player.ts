@@ -12,13 +12,18 @@ export class ReplayPlayer {
 
   startTime = performance.now();
 
-  private animationFrameId: number | null = null;
+  private animationFrameId: ReturnType<typeof requestAnimationFrame> | null =
+    null;
+
+  private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   timescale = 1;
 
   private subscribers = new Set<(value: TextToken | undefined) => void>();
 
   onDone?: () => void;
+
+  onTick?: (time: number) => void;
 
   constructor(
     readonly replay: Replay,
@@ -47,6 +52,7 @@ export class ReplayPlayer {
     }
 
     const now = performance.now() - this.startTime;
+    this.onTick?.(now);
 
     while (
       this.replayCursor < this.replay.keys.length &&
@@ -131,7 +137,7 @@ export class ReplayPlayer {
       }
       return this;
     }
-    setTimeout(() => {
+    this.timeoutId = setTimeout(() => {
       this.startTime = performance.now();
       this.animationFrameId = requestAnimationFrame(this.updateLoop.bind(this));
     }, delay);
@@ -139,6 +145,9 @@ export class ReplayPlayer {
   }
 
   destroy() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }

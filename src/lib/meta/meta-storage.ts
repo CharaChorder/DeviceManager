@@ -17,7 +17,7 @@ export async function getMeta(
   try {
     if (!browser) return fetchMeta(device, version, fetch);
 
-    const dbRequest = indexedDB.open("version-meta", 5);
+    const dbRequest = indexedDB.open("version-meta", 6);
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       dbRequest.onsuccess = () => resolve(dbRequest.result);
       dbRequest.onerror = () => reject(dbRequest.error);
@@ -130,6 +130,9 @@ async function fetchMeta(
             async (load) => load().then((it) => (it as any).default),
           ),
         )),
+    recipes: await (meta?.recipes
+      ? fetch(`${path}/${meta.recipes}`).then((it) => it.json())
+      : undefined),
     update: {
       uf2:
         meta?.update?.uf2 ??

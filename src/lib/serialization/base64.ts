@@ -29,5 +29,10 @@ export async function fromBase64(
       .replaceAll(".", "+")
       .replaceAll("_", "/")
       .replaceAll("-", "=")}`,
-  ).then((it) => it.blob());
+  )
+    .then((it) => {
+      console.log(it);
+      return it;
+    })
+    .then((it) => it.blob());
 }

@@ -13,6 +13,7 @@ export interface SettingsMeta {
 
 export interface SettingsItemMeta {
   id: number;
+  name?: string;
   description?: string;
   enum?: string[];
   range: [number, number];
@@ -43,6 +44,7 @@ export interface RawVersionMeta {
   actions: string;
   settings: string;
   changelog: string;
+  recipes: string;
   factory_defaults: {
     layout: string;
     settings: string;
@@ -61,6 +63,38 @@ export interface RawVersionMeta {
   spi_flash: SPIFlashInfo | null;
 }
 
+export interface E2eAddChord {
+  input: string[][];
+  output: string[];
+}
+
+export interface E2eTestItem {
+  keys?: string[];
+  modifiers?: Record<string, boolean>;
+  press?: string[];
+  release?: string[];
+  step?: number;
+  idle?: boolean;
+  clearChords?: boolean;
+  addChords?: E2eAddChord[];
+  settings: Record<string, Record<string, string | number>>;
+}
+
+export interface E2eTest {
+  matrix?: string[];
+  test: E2eTestItem[];
+}
+
+export interface E2eDemo {
+  demo?: {
+    id?: string;
+    title?: string;
+    description?: string;
+  };
+  matrix?: string[];
+  tests: E2eTest[];
+}
+
 export interface VersionMeta {
   version: string;
   device: string;
@@ -73,6 +107,7 @@ export interface VersionMeta {
   actions: KeymapCategory[];
   settings: SettingsMeta[];
   changelog: Changelog;
+  recipes?: E2eTest[];
   factoryDefaults?: {
     layout: CharaLayoutFile;
     settings: CharaSettingsFile;
