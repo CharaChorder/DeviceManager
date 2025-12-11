@@ -20,6 +20,7 @@
     syncStatus,
   } from "$lib/serial/connection";
   import { askForConfirmation } from "$lib/dialogs/confirm-dialog";
+  import ProgressButton from "$lib/ProgressButton.svelte";
 
   function undo(event: MouseEvent) {
     if (event.shiftKey) {
@@ -40,11 +41,27 @@
     }
   }
   let redoQueue: Change[][] = $state([]);
+  let error = $state<Error | undefined>(undefined);
+  let progressButton: HTMLButtonElement | undefined = $state();
+  let shouldSaveNext = $state(false);
+
+  $effect(() => {
+    if ($serialPort && $syncStatus == "done" && shouldSaveNext) {
+      shouldSaveNext = false;
+      save();
+    }
+  });
 
   async function save() {
     try {
       const port = $serialPort;
-      if (!port) return;
+      if (!port) {
+        document
+          .getElementById("connect-popup")
+          ?.showPopover({ source: progressButton });
+        shouldSaveNext = true;
+        return;
+      }
       $syncStatus = "uploading";
 
       const layoutChanges = $overlay.layout.reduce(
@@ -160,12 +177,14 @@
       );
       $changes = [];
     } catch (e) {
-      alert(e);
-      console.error(e);
+      error = e as Error;
+      console.error("Error while saving changes:", error);
     } finally {
       $syncStatus = "done";
     }
   }
+
+  let progressPopover: HTMLElement | undefined = $state();
 </script>
 
 <button
@@ -180,32 +199,28 @@
   disabled={redoQueue.length === 0}
   onclick={redo}>redo</button
 >
-{#if $changes.length !== 0}
-  <button
+{#if $changes.length !== 0 || $syncStatus === "uploading" || $syncStatus === "error"}
+  <div
     transition:fly={{ x: 10 }}
     use:action={{ title: $LL.saveActions.SAVE(), shortcut: "ctrl+shift+s" }}
-    onclick={save}
-    class="click-me"
-    ><span class="icon">save</span>{$LL.saveActions.SAVE()}</button
   >
+    <ProgressButton
+      disabled={$syncStatus !== "done"}
+      working={$syncStatus === "uploading" || $syncStatus === "downloading"}
+      progress={$syncProgress && $syncStatus === "uploading"
+        ? $syncProgress.current / $syncProgress.max
+        : 0}
+      style="--height: 36px"
+      error={error !== undefined
+        ? (error.message ?? error.toString())
+        : undefined}
+      onclick={save}
+      bind:element={progressButton}
+    >
+      <span class="icon">save</span>{$LL.saveActions.SAVE()}
+    </ProgressButton>
+    <div bind:this={progressPopover} popover="hint">
+      {$LL.saveActions.SAVE()}
+    </div>
+  </div>
 {/if}
-
-<style lang="scss">
-  .click-me {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-inline: 8px;
-    outline: 2px dashed var(--md-sys-color-primary);
-    outline-offset: 2px;
-    border: 2px solid var(--md-sys-color-primary);
-    border-radius: 18px;
-    padding-inline-start: 8px;
-    padding-inline-end: 12px;
-    padding-block: 2px;
-    height: fit-content;
-    color: var(--md-sys-color-primary);
-    font-weight: bold;
-    font-family: inherit;
-  }
-</style>

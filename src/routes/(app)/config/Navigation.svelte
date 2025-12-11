@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { fly } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
   import { canShare, triggerShare } from "$lib/share";
   import { action } from "$lib/title";
   import { activeProfile, serialPort } from "$lib/serial/connection";
   import LL from "$i18n/i18n-svelte";
   import EditActions from "./EditActions.svelte";
+  import { page } from "$app/state";
+  import { expoOut } from "svelte/easing";
 </script>
 
 <nav>
@@ -12,9 +14,12 @@
     <EditActions />
   </div>
 
-  <div class="profiles">
-    {#if $serialPort}
-      {#if $serialPort.profileCount > 1}
+  <div>
+    {#if $serialPort && $serialPort.profileCount > 1 && !page.route.id?.startsWith("/(app)/config/chords")}
+      <div
+        transition:fade={{ duration: 250, easing: expoOut }}
+        class="profiles"
+      >
         {#each Array.from({ length: $serialPort.profileCount }, (_, i) => i) as profile}
           <label
             ><input
@@ -25,7 +30,7 @@
             />{String.fromCodePoint("A".codePointAt(0)! + profile)}</label
           >
         {/each}
-      {/if}
+      </div>
     {/if}
   </div>
 

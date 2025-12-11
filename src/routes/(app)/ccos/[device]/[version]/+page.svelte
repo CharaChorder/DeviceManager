@@ -4,6 +4,7 @@
   import { fade, slide } from "svelte/transition";
   import { lt as semverLt } from "semver";
   import type { LoaderOptions, ESPLoader } from "esptool-js";
+  import ProgressButton from "$lib/ProgressButton.svelte";
 
   let { data } = $props();
 
@@ -205,18 +206,13 @@
   {#if data.meta.update.ota && !data.meta.device.endsWith("m0")}
     {@const buttonError = error || (!success && isCorrectDevice === false)}
     <section>
-      <button
-        class="update-button"
-        class:working={working && (progress <= 0 || progress >= 1)}
-        class:progress={working && progress > 0 && progress < 1}
-        style:--progress="{progress * 100}%"
-        class:primary={!buttonError}
-        class:error={buttonError}
-        disabled={isTooOld ||
-          working ||
-          $serialPort === undefined ||
-          !isCorrectDevice}
-        onclick={update}>Apply Update</button
+      <ProgressButton
+        {working}
+        {progress}
+        style="--height: 42px; --border-radius: 8px; margin-block: 16px;"
+        error={buttonError ? buttonError.toString() : undefined}
+        disabled={isTooOld || $serialPort === undefined || !isCorrectDevice}
+        onclick={update}>Apply Update</ProgressButton
       >
       {#if isTooOld}
         <div class="error" transition:slide>
@@ -433,27 +429,6 @@
     overflow: auto;
   }
 
-  @keyframes rotate {
-    0% {
-      transform: rotate(120deg);
-      opacity: 0;
-    }
-
-    20% {
-      transform: rotate(120deg);
-      opacity: 0;
-    }
-
-    60% {
-      opacity: 1;
-    }
-
-    100% {
-      transform: rotate(270deg);
-      opacity: 0;
-    }
-  }
-
   button.inline-button {
     display: inline;
     margin: 0;
@@ -477,67 +452,6 @@
 
   .faded {
     opacity: 0.8;
-  }
-
-  button.update-button {
-    position: relative;
-    transition:
-      border 200ms ease,
-      color 200ms ease;
-
-    margin: 6px;
-    margin-block: 16px;
-
-    outline: 2px dashed currentcolor;
-    outline-offset: 4px;
-
-    border: 2px solid currentcolor;
-    border-radius: 8px;
-
-    background: var(--md-sys-color-background);
-    height: 42px;
-    overflow: hidden;
-
-    &.primary {
-      background: none;
-      color: var(--md-sys-color-primary);
-    }
-
-    &.progress,
-    &.working {
-      border-color: transparent;
-    }
-
-    &.working::before {
-      position: absolute;
-      z-index: -1;
-      border-radius: 8px;
-      background: var(--md-sys-color-background);
-      width: calc(100% - 4px);
-      height: calc(100% - 4px);
-      content: "";
-    }
-
-    &.working::after {
-      position: absolute;
-      z-index: -2;
-      animation: rotate 1s ease-out forwards infinite;
-      background: var(--md-sys-color-primary);
-      width: 120%;
-      height: 30%;
-      content: "";
-    }
-
-    &.progress::after {
-      position: absolute;
-      left: 0;
-      opacity: 0.2;
-      z-index: -2;
-      background: var(--md-sys-color-primary);
-      width: var(--progress);
-      height: 100%;
-      content: "";
-    }
   }
 
   .version {

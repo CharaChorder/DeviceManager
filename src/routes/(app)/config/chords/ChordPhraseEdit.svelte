@@ -9,7 +9,7 @@
   import { inputToAction } from "./input-converter";
   import { deviceMeta, serialPort } from "$lib/serial/connection";
   import { get } from "svelte/store";
-  import { action } from "$lib/title";
+  import { action, actionTooltip } from "$lib/title";
   import semverGte from "semver/functions/gte";
   import Action from "$lib/components/Action.svelte";
 
@@ -37,7 +37,7 @@
     } else if (event.key === "Delete") {
       deleteAction(cursorPosition, 1, true);
     } else {
-      if (event.key === "Shift") return;
+      if (event.key === "Shift" || event.key === "Meta") return;
       const action = inputToAction(event, get(serialPort)?.device === "X");
       if (action !== undefined) {
         insertAction(cursorPosition, action);
@@ -197,31 +197,39 @@
   }
 </script>
 
+<!-- svelte-ignore a11y_interactive_supports_focus -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
+  role="textbox"
   class="wrapper"
   class:edited={!chord.deleted && chord.phraseChanged}
   onclick={() => {
-    box.focus();
+    box?.focus();
   }}
 >
   {#if supportsAutospace}
-    <label
-      class="auto-space-edit"
-      use:action={{ title: "Remove previous concatenator" }}
-      ><span class="icon">join_inner</span><input
-        checked={chord.phrase[0] === JOIN_ACTION}
+    {#snippet tooltip()}
+      {#if chord.phrase[0] === JOIN_ACTION}
+        <b>Remove</b> preceding space
+      {:else}
+        <b>Keep</b> preceding space
+      {/if}
+    {/snippet}
+    <label class="auto-space-edit" {@attach actionTooltip(tooltip)}
+      ><span class="icon">space_bar</span><input
+        checked={chord.phrase[0] !== JOIN_ACTION}
         onchange={async (event) => {
           const autospace = hasAutospace;
           if ((event.target as HTMLInputElement).checked) {
-            if (chord.phrase[0] !== JOIN_ACTION) {
-              insertAction(0, JOIN_ACTION);
-              moveCursor(cursorPosition + 1, true);
-            }
-          } else {
             if (chord.phrase[0] === JOIN_ACTION) {
               deleteAction(0, 1);
               await tick();
               moveCursor(cursorPosition - 1, true);
+            }
+          } else {
+            if (chord.phrase[0] !== JOIN_ACTION) {
+              insertAction(0, JOIN_ACTION);
+              moveCursor(cursorPosition + 1, true);
             }
           }
           await tick();
@@ -260,7 +268,14 @@
     {/each}
   </div>
   {#if supportsAutospace}
-    <label class="auto-space-edit" use:action={{ title: "Add concatenator" }}
+    {#snippet tooltip()}
+      {#if hasAutospace}
+        <b>Add</b> trailing space
+      {:else}
+        <b>Don't add</b> trailing space
+      {/if}
+    {/snippet}
+    <label class="auto-space-edit" {@attach actionTooltip(tooltip)}
       ><span class="icon">space_bar</span><input
         checked={hasAutospace}
         onchange={(event) =>
@@ -324,8 +339,7 @@
     color: var(--md-sys-color-on-tertiary-container);
     font-size: 1.3em;
 
-    &:first-of-type:not(:has(:checked)),
-    &:last-of-type:has(:checked) {
+    &:has(:checked) {
       opacity: 0;
     }
   }

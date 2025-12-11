@@ -77,10 +77,15 @@
       </a>
     </li>
   </ul>
-  <div class="sync-box">
+  <div
+    class="sync-box"
+    class:primary={!$serialPort}
+    class:attention={$syncStatus !== "done"}
+  >
     {#if !$serialPort}
       <button
-        class="warning"
+        class="no-connection"
+        id="connect-button"
         popovertarget="connect-popup"
         transition:slide={{ axis: "x" }}
         ><span class="icon">usb</span>{$LL.deviceManager.CONNECT()}</button
@@ -103,7 +108,7 @@
       >
     {/if}
 
-    {#if $syncStatus !== "done"}
+    {#if $syncStatus === "downloading"}
       <progress
         transition:fade
         max={$syncProgress?.max ?? 1}
@@ -168,26 +173,54 @@
 </footer>
 
 <style lang="scss">
+  @keyframes attention {
+    0%,
+    100% {
+      filter: brightness(0.5);
+    }
+    50% {
+      filter: brightness(1);
+    }
+  }
+
+  $sync-border-radius: 16px;
+
   .sync-box {
     display: flex;
     position: relative;
     justify-content: center;
     align-items: center;
+    translate: 0;
+    transition: all 250ms ease;
+    border-radius: 24px;
+    overflow: hidden;
 
     button {
       text-wrap: nowrap;
     }
+
+    &.primary {
+      translate: 0 -32px;
+      background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    &.attention {
+      animation: attention 2s infinite;
+      border-radius: $sync-border-radius;
+      color: var(--md-sys-color-primary);
+    }
   }
 
   progress {
+    $inset: 8px;
     position: absolute;
-    right: 16px;
-    bottom: 0;
-    left: 16px;
+    opacity: 0.3;
     z-index: -1;
-    border-radius: 4px;
-    width: calc(100% - 32px);
-    height: 8px;
+    inset: $inset;
+    border-radius: #{$sync-border-radius - $inset};
+    width: calc(100% - $inset * 2);
+    height: calc(100% - $inset * 2);
     overflow: hidden;
   }
 
@@ -241,7 +274,6 @@
     justify-content: center;
     align-items: center;
 
-    opacity: 0.4;
     padding: 8px;
     padding-inline-end: 16px;
     padding-block-start: 0;

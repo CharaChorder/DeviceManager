@@ -1,9 +1,14 @@
 <script lang="ts">
-  let { title, shortcut }: { title?: string; shortcut?: string } = $props();
+  import type { Snippet } from "svelte";
+
+  let { title, shortcut }: { title?: string | Snippet; shortcut?: string } =
+    $props();
 </script>
 
-{#if title}
+{#if typeof title === "string"}
   <p>{@html title}</p>
+{:else}
+  {@render title?.()}
 {/if}
 
 {#if shortcut}

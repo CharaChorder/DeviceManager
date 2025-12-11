@@ -18,7 +18,7 @@ export function tooltip(
 
     node.addEventListener("mouseenter", show);
     node.addEventListener("focus", show);
-    node.addEventListener("mouseout", hide);
+    node.addEventListener("mouseleave", hide);
     node.addEventListener("blur", hide);
 
     if (shortcut && node instanceof HTMLElement) {
@@ -28,7 +28,7 @@ export function tooltip(
     return () => {
       node.removeEventListener("mouseenter", show);
       node.removeEventListener("focus", show);
-      node.removeEventListener("mouseout", hide);
+      node.removeEventListener("mouseleave", hide);
       node.removeEventListener("blur", hide);
 
       if (shortcut && node instanceof HTMLElement) {

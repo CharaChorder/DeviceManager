@@ -41,7 +41,6 @@
 
 <section>
   <nav>
-    <a href="#connection">Connection</a>
     {#if $deviceMeta}
       {#each $deviceMeta?.settings as category}
         <a href={`#${category.name}`}>{titlecase(category.name)}</a>
@@ -50,19 +49,6 @@
     <a href="#backup">Backup</a>
   </nav>
   <div class="content">
-    <fieldset id="connection">
-      <legend>Connection</legend>
-      <label
-        ><input type="checkbox" use:preference={"autoConnect"} />
-        <div class="title">{$LL.deviceManager.AUTO_CONNECT()}</div>
-      </label>
-
-      <label
-        ><input type="checkbox" use:preference={"backup"} />
-        <div class="title">{@html $LL.backup.AUTO_BACKUP()}</div>
-        <div class="description">{@html $LL.backup.DISCLAIMER()}</div>
-      </label>
-    </fieldset>
     {#if $deviceMeta}
       {#each $deviceMeta.settings as category}
         <fieldset id={category.name}>
@@ -70,7 +56,7 @@
             {titlecase(category.name)}
           </legend>
           {#if category.description}
-            <p>{category.description}</p>
+            <p class="category-description">{@html category.description}</p>
           {/if}
           {#each category.items as item}
             {#if item.unit === "H"}
@@ -112,7 +98,7 @@
                 {/if}
                 <div class="title">{titlecase(item.name)}</div>
                 {#if item.description}
-                  <div class="description">{item.description}</div>
+                  <div class="description">{@html item.description}</div>
                 {/if}
               </label>
             {/if}
@@ -183,6 +169,13 @@
     scroll-behavior: smooth;
   }
 
+  .category-description {
+    margin-inline: 16px;
+    margin-block: 24px;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 12px;
+  }
+
   legend {
     position: relative;
     padding: 0;
@@ -213,7 +206,7 @@
       display: flex;
       position: relative;
       flex-wrap: wrap;
-      justify-content: flex-start;
+      justify-content: flex-start !important;
       align-items: center;
       appearance: none;
 

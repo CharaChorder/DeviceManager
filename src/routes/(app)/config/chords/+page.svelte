@@ -460,7 +460,7 @@
   }
 
   .results {
-    min-width: min(90vw, 16.5cm);
+    min-width: min(90vw, 20cm);
     height: 100%;
   }
 

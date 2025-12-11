@@ -11,6 +11,9 @@
   import LL from "$i18n/i18n-svelte";
   import { action } from "$lib/title";
   import { get } from "svelte/store";
+  import type { KeymapCategory } from "$lib/meta/types/actions";
+  import Action from "../Action.svelte";
+  import { isVerbose } from "../verbose-action";
 
   let {
     currentAction = undefined,
@@ -26,6 +29,7 @@
 
   onMount(() => {
     searchBox.focus();
+    search();
   });
 
   const index = new FlexSearch.Index({ tokenize: "full" });
@@ -46,7 +50,29 @@
   }
 
   async function search() {
-    results = (await index!.searchAsync(searchBox.value)) as number[];
+    const groups = new Map(
+      $KEYMAP_CATEGORIES.map(
+        (category) => [category, []] as [KeymapCategory, KeyInfo[]],
+      ),
+    );
+    const result =
+      searchBox.value === ""
+        ? Array.from($KEYMAP_CODES.keys())
+        : await index!.searchAsync(searchBox.value);
+    for (const id of result) {
+      const action = $KEYMAP_CODES.get(id as number);
+      if (action?.category) {
+        groups.get(action.category)?.push(action);
+      }
+    }
+
+    function sortValue(action: KeyInfo): number {
+      return isVerbose(action) ? 0 : action.id?.length === 1 ? 2 : 1;
+    }
+    for (const actions of groups.values()) {
+      actions.sort((a, b) => sortValue(b) - sortValue(a));
+    }
+    results = groups;
     exact = get(KEYMAP_IDS).get(searchBox.value)?.code;
     code = Number(searchBox.value);
   }
@@ -81,13 +107,12 @@
     event.preventDefault();
   }
 
-  let results: number[] = $state([]);
+  let results: Map<KeymapCategory, KeyInfo[]> = $state(new Map());
   let exact: number | undefined = $state(undefined);
   let code: number = $state(Number.NaN);
 
   let searchBox: HTMLInputElement;
   let resultList: HTMLUListElement;
-  let filter: Set<number> | undefined = $state(undefined);
 </script>
 
 <svelte:window on:keydown={keyboardNavigation} />
@@ -122,29 +147,6 @@
         onclick={onclose}>close</button
       >
     </div>
-    <fieldset class="filters">
-      <label
-        >{$LL.actionSearch.filter.ALL()}<input
-          checked
-          name="category"
-          type="radio"
-          value={undefined}
-          bind:group={filter}
-        /></label
-      >
-      {#each $KEYMAP_CATEGORIES as category}
-        {#if category.name !== "Internal"}
-          <label
-            >{category.name}<input
-              name="category"
-              type="radio"
-              value={new Set(Object.keys(category.actions).map(Number))}
-              bind:group={filter}
-            /></label
-          >
-        {/if}
-      {/each}
-    </fieldset>
     {#if currentAction !== undefined}
       <aside>
         <h3>{$LL.actionSearch.CURRENT_ACTION()}</h3>
@@ -171,15 +173,21 @@
           <li>Action code is out of range</li>
         {/if}
       {/if}
-      {#if filter !== undefined || results.length > 0}
-        {@const resultValue =
-          results.length === 0
-            ? Array.from($KEYMAP_CODES, ([it]) => it)
-            : results}
-        {#each filter ? resultValue.filter( (it) => filter.has(it), ) : resultValue as id (id)}
-          <li><ActionListItem {id} onclick={() => select(id)} /></li>
-        {/each}
-      {/if}
+      {#each results as [category, actions] (category)}
+        {#if actions.length > 0}
+          <div class="category">
+            <h3>{category.name}</h3>
+            <div class="description">{category.description}</div>
+            <ul>
+              {#each actions as action (action.code)}
+                <button class="action-item" onclick={() => select(action.code)}>
+                  <Action {action} display="verbose"></Action>
+                </button>
+              {/each}
+            </ul>
+          </div>
+        {/if}
+      {/each}
     </ul>
   </div>
 </dialog>
@@ -208,6 +216,13 @@
         display: none;
       }
     }
+  }
+
+  .action-item {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    font: inherit;
   }
 
   dialog {
@@ -312,6 +327,22 @@
     overflow-y: auto;
 
     scrollbar-gutter: both-edges stable;
+  }
+
+  .category {
+    .description {
+      opacity: 0.8;
+      margin-block-start: -16px;
+      font-style: italic;
+      font-size: 14px;
+    }
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-block: 24px;
+      overflow: hidden;
+    }
   }
 
   li {

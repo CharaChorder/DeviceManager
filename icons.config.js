@@ -79,6 +79,7 @@ const config = {
     "palette",
     "translate",
     "smart_toy",
+    "visibility_off",
     "play_arrow",
     "extension",
     "upload_file",
@@ -165,6 +166,7 @@ const config = {
     routine: "e20c",
     experiment: "e686",
     dictionary: "f539",
+    visibility_off: "e8f5",
   },
 };
 

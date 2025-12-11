@@ -6,8 +6,8 @@
     [
       {
         href: "/config/settings/",
-        icon: "cable",
-        title: "Device",
+        icon: "tune",
+        title: "Settings",
         primary: true,
       },
       { href: "/config/chords/", icon: "dictionary", title: "Library" },
