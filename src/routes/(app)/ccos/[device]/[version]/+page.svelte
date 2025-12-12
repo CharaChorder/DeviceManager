@@ -10,7 +10,9 @@
 
   let working = $state(false);
   let success = $state(false);
-  let error = $state<Error | undefined>(undefined);
+  let error = $state<Error | undefined>(
+    new Error("ESP_ERR_OTA_VALIDATE_FAILED"),
+  );
 
   let isTooOld = $derived(
     $serialPort ? semverLt($serialPort.version, "2.0.0") : false,
@@ -32,21 +34,45 @@
     success = false;
     const port = $serialPort!;
     $serialPort = undefined;
-    try {
-      const file = await fetch(
-        `${data.meta.path}/${data.meta.update.ota}`,
-      ).then((it) => it.arrayBuffer());
 
-      await port.updateFirmware(file, (transferred, total) => {
-        progress = transferred / total;
-      });
+    let file: ArrayBuffer | undefined;
+    let retries = 3;
+    let err: Error | undefined = undefined;
 
-      success = true;
-    } catch (e) {
-      error = e as Error;
-    } finally {
-      working = false;
+    while (!file && retries-- > 0) {
+      try {
+        file = await fetch(`${data.meta.path}/${data.meta.update.ota}`).then(
+          (it) => it.arrayBuffer(),
+        );
+      } catch (e) {
+        err = e as Error;
+      }
     }
+
+    if (!file) {
+      error = err;
+      working = false;
+      return;
+    }
+
+    retries = 2;
+    while (retries-- > 0 && !success) {
+      try {
+        await port.updateFirmware(file, (transferred, total) => {
+          progress = transferred / total;
+        });
+
+        success = true;
+      } catch (e) {
+        err = e as Error;
+        port.baudRate = 9600;
+      }
+    }
+
+    if (!success) {
+      error = err;
+    }
+    working = false;
   }
 
   let currentDevice = $derived(
@@ -237,7 +263,32 @@
       {:else if success}
         <div class="primary" transition:slide>Update successful</div>
       {:else if error}
-        <div class="error" transition:slide>{error.message}</div>
+        <div class="error" transition:slide>
+          {#if error.message.includes("ESP_ERR_OTA_VALIDATE_FAILED")}
+            <b>Update corrupted during transmission</b>
+            <ul>
+              <li>
+                Double-check your USB cable is <b>fully seated</b> on both ends
+              </li>
+              <li>Remove any USB hubs between the device and the computer</li>
+              <li>Unplug all other USB devices</li>
+              <li>Don't touch the device or your computer during the update</li>
+              <li>Try using a different USB cable</li>
+              <li>Try using a different USB Port</li>
+              <li>Try the update again a few times</li>
+              {#if navigator.userAgent.includes("Macintosh")}
+                <li>
+                  Try updating on either Windows, Linux or ChromeOS instead of
+                  MacOS
+                </li>
+              {/if}
+            </ul>
+            <b>DO NOT USE THE UNSAFE RECOVERY OPTIONS</b>, they bypass
+            corruption checks an can soft-brick your device.
+          {:else}
+            {error.message}
+          {/if}
+        </div>
       {:else if working}
         <div class="primary" transition:slide>Updating your device...</div>
       {:else}

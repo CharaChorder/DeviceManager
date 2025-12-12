@@ -64,6 +64,7 @@ const KEY_COUNTS = {
   TWO: 90,
   LITE: 67,
   X: 256,
+  ENGINE: 256,
   M4G: 90,
   M4GR: 90,
   T4G: 7,
@@ -157,7 +158,7 @@ export class CharaDevice {
 
   constructor(
     private readonly port: SerialPortLike,
-    private readonly baudRate = 115200,
+    public baudRate = 115200,
   ) {}
 
   async init() {
