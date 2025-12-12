@@ -10,9 +10,7 @@
 
   let working = $state(false);
   let success = $state(false);
-  let error = $state<Error | undefined>(
-    new Error("ESP_ERR_OTA_VALIDATE_FAILED"),
-  );
+  let error = $state<Error | undefined>(undefined);
 
   let isTooOld = $derived(
     $serialPort ? semverLt($serialPort.version, "2.0.0") : false,
