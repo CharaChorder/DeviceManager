@@ -7,20 +7,24 @@
     layout,
     overlay,
     settings,
+    duplicateChords,
   } from "$lib/undo-redo";
-  import type { Change } from "$lib/undo-redo";
+  import type { Change, ChordChange } from "$lib/undo-redo";
   import { fly } from "svelte/transition";
-  import { action } from "$lib/title";
+  import { action, actionTooltip } from "$lib/title";
   import {
     deviceChords,
     deviceLayout,
     deviceSettings,
+    serialLog,
     serialPort,
+    sync,
     syncProgress,
     syncStatus,
   } from "$lib/serial/connection";
-  import { askForConfirmation } from "$lib/dialogs/confirm-dialog";
   import ProgressButton from "$lib/ProgressButton.svelte";
+  import { tick } from "svelte";
+  import { goto } from "$app/navigation";
 
   function undo(event: MouseEvent) {
     if (event.shiftKey) {
@@ -43,91 +47,11 @@
   let redoQueue: Change[][] = $state([]);
   let error = $state<Error | undefined>(undefined);
   let progressButton: HTMLButtonElement | undefined = $state();
-  let shouldSaveNext = $state(false);
 
-  $effect(() => {
-    if ($serialPort && $syncStatus == "done" && shouldSaveNext) {
-      shouldSaveNext = false;
-      save();
-    }
-  });
-
-  async function save() {
+  async function saveLayoutChanges(progress: () => void): Promise<boolean> {
+    const port = $serialPort;
+    if (!port) return false;
     try {
-      const port = $serialPort;
-      if (!port) {
-        document
-          .getElementById("connect-popup")
-          ?.showPopover({ source: progressButton });
-        shouldSaveNext = true;
-        return;
-      }
-      $syncStatus = "uploading";
-
-      const layoutChanges = $overlay.layout.reduce(
-        (acc, profile) =>
-          acc + profile.reduce((acc, layer) => acc + layer.size, 0),
-        0,
-      );
-      const settingChanges = $overlay.settings.reduce(
-        (acc, profile) => acc + profile.size,
-        0,
-      );
-      const chordChanges = $overlay.chords.size;
-      const needsCommit = settingChanges > 0 || layoutChanges > 0;
-      const progressMax = layoutChanges + settingChanges + chordChanges;
-
-      let progressCurrent = 0;
-
-      syncProgress.set({
-        max: progressMax,
-        current: progressCurrent,
-      });
-
-      console.log($overlay);
-
-      for (const [id, chord] of $overlay.chords) {
-        if (!chord.deleted) {
-          if (id !== JSON.stringify(chord.actions)) {
-            const existingChord = await port.getChordPhrase(chord.actions);
-            if (
-              existingChord !== undefined &&
-              !(await askForConfirmation(
-                $LL.configure.chords.conflict.TITLE(),
-                $LL.configure.chords.conflict.DESCRIPTION(),
-                $LL.configure.chords.conflict.CONFIRM(),
-                $LL.configure.chords.conflict.ABORT(),
-                chord,
-              ))
-            ) {
-              changes.update((changes) =>
-                changes
-                  .map((it) =>
-                    it.filter(
-                      (it) =>
-                        !(
-                          it.type === ChangeType.Chord &&
-                          JSON.stringify(it.id) === id
-                        ),
-                    ),
-                  )
-                  .filter((it) => it.length > 0),
-              );
-              continue;
-            }
-
-            await port.deleteChord({ actions: JSON.parse(id) });
-          }
-          await port.setChord({ actions: chord.actions, phrase: chord.phrase });
-        } else {
-          await port.deleteChord({ actions: chord.actions });
-        }
-        syncProgress.set({
-          max: progressMax,
-          current: progressCurrent++,
-        });
-      }
-
       for (const [profile, layout] of $overlay.layout.entries()) {
         if (layout === undefined) continue;
         for (const [layer, actions] of layout.entries()) {
@@ -135,52 +59,231 @@
           for (const [id, action] of actions) {
             if (action === undefined) continue;
             await port.setLayoutKey(profile, layer + 1, id, action);
-            syncProgress.set({
-              max: progressMax,
-              current: progressCurrent++,
-            });
+            progress();
           }
         }
       }
+      $deviceLayout = $layout.map((profile) =>
+        profile.map((layer) => layer.map<number>(({ action }) => action)),
+      );
+      changes.update((changes) =>
+        changes
+          .map((it) => it.filter((it) => it.type !== ChangeType.Layout))
+          .filter((it) => it.length > 0),
+      );
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+    await tick();
+    return true;
+  }
 
+  async function saveSettings(progress: () => void): Promise<boolean> {
+    const port = $serialPort;
+    if (!port) return false;
+    try {
       for (const [profile, settings] of $overlay.settings.entries()) {
         if (settings === undefined) continue;
         for (const [id, setting] of settings.entries()) {
           if (setting === undefined) continue;
           await port.setSetting(profile, id, setting);
-          syncProgress.set({
-            max: progressMax,
-            current: progressCurrent++,
-          });
+          progress();
         }
       }
-
-      // Yes, this is a completely arbitrary and unnecessary delay.
-      // The only purpose of it is to create a sense of weight,
-      // aka make it more "energy intensive" to click.
-      // The only conceivable way users could reach the commit limit in this case
-      // would be if they click it every time they change a setting.
-      // Because of that, we don't need to show a fearmongering message such as
-      // "Your device will break after you click this 10,000 times!"
-      if (needsCommit) {
-        await port.commit();
-      }
-
-      $deviceLayout = $layout.map((profile) =>
-        profile.map((layer) => layer.map<number>(({ action }) => action)),
-      );
-      $deviceChords = $chords
-        .filter(({ deleted }) => !deleted)
-        .map(({ actions, phrase }) => ({ actions, phrase }));
       $deviceSettings = $settings.map((profile) =>
         profile.map(({ value }) => value),
       );
-      $changes = [];
+      changes.update((changes) =>
+        changes
+          .map((it) => it.filter((it) => it.type !== ChangeType.Setting))
+          .filter((it) => it.length > 0),
+      );
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+    await tick();
+    return true;
+  }
+
+  async function safeDeleteChord(actions: number[]): Promise<boolean> {
+    const port = $serialPort;
+    if (!port) return false;
+    try {
+      await port.deleteChord({ actions });
+      return true;
+    } catch (e) {
+      console.error(e);
+      try {
+        if ((await port.getChordPhrase(actions)) === undefined) {
+          return true;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return false;
+  }
+
+  async function saveChords(progress: () => void): Promise<boolean> {
+    const port = $serialPort;
+    if (!port) return false;
+    let ok = true;
+
+    const empty = new Set<string>();
+    for (const [id, chord] of $overlay.chords) {
+      if (chord.actions.length === 0 || chord.phrase.length === 0) {
+        empty.add(id);
+      }
+    }
+    changes.update((changes) => {
+      changes.push([
+        ...empty.keys().map(
+          (id) =>
+            ({
+              type: ChangeType.Chord,
+              id: JSON.parse(id),
+              deleted: true,
+              actions: [],
+              phrase: [],
+            }) satisfies ChordChange,
+        ),
+      ]);
+      return changes;
+    });
+    await tick();
+
+    const deleted = new Set<string>();
+    const changed = new Map<string, number[]>();
+    for (const [id, chord] of $overlay.chords) {
+      if (!chord.deleted) continue;
+      if (await safeDeleteChord(JSON.parse(id))) {
+        deleted.add(id);
+      } else {
+        ok = false;
+      }
+      progress();
+    }
+    deviceChords.update((chords) =>
+      chords.filter((chord) => !deleted.has(JSON.stringify(chord.actions))),
+    );
+    deleted.clear();
+    await tick();
+
+    for (const [id, chord] of $overlay.chords) {
+      if (chord.deleted) continue;
+      if ($duplicateChords.has(JSON.stringify(chord.actions))) {
+        ok = false;
+      } else {
+        let skip = false;
+        if (id !== JSON.stringify(chord.actions)) {
+          if (await safeDeleteChord(JSON.parse(id))) {
+            deleted.add(id);
+          } else {
+            skip = true;
+            ok = false;
+          }
+        }
+        if (!skip) {
+          try {
+            await port.setChord({
+              actions: chord.actions,
+              phrase: chord.phrase,
+            });
+            deleted.add(JSON.stringify(chord.actions));
+            changed.set(JSON.stringify(chord.actions), chord.phrase);
+          } catch (e) {
+            console.error(e);
+            ok = false;
+          }
+        } else {
+          ok = false;
+        }
+      }
+      progress();
+    }
+    deviceChords.update((chords) => {
+      chords.filter((chord) => !deleted.has(JSON.stringify(chord.actions)));
+      for (const [id, phrase] of changed) {
+        chords.push({ actions: JSON.parse(id), phrase });
+      }
+      return chords;
+    });
+    await tick();
+    return ok;
+  }
+
+  async function save() {
+    let needsSync = false;
+    try {
+      const port = $serialPort;
+      if (!port) {
+        document
+          .getElementById("connect-popup")
+          ?.showPopover({ source: progressButton });
+        return;
+      }
+      $syncStatus = "uploading";
+
+      const layoutChanges = $overlay.layout.reduce(
+        (acc, profile) =>
+          acc +
+          (profile?.reduce((acc, layer) => acc + (layer?.size ?? 0), 0) ?? 0),
+        0,
+      );
+      const settingChanges = $overlay.settings.reduce(
+        (acc, profile) => acc + (profile?.size ?? 0),
+        0,
+      );
+      const chordChanges = $overlay.chords.size;
+      needsSync = chordChanges > 0;
+      const needsCommit = settingChanges > 0 || layoutChanges > 0;
+      const progressMax = layoutChanges + settingChanges + chordChanges;
+
+      let progressCurrent = 0;
+
+      function updateProgress() {
+        syncProgress.set({
+          max: progressMax,
+          current: Math.min(progressMax, progressCurrent++),
+        });
+      }
+      updateProgress();
+
+      let layoutSuccess = await saveLayoutChanges(updateProgress);
+      let settingsSuccess = await saveSettings(updateProgress);
+
+      if (needsCommit) {
+        try {
+          await port.commit();
+        } catch (e) {
+          console.error("Error during commit:", e);
+          layoutSuccess = false;
+        }
+      }
+      let chordsSuccess = await saveChords(updateProgress);
+
+      if (layoutSuccess && settingsSuccess && chordsSuccess) {
+        changes.set([]);
+        needsSync = true;
+      } else {
+        throw new Error("Some changes could not be saved.");
+      }
     } catch (e) {
       error = e as Error;
       console.error("Error while saving changes:", error);
+      serialLog.update((log) => {
+        log.push({ type: "system", value: error?.message ?? "Error" });
+        return log;
+      });
+      goto("/terminal");
     } finally {
       $syncStatus = "done";
+    }
+
+    if (needsSync) {
+      await sync();
     }
   }
 
@@ -188,13 +291,13 @@
 </script>
 
 <button
-  use:action={{ title: $LL.saveActions.UNDO(), shortcut: "ctrl+z" }}
+  {@attach actionTooltip($LL.saveActions.UNDO(), "ctrl+z")}
   class="icon"
   disabled={$changes.length === 0}
   onclick={undo}>undo</button
 >
 <button
-  use:action={{ title: $LL.saveActions.REDO(), shortcut: "ctrl+y" }}
+  {@attach actionTooltip($LL.saveActions.REDO(), "ctrl+y")}
   class="icon"
   disabled={redoQueue.length === 0}
   onclick={redo}>redo</button
@@ -202,7 +305,7 @@
 {#if $changes.length !== 0 || $syncStatus === "uploading" || $syncStatus === "error"}
   <div
     transition:fly={{ x: 10 }}
-    use:action={{ title: $LL.saveActions.SAVE(), shortcut: "ctrl+shift+s" }}
+    {@attach actionTooltip($LL.saveActions.SAVE(), "ctrl+shift+s")}
   >
     <ProgressButton
       disabled={$syncStatus !== "done"}

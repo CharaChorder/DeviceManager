@@ -342,23 +342,24 @@ export class CharaDevice {
         .join(" ")
         .replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
       const readResult = await read(timeout);
-      if (readResult === undefined) {
+      return readResult
+        ?.replace(new RegExp(`^${commandString} `), "")
+        .split(" ");
+    }).then((it) => {
+      if (it === undefined) {
         console.error("No response");
         return Array(expectedLength).fill("NO_RESPONSE") as LengthArray<
           string,
           T
         >;
       }
-      const array = readResult
-        .replace(new RegExp(`^${commandString} `), "")
-        .split(" ");
-      if (array.length < expectedLength) {
+      if (it.length < expectedLength) {
         console.error("Response too short");
-        return array.concat(
-          Array(expectedLength - array.length).fill("TOO_SHORT"),
+        return it.concat(
+          Array(expectedLength - it.length).fill("TOO_SHORT"),
         ) as LengthArray<string, T>;
       }
-      return array as LengthArray<string, T>;
+      return it as LengthArray<string, T>;
     });
   }
 
@@ -401,7 +402,7 @@ export class CharaDevice {
       stringifyChordActions(chord.actions),
       stringifyPhrase(chord.phrase),
     ]);
-    if (status !== "0") console.error(`Failed with status ${status}`);
+    if (status !== "0") throw new Error(`Failed with status ${status}`);
   }
 
   async deleteChord(chord: Pick<Chord, "actions">) {

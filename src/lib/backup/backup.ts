@@ -72,22 +72,26 @@ export function createSettingsBackup(): CharaSettingsFile {
   };
 }
 
-export async function restoreBackup(event: Event) {
+export async function restoreBackup(
+  event: Event,
+  only?: "chords" | "layout" | "settings",
+) {
   const input = (event.target as HTMLInputElement).files![0];
   if (!input) return;
   const text = await input.text();
   if (input.name.endsWith(".json")) {
-    restoreFromFile(JSON.parse(text));
+    restoreFromFile(JSON.parse(text), only);
   } else if (isCsvLayout(text)) {
-    restoreFromFile(csvLayoutToJson(text));
+    restoreFromFile(csvLayoutToJson(text), only);
   } else if (isCsvChords(text)) {
-    restoreFromFile(csvChordsToJson(text));
+    restoreFromFile(csvChordsToJson(text), only);
   } else {
   }
 }
 
 export function restoreFromFile(
   file: CharaBackupFile | CharaSettingsFile | CharaLayoutFile | CharaChordFile,
+  only?: "chords" | "layout" | "settings",
 ) {
   if (file.charaVersion !== 1) throw new Error("Incompatible backup");
   switch (file.type) {
@@ -112,33 +116,45 @@ export function restoreFromFile(
 
       changes.update((changes) => {
         changes.push([
-          ...getChangesFromChordFile(recent[0]),
-          ...getChangesFromLayoutFile(recent[1]),
-          ...getChangesFromSettingsFile(recent[2]),
+          ...(!only || only === "chords"
+            ? getChangesFromChordFile(recent[0])
+            : []),
+          ...(!only || only === "layout"
+            ? getChangesFromLayoutFile(recent[1])
+            : []),
+          ...(!only || only === "settings"
+            ? getChangesFromSettingsFile(recent[2])
+            : []),
         ]);
         return changes;
       });
       break;
     }
     case "chords": {
-      changes.update((changes) => {
-        changes.push(getChangesFromChordFile(file));
-        return changes;
-      });
+      if (!only || only === "chords") {
+        changes.update((changes) => {
+          changes.push(getChangesFromChordFile(file));
+          return changes;
+        });
+      }
       break;
     }
     case "layout": {
-      changes.update((changes) => {
-        changes.push(getChangesFromLayoutFile(file));
-        return changes;
-      });
+      if (!only || only === "layout") {
+        changes.update((changes) => {
+          changes.push(getChangesFromLayoutFile(file));
+          return changes;
+        });
+      }
       break;
     }
     case "settings": {
-      changes.update((changes) => {
-        changes.push(getChangesFromSettingsFile(file));
-        return changes;
-      });
+      if (!only || only === "settings") {
+        changes.update((changes) => {
+          changes.push(getChangesFromSettingsFile(file));
+          return changes;
+        });
+      }
       break;
     }
     default: {

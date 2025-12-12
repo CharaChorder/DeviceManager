@@ -1,6 +1,11 @@
 <script lang="ts">
   import { serialLog, serialPort } from "$lib/serial/connection";
+  import { onMount } from "svelte";
   import { slide } from "svelte/transition";
+
+  onMount(() => {
+    io.scrollTo({ top: io.scrollHeight });
+  });
 
   function submit(event: Event) {
     event.preventDefault();

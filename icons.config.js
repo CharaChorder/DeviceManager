@@ -83,6 +83,8 @@ const config = {
     "play_arrow",
     "extension",
     "upload_file",
+    "file_export",
+    "file_save",
     "commit",
     "bug_report",
     "delete",
@@ -167,6 +169,7 @@ const config = {
     experiment: "e686",
     dictionary: "f539",
     visibility_off: "e8f5",
+    file_save: "f17f",
   },
 };
 

@@ -179,6 +179,22 @@ export const chords = derived(
   },
 );
 
+export const duplicateChords = derived(chords, (chords) => {
+  const duplicates = new Set<string>();
+  const seen = new Set<string>();
+
+  for (const chord of chords) {
+    const key = JSON.stringify(chord.actions);
+    if (seen.has(key)) {
+      duplicates.add(key);
+    } else {
+      seen.add(key);
+    }
+  }
+
+  return duplicates;
+});
+
 export const chordHashes = derived(
   chords,
   (chords) =>
