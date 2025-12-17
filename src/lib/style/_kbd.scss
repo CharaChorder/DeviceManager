@@ -3,9 +3,14 @@ kbd {
   justify-content: center;
   align-items: center;
   margin-block: 6px;
-
-  border: 1px solid currentcolor;
   border-radius: 4px;
+
+  //border: 1px solid currentcolor;
+  background: color-mix(
+    in srgb,
+    var(--md-sys-color-surface-variant) 50%,
+    transparent
+  );
   padding: 4px;
 
   height: 20px;

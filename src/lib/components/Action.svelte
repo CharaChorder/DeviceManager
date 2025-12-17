@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
+  import { KEYMAP_CODES, KEYMAP_IDS } from "$lib/serial/keymap-codes";
   import type { KeyInfo } from "$lib/serial/keymap-codes";
   import { osLayout } from "$lib/os-layout";
   import { tooltip } from "$lib/hover-popover";
@@ -9,33 +9,54 @@
   let {
     action,
     display,
-  }: { action: number | KeyInfo; display: "inline-keys" | "keys" | "verbose" } =
-    $props();
+  }: {
+    action: string | number | KeyInfo;
+    display: "inline-text" | "inline-keys" | "keys" | "verbose";
+  } = $props();
 
-  let info = $derived(
+  let retrievedInfo = $derived(
     typeof action === "number"
-      ? ($KEYMAP_CODES.get(action) ?? { code: action })
-      : action,
+      ? $KEYMAP_CODES.get(action)
+      : typeof action === "string"
+        ? $KEYMAP_IDS.get(action)
+        : action,
+  );
+  let info = $derived(
+    retrievedInfo ??
+      (typeof action === "number"
+        ? ({ code: action } satisfies KeyInfo)
+        : typeof action === "string"
+          ? ({ code: 1024, id: action } satisfies KeyInfo)
+          : action),
   );
   let dynamicMapping = $derived(info.keyCode && $osLayout.get(info.keyCode));
-  let hasPopover = $derived(!info.id || info.title || info.description);
+  let hasPopover = $derived(
+    !retrievedInfo || !info.id || info.title || info.description,
+  );
 </script>
 
 {#snippet popover()}
-  {#if info.icon || info.display || !info.id}
-    &lt;<b>{info.id ?? `0x${info.code.toString(16)}`}</b>&gt;
-  {/if}
-  {#if info.title}
-    {info.title}
-  {/if}
-  {#if info.variant === "left"}
-    (Left)
-  {:else if info.variant === "right"}
-    (Right)
-  {/if}
-  {#if info.description}
-    <br />
-    <small>{info.description}</small>
+  {#if retrievedInfo}
+    {#if info.icon || info.display || !info.id}
+      &lt;<b>{info.id ?? `0x${info.code.toString(16)}`}</b>&gt;
+    {/if}
+    {#if info.title}
+      {info.title}
+    {/if}
+    {#if info.variant === "left"}
+      (Left)
+    {:else if info.variant === "right"}
+      (Right)
+    {/if}
+    {#if info.description}
+      <br />
+      <small>{info.description}</small>
+    {/if}
+  {:else}
+    <b>Unknown Action</b><br />
+    {#if info.code > 1023}
+      This action cannot be translated and will be ingored.
+    {/if}
   {/if}
 {/snippet}
 
@@ -51,6 +72,8 @@
     class:icon={!!info.icon}
     class:left={info.variant === "left"}
     class:right={info.variant === "right"}
+    class:error={info.code > 1023}
+    class:warn={!retrievedInfo}
     {@attach withPopover && hasPopover ? actionTooltip(popover) : null}
   >
     {@render kbdText()}
@@ -60,21 +83,30 @@
   {#if !info.icon && dynamicMapping?.length === 1}
     <span
       {@attach hasPopover ? actionTooltip(popover) : null}
+      class:in-text={display === "inline-text"}
+      class:error={info.code > 1023}
+      class:warn={!retrievedInfo}
       class:left={info.variant === "left"}
       class:right={info.variant === "right"}>{dynamicMapping}</span
     >
   {:else if !info.icon && info.id?.length === 1}
     <span
       {@attach hasPopover ? actionTooltip(popover) : null}
+      class:in-text={display === "inline-text"}
+      class:error={info.code > 1023}
+      class:warn={!retrievedInfo}
       class:left={info.variant === "left"}
       class:right={info.variant === "right"}>{info.id}</span
     >
   {:else}
     <kbd
       class="inline-kbd"
+      class:in-text={display === "inline-text"}
       class:left={info.variant === "left"}
       class:right={info.variant === "right"}
       class:icon={!!info.icon}
+      class:warn={!retrievedInfo}
+      class:error={info.code > 1023}
       {@attach hasPopover ? actionTooltip(popover) : null}
     >
       {@render kbdText()}
@@ -93,7 +125,7 @@
   {:else}
     {@render inlineKbdSnippet()}
   {/if}
-{:else if display === "inline-keys"}
+{:else if display === "inline-keys" || display === "inline-text"}
   {@render inlineKbdSnippet()}
 {/if}
 
@@ -102,6 +134,23 @@
     transition: color 250ms ease;
     padding-block: auto;
     height: 24px;
+
+    &.in-text {
+      display: inline-flex;
+      vertical-align: middle;
+      margin-block: auto;
+      padding-block: revert;
+    }
+  }
+
+  .warn:not(.error) {
+    border-color: var(--md-sys-color-error);
+    color: var(--md-sys-color-error);
+  }
+
+  .error {
+    opacity: 0.6;
+    text-decoration: line-through;
   }
 
   .left {
@@ -113,6 +162,10 @@
 
   .inline-kbd {
     margin-inline-end: 2px;
+
+    &.in-text.icon {
+      translate: 0 -4em;
+    }
   }
 
   :global(span) + .inline-kbd {

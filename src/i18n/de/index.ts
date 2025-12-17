@@ -6,7 +6,7 @@ const de = {
   saveActions: {
     UNDO: "Rückgängig (<kbd class='icon'>shift</kbd> halten um alle Änderungen rückgängig zu machen)",
     REDO: "Wiederholen",
-    SAVE: "Speichern",
+    SAVE: "Anwended",
   },
   update: {
     TITLE: "Gerät aktualisieren",

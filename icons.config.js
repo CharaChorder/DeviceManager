@@ -96,6 +96,7 @@ const config = {
     "undo",
     "redo",
     "replay",
+    "clock_loader_80",
     "reply",
     "navigate_before",
     "navigate_next",

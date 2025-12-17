@@ -52,9 +52,21 @@
 
   onMount(async () => {
     theme.subscribe((it) => {
-      const theme = themeFromSourceColor(argbFromHex(it.color));
+      const theme = themeFromSourceColor(argbFromHex(it.color), [
+        {
+          name: "success",
+          value: argbFromHex("#4CAF50"),
+          blend: true,
+        },
+      ]);
       const dark = it.mode === "dark"; // window.matchMedia("(prefers-color-scheme: dark)").matches
       applyTheme(theme, { target: document.body, dark });
+      for (const custom of theme.customColors) {
+        document.body.style.setProperty(
+          `--md-sys-color-${custom.color.name}`,
+          `#${custom.value.toString(16).padStart(8, "0").substring(2)}`,
+        );
+      }
     });
 
     if (import.meta.env.TAURI_FAMILY === undefined) {

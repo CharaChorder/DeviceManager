@@ -1,0 +1,27 @@
+@top Program { Chord* }
+
+ExplicitAction { ExplicitDelimStart (HexNumber | DecimalNumber | ActionId) ExplicitDelimEnd }
+EscapedSingleAction { Escape EscapedLetter }
+Action { SingleLetter | ExplicitAction | EscapedSingleAction }
+ActionString { Action* }
+ChordInput { (ActionString CompoundDelim)* ActionString }
+ChordPhrase { ActionString }
+Chord { ChordInput PhraseDelim ChordPhrase ChordDelim }
+
+@tokens {
+  @precedence {HexNumber, DecimalNumber}
+  @precedence {CompoundDelim, PhraseDelim, ExplicitDelimStart, ChordDelim, SingleLetter}
+  @precedence {EscapedLetter}
+  ExplicitDelimStart {"<"}
+  ExplicitDelimEnd {">"}
+  CompoundDelim {"+>"}
+  PhraseDelim {"=>"}
+  Escape { "\\" }
+  HexNumber { "0x" $[a-fA-F0-9]+ }
+  DecimalNumber { $[0-9]+ }
+  ActionId { $[a-zA-Z_]$[a-zA-Z0-9_]* }
+  SingleLetter { ![\\] }
+  EscapedLetter { ![] }
+  ChordDelim { ($[\n] | @eof) }
+}
+

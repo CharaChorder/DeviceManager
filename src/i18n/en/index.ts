@@ -7,7 +7,7 @@ const en = {
   saveActions: {
     UNDO: "Undo (hold <kbd class='icon'>shift</kbd> to undo all changes)",
     REDO: "Redo",
-    SAVE: "Save",
+    SAVE: "Apply",
   },
   update: {
     TITLE: "Update your device",
