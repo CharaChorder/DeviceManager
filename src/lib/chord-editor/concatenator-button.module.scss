@@ -1,0 +1,13 @@
+.concatenator-button {
+  display: inline;
+  opacity: calc(var(--auto-space-show, 0) * 0.7);
+  margin: 0;
+  padding: 4px;
+  height: auto;
+
+  > :global(kbd) {
+    outline: 1px dashed var(--md-sys-color-outline);
+    outline-offset: -1px;
+    background: none;
+  }
+}

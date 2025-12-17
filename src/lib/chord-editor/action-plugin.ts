@@ -11,19 +11,12 @@ import { syntaxTree } from "@codemirror/language";
 import type { Range } from "@codemirror/state";
 
 export class ActionWidget extends WidgetType {
-  component: {};
-  element: HTMLElement;
+  component?: {};
+  element?: HTMLElement;
 
   constructor(readonly id: string | number) {
     super();
     this.id = id;
-    this.element = document.createElement("span");
-    this.element.style.paddingInline = "2px";
-
-    this.component = mount(Action, {
-      target: this.element,
-      props: { action: id, display: "keys" },
-    });
   }
 
   override eq(other: ActionWidget) {
@@ -31,6 +24,15 @@ export class ActionWidget extends WidgetType {
   }
 
   toDOM() {
+    if (!this.element) {
+      this.element = document.createElement("span");
+      this.element.style.paddingInline = "2px";
+
+      this.component = mount(Action, {
+        target: this.element,
+        props: { action: this.id, display: "keys", inText: true },
+      });
+    }
     return this.element;
   }
 
@@ -39,7 +41,9 @@ export class ActionWidget extends WidgetType {
   }
 
   override destroy() {
-    unmount(this.component);
+    if (this.component) {
+      unmount(this.component);
+    }
   }
 }
 

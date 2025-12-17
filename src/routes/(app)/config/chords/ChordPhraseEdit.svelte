@@ -12,6 +12,7 @@
   import { action, actionTooltip } from "$lib/title";
   import semverGte from "semver/functions/gte";
   import Action from "$lib/components/Action.svelte";
+  import AutospaceSelector from "$lib/chord-editor/AutospaceSelector.svelte";
 
   let { chord }: { chord: ChordInfo } = $props();
 
@@ -208,36 +209,27 @@
   }}
 >
   {#if supportsAutospace}
-    {#snippet tooltip()}
-      {#if chord.phrase[0] === JOIN_ACTION}
-        <b>Remove</b> preceding space
-      {:else}
-        <b>Keep</b> preceding space
-      {/if}
-    {/snippet}
-    <label class="auto-space-edit" {@attach actionTooltip(tooltip)}
-      ><span class="icon">space_bar</span><input
-        checked={chord.phrase[0] !== JOIN_ACTION}
-        onchange={async (event) => {
-          const autospace = hasAutospace;
-          if ((event.target as HTMLInputElement).checked) {
-            if (chord.phrase[0] === JOIN_ACTION) {
-              deleteAction(0, 1);
-              await tick();
-              moveCursor(cursorPosition - 1, true);
-            }
-          } else {
-            if (chord.phrase[0] !== JOIN_ACTION) {
-              insertAction(0, JOIN_ACTION);
-              moveCursor(cursorPosition + 1, true);
-            }
+    <AutospaceSelector
+      variant="start"
+      value={chord.phrase[0] === JOIN_ACTION}
+      onchange={async (event) => {
+        const autospace = hasAutospace;
+        if ((event.target as HTMLInputElement).checked) {
+          if (chord.phrase[0] === JOIN_ACTION) {
+            deleteAction(0, 1);
+            await tick();
+            moveCursor(cursorPosition - 1, true);
           }
-          await tick();
-          resolveAutospace(autospace);
-        }}
-        type="checkbox"
-      /></label
-    >
+        } else {
+          if (chord.phrase[0] !== JOIN_ACTION) {
+            insertAction(0, JOIN_ACTION);
+            moveCursor(cursorPosition + 1, true);
+          }
+        }
+        await tick();
+        resolveAutospace(autospace);
+      }}
+    />
   {/if}
   <div
     onkeydown={keypress}
@@ -268,21 +260,12 @@
     {/each}
   </div>
   {#if supportsAutospace}
-    {#snippet tooltip()}
-      {#if hasAutospace}
-        <b>Add</b> trailing space
-      {:else}
-        <b>Don't add</b> trailing space
-      {/if}
-    {/snippet}
-    <label class="auto-space-edit" {@attach actionTooltip(tooltip)}
-      ><span class="icon">space_bar</span><input
-        checked={hasAutospace}
-        onchange={(event) =>
-          resolveAutospace((event.target as HTMLInputElement).checked)}
-        type="checkbox"
-      /></label
-    >
+    <AutospaceSelector
+      variant="end"
+      value={!hasAutospace}
+      onchange={(event) =>
+        resolveAutospace((event.target as HTMLInputElement).checked)}
+    />
   {/if}
   <sup>•</sup>
 </div>
@@ -330,24 +313,6 @@
     }
   }
 
-  .auto-space-edit {
-    margin-inline: 8px;
-    border-radius: 4px;
-    background: var(--md-sys-color-tertiary-container);
-    padding-inline: 0;
-    height: 1em;
-    color: var(--md-sys-color-on-tertiary-container);
-    font-size: 1.3em;
-
-    &:has(:checked) {
-      opacity: 0;
-    }
-  }
-
-  .wrapper:hover .auto-space-edit {
-    opacity: 1;
-  }
-
   .wrapper {
     display: flex;
 
@@ -380,8 +345,12 @@
       transition-duration: 250ms;
     }
 
-    &:hover::before {
-      opacity: 0.3;
+    &:hover {
+      --auto-space-show: 1;
+
+      &::before {
+        opacity: 0.3;
+      }
     }
 
     &:has(> :focus-within)::after {

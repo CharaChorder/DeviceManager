@@ -43,6 +43,7 @@
     "@codemirror/view": "^6.38.1",
     "@fontsource-variable/material-symbols-rounded": "^5.2.17",
     "@fontsource-variable/noto-sans-mono": "^5.2.7",
+    "@lezer/common": "^1.4.0",
     "@lezer/generator": "^1.8.0",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.5",

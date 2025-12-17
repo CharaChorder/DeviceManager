@@ -26,15 +26,16 @@
   const showEdits = persistentWritable("chord-editor-show-edits", true);
   let originalDoc = $derived(
     $chords
-      .map(
-        (chord) =>
+      .map((chord) => {
+        return (
           chord.actions
             .filter((it) => it !== 0)
             .map((it) => actionToValue(it))
             .join("") +
           "=>" +
-          chord.phrase.map((it) => actionToValue(it)).join(""),
-      )
+          chord.phrase.map((it) => actionToValue(it)).join("")
+        );
+      })
       .join("\n"),
   );
   let editor: HTMLDivElement | undefined = $state(undefined);
@@ -173,6 +174,11 @@
         var(--md-sys-color-primary) 5%,
         transparent
       ) !important;
+    }
+
+    :global(.cm-activeLine),
+    :global(.cm-line:hover) {
+      --auto-space-show: 1;
     }
 
     :global(.cm-activeLine) {

@@ -2,16 +2,17 @@
   import { KEYMAP_CODES, KEYMAP_IDS } from "$lib/serial/keymap-codes";
   import type { KeyInfo } from "$lib/serial/keymap-codes";
   import { osLayout } from "$lib/os-layout";
-  import { tooltip } from "$lib/hover-popover";
   import { isVerbose } from "./verbose-action";
   import { actionTooltip } from "$lib/title";
 
   let {
     action,
     display,
+    inText = false,
   }: {
     action: string | number | KeyInfo;
-    display: "inline-text" | "inline-keys" | "keys" | "verbose";
+    display: "inline-keys" | "keys" | "verbose";
+    inText?: boolean;
   } = $props();
 
   let retrievedInfo = $derived(
@@ -69,6 +70,7 @@
 {/snippet}
 {#snippet kbdSnippet(withPopover = true)}
   <kbd
+    class:in-text={inText}
     class:icon={!!info.icon}
     class:left={info.variant === "left"}
     class:right={info.variant === "right"}
@@ -83,7 +85,7 @@
   {#if !info.icon && dynamicMapping?.length === 1}
     <span
       {@attach hasPopover ? actionTooltip(popover) : null}
-      class:in-text={display === "inline-text"}
+      class:in-text={inText}
       class:error={info.code > 1023}
       class:warn={!retrievedInfo}
       class:left={info.variant === "left"}
@@ -92,7 +94,7 @@
   {:else if !info.icon && info.id?.length === 1}
     <span
       {@attach hasPopover ? actionTooltip(popover) : null}
-      class:in-text={display === "inline-text"}
+      class:in-text={inText}
       class:error={info.code > 1023}
       class:warn={!retrievedInfo}
       class:left={info.variant === "left"}
@@ -101,7 +103,7 @@
   {:else}
     <kbd
       class="inline-kbd"
-      class:in-text={display === "inline-text"}
+      class:in-text={inText}
       class:left={info.variant === "left"}
       class:right={info.variant === "right"}
       class:icon={!!info.icon}
