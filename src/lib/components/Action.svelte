@@ -155,11 +155,21 @@
     text-decoration: line-through;
   }
 
+  $variant-offset: 12px;
+  $variant-padding: calc(2px + $variant-offset);
+  $variant-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) 50%,
+    transparent
+  );
+
   .left {
-    border-left-width: 3px;
+    padding-inline-end: $variant-padding;
+    text-shadow: $variant-offset 0 2px $variant-color;
   }
   .right {
-    border-right-width: 3px;
+    padding-inline-start: $variant-padding;
+    text-shadow: -$variant-offset 0 2px $variant-color;
   }
 
   .inline-kbd {
