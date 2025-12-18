@@ -5,8 +5,8 @@ import { type ChordInfo, chords } from "$lib/undo-redo";
 import { derived } from "svelte/store";
 
 export const words = derived(
-  [chords, osLayout],
-  ([chords, layout]) =>
+  [chords, osLayout, KEYMAP_CODES],
+  ([chords, layout, KEYMAP_CODES]) =>
     new Map<string, ChordInfo>(
       chords
         .map((chord) => ({

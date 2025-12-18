@@ -82,6 +82,7 @@
   function addSpecial(event: MouseEvent) {
     event.stopPropagation();
     selectAction(event, (action) => {
+      if (!chord) return onsubmit([action]);
       changes.update((changes) => {
         changes.push([
           {

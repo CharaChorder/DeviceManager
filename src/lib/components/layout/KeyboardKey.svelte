@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { CompiledLayoutKey } from "$lib/serialization/visual-layout";
+  import type { CompiledLayoutKey } from "$lib/assets/layouts/layout.d.ts";
   import { getContext } from "svelte";
   import type { VisualLayoutConfig } from "./visual-layout.js";
   import KeyText from "$lib/components/layout/KeyText.svelte";
@@ -64,6 +64,7 @@
         [-1, 1],
         [-1, -1],
         [1, -1],
+        [1, 1],
       ]}
     />
   {:else if key.shape === "quarter-circle"}

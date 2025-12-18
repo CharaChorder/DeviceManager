@@ -184,19 +184,6 @@
     margin-inline-start: 2px;
   }
 
-  div[popover] {
-    width: fit-content;
-    max-width: 200px;
-    height: fit-content;
-    text-align: left;
-    text-wrap: break-word;
-
-    small {
-      opacity: 0.8;
-      font-size: 0.9em;
-    }
-  }
-
   .verbose {
     display: flex;
     align-items: center;

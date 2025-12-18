@@ -39,13 +39,6 @@ export default defineConfig({
   define: {
     global: "window",
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: "modern-compiler",
-      },
-    },
-  },
   envPrefix: ["TAURI_", "VITE_"],
   plugins: [
     ViteYaml({ exclude: /\.layout\.yml$/ }),

@@ -56,7 +56,7 @@ export class ReplayRecorder {
 
   finish(trim = true, round = true) {
     return {
-      start: maybeRound(trim ? this.replay[0]?.[2] : this.start, round),
+      start: maybeRound(trim ? this.replay[0]?.[2] : this.start, round) ?? 0,
       finish: maybeRound(
         trim
           ? Math.max(...this.replay.map((it) => it[2] + it[3]))
@@ -74,6 +74,6 @@ export class ReplayRecorder {
             ] as const,
         )
         .sort((a, b) => a[2] - b[2]),
-    };
+    } satisfies Replay;
   }
 }

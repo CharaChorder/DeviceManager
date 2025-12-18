@@ -3,7 +3,6 @@
   import {
     changes,
     ChangeType,
-    chords,
     layout,
     overlay,
     settings,
@@ -11,7 +10,7 @@
   } from "$lib/undo-redo";
   import type { Change, ChordChange } from "$lib/undo-redo";
   import { fly } from "svelte/transition";
-  import { action, actionTooltip } from "$lib/title";
+  import { actionTooltip } from "$lib/title";
   import {
     deviceChords,
     deviceLayout,

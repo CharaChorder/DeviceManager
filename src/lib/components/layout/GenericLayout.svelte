@@ -28,7 +28,7 @@
     console.assert(iconFontSize % 1 === 0, "Icon font size must be an integer");
   }
 
-  let { layoutInfo }: { layout: CompiledLayout } = $props();
+  let { layoutInfo }: { layoutInfo: CompiledLayout } = $props();
 
   function getCenter(key: CompiledLayoutKey): [x: number, y: number] {
     return [key.pos[0] + key.size[0] / 2, key.pos[1] + key.size[1] / 2];

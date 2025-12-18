@@ -74,6 +74,7 @@ export interface E2eTestItem {
   press?: string[];
   release?: string[];
   step?: number;
+  skip?: number;
   idle?: boolean;
   clearChords?: boolean;
   addChords?: E2eAddChord[];
@@ -107,7 +108,7 @@ export interface VersionMeta {
   actions: KeymapCategory[];
   settings: SettingsMeta[];
   changelog: Changelog;
-  recipes?: E2eTest[];
+  recipes?: E2eDemo[];
   factoryDefaults?: {
     layout: CharaLayoutFile;
     settings: CharaSettingsFile;

@@ -4,8 +4,8 @@
 
   let recipes = $derived(
     $deviceMeta?.recipes?.toSorted((a, b) => {
-      if (a.demo == null) return 1;
-      if (b.demo == null) return -1;
+      if (!a.demo?.title) return 1;
+      if (!b.demo?.title) return -1;
       return a.demo.title.localeCompare(b.demo.title);
     }),
   );

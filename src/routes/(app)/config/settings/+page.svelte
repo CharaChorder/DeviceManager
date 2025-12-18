@@ -1,6 +1,4 @@
 <script lang="ts">
-  import Action from "$lib/components/Action.svelte";
-  import { popup } from "$lib/popup";
   import { deviceMeta, serialPort } from "$lib/serial/connection";
   import { setting } from "$lib/setting";
   import ResetPopup from "./ResetPopup.svelte";
@@ -14,8 +12,7 @@
     restoreBackup,
     restoreFromFile,
   } from "$lib/backup/backup";
-  import { preference } from "$lib/preferences";
-  import { action } from "$lib/title";
+  import { actionTooltip } from "$lib/title";
   import { fly } from "svelte/transition";
   import type { SettingsItemMeta } from "$lib/meta/types/meta";
 
@@ -96,7 +93,9 @@
                     />{item.unit}
                   </div>
                 {/if}
-                <div class="title">{titlecase(item.name)}</div>
+                {#if item.name}
+                  <div class="title">{titlecase(item.name)}</div>
+                {/if}
                 {#if item.description}
                   <div class="description">{@html item.description}</div>
                 {/if}
@@ -139,7 +138,7 @@
       {#if $serialPort}
         {#if $deviceMeta?.factoryDefaults?.settings}
           <button
-            use:action={{ title: "Reset Settings" }}
+            {@attach actionTooltip("Reset Settings")}
             transition:fly={{ x: -8 }}
             onclick={() =>
               restoreFromFile($deviceMeta.factoryDefaults!.settings)}

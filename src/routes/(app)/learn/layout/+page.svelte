@@ -1,9 +1,6 @@
 <script lang="ts">
-  import { share } from "$lib/share";
-  import tippy from "tippy.js";
-  import { mount, setContext, unmount } from "svelte";
+  import { setContext } from "svelte";
   import Layout from "$lib/components/layout/Layout.svelte";
-  import { charaFileToUriComponent } from "$lib/share/share-url";
   import type { VisualLayoutConfig } from "$lib/components/layout/visual-layout";
   import { writable, derived } from "svelte/store";
   import { layout } from "$lib/undo-redo";
@@ -26,7 +23,7 @@
     const result = new Set<number>();
     for (const layer of layout) {
       for (const key of layer) {
-        result.add(key.action);
+        result.add(key[0].action);
       }
     }
     return [...result];
@@ -39,11 +36,12 @@
     ([layout, currentAction]) => {
       const result: Array<{ layer: number; key: number }> = [];
       for (let layer = 0; layer <= layout.length; layer++) {
-        if (layout[layer] === undefined) {
+        const layerArr = layout[layer];
+        if (layerArr === undefined) {
           continue;
         }
-        for (let key = 0; key <= layout[layer].length; key++) {
-          if (layout[layer][key]?.action === currentAction) {
+        for (let key = 0; key <= layerArr.length; key++) {
+          if (layerArr[key]?.[0].action === currentAction) {
             result.push({ layer, key });
           }
         }

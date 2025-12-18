@@ -1,14 +1,11 @@
 <script lang="ts">
   import CharRecorder from "$lib/charrecorder/CharRecorder.svelte";
-  import { ReplayPlayer } from "$lib/charrecorder/core/player";
   import type { Replay } from "$lib/charrecorder/core/types";
   import ActionString from "$lib/components/ActionString.svelte";
-  import ChordPhraseDisplay from "$lib/components/ChordPhraseDisplay.svelte";
   import type { E2eTest, E2eTestItem } from "$lib/meta/types/meta";
   import { osLayout } from "$lib/os-layout";
   import { deviceMeta } from "$lib/serial/connection";
   import { KEYMAP_IDS } from "$lib/serial/keymap-codes";
-  import type { ChordInfo } from "$lib/undo-redo";
 
   let { test, paused = false }: { test: E2eTest; paused?: boolean } = $props();
 
@@ -224,7 +221,8 @@
     <ul>
       {#each settings as [item, value]}
         <li>
-          {item?.name ?? "Unknown Setting"}: {value?.toString()}
+          {(typeof item === "object" ? item?.name : undefined) ??
+            "Unknown Setting"}: {value?.toString()}
         </li>
       {/each}
     </ul>
@@ -285,26 +283,6 @@
         transition: none;
       }
     }
-  }
-
-  .details {
-    position: absolute;
-    transform-origin: top;
-    scale: 1 0.5;
-    z-index: 1;
-    margin-left: -17px;
-    border: 1px solid var(--md-sys-color-outline);
-    border-top: none;
-    background-color: var(--md-sys-color-surface);
-    padding: 16px;
-    width: calc(100% + 2px);
-  }
-
-  summary {
-    cursor: pointer;
-    margin-top: 0.5rem;
-    font-weight: bold;
-    user-select: none;
   }
 
   .replay {

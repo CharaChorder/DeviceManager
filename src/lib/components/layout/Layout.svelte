@@ -1,13 +1,13 @@
 <script lang="ts">
   import { deviceMeta, serialPort } from "$lib/serial/connection";
-  import { action } from "$lib/title";
+  import { actionTooltip } from "$lib/title";
   import GenericLayout from "$lib/components/layout/GenericLayout.svelte";
   import { activeProfile, activeLayer } from "$lib/serial/connection";
   import { fade, fly } from "svelte/transition";
   import { restoreFromFile } from "$lib/backup/backup";
   import type { CompiledLayout } from "$lib/assets/layouts/layout.d.ts";
 
-  const layouts = {
+  const layouts: Record<string, (() => Promise<CompiledLayout>) | undefined> = {
     ONE: () =>
       import("$lib/assets/layouts/one.layout.yml").then(
         (it) => it.default as CompiledLayout,
@@ -45,7 +45,7 @@
 
 <div class="container">
   {#if $serialPort}
-    {#await layouts[$serialPort.device]() then layoutInfo}
+    {#await layouts[$serialPort.device]?.() then layoutInfo}
       <fieldset transition:fade>
         <div class="layers">
           {#each Array.from({ length: $serialPort.layerCount }, (_, i) => i) as layer}
@@ -65,7 +65,7 @@
         </div>
         {#if $deviceMeta?.factoryDefaults?.layout}
           <button
-            use:action={{ title: "Reset Layout" }}
+            {@attach actionTooltip("Reset Layout")}
             transition:fly={{ x: -8 }}
             class="icon reset-layout"
             onclick={() =>
@@ -75,7 +75,9 @@
         {/if}
       </fieldset>
 
-      <GenericLayout {layoutInfo} />
+      {#if layoutInfo}
+        <GenericLayout {layoutInfo} />
+      {/if}
     {/await}
   {/if}
 </div>

@@ -1,10 +1,10 @@
 <script lang="ts">
   import { browser, version } from "$app/environment";
-  import { action } from "$lib/title";
+  import { actionTooltip } from "$lib/title";
   import LL, { setLocale } from "$i18n/i18n-svelte";
   import { theme } from "$lib/preferences.js";
   import type { Locales } from "$i18n/i18n-types";
-  import { detectLocale, locales } from "$i18n/i18n-util";
+  import { detectLocale } from "$i18n/i18n-util";
   import { loadLocaleAsync } from "$i18n/i18n-util.async";
   import { tick } from "svelte";
   import {
@@ -54,15 +54,13 @@
       $serialPort = undefined;
     }
   }
-
-  let languageSelect: HTMLSelectElement;
 </script>
 
 <footer>
   <ul>
     <li>
       <a
-        use:action={{ title: "Branch" }}
+        {@attach actionTooltip("Branch")}
         href={import.meta.env.VITE_HOMEPAGE_URL}
         rel="noreferrer"
         target="_blank"><span class="icon">commit</span> v{version}</a
@@ -71,7 +69,7 @@
     <li>
       <a
         href="/ccos/{currentDevice ? `${currentDevice}/` : ''}"
-        use:action={{ title: "Updates" }}
+        {@attach actionTooltip("Updates")}
       >
         CCOS {$serialPort?.version ?? "Updates"}
       </a>
@@ -94,12 +92,13 @@
         <ConnectPopup />
       </div>
     {:else}
+      {#snippet disconnectTooltip()}
+        Disconnect<br /><kbd class="icon">shift</kbd> Sync
+      {/snippet}
       <button
         transition:slide={{ axis: "x" }}
         onclick={disconnect}
-        use:action={{
-          title: "Disconnect<br><kbd class='icon'>shift</kbd> Sync",
-        }}
+        {@attach actionTooltip(disconnectTooltip)}
         ><b
           >{$serialPort.company}
           {$serialPort.device}
@@ -129,7 +128,7 @@
     </li>
     <li class="hide-forced-colors">
       <input
-        use:action={{ title: $LL.profile.theme.COLOR_SCHEME() }}
+        {@attach actionTooltip($LL.profile.theme.COLOR_SCHEME())}
         type="color"
         bind:value={$theme.color}
       />
@@ -137,7 +136,7 @@
     <li class="hide-forced-colors">
       {#if $theme.mode === "light"}
         <button
-          use:action={{ title: $LL.profile.theme.DARK_MODE() }}
+          {@attach actionTooltip($LL.profile.theme.DARK_MODE())}
           class="icon"
           onclick={switchTheme}
         >
@@ -145,7 +144,7 @@
         </button>
       {:else if $theme.mode === "dark"}
         <button
-          use:action={{ title: $LL.profile.theme.LIGHT_MODE() }}
+          {@attach actionTooltip($LL.profile.theme.LIGHT_MODE())}
           class="icon"
           onclick={switchTheme}
         >
@@ -153,22 +152,6 @@
         </button>
       {/if}
     </li>
-    <!--<li>
-      <div
-        role="button"
-        class="icon"
-        use:action={{ title: $LL.profile.LANGUAGE() }}
-        onclick={() => languageSelect.click()}
-      >
-        translate
-
-        <select bind:value={locale} bind:this={languageSelect}>
-          {#each locales as code}
-            <option value={code}>{code}</option>
-          {/each}
-        </select>
-      </div>
-    </li>-->
   </ul>
 </footer>
 
@@ -230,14 +213,6 @@
 
   progress::-webkit-progress-value {
     background: var(--md-sys-color-primary);
-  }
-
-  .warning {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    color: var(--md-sys-color-error);
   }
 
   input[type="color"] {

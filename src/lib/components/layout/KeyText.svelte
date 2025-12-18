@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { Writable } from "svelte/store";
   import type { VisualLayoutConfig } from "$lib/components/layout/visual-layout";
-  import type { CompiledLayoutKey } from "$lib/serialization/visual-layout";
+  import type { CompiledLayoutKey } from "$lib/assets/layouts/layout.d.ts";
   import { layout } from "$lib/undo-redo.js";
   import { osLayout } from "$lib/os-layout.js";
   import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
-  import { action } from "$lib/title";
+  import { actionTooltip } from "$lib/title";
   import { activeProfile, activeLayer } from "$lib/serial/connection";
   import { getContext } from "svelte";
 
@@ -28,7 +28,12 @@
     middle: [number, number];
     pos: [number, number];
     rotate: number;
-    positions: [[number, number], [number, number], [number, number]];
+    positions: [
+      [number, number],
+      [number, number],
+      [number, number],
+      [number, number],
+    ];
   } = $props();
 </script>
 
@@ -67,7 +72,7 @@
       ? "0 0 0"
       : `${direction[0]?.toPrecision(2)}px ${direction[1]?.toPrecision(2)}px 0`}
     style:rotate="{rotate}deg"
-    use:action={{ title: tooltip }}
+    {@attach actionTooltip(tooltip)}
   >
     {#if code !== 0 && code != 1023}
       {dynamicMapping || icon || display || id || `0x${code.toString(16)}`}

@@ -131,8 +131,6 @@
 <div class="layout">
   <Sidebar />
 
-  <!-- <PickChangesDialog /> -->
-
   <PageTransition>
     {#if children}
       {@render children()}

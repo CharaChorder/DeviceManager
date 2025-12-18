@@ -7,6 +7,7 @@
   import SharePopup from "../SharePopup.svelte";
   import type { VisualLayoutConfig } from "$lib/components/layout/visual-layout";
   import { layout } from "$lib/undo-redo";
+  import { activeProfile } from "$lib/serial/connection";
 
   async function shareLayout(event: Event) {
     const url = new URL(window.location.href);
@@ -16,11 +17,9 @@
         charaVersion: 1,
         type: "layout",
         device: "one",
-        layout: $layout.map((it) => it.map((it) => it.action)) as [
-          number[],
-          number[],
-          number[],
-        ],
+        layout: $layout[$activeProfile]?.map((it) =>
+          it.map((it) => it.action),
+        ) as [number[], number[], number[]],
       }),
     );
     await navigator.clipboard.writeText(url.toString());

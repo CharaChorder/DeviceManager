@@ -9,7 +9,7 @@
   import { onMount } from "svelte";
   import ActionListItem from "$lib/components/ActionListItem.svelte";
   import LL from "$i18n/i18n-svelte";
-  import { action } from "$lib/title";
+  import { actionTooltip } from "$lib/title";
   import { get } from "svelte/store";
   import type { KeymapCategory } from "$lib/meta/types/actions";
   import Action from "../Action.svelte";
@@ -26,7 +26,7 @@
     currentAction?: number;
     nextAction?: number;
     autofocus?: boolean;
-    onselect: (id: number) => void;
+    onselect?: (id: number) => void;
     onclose?: () => void;
   } = $props();
 
@@ -84,13 +84,13 @@
 
   function select(id?: number) {
     if (id !== undefined) {
-      onselect(id);
+      onselect?.(id);
     }
   }
 
   function keyboardNavigation(event: KeyboardEvent) {
     if (event.shiftKey && event.key === "Enter" && exact !== undefined) {
-      onselect(exact);
+      onselect?.(exact);
     } else if (event.key === "ArrowDown") {
       const element =
         resultList.querySelector("li:focus-within")?.nextSibling ??
@@ -131,11 +131,11 @@
       placeholder={$LL.actionSearch.PLACEHOLDER()}
     />
     {#if onclose}
-      <button onclick={() => select(0)} use:action={{ shortcut: "shift+esc" }}
+      <button onclick={() => select(0)} {@attach actionTooltip("", "shift+esc")}
         >{$LL.actionSearch.DELETE()}</button
       >
       <button
-        use:action={{ title: $LL.modal.CLOSE(), shortcut: "esc" }}
+        {@attach actionTooltip($LL.modal.CLOSE(), "esc")}
         class="icon"
         onclick={onclose}>close</button
       >
@@ -176,9 +176,9 @@
             {#each actions as action (action.code)}
               <button
                 class="action-item"
-                draggable="true"
+                draggable={!onclose}
                 onclick={() => select(action.code)}
-                ondragstart={onselect === undefined
+                ondragstart={onclose === undefined
                   ? (event) => {
                       if (!event.dataTransfer) return;
                       event.stopPropagation();
@@ -202,50 +202,15 @@
 </div>
 
 <style lang="scss">
-  .filters {
-    display: flex;
-    gap: 4px;
-    border: none;
-
-    label {
-      border: 1px solid currentcolor;
-      border-radius: 6px;
-      padding-inline: 4px;
-      padding-block: 2px;
-      height: unset;
-
-      font-size: 14px;
-
-      &:has(:checked) {
-        background: var(--md-sys-color-secondary);
-        color: var(--md-sys-color-on-secondary);
-      }
-
-      input {
-        display: none;
-      }
-    }
-  }
-
   .action-item {
-    cursor: grab;
     margin: 0;
     padding: 0;
     height: auto;
     font: inherit;
-  }
 
-  dialog {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    border: none;
-
-    background: rgba(0 0 0 / 60%);
-
-    width: 100%;
-    height: 100%;
+    &[draggable="true"] {
+      cursor: grab;
+    }
   }
 
   aside {

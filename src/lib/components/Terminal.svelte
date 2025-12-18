@@ -9,7 +9,7 @@
 
   function submit(event: Event) {
     event.preventDefault();
-    $serialPort?.send(0, value.trim());
+    $serialPort?.send(0, [value.trim()]);
     value = "";
     io.scrollTo({ top: io.scrollHeight });
   }

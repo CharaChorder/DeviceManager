@@ -1,8 +1,8 @@
 <script lang="ts">
   import { KEYMAP_CODES, type KeyInfo } from "$lib/serial/keymap-codes";
-  import FlexSearch from "flexsearch";
+  import FlexSearch, { type Index } from "flexsearch";
   import LL from "$i18n/i18n-svelte";
-  import { action } from "$lib/title";
+  import { actionTooltip } from "$lib/title";
   import { onDestroy, onMount, setContext, tick } from "svelte";
   import { changes, ChangeType, chords } from "$lib/undo-redo";
   import type { ChordChange, ChordInfo } from "$lib/undo-redo";
@@ -38,7 +38,7 @@
   });
 
   let index = new FlexSearch.Index();
-  let searchIndex = writable<FlexSearch.Index | undefined>(undefined);
+  let searchIndex = writable<Index | undefined>(undefined);
   $effect(() => {
     abortIndexing?.();
     progress = 0;
@@ -129,7 +129,7 @@
     chords: ChordInfo[],
     osLayout: Map<string, string>,
     codes: Map<number, KeyInfo>,
-  ): Promise<FlexSearch.Index> {
+  ): Promise<Index> {
     if (chords.length === 0 || !browser) return index;
 
     index = new FlexSearch.Index({
@@ -185,7 +185,7 @@
   const searchFilter = writable<number[] | undefined>(undefined);
   let currentSearchQuery = $state("");
 
-  async function search(index: FlexSearch.Index, event: Event) {
+  async function search(index: Index, event: Event) {
     const query = (event.target as HTMLInputElement).value;
     currentSearchQuery = query;
     searchFilter.set(
@@ -296,12 +296,12 @@
   <button
     class="icon"
     onclick={() => (page = Math.max(page - 1, 0))}
-    use:action={{ shortcut: "ctrl+left" }}>navigate_before</button
+    {@attach actionTooltip("", "ctrl+left")}>navigate_before</button
   >
   <button
     class="icon"
     onclick={() => (page = Math.min(page + 1, $lastPage))}
-    use:action={{ shortcut: "ctrl+right" }}>navigate_next</button
+    {@attach actionTooltip("", "ctrl+right")}>navigate_next</button
   >
 </div>
 
@@ -368,10 +368,6 @@
     display: flex;
     justify-content: flex-end;
     min-width: 8ch;
-  }
-
-  .new-chord :global(.add) {
-    visibility: hidden;
   }
 
   .sidebar {

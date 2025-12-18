@@ -9,7 +9,7 @@
     learnConfig,
     learnConfigStored,
   } from "$lib/learn/chords";
-  import { blur, fade } from "svelte/transition";
+  import { fade } from "svelte/transition";
   import ChordActionEdit from "../../config/chords/ChordActionEdit.svelte";
   import TrackChords from "$lib/charrecorder/TrackChords.svelte";
   import type { InferredChord } from "$lib/charrecorder/core/types";
@@ -144,7 +144,7 @@
     <tbody>
       {#each Object.entries($scores)
         .sort(([, a], [, b]) => b.lastTyped - a.lastTyped)
-        .splice(0, 10) as [word, score]}
+        .splice(0, 10) as [word, _score]}
         <tr class="decay">
           <td>{word}</td>
         </tr>
@@ -164,16 +164,20 @@
           <td
             ><input
               type="number"
-              value={$learnConfig[key] ?? value}
+              value={$learnConfig[key as keyof typeof $learnConfig] ?? value}
               step="0.1"
               oninput={(event) =>
-                ($learnConfigStored[key] = event.target.value)}
+                ($learnConfigStored[key as keyof typeof $learnConfig] = (
+                  event.target as HTMLInputElement
+                ).value as any)}
             />
           </td>
           <td>
             <button
-              disabled={!$learnConfigStored[key]}
-              onclick={() => ($learnConfigStored[key] = undefined)}>⟲</button
+              disabled={!$learnConfigStored[key as keyof typeof $learnConfig]}
+              onclick={() =>
+                ($learnConfigStored[key as keyof typeof $learnConfigStored] =
+                  undefined)}>⟲</button
             >
           </td>
         </tr>
