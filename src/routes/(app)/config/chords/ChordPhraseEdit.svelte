@@ -1,15 +1,13 @@
 <script lang="ts">
-  import { KEYMAP_CODES } from "$lib/serial/keymap-codes";
+  import { KEYMAP_CODES, KEYMAP_IDS } from "$lib/serial/keymap-codes";
   import { onMount, tick } from "svelte";
   import { changes, ChangeType } from "$lib/undo-redo";
   import type { ChordInfo } from "$lib/undo-redo";
   import { scale } from "svelte/transition";
-  import ActionString from "$lib/components/ActionString.svelte";
   import { selectAction } from "./action-selector";
   import { inputToAction } from "./input-converter";
   import { deviceMeta, serialPort } from "$lib/serial/connection";
   import { get } from "svelte/store";
-  import { action, actionTooltip } from "$lib/title";
   import semverGte from "semver/functions/gte";
   import Action from "$lib/components/Action.svelte";
   import AutospaceSelector from "$lib/chord-editor/AutospaceSelector.svelte";
@@ -26,12 +24,16 @@
   });
 
   function keypress(event: KeyboardEvent) {
+    console.log(event);
     if (!event.shiftKey && event.key === "ArrowUp") {
       addSpecial(event);
     } else if (!event.shiftKey && event.key === "ArrowLeft") {
       moveCursor(cursorPosition - 1, true);
     } else if (!event.shiftKey && event.key === "ArrowRight") {
       moveCursor(cursorPosition + 1, true);
+    } else if (event.key === " " && $KEYMAP_IDS.has("HYPERSPACE")) {
+      insertAction(cursorPosition, $KEYMAP_IDS.get("HYPERSPACE")!.code);
+      tick().then(() => moveCursor(cursorPosition + 1));
     } else if (event.key === "Backspace") {
       deleteAction(cursorPosition - 1, 1, true);
       moveCursor(cursorPosition - 1, true);

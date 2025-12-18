@@ -7,6 +7,7 @@ import ViteYaml from "@modyfi/vite-plugin-yaml";
 import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
 import { lezerGrammarPlugin } from "./vite-plugin-lezer";
+import { layoutPlugin } from "./vite-plugin-layout";
 
 const isTauri = "TAURI_FAMILY" in process.env;
 console.info(isTauri ? "Building for Tauri" : "Building for PWA");
@@ -47,7 +48,8 @@ export default defineConfig({
   },
   envPrefix: ["TAURI_", "VITE_"],
   plugins: [
-    ViteYaml(),
+    ViteYaml({ exclude: /\.layout\.yml$/ }),
+    layoutPlugin(),
     sveltekit(),
     lezerGrammarPlugin(),
     ...(isTauri

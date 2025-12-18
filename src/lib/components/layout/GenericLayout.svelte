@@ -1,9 +1,4 @@
 <script lang="ts">
-  import { compileLayout } from "$lib/serialization/visual-layout";
-  import type {
-    VisualLayout,
-    CompiledLayoutKey,
-  } from "$lib/serialization/visual-layout";
   import { deviceLayout } from "$lib/serial/connection";
   import { dev } from "$app/environment";
   import ActionSelector from "$lib/components/layout/ActionSelector.svelte";
@@ -15,6 +10,10 @@
   import { fly } from "svelte/transition";
   import { expoOut } from "svelte/easing";
   import { activeLayer, activeProfile } from "$lib/serial/connection";
+  import type {
+    CompiledLayout,
+    CompiledLayoutKey,
+  } from "$lib/assets/layouts/layout.d.ts";
 
   const { scale, margin, strokeWidth, fontSize, iconFontSize } =
     getContext<VisualLayoutConfig>("visual-layout-config");
@@ -29,8 +28,7 @@
     console.assert(iconFontSize % 1 === 0, "Icon font size must be an integer");
   }
 
-  let { visualLayout }: { visualLayout: VisualLayout } = $props();
-  let layoutInfo = $state(compileLayout(visualLayout));
+  let { layoutInfo }: { layout: CompiledLayout } = $props();
 
   function getCenter(key: CompiledLayoutKey): [x: number, y: number] {
     return [key.pos[0] + key.size[0] / 2, key.pos[1] + key.size[1] / 2];

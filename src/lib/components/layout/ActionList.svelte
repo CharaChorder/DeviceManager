@@ -32,6 +32,9 @@
 
   onMount(() => {
     search();
+    if (autofocus) {
+      searchBox.focus();
+    }
   });
 
   const index = new FlexSearch.Index({ tokenize: "full" });
@@ -122,7 +125,6 @@
     <!-- svelte-ignore a11y_autofocus -->
     <input
       type="search"
-      {autofocus}
       bind:this={searchBox}
       oninput={search}
       onkeypress={keyboardNavigation}
@@ -175,16 +177,19 @@
               <button
                 class="action-item"
                 draggable="true"
-                ondragstart={(event) => {
-                  if (!event.dataTransfer) return;
-                  event.stopPropagation();
-                  event.dataTransfer.dropEffect = "copy";
-                  event.dataTransfer.clearData();
-                  event.dataTransfer.setData(
-                    "text/plain",
-                    actionToValue(action.code),
-                  );
-                }}
+                onclick={() => select(action.code)}
+                ondragstart={onselect === undefined
+                  ? (event) => {
+                      if (!event.dataTransfer) return;
+                      event.stopPropagation();
+                      event.dataTransfer.dropEffect = "copy";
+                      event.dataTransfer.clearData();
+                      event.dataTransfer.setData(
+                        "text/plain",
+                        actionToValue(action.code),
+                      );
+                    }
+                  : undefined}
               >
                 <Action {action} display="verbose"></Action>
               </button>

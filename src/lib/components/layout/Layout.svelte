@@ -3,49 +3,49 @@
   import { action } from "$lib/title";
   import GenericLayout from "$lib/components/layout/GenericLayout.svelte";
   import { activeProfile, activeLayer } from "$lib/serial/connection";
-  import type { VisualLayout } from "$lib/serialization/visual-layout";
   import { fade, fly } from "svelte/transition";
   import { restoreFromFile } from "$lib/backup/backup";
+  import type { CompiledLayout } from "$lib/assets/layouts/layout.d.ts";
 
   const layouts = {
     ONE: () =>
-      import("$lib/assets/layouts/one.yml").then(
-        (it) => it.default as VisualLayout,
+      import("$lib/assets/layouts/one.layout.yml").then(
+        (it) => it.default as CompiledLayout,
       ),
     TWO: () =>
-      import("$lib/assets/layouts/one.yml").then(
-        (it) => it.default as VisualLayout,
+      import("$lib/assets/layouts/one.layout.yml").then(
+        (it) => it.default as CompiledLayout,
       ),
     LITE: () =>
-      import("$lib/assets/layouts/lite.yml").then(
-        (it) => it.default as VisualLayout,
+      import("$lib/assets/layouts/lite.layout.yml").then(
+        (it) => it.default as CompiledLayout,
       ),
     X: () =>
-      import("$lib/assets/layouts/generic/103-key.yml").then(
-        (it) => it.default as VisualLayout,
+      import("$lib/assets/layouts/103-key.layout.yml").then(
+        (it) => it.default as CompiledLayout,
       ),
     ZERO: () =>
-      import("$lib/assets/layouts/generic/103-key.yml").then(
-        (it) => it.default as VisualLayout,
+      import("$lib/assets/layouts/103-key.layout.yml").then(
+        (it) => it.default as CompiledLayout,
       ),
     M4G: () =>
-      import("$lib/assets/layouts/m4g.yml").then(
-        (it) => it.default as VisualLayout,
+      import("$lib/assets/layouts/m4g.layout.yml").then(
+        (it) => it.default as CompiledLayout,
       ),
     M4GR: () =>
-      import("$lib/assets/layouts/m4gr.yml").then(
-        (it) => it.default as VisualLayout,
+      import("$lib/assets/layouts/m4gr.layout.yml").then(
+        (it) => it.default as CompiledLayout,
       ),
     T4G: () =>
-      import("$lib/assets/layouts/t4g.yml").then(
-        (it) => it.default as VisualLayout,
+      import("$lib/assets/layouts/t4g.layout.yml").then(
+        (it) => it.default as CompiledLayout,
       ),
   };
 </script>
 
 <div class="container">
   {#if $serialPort}
-    {#await layouts[$serialPort.device]() then visualLayout}
+    {#await layouts[$serialPort.device]() then layoutInfo}
       <fieldset transition:fade>
         <div class="layers">
           {#each Array.from({ length: $serialPort.layerCount }, (_, i) => i) as layer}
@@ -75,7 +75,7 @@
         {/if}
       </fieldset>
 
-      <GenericLayout {visualLayout} />
+      <GenericLayout {layoutInfo} />
     {/await}
   {/if}
 </div>

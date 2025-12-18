@@ -67,13 +67,13 @@
 <label><input type="checkbox" bind:checked={$showEdits} />Show edits</label>
 
 <div class="split">
+  <ActionList />
   <div
     class="editor"
     class:hide-edits={!$showEdits}
     class:raw={$rawCode}
     bind:this={editor}
   ></div>
-  <ActionList />
 </div>
 
 <style lang="scss">
@@ -82,13 +82,12 @@
     gap: 1rem;
     height: 100%;
 
-    > :global(:last-child) {
+    > :global(:first-child) {
       max-width: 600px;
     }
   }
 
   .editor:not(.raw) :global(.cm-line) {
-    margin-inline: auto;
     width: fit-content;
   }
 

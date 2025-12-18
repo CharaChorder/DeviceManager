@@ -1,3 +1,7 @@
+import type { Plugin, Rollup } from "vite";
+import type { CompiledLayout } from "./src/lib/assets/layouts/layout.d.ts";
+import yaml from "js-yaml";
+
 export interface VisualLayout {
   name: string;
   col: VisualLayoutRow[];
@@ -27,19 +31,21 @@ export interface VisualLayoutSwitch extends Positionable {
   };
 }
 
-export interface CompiledLayout {
-  name: string;
-  size: [number, number];
-  keys: CompiledLayoutKey[];
-}
+const fileRegex = /\.(layout\.yml)$/;
 
-export interface CompiledLayoutKey {
-  id: number;
-  shape: "quarter-circle" | "square";
-  cornerRadius: number;
-  size: [number, number];
-  pos: [number, number];
-  rotate: number;
+export function layoutPlugin() {
+  return {
+    name: "charachorder-layout",
+    transform(code, id) {
+      if (fileRegex.test(id)) {
+        return {
+          code: `const data = ${JSON.stringify(compileLayout(yaml.load(code) as VisualLayout))};\nexport default data;`,
+          map: null,
+        } satisfies Rollup.TransformResult;
+      }
+      return null;
+    },
+  } satisfies Plugin;
 }
 
 export function compileLayout(layout: VisualLayout): CompiledLayout {
@@ -89,14 +95,16 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
             rotate: 90 * i + 45,
           });
         }
-        compiled.keys.push({
-          id: info.switch.d,
-          shape: "square",
-          cornerRadius: 0.5,
-          size: [0.8, 0.8],
-          pos: [x + 0.6 + ox, y + 0.6 + oy],
-          rotate: 0,
-        });
+        if (info.switch.d !== undefined) {
+          compiled.keys.push({
+            id: info.switch.d,
+            shape: "square",
+            cornerRadius: 0.5,
+            size: [0.8, 0.8],
+            pos: [x + 0.6 + ox, y + 0.6 + oy],
+            rotate: 0,
+          });
+        }
 
         x += 2 + ox;
         maxHeight = Math.max(maxHeight, 2 + oy);
