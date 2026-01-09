@@ -2,26 +2,13 @@
   import { chords } from "$lib/undo-redo";
   import { EditorView } from "codemirror";
   import { actionToValue } from "$lib/chord-editor/action-serializer";
-  import { actionPlugin } from "$lib/chord-editor/action-plugin";
-  import { delimPlugin } from "$lib/chord-editor/chord-delim-plugin";
-  import { highlightActiveLine, keymap } from "@codemirror/view";
-  import { history, standardKeymap } from "@codemirror/commands";
   import "$lib/chord-editor/chords.grammar";
-  import {
-    chordHighlightStyle,
-    chordLanguageSupport,
-  } from "$lib/chord-editor/chords-grammar-plugin";
-  import { syntaxHighlighting } from "@codemirror/language";
   import { persistentWritable } from "$lib/storage";
   import ActionList from "$lib/components/layout/ActionList.svelte";
-  import { actionAutocompletePlugin } from "$lib/chord-editor/autocomplete";
-  import {
-    actionLinter,
-    actionLinterDependencies,
-  } from "$lib/chord-editor/action-linter";
-  import { forceLinting } from "@codemirror/lint";
-  import { untrack } from "svelte";
   import { splitCompound } from "$lib/serial/chord";
+  import { loadPersistentState } from "$lib/chord-editor/persistent-state-plugin";
+  import { parsedChordsField } from "$lib/chord-editor/parsed-chords-plugin";
+  import type { CharaChordFile } from "$lib/share/chara-file";
 
   let queryFilter: string | undefined = $state(undefined);
 
@@ -29,8 +16,26 @@
   const showEdits = persistentWritable("chord-editor-show-edits", true);
   const denseSpacing = persistentWritable("chord-editor-spacing", false);
 
-  let originalDoc = $derived(
-    $chords
+  let editor: HTMLDivElement | undefined = $state(undefined);
+  let view: EditorView;
+
+  $effect(() => {
+    if (!editor) return;
+    view = new EditorView({
+      parent: editor,
+      state: loadPersistentState({
+        rawCode: $rawCode,
+        storeName: "chord-editor-state-storage",
+        autocomplete(query) {
+          queryFilter = query;
+        },
+      }),
+    });
+    return () => view.destroy();
+  });
+
+  function regenerate() {
+    const doc = $chords
       .map((chord) => {
         const [actions, compound] = splitCompound(chord.actions);
         return (
@@ -42,63 +47,78 @@
           chord.phrase.map((it) => actionToValue(it)).join("")
         );
       })
-      .join("\n"),
-  );
-  let editor: HTMLDivElement | undefined = $state(undefined);
-  let view: EditorView;
-
-  $effect(() => {
-    if (!editor) return;
-    view = new EditorView({
-      parent: editor,
-      doc: originalDoc,
-      extensions: [
-        ...($rawCode ? [] : [delimPlugin, actionPlugin]),
-        chordLanguageSupport(),
-        actionLinter,
-        // lineNumbers(),
-        actionAutocompletePlugin((query) => {
-          queryFilter = query;
-        }),
-        history(),
-        syntaxHighlighting(chordHighlightStyle),
-        highlightActiveLine(),
-        // drawSelection(),
-        EditorView.theme({
-          ".cm-line": {
-            borderBottom: "1px solid transparent",
-            caretColor: "var(--md-sys-color-on-surface)",
-          },
-          ".cm-scroller": {
-            overflow: "auto",
-            width: "100%",
-            fontFamily: "inherit !important",
-            gap: "8px",
-          },
-          ".cm-content": {
-            width: "100%",
-          },
-          ".cm-cursor": {
-            borderColor: "var(--md-sys-color-on-surface)",
-          },
-        }),
-        keymap.of(standardKeymap),
-      ],
+      .join("\n");
+    view.dispatch({
+      changes: { from: 0, to: view.state.doc.length, insert: doc },
     });
-    return () => view.destroy();
-  });
+  }
 
-  $effect(() => {
-    $actionLinterDependencies;
-    untrack(() => view && forceLinting(view));
-  });
+  function loadBackup(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const backup: CharaChordFile = JSON.parse(content);
+        const doc = backup.chords
+          .map((chord) => {
+            const [actions, compound] = splitCompound(chord[0]);
+            return (
+              (compound
+                ? "<0x" + compound.toString(16).padStart(8, "0") + ">"
+                : "") +
+              actions.map((it) => actionToValue(it)).join("") +
+              "=>" +
+              chord[1].map((it) => actionToValue(it)).join("")
+            );
+          })
+          .join("\n");
+        view.dispatch({
+          changes: { from: 0, to: view.state.doc.length, insert: doc },
+        });
+      } catch (err) {
+        alert("Failed to load backup: " + err);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function downloadBackup() {
+    const backup: CharaChordFile = {
+      charaVersion: 1,
+      type: "chords",
+      chords: view.state.field(parsedChordsField).result,
+    };
+    console.log(JSON.stringify(backup));
+    const blob = new Blob([JSON.stringify(backup)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "chord-backup.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 </script>
 
-<label><input type="checkbox" bind:checked={$rawCode} />Edit as code</label>
-<!--<label><input type="checkbox" bind:checked={$showEdits} />Show edits</label>-->
-<label
-  ><input type="checkbox" bind:checked={$denseSpacing} />Dense Spacing</label
->
+<div style:display="flex">
+  <label><input type="checkbox" bind:checked={$rawCode} />Edit as code</label>
+  <!--<label><input type="checkbox" bind:checked={$showEdits} />Show edits</label>-->
+  <label
+    ><input type="checkbox" bind:checked={$denseSpacing} />Dense Spacing</label
+  >
+  <button onclick={regenerate}>Regenerate from current chords</button>
+  <button onclick={downloadBackup}>Download Backup</button>
+  <input
+    type="file"
+    accept="application/json"
+    onchange={loadBackup}
+    style="margin-left: 1rem"
+  />
+</div>
 
 <div class="split">
   <div
@@ -115,10 +135,11 @@
   .split {
     display: flex;
     gap: 1rem;
+    width: calc(min(100%, 1400px));
     height: 100%;
 
-    > :global(:last-child) {
-      width: min(600px, 30vw);
+    > :global(*) {
+      flex: 1;
     }
   }
 
@@ -127,7 +148,6 @@
   }
 
   .editor {
-    width: min(600px, 30vw);
     height: 100%;
     font-size: 16px;
 

@@ -1,25 +1,33 @@
-import {
-  KEYMAP_CODES,
-  KEYMAP_IDS,
-  type KeyInfo,
-} from "$lib/serial/keymap-codes";
+import { type KeyInfo } from "$lib/serial/keymap-codes";
 import { syntaxTree } from "@codemirror/language";
 import { linter, type Diagnostic } from "@codemirror/lint";
-import { derived, get } from "svelte/store";
-import { parseCharaChords } from "./action-serializer";
-import { deviceChords } from "$lib/serial/connection";
+import { parsedChordsField } from "./parsed-chords-plugin";
+import { actionMetaPlugin } from "./action-meta-plugin";
 
-export const actionLinterDependencies = derived(
-  [KEYMAP_IDS, KEYMAP_CODES, deviceChords],
-  (it) => it,
-);
-
-export const actionLinter = linter(
-  (view) => {
+export function actionLinter(config?: Parameters<typeof linter>[1]) {
+  const finalConfig: Parameters<typeof linter>[1] = {
+    ...config,
+    needsRefresh(update) {
+      console.log(
+        "test",
+        update.startState.field(actionMetaPlugin.field) !==
+          update.state.field(actionMetaPlugin.field),
+        update.startState.field(parsedChordsField) !==
+          update.state.field(parsedChordsField),
+      );
+      return (
+        update.startState.field(actionMetaPlugin.field) !==
+          update.state.field(actionMetaPlugin.field) ||
+        update.startState.field(parsedChordsField) !==
+          update.state.field(parsedChordsField)
+      );
+    },
+  };
+  return linter((view) => {
+    console.log("lint");
     const diagnostics: Diagnostic[] = [];
-    const [ids, codes, deviceChords] = get(actionLinterDependencies);
-
-    const { meta, compoundInputs } = parseCharaChords(view.state, ids);
+    const { ids, codes } = view.state.field(actionMetaPlugin.field);
+    const { meta, compoundInputs } = view.state.field(parsedChordsField);
 
     syntaxTree(view.state)
       .cursor()
@@ -150,7 +158,7 @@ export const actionLinter = linter(
       if (m.emptyPhrase) {
         diagnostics.push({
           from: m.from,
-          to: m.to,
+          to: m.from,
           severity: "warning",
           message: `Chord phrase is empty`,
         });
@@ -158,7 +166,7 @@ export const actionLinter = linter(
       if (m.overriddenBy) {
         diagnostics.push({
           from: m.from,
-          to: m.to,
+          to: m.from,
           severity: "warning",
           message: `Chord overridden by previous chord`,
         });
@@ -166,7 +174,7 @@ export const actionLinter = linter(
       if (m.orphan) {
         diagnostics.push({
           from: m.from,
-          to: m.to,
+          to: m.from,
           severity: "warning",
           message: `Orphan compound chord`,
         });
@@ -183,7 +191,7 @@ export const actionLinter = linter(
       if ((m.overrides?.length ?? 0) > 0) {
         diagnostics.push({
           from: m.from,
-          to: m.to,
+          to: m.from,
           severity: "info",
           message: `Chord overrides other chords`,
         });
@@ -191,6 +199,5 @@ export const actionLinter = linter(
     }
 
     return diagnostics;
-  },
-  { delay: 100 },
-);
+  }, finalConfig);
+}

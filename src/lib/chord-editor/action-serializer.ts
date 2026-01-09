@@ -10,6 +10,7 @@ import type { Update } from "@codemirror/collab";
 import { get } from "svelte/store";
 import {
   composeChordInput,
+  hasConcatenator,
   hashChord,
   splitCompound,
   willBeValidChordInput,
@@ -33,6 +34,7 @@ export function actionToValue(action: number | KeyInfo) {
 export interface ParseMeta {
   from: number;
   to: number;
+  hasConcatenator: boolean;
   invalidActions?: true;
   invalidInput?: true;
   emptyPhrase?: true;
@@ -51,11 +53,14 @@ export interface ParseResult {
 export function parseCharaChords(
   data: EditorState,
   ids: Map<string, KeyInfo>,
+  codes: Map<number, KeyInfo>,
 ): ParseResult {
+  console.time("parseCharaChords");
   const chords: CharaChordFile["chords"] = [];
   const metas: ParseMeta[] = [];
   const keys = new Map<string, number>();
   const compoundInputs = new Map<number, string>();
+  const orphanCompounds = new Set<number>();
 
   let currentChord: CharaChordFile["chords"][number] | undefined = undefined;
   let compound: number | undefined = undefined;
@@ -64,15 +69,16 @@ export function parseCharaChords(
   let invalidInput = false;
   let chordFrom = 0;
 
-  function makeChordInput(node: SyntaxNodeRef): number[] {
+  const makeChordInput = (node: SyntaxNodeRef): number[] => {
     invalidInput ||= !willBeValidChordInput(currentActions.length, !!compound);
     const input = composeChordInput(currentActions, compound);
     compound = hashChord(input);
     if (!compoundInputs.has(compound)) {
       compoundInputs.set(compound, data.doc.sliceString(chordFrom, node.from));
+      orphanCompounds.add(compound);
     }
     return input;
-  }
+  };
 
   syntaxTree(data)
     .cursor()
@@ -125,7 +131,11 @@ export function parseCharaChords(
             currentChord[1] = currentActions;
             const index = chords.length;
             chords.push(currentChord);
-            const meta: ParseMeta = { from: node.from, to: node.to };
+            const meta: ParseMeta = {
+              from: node.from,
+              to: node.to,
+              hasConcatenator: hasConcatenator(currentChord[1], codes),
+            };
             if (invalidActions) {
               meta.invalidActions = true;
             }
@@ -161,18 +171,25 @@ export function parseCharaChords(
           makeChordInput(node);
         } else if (node.name === "PhraseDelim") {
           const input = makeChordInput(node);
-          currentChord = [composeChordInput(input, compound), []];
+          orphanCompounds.delete(hashChord(input));
+          currentChord = [input, []];
         }
       },
     );
 
   for (let i = 0; i < metas.length; i++) {
     const [, compound] = splitCompound(chords[i]![0]);
-    if (compound !== undefined && !compoundInputs.has(compound)) {
+    if (
+      compound !== undefined &&
+      (!compoundInputs.has(compound) || orphanCompounds.has(compound))
+    ) {
       metas[i]!.orphan = true;
     }
   }
 
+  console.timeEnd("parseCharaChords");
+
+  console.log(chords.length);
   return { result: chords, meta: metas, compoundInputs };
 }
 

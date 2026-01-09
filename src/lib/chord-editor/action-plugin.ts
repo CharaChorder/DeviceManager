@@ -12,28 +12,28 @@ import type { Range } from "@codemirror/state";
 
 export class ActionWidget extends WidgetType {
   component?: {};
-  element?: HTMLElement;
 
   constructor(readonly id: string | number) {
     super();
     this.id = id;
   }
 
-  override eq(other: ActionWidget) {
+  /*override eq(other: ActionWidget) {
     return this.id == other.id;
-  }
+  }*/
 
   toDOM() {
-    if (!this.element) {
-      this.element = document.createElement("span");
-      this.element.style.paddingInline = "2px";
-
-      this.component = mount(Action, {
-        target: this.element,
-        props: { action: this.id, display: "keys", inText: true },
-      });
+    if (this.component) {
+      unmount(this.component);
     }
-    return this.element;
+    const element = document.createElement("span");
+    element.style.paddingInline = "2px";
+
+    this.component = mount(Action, {
+      target: element,
+      props: { action: this.id, display: "keys", inText: true },
+    });
+    return element;
   }
 
   override ignoreEvent() {

@@ -1,4 +1,5 @@
 import { compressActions, decompressActions } from "../serialization/actions";
+import type { KeyInfo } from "./keymap-codes";
 
 export interface Chord {
   actions: number[];
@@ -112,6 +113,25 @@ export function willBeValidChordInput(
     inputCount > 0 &&
     inputCount <= maxChordInputItems - (hasCompound ? compoundHashItems + 1 : 0)
   );
+}
+
+const ACTION_JOIN = 574;
+const ACTION_KSC_00 = 256;
+
+export function hasConcatenator(
+  actions: number[],
+  ids: Map<number, KeyInfo>,
+): boolean {
+  const lastAction = actions.at(-1);
+  for (const action of actions) {
+    if (!ids.get(action)?.printable) {
+      if (actions.length == 0) {
+        return false;
+      }
+      return lastAction == ACTION_JOIN;
+    }
+  }
+  return lastAction != ACTION_KSC_00;
 }
 
 /**
