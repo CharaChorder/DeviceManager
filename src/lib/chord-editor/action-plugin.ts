@@ -56,18 +56,16 @@ function actionWidgets(view: EditorView) {
       enter: (node) => {
         if (node.name !== "ExplicitAction") return;
         const value =
-          node.node.getChild("ActionId") ??
-          node.node.getChild("HexNumber") ??
-          node.node.getChild("DecimalNumber");
+          node.node.getChild("ActionId") ?? node.node.getChild("HexNumber");
         if (!value) return;
         if (!node.node.getChild("ExplicitDelimEnd")) {
           return;
         }
-
         const id = view.state.doc.sliceString(value.from, value.to);
+        if (value.name === "HexNumber" && id.length === 10) return;
         let deco = Decoration.replace({
           widget: new ActionWidget(
-            value.name === "ActionId" ? id : parseInt(id),
+            value.name === "ActionId" ? id : Number.parseInt(id, 16),
           ),
         });
         widgets.push(deco.range(node.from, node.to));
