@@ -26,7 +26,7 @@ export class DelimWidget extends WidgetType {
 
   toDOM() {
     if (!this.element) {
-      this.element = document.createElement("span");
+      /*this.element = document.createElement("span");
       this.element.innerHTML =
         "&emsp;⇛" + (this.hasConcatenator ? "" : "&emsp;");
       this.element.style.scale = "1.8";
@@ -41,7 +41,9 @@ export class DelimWidget extends WidgetType {
           props: { action: 574, display: "keys", inText: true, ghost: true },
         });
         this.element.appendChild(button);
-      }
+      }*/
+      this.element = document.createElement("div");
+      this.element.style.breakAfter = "column";
     }
     return this.element;
   }

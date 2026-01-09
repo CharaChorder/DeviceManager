@@ -13,14 +13,7 @@
 
   let isNavigating = $state(false);
 
-  const routeOrder = [
-    "/config",
-    "/learn",
-    "/docs",
-    "/editor",
-    "/chat",
-    "/plugin",
-  ];
+  const routeOrder = ["/config", "/docs", "/editor", "/chat", "/plugin"];
 
   function routeIndex(route: string | undefined): number {
     return routeOrder.findIndex((it) => route?.startsWith(it));
