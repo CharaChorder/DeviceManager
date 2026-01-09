@@ -6,18 +6,15 @@
     layout,
     overlay,
     settings,
-    duplicateChords,
   } from "$lib/undo-redo";
-  import type { Change, ChordChange } from "$lib/undo-redo";
+  import type { Change } from "$lib/undo-redo";
   import { fly } from "svelte/transition";
   import { actionTooltip } from "$lib/title";
   import {
-    deviceChords,
     deviceLayout,
     deviceSettings,
     serialLog,
     serialPort,
-    sync,
     syncProgress,
     syncStatus,
     waitForDevice,
@@ -216,7 +213,6 @@
   }
 
   async function save() {
-    let needsSync = false;
     try {
       const port = $serialPort;
       if (!port) {
@@ -237,10 +233,8 @@
         (acc, profile) => acc + (profile?.size ?? 0),
         0,
       );
-      const chordChanges = $overlay.chords.size;
-      needsSync = chordChanges > 0;
       const needsCommit = settingChanges > 0 || layoutChanges > 0;
-      const progressMax = layoutChanges + settingChanges + chordChanges;
+      const progressMax = layoutChanges + settingChanges;
 
       let progressCurrent = 0;
 
@@ -265,11 +259,9 @@
           layoutSuccess = false;
         }
       }
-      let chordsSuccess = await saveChords(updateProgress);
 
-      if (layoutSuccess && settingsSuccess && chordsSuccess) {
+      if (layoutSuccess && settingsSuccess) {
         changes.set([]);
-        needsSync = true;
       } else {
         throw new Error("Some changes could not be saved.");
       }
@@ -283,10 +275,6 @@
       goto("/terminal");
     } finally {
       $syncStatus = "done";
-    }
-
-    if (needsSync) {
-      await sync();
     }
   }
 

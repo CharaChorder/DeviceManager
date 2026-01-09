@@ -1,22 +1,22 @@
 kbd {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  margin-block: 6px;
-  border-radius: 4px;
-
-  //border: 1px solid currentcolor;
-  background: color-mix(
+  --bg-color: color-mix(
     in srgb,
     var(--md-sys-color-surface-variant) 50%,
     transparent
   );
-  padding: 4px;
+  --border-radius: 4px;
 
+  display: inline-flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  margin-block: 6px;
+  border-radius: var(--border-radius);
+  background: var(--bg-color);
+  padding: 4px;
   height: 20px;
   color: currentcolor;
   font-weight: normal;
-
   font-size: 14px;
 
   &.icon {

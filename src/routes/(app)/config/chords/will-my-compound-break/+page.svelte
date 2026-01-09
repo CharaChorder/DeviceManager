@@ -1,7 +1,5 @@
 <script lang="ts">
   import { serializeActions } from "$lib/serial/chord";
-  import { chords } from "$lib/undo-redo";
-  import ChordEdit from "../ChordEdit.svelte";
 
   export function hashChord(actions: number[]) {
     const chord = new Uint8Array(16);
@@ -17,7 +15,8 @@
   }
 
   const broken = $derived(
-    $chords.filter((it) => (hashChord(it.actions) & 0xff) === 0xff),
+    [],
+    // $chords.filter((it) => (hashChord(it.actions) & 0xff) === 0xff),
   );
 </script>
 
@@ -35,7 +34,7 @@
     >, your library might have been corrupted.
   </p>
   {#each broken as chord}
-    <ChordEdit {chord} onduplicate={() => {}} />
+    <!--<ChordEdit {chord} onduplicate={() => {}} />-->
   {/each}
 {:else}
   <p>No problematic chords found</p>

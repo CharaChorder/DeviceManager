@@ -5,7 +5,6 @@ import {
   HighlightStyle,
 } from "@codemirror/language";
 import { styleTags, tags } from "@lezer/highlight";
-import { actionAutocomplete } from "./autocomplete";
 
 export const chordHighlightStyle = HighlightStyle.define([
   {
@@ -51,7 +50,5 @@ export const chordLanguage = LRLanguage.define({
 });
 
 export function chordLanguageSupport() {
-  return new LanguageSupport(chordLanguage, [
-    chordLanguage.data.of({ autocomplete: actionAutocomplete }),
-  ]);
+  return new LanguageSupport(chordLanguage, [chordLanguage.data.of({})]);
 }
