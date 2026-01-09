@@ -8,10 +8,12 @@
   let {
     action,
     display,
+    ignoreIcon = false,
     inText = false,
   }: {
     action: string | number | KeyInfo;
     display: "inline-keys" | "keys" | "verbose";
+    ignoreIcon?: boolean;
     inText?: boolean;
   } = $props();
 
@@ -30,6 +32,7 @@
           ? ({ code: 1024, id: action } satisfies KeyInfo)
           : action),
   );
+  let icon = $derived(ignoreIcon ? undefined : info.icon);
   let dynamicMapping = $derived(info.keyCode && $osLayout.get(info.keyCode));
   let hasPopover = $derived(
     !retrievedInfo || !info.id || info.title || info.description,
@@ -69,7 +72,7 @@
 
 {#snippet kbdText()}
   {dynamicMapping ??
-    info.icon ??
+    icon ??
     info.display ??
     info.id ??
     `0x${info.code.toString(16)}`}
@@ -77,7 +80,7 @@
 {#snippet kbdSnippet(withPopover = true)}
   <kbd
     class:in-text={inText}
-    class:icon={!!info.icon}
+    class:icon={!!icon}
     class:left={info.variant === "left"}
     class:right={info.variant === "right"}
     class:error={info.code > 1023}
@@ -97,7 +100,7 @@
       class:left={info.variant === "left"}
       class:right={info.variant === "right"}>{dynamicMapping}</span
     >
-  {:else if !info.icon && info.id?.length === 1}
+  {:else if !icon && info.id?.length === 1}
     <span
       {@attach hasPopover ? actionTooltip(popover) : null}
       class:in-text={inText}
@@ -112,7 +115,7 @@
       class:in-text={inText}
       class:left={info.variant === "left"}
       class:right={info.variant === "right"}
-      class:icon={!!info.icon}
+      class:icon={!!icon}
       class:warn={!retrievedInfo}
       class:error={info.code > 1023}
       {@attach hasPopover ? actionTooltip(popover) : null}
@@ -161,21 +164,50 @@
     text-decoration: line-through;
   }
 
-  $variant-offset: 12px;
-  $variant-padding: calc(2px + $variant-offset);
   $variant-color: color-mix(
     in srgb,
     var(--md-sys-color-on-surface) 50%,
     transparent
   );
 
+  .left,
+  .right {
+    background-color: transparent;
+
+    &::before {
+      position: absolute;
+      inset: 0;
+      outline: 2px dashed
+        color-mix(in srgb, var(--bg-color), var(--md-sys-color-outline) 40%);
+      outline-offset: -2px;
+      border-radius: var(--border-radius);
+      content: "";
+    }
+  }
+
+  $cutoff: 60%;
+
   .left {
-    padding-inline-end: $variant-padding;
-    text-shadow: $variant-offset 0 2px $variant-color;
+    background-image: linear-gradient(
+      to right,
+      var(--bg-color) $cutoff,
+      transparent $cutoff
+    );
+
+    &::before {
+      clip-path: inset(0 0 0 $cutoff);
+    }
   }
   .right {
-    padding-inline-start: $variant-padding;
-    text-shadow: -$variant-offset 0 2px $variant-color;
+    background-image: linear-gradient(
+      to left,
+      var(--bg-color) $cutoff,
+      transparent $cutoff
+    );
+
+    &::before {
+      clip-path: inset(0 $cutoff 0 0);
+    }
   }
 
   .inline-kbd {

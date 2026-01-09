@@ -6,18 +6,15 @@
     layout,
     overlay,
     settings,
-    duplicateChords,
   } from "$lib/undo-redo";
-  import type { Change, ChordChange } from "$lib/undo-redo";
+  import type { Change } from "$lib/undo-redo";
   import { fly } from "svelte/transition";
   import { actionTooltip } from "$lib/title";
   import {
-    deviceChords,
     deviceLayout,
     deviceSettings,
     serialLog,
     serialPort,
-    sync,
     syncProgress,
     syncStatus,
   } from "$lib/serial/connection";
@@ -106,115 +103,7 @@
     return true;
   }
 
-  async function safeDeleteChord(actions: number[]): Promise<boolean> {
-    const port = $serialPort;
-    if (!port) return false;
-    try {
-      await port.deleteChord({ actions });
-      return true;
-    } catch (e) {
-      console.error(e);
-      try {
-        if ((await port.getChordPhrase(actions)) === undefined) {
-          return true;
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return false;
-  }
-
-  async function saveChords(progress: () => void): Promise<boolean> {
-    const port = $serialPort;
-    if (!port) return false;
-    let ok = true;
-
-    const empty = new Set<string>();
-    for (const [id, chord] of $overlay.chords) {
-      if (chord.actions.length === 0 || chord.phrase.length === 0) {
-        empty.add(id);
-      }
-    }
-    changes.update((changes) => {
-      changes.push([
-        ...empty.keys().map(
-          (id) =>
-            ({
-              type: ChangeType.Chord,
-              id: JSON.parse(id),
-              deleted: true,
-              actions: [],
-              phrase: [],
-            }) satisfies ChordChange,
-        ),
-      ]);
-      return changes;
-    });
-    await tick();
-
-    const deleted = new Set<string>();
-    const changed = new Map<string, number[]>();
-    for (const [id, chord] of $overlay.chords) {
-      if (!chord.deleted) continue;
-      if (await safeDeleteChord(JSON.parse(id))) {
-        deleted.add(id);
-      } else {
-        ok = false;
-      }
-      progress();
-    }
-    deviceChords.update((chords) =>
-      chords.filter((chord) => !deleted.has(JSON.stringify(chord.actions))),
-    );
-    deleted.clear();
-    await tick();
-
-    for (const [id, chord] of $overlay.chords) {
-      if (chord.deleted) continue;
-      if ($duplicateChords.has(JSON.stringify(chord.actions))) {
-        ok = false;
-      } else {
-        let skip = false;
-        if (id !== JSON.stringify(chord.actions)) {
-          if (await safeDeleteChord(JSON.parse(id))) {
-            deleted.add(id);
-          } else {
-            skip = true;
-            ok = false;
-          }
-        }
-        if (!skip) {
-          try {
-            await port.setChord({
-              actions: chord.actions,
-              phrase: chord.phrase,
-            });
-            deleted.add(JSON.stringify(chord.actions));
-            changed.set(JSON.stringify(chord.actions), chord.phrase);
-          } catch (e) {
-            console.error(e);
-            ok = false;
-          }
-        } else {
-          ok = false;
-        }
-      }
-      progress();
-    }
-    deviceChords.update((chords) => {
-      chords.filter((chord) => !deleted.has(JSON.stringify(chord.actions)));
-      for (const [id, phrase] of changed) {
-        chords.push({ actions: JSON.parse(id), phrase });
-      }
-      return chords;
-    });
-    await tick();
-    return ok;
-  }
-
   async function save() {
-    let needsSync = false;
     try {
       const port = $serialPort;
       if (!port) {
@@ -235,10 +124,8 @@
         (acc, profile) => acc + (profile?.size ?? 0),
         0,
       );
-      const chordChanges = $overlay.chords.size;
-      needsSync = chordChanges > 0;
       const needsCommit = settingChanges > 0 || layoutChanges > 0;
-      const progressMax = layoutChanges + settingChanges + chordChanges;
+      const progressMax = layoutChanges + settingChanges;
 
       let progressCurrent = 0;
 
@@ -261,11 +148,9 @@
           layoutSuccess = false;
         }
       }
-      let chordsSuccess = await saveChords(updateProgress);
 
-      if (layoutSuccess && settingsSuccess && chordsSuccess) {
+      if (layoutSuccess && settingsSuccess) {
         changes.set([]);
-        needsSync = true;
       } else {
         throw new Error("Some changes could not be saved.");
       }
@@ -279,10 +164,6 @@
       goto("/terminal");
     } finally {
       $syncStatus = "done";
-    }
-
-    if (needsSync) {
-      await sync();
     }
   }
 
