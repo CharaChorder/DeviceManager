@@ -8,6 +8,13 @@ export const deviceChordField = StateField.define<CharaChordFile["chords"]>({
     return [];
   },
   update(value, transaction) {
+    // save initial device chords
+    // compare new device chords with initial device chords
+    // take changed/new/removed chords
+    // compare current editor chords with initial device chords
+    // compare two change sets
+    // apply removals if the chord didn't change on either end
+    // apply
     return (
       transaction.effects.findLast((it) => it.is(chordSyncEffect))?.value ??
       value

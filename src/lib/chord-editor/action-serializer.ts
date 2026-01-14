@@ -1,21 +1,20 @@
-import {
-  KEYMAP_CODES,
-  KEYMAP_IDS,
-  type KeyInfo,
-} from "$lib/serial/keymap-codes";
+import { KEYMAP_CODES, type KeyInfo } from "$lib/serial/keymap-codes";
 import type { CharaChordFile } from "$lib/share/chara-file";
 import { syntaxTree } from "@codemirror/language";
-import { StateEffect, ChangeDesc, type EditorState } from "@codemirror/state";
-import type { Update } from "@codemirror/collab";
+import type { EditorState } from "@codemirror/state";
 import { get } from "svelte/store";
 import {
   composeChordInput,
   hasConcatenator,
   hashChord,
-  splitCompound,
   willBeValidChordInput,
 } from "$lib/serial/chord";
-import type { SyntaxNodeRef } from "@lezer/common";
+import type {
+  ActionMeta,
+  ChordMeta,
+  MetaRange,
+  ParseResult,
+} from "./parse-meta";
 
 export function canUseIdAsString(info: KeyInfo): boolean {
   return !!info.id && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(info.id);
@@ -31,153 +30,214 @@ export function actionToValue(action: number | KeyInfo) {
   return `<${info.id}>`;
 }
 
-export interface ParseMeta {
-  from: number;
-  to: number;
-  hasConcatenator: boolean;
-  invalidActions?: true;
-  invalidInput?: true;
-  emptyPhrase?: true;
-  orphan?: true;
-  disabled?: true;
-  overrides?: number[];
-  overriddenBy?: number;
+export function parseChordMeta(
+  data: EditorState,
+  ids: Map<string, KeyInfo>,
+  codes: Map<number, KeyInfo>,
+): ChordMeta[] {
+  console.time("parseChordTree");
+  const result: ChordMeta[] = [];
+
+  let current: ChordMeta = { range: [0, 0], valid: false };
+  let actions: ActionMeta[] = [];
+  let actionRange: MetaRange | undefined = undefined;
+
+  syntaxTree(data)
+    .cursor()
+    .iterate(
+      (node) => {
+        if (node.name === "Action") {
+          actionRange = [node.from, node.to];
+        } else if (node.name === "ChordPhrase") {
+          current.phrase = {
+            range: [node.from, node.to],
+            value: [],
+            valid: true,
+            actions: [],
+            hasConcatenator: false,
+          };
+        } else if (node.name === "Chord") {
+          current = { range: [node.from, node.to], valid: false };
+        } else if (node.name === "ActionString") {
+          actions = [];
+        } else if (node.name === "HexNumber") {
+          const hexString = data.doc.sliceString(node.from, node.to);
+          const code = Number.parseInt(hexString, 16);
+          const parentNode = node.node.parent;
+          if (parentNode?.type.name === "CompoundLiteral") {
+            current.compounds ??= [];
+            current.compounds.push({
+              range: [parentNode.from, parentNode.to],
+              value: code,
+              actions: [],
+              valid: true, // TODO: validate compound literal
+            });
+          } else {
+            const valid = !(Number.isNaN(code) || code < 0 || code > 1023);
+            actions.push({
+              code,
+              info: codes.get(code),
+              explicit: true,
+              valid,
+              range: actionRange!,
+            });
+          }
+        } else if (
+          node.name === "ActionId" ||
+          node.name === "SingleLetter" ||
+          node.name === "EscapedLetter"
+        ) {
+          const id = data.doc.sliceString(node.from, node.to);
+          const info = ids.get(id);
+          const value: ActionMeta = {
+            code: info?.code ?? Number.NaN,
+            info,
+            valid: info !== undefined,
+            range: actionRange!,
+          };
+          if (node.name === "ActionId") {
+            value.explicit = true;
+          }
+          actions.push(value);
+        }
+      },
+      (node) => {
+        if (node.name === "Chord") {
+          result.push(current);
+          if (current.phrase) {
+            current.phrase.actions = actions;
+            current.phrase.value = actions.map(({ code }) => code);
+            current.phrase.valid = actions.every(({ valid }) => valid);
+            current.phrase.hasConcatenator = hasConcatenator(
+              current.phrase.value,
+              codes,
+            );
+          }
+          current.valid =
+            (current.phrase?.valid ?? false) && (current.input?.valid ?? false);
+          if (!current.valid) {
+            current.disabled = true;
+          }
+        } else if (node.name === "CompoundInput") {
+          const lastCompound = current.compounds?.at(-1);
+          current.compounds ??= [];
+          current.compounds.push({
+            range: [node.from, node.to],
+            value: hashChord(
+              composeChordInput(
+                actions.map(({ code }) => code),
+                lastCompound?.value,
+              ),
+            ),
+            actions,
+            valid:
+              willBeValidChordInput(
+                actions.length,
+                lastCompound !== undefined,
+              ) && actions.every(({ valid }) => valid),
+          });
+        } else if (node.name === "ChordInput") {
+          const lastCompound = current.compounds?.at(-1);
+          current.input = {
+            range: [node.from, node.to],
+            value: composeChordInput(
+              actions.map(({ code }) => code),
+              lastCompound?.value,
+            ),
+            valid:
+              willBeValidChordInput(
+                actions.length,
+                lastCompound !== undefined,
+              ) && actions.every(({ valid }) => valid),
+            actions,
+          };
+        }
+      },
+    );
+
+  console.timeEnd("parseChordTree");
+  return result;
 }
 
-export interface ParseResult {
-  result: CharaChordFile["chords"];
-  meta: ParseMeta[];
-  compoundInputs: Map<number, string>;
+function resolveChordOverrides(chords: ChordMeta[]) {
+  console.time("resolveOverrides");
+  const seen = new Map<string, ChordMeta>();
+  for (const info of chords) {
+    if (!info.input || info.disabled) continue;
+    const key = JSON.stringify(info.input.value);
+    const override = seen.get(key);
+    if (override) {
+      override.overrides ??= [];
+      override.overrides.push(info);
+      info.overriddenBy = override;
+      info.disabled = true;
+    } else {
+      seen.set(key, info);
+    }
+  }
+  console.timeEnd("resolveOverrides");
+}
+
+function resolveChordAliases(chords: ChordMeta[]) {
+  console.time("resolveAliases");
+  const aliases = new Map<string, ChordMeta[]>();
+  for (const info of chords) {
+    if (!info.phrase) continue;
+    const key = JSON.stringify(info.phrase.value);
+    const list = aliases.get(key) ?? [];
+    list.push(info);
+    aliases.set(key, list);
+  }
+  for (const aliasList of aliases.values()) {
+    if (aliasList.length > 1) {
+      for (const info of aliasList) {
+        info.aliases = aliasList.filter((i) => i !== info);
+      }
+    }
+  }
+  console.timeEnd("resolveAliases");
+}
+
+function resolveCompoundParents(chords: ChordMeta[]) {
+  console.time("resolveCompoundParents");
+  const compounds = new Map<number, ChordMeta>();
+  for (const chord of chords) {
+    if (chord.input && !chord.disabled) {
+      compounds.set(hashChord(chord.input.value), chord);
+    }
+  }
+  for (const chord of chords) {
+    if (chord.compounds) {
+      for (const compound of chord.compounds) {
+        const parent = compounds.get(compound.value);
+        if (parent) {
+          compound.parent = parent;
+        }
+      }
+      const lastCompound = chord.compounds?.at(-1);
+      if (lastCompound && lastCompound.parent) {
+        lastCompound.parent.children ??= [];
+        lastCompound.parent.children.push(chord);
+      }
+    }
+  }
+  console.timeEnd("resolveCompoundParents");
 }
 
 export function parseCharaChords(
   data: EditorState,
   ids: Map<string, KeyInfo>,
   codes: Map<number, KeyInfo>,
+  deviceChords: CharaChordFile["chords"],
 ): ParseResult {
-  console.time("parseCharaChords");
-  const chords: CharaChordFile["chords"] = [];
-  const metas: ParseMeta[] = [];
-  const keys = new Map<string, number>();
-  const compoundInputs = new Map<number, string>();
-  const orphanCompounds = new Set<number>();
+  console.time("parseTotal");
 
-  let currentChord: CharaChordFile["chords"][number] | undefined = undefined;
-  let compound: number | undefined = undefined;
-  let currentActions: number[] = [];
-  let invalidActions = false;
-  let invalidInput = false;
-  let chordFrom = 0;
+  const chords = parseChordMeta(data, ids, codes);
+  resolveChordOverrides(chords);
+  resolveChordAliases(chords);
+  resolveCompoundParents(chords);
 
-  const makeChordInput = (node: SyntaxNodeRef): number[] => {
-    invalidInput ||= !willBeValidChordInput(currentActions.length, !!compound);
-    const input = composeChordInput(currentActions, compound);
-    compound = hashChord(input);
-    if (!compoundInputs.has(compound)) {
-      compoundInputs.set(compound, data.doc.sliceString(chordFrom, node.from));
-      orphanCompounds.add(compound);
-    }
-    return input;
-  };
-
-  syntaxTree(data)
-    .cursor()
-    .iterate(
-      (node) => {
-        if (node.name === "Chord") {
-          currentChord = undefined;
-          compound = undefined;
-          invalidActions = false;
-          invalidInput = false;
-          chordFrom = node.from;
-        } else if (node.name === "ActionString") {
-          currentActions = [];
-        } else if (node.name === "HexNumber") {
-          const hexString = data.doc.sliceString(node.from, node.to);
-          const code = Number.parseInt(hexString, 16);
-          if (hexString.length === 10) {
-            if (compound !== undefined) {
-              invalidInput = true;
-            }
-            compound = code;
-          } else {
-            if (Number.isNaN(code) || code < 0 || code > 1023) {
-              invalidActions = true;
-            }
-            currentActions.push(code);
-          }
-        } else if (
-          node.name === "ActionId" ||
-          node.name === "SingleLetter" ||
-          node.name === "EscapedChar"
-        ) {
-          const id = data.doc.sliceString(node.from, node.to);
-          const code = ids.get(id)?.code;
-          if (code === undefined) {
-            invalidActions = true;
-            const encoder = new TextEncoder();
-            const bytes = encoder.encode(id);
-            for (let byte of bytes) {
-              currentActions.push(-byte);
-            }
-          } else {
-            currentActions.push(code);
-          }
-        }
-      },
-      (node) => {
-        if (node.name === "Chord" && currentChord !== undefined) {
-          if (currentChord !== undefined) {
-            currentChord[1] = currentActions;
-            const index = chords.length;
-            chords.push(currentChord);
-            const meta: ParseMeta = {
-              from: node.from,
-              to: node.to,
-              hasConcatenator: hasConcatenator(currentChord[1], codes),
-            };
-            if (invalidActions) {
-              meta.invalidActions = true;
-            }
-            if (invalidInput) {
-              meta.invalidInput = true;
-            }
-            metas.push(meta);
-            if (currentChord[1].length === 0) {
-              meta.emptyPhrase = true;
-            }
-            const key = JSON.stringify(currentChord[0]);
-            if (!meta.invalidInput) {
-              if (keys.has(key)) {
-                const targetIndex = keys.get(key)!;
-                const targetMeta = metas[targetIndex]!;
-                if (!targetMeta.overrides) targetMeta.overrides = [];
-                targetMeta.overrides.push(index);
-                meta.overriddenBy = targetIndex;
-              } else {
-                keys.set(key, index);
-              }
-            }
-            if (
-              meta.emptyPhrase ||
-              meta.invalidInput ||
-              meta.invalidActions ||
-              meta.overriddenBy !== undefined
-            ) {
-              meta.disabled = true;
-            }
-          }
-        } else if (node.name === "CompoundDelim") {
-          makeChordInput(node);
-        } else if (node.name === "PhraseDelim") {
-          const input = makeChordInput(node);
-          orphanCompounds.delete(hashChord(input));
-          currentChord = [input, []];
-        }
-      },
-    );
-
-  for (let i = 0; i < metas.length; i++) {
+  /*for (let i = 0; i < metas.length; i++) {
     const [, compound] = splitCompound(chords[i]![0]);
     if (
       compound !== undefined &&
@@ -187,124 +247,27 @@ export function parseCharaChords(
     }
   }
 
-  console.timeEnd("parseCharaChords");
-
-  console.log(chords.length);
-  return { result: chords, meta: metas, compoundInputs };
-}
-
-class ChordRecord {
-  private chords = new Map<string, Set<string>>();
-
-  constructor(chords: CharaChordFile["chords"]) {
-    for (let chord of chords) {
-      const key = JSON.stringify(chord[0]);
-      if (!this.chords.has(key)) {
-        this.chords.set(key, new Set());
-      }
-      this.chords.get(key)!.add(JSON.stringify(chord));
-    }
-  }
-
-  static createDiff(
-    previous: CharaChordFile["chords"],
-    updated: CharaChordFile["chords"],
-  ) {
-    const deleted = new ChordRecord(previous);
-    const added = new ChordRecord(updated);
-    const dupA = deleted.duplicates(added);
-    const dupB = added.duplicates(deleted);
-    for (let chord of dupA) {
-      deleted.remove(chord);
-      added.remove(chord);
-    }
-    for (let chord of dupB) {
-      deleted.remove(chord);
-      added.remove(chord);
-    }
-    return { deleted, added };
-  }
-
-  duplicates(
-    other: ChordRecord,
-  ): IteratorObject<CharaChordFile["chords"][number]> {
-    const duplicates = new Set<string>();
-    for (let [key, chordSet] of this.chords) {
-      for (let chord of chordSet) {
-        if (other.hasInternal(key, chord)) {
-          duplicates.add(chord);
-        }
-      }
-    }
-    return duplicates
-      .values()
-      .map((it) => JSON.parse(it) as CharaChordFile["chords"][number]);
-  }
-
-  private hasInternal(key: string, chord: string): boolean {
-    return this.chords.get(key)?.has(chord) ?? false;
-  }
-
-  has(chord: CharaChordFile["chords"][number]): boolean {
-    return this.hasInternal(JSON.stringify(chord[0]), JSON.stringify(chord));
-  }
-
-  remove(chord: CharaChordFile["chords"][number]) {
-    const key = JSON.stringify(chord[0]);
-    const set = this.chords.get(key);
-    if (set) {
-      set.delete(JSON.stringify(chord));
-      if (set.size === 0) {
-        this.chords.delete(key);
-      }
-    }
-  }
-}
-
-export function syncChords(
-  previous: CharaChordFile["chords"],
-  updated: CharaChordFile["chords"],
-  state: EditorState,
-) {
-  const deviceDiff = ChordRecord.createDiff(previous, updated);
-  const current = parseCharaChords(state, get(KEYMAP_IDS));
-  // save initial device chords
-  // compare new device chords with initial device chords
-  // take changed/new/removed chords
-  // compare current editor chords with initial device chords
-  // compare two change sets
-  // apply removals if the chord didn't change on either end
-  // apply
-}
-
-export function rebaseUpdates(
-  updates: readonly Update[],
-  over: readonly { changes: ChangeDesc; clientID: string }[],
-) {
-  if (!over.length || !updates.length) return updates;
-  let changes: ChangeDesc | null = null,
-    skip = 0;
-  for (let update of over) {
-    let other = skip < updates.length ? updates[skip] : null;
-    if (other && other.clientID == update.clientID) {
-      if (changes) changes = changes.mapDesc(other.changes, true);
-      skip++;
+  const removed: CharaChordFile["chords"] = [];
+  for (let deviceChord of deviceChords) {
+    const key = JSON.stringify(deviceChord[0]);
+    if (!keys.has(key)) {
+      removed.push(deviceChord);
     } else {
-      changes = changes ? changes.composeDesc(update.changes) : update.changes;
+      const index = keys.get(key)!;
+      const meta = metas[index]!;
+      if (
+        JSON.stringify(deviceChord[1]) !==
+        JSON.stringify(chords[keys.get(key)!]![1])
+      ) {
+        meta.originalPhrase = deviceChord[1];
+      } else {
+        meta.unchanged = true;
+      }
     }
-  }
+  }*/
 
-  if (skip) updates = updates.slice(skip);
-  return !changes
-    ? updates
-    : updates.map((update) => {
-        let updateChanges = update.changes.map(changes!);
-        changes = changes!.mapDesc(update.changes, true);
-        return {
-          changes: updateChanges,
-          effects:
-            update.effects && StateEffect.mapEffects(update.effects, changes!),
-          clientID: update.clientID,
-        };
-      });
+  console.timeEnd("parseTotal");
+
+  console.log(chords);
+  return { chords, removed: [] };
 }

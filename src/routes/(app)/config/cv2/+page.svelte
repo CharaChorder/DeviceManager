@@ -9,6 +9,7 @@
   import { loadPersistentState } from "$lib/chord-editor/persistent-state-plugin";
   import { parsedChordsField } from "$lib/chord-editor/parsed-chords-plugin";
   import type { CharaChordFile } from "$lib/share/chara-file";
+  import { chordSyncEffect } from "$lib/chord-editor/chord-sync-plugin";
 
   let queryFilter: string | undefined = $state(undefined);
 
@@ -39,9 +40,7 @@
       .map((chord) => {
         const [actions, compound] = splitCompound(chord.actions);
         return (
-          (compound
-            ? "<0x" + compound.toString(16).padStart(8, "0") + ">"
-            : "") +
+          (compound ? "|0x" + compound.toString(16) + "|" : "") +
           actions.map((it) => actionToValue(it)).join("") +
           "=>" +
           chord.phrase.map((it) => actionToValue(it)).join("")
@@ -50,6 +49,9 @@
       .join("\n");
     view.dispatch({
       changes: { from: 0, to: view.state.doc.length, insert: doc },
+      effects: chordSyncEffect.of(
+        $chords.map((chord) => [chord.actions, chord.phrase] as const),
+      ),
     });
   }
 
@@ -200,6 +202,11 @@
       opacity: 0.5;
       background-image: none;
       text-decoration: line-through;
+    }
+
+    :global(.chord-child) {
+      background-image: none;
+      text-decoration: underline;
     }
 
     :global(.chord-invalid) {

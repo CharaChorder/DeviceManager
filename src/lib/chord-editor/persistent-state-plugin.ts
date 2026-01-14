@@ -26,7 +26,7 @@ import { actionPlugin } from "./action-plugin";
 import { syntaxHighlighting } from "@codemirror/language";
 import { deviceChordField } from "./chord-sync-plugin";
 import { actionMetaPlugin } from "./action-meta-plugin";
-import { parsedChordsPlugin } from "./parsed-chords-plugin";
+import { parsedChordsField } from "./parsed-chords-plugin";
 
 const serializedFields = {
   history: historyField,
@@ -45,7 +45,7 @@ export function loadPersistentState(params: EditorConfig): EditorState {
     extensions: [
       actionMetaPlugin.plugin,
       deviceChordField,
-      parsedChordsPlugin(),
+      parsedChordsField,
       lintGutter(),
       params.rawCode ? [lineNumbers()] : [delimPlugin, actionPlugin],
       chordLanguageSupport(),
