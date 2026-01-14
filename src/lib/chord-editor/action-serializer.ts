@@ -17,7 +17,7 @@ import type {
 } from "./parse-meta";
 
 export function canUseIdAsString(info: KeyInfo): boolean {
-  return !!info.id && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(info.id);
+  return !!info.id && /^[^>\n]+$/.test(info.id);
 }
 
 export function actionToValue(action: number | KeyInfo) {
@@ -224,6 +224,40 @@ function resolveCompoundParents(chords: ChordMeta[]) {
   console.timeEnd("resolveCompoundParents");
 }
 
+export function resolveChanges(
+  chords: ChordMeta[],
+  deviceChords: CharaChordFile["chords"],
+): CharaChordFile["chords"] {
+  console.time("resolveChanges");
+  const removed: CharaChordFile["chords"] = [];
+  const info = new Map<string, ChordMeta>();
+  for (const chord of chords) {
+    if (chord.input && chord.phrase && !chord.disabled) {
+      info.set(
+        JSON.stringify([chord.input.value, chord.phrase?.value ?? []]),
+        chord,
+      );
+      info.set(JSON.stringify(chord.input.value), chord);
+    }
+  }
+  for (const deviceChord of deviceChords) {
+    const exact = info.get(JSON.stringify(deviceChord));
+    if (exact) {
+      exact.phrase!.originalValue = exact.phrase!.value;
+      continue;
+    }
+    const byInput = info.get(JSON.stringify(deviceChord[0]));
+    if (byInput) {
+      byInput.phrase!.originalValue = deviceChord[1];
+      continue;
+    }
+    removed.push(deviceChord);
+  }
+
+  console.timeEnd("resolveChanges");
+  return removed;
+}
+
 export function parseCharaChords(
   data: EditorState,
   ids: Map<string, KeyInfo>,
@@ -236,6 +270,7 @@ export function parseCharaChords(
   resolveChordOverrides(chords);
   resolveChordAliases(chords);
   resolveCompoundParents(chords);
+  const removed = resolveChanges(chords, deviceChords);
 
   /*for (let i = 0; i < metas.length; i++) {
     const [, compound] = splitCompound(chords[i]![0]);
@@ -269,5 +304,5 @@ export function parseCharaChords(
   console.timeEnd("parseTotal");
 
   console.log(chords);
-  return { chords, removed: [] };
+  return { chords, removed };
 }

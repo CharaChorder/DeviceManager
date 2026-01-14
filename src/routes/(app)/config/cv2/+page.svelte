@@ -5,11 +5,16 @@
   import "$lib/chord-editor/chords.grammar";
   import { persistentWritable } from "$lib/storage";
   import ActionList from "$lib/components/layout/ActionList.svelte";
-  import { splitCompound } from "$lib/serial/chord";
+  import {
+    composeChordInput,
+    hashChord,
+    splitCompound,
+  } from "$lib/serial/chord";
   import { loadPersistentState } from "$lib/chord-editor/persistent-state-plugin";
   import { parsedChordsField } from "$lib/chord-editor/parsed-chords-plugin";
   import type { CharaChordFile } from "$lib/share/chara-file";
   import { chordSyncEffect } from "$lib/chord-editor/chord-sync-plugin";
+  import { KEYMAP_IDS, type KeyInfo } from "$lib/serial/keymap-codes";
 
   let queryFilter: string | undefined = $state(undefined);
 
@@ -22,17 +27,21 @@
 
   $effect(() => {
     if (!editor) return;
-    view = new EditorView({
-      parent: editor,
-      state: loadPersistentState({
-        rawCode: $rawCode,
-        storeName: "chord-editor-state-storage",
-        autocomplete(query) {
-          queryFilter = query;
-        },
-      }),
-    });
-    return () => view.destroy();
+    const viewPromise = loadPersistentState({
+      rawCode: $rawCode,
+      storeName: "chord-editor-state-storage",
+      autocomplete(query) {
+        queryFilter = query;
+      },
+    }).then(
+      (state) =>
+        new EditorView({
+          parent: editor,
+          state,
+        }),
+    );
+    viewPromise.then((it) => (view = it));
+    return () => viewPromise.then((it) => it.destroy());
   });
 
   function regenerate() {
@@ -44,6 +53,63 @@
           actions.map((it) => actionToValue(it)).join("") +
           "=>" +
           chord.phrase.map((it) => actionToValue(it)).join("")
+        );
+      })
+      .join("\n");
+    view.dispatch({
+      changes: { from: 0, to: view.state.doc.length, insert: doc },
+      effects: chordSyncEffect.of(
+        $chords.map((chord) => [chord.actions, chord.phrase] as const),
+      ),
+    });
+  }
+
+  function largeFile() {
+    const chordCount = 100000;
+    const maxPhraseLength = 100;
+    const maxInputLength = 8;
+    const compoundChance = 0.05;
+
+    const actions = [...$KEYMAP_IDS.values()];
+    function randomAction(): KeyInfo {
+      return actions[Math.floor(actions.length * Math.random())]!;
+    }
+
+    const backup: [KeyInfo[][], KeyInfo[]][] = Array.from(
+      { length: chordCount },
+      () =>
+        [
+          [
+            Array.from(
+              { length: Math.floor(Math.random() * maxInputLength) + 1 },
+              randomAction,
+            ),
+          ],
+          Array.from(
+            {
+              length: Math.floor(Math.log(Math.random() * maxPhraseLength)) + 1,
+            },
+            randomAction,
+          ),
+        ] as const,
+    );
+    for (const chord of backup) {
+      if (Math.random() < compoundChance) {
+        chord[0] = [
+          ...backup[Math.floor(backup.length * Math.random())]![0],
+          ...chord[0],
+        ];
+      }
+    }
+
+    const doc = backup
+      .map(([inputs, phrase]) => {
+        return (
+          inputs
+            .map((input) => input.map((it) => actionToValue(it)).join(""))
+            .join("|") +
+          "=>" +
+          phrase.map((it) => actionToValue(it)).join("")
         );
       })
       .join("\n");
@@ -106,39 +172,50 @@
   }
 </script>
 
-<div style:display="flex">
-  <label><input type="checkbox" bind:checked={$rawCode} />Edit as code</label>
-  <!--<label><input type="checkbox" bind:checked={$showEdits} />Show edits</label>-->
-  <label
-    ><input type="checkbox" bind:checked={$denseSpacing} />Dense Spacing</label
-  >
-  <button onclick={regenerate}>Regenerate from current chords</button>
-  <button onclick={downloadBackup}>Download Backup</button>
-  <input
-    type="file"
-    accept="application/json"
-    onchange={loadBackup}
-    style="margin-left: 1rem"
-  />
-</div>
+<div class="vertical">
+  <div style:display="flex">
+    <label><input type="checkbox" bind:checked={$rawCode} />Edit as code</label>
+    <!--<label><input type="checkbox" bind:checked={$showEdits} />Show edits</label>-->
+    <label
+      ><input type="checkbox" bind:checked={$denseSpacing} />Dense Spacing</label
+    >
+    <button onclick={regenerate}>Regenerate from current chords</button>
+    <!--<button onclick={largeFile}>Create Huge File</button>-->
+    <button onclick={downloadBackup}>Download Backup</button>
+    <input
+      type="file"
+      accept="application/json"
+      onchange={loadBackup}
+      style="margin-left: 1rem"
+    />
+  </div>
 
-<div class="split">
-  <div
-    class="editor"
-    class:hide-edits={!$showEdits}
-    class:raw={$rawCode}
-    class:dense-spacing={$denseSpacing}
-    bind:this={editor}
-  ></div>
-  <ActionList {queryFilter} ignoreIcon={$rawCode} />
+  <div class="split">
+    <div
+      class="editor"
+      class:hide-edits={!$showEdits}
+      class:raw={$rawCode}
+      class:dense-spacing={$denseSpacing}
+      bind:this={editor}
+    ></div>
+    <ActionList {queryFilter} ignoreIcon={$rawCode} />
+  </div>
 </div>
 
 <style lang="scss">
+  .vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+  }
+
   .split {
     display: flex;
-    gap: 1rem;
+    flex-grow: 1;
+    flex-shrink: 1;
     width: calc(min(100%, 1400px));
-    height: 100%;
+    min-height: 0;
 
     > :global(*) {
       flex: 1;

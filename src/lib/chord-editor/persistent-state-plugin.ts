@@ -12,7 +12,7 @@ import {
   historyKeymap,
   standardKeymap,
 } from "@codemirror/commands";
-import { debounceTime, Subject } from "rxjs";
+import { debounceTime, mergeMap, Subject } from "rxjs";
 import { EditorState, type EditorStateConfig } from "@codemirror/state";
 import { lintGutter } from "@codemirror/lint";
 import {
@@ -27,6 +27,11 @@ import { syntaxHighlighting } from "@codemirror/language";
 import { deviceChordField } from "./chord-sync-plugin";
 import { actionMetaPlugin } from "./action-meta-plugin";
 import { parsedChordsField } from "./parsed-chords-plugin";
+import { changesPanel } from "./changes-panel";
+import {
+  parseCompressed,
+  stringifyCompressed,
+} from "$lib/serial/serialization";
 
 const serializedFields = {
   history: historyField,
@@ -39,13 +44,16 @@ export interface EditorConfig {
   autocomplete(query: string | undefined): void;
 }
 
-export function loadPersistentState(params: EditorConfig): EditorState {
+export async function loadPersistentState(
+  params: EditorConfig,
+): Promise<EditorState> {
   const stored = localStorage.getItem(params.storeName);
   const config = {
     extensions: [
       actionMetaPlugin.plugin,
       deviceChordField,
       parsedChordsField,
+      changesPanel(),
       lintGutter(),
       params.rawCode ? [lineNumbers()] : [delimPlugin, actionPlugin],
       chordLanguageSupport(),
@@ -84,7 +92,7 @@ export function loadPersistentState(params: EditorConfig): EditorState {
 
   if (stored) {
     try {
-      const parsed = JSON.parse(stored);
+      const parsed = await parseCompressed(new Blob([stored]));
       return EditorState.fromJSON(parsed, config, serializedFields);
     } catch (e) {
       console.error("Failed to parse persistent state:", e);
@@ -98,12 +106,15 @@ export function persistentStatePlugin(storeName: string) {
     class {
       updateSubject = new Subject<void>();
       subscription = this.updateSubject
-        .pipe(debounceTime(500))
-        .subscribe(() => {
-          localStorage.setItem(
-            storeName,
-            JSON.stringify(this.view.state.toJSON(serializedFields)),
-          );
+        .pipe(
+          debounceTime(500),
+          mergeMap(() =>
+            stringifyCompressed(this.view.state.toJSON(serializedFields)),
+          ),
+          mergeMap((blob) => blob.text()),
+        )
+        .subscribe((value) => {
+          localStorage.setItem(storeName, value);
         });
 
       constructor(readonly view: EditorView) {}

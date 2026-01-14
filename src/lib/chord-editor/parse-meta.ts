@@ -77,6 +77,7 @@ function mapActionStringMeta<T extends ActionStringMeta<unknown>>(
 
 export interface PhraseMeta extends ActionStringMeta<number[]> {
   hasConcatenator: boolean;
+  originalValue?: number[];
 }
 
 export interface CompoundMeta extends ActionStringMeta<number> {
