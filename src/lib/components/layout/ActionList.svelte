@@ -14,7 +14,7 @@
   import type { KeymapCategory } from "$lib/meta/types/actions";
   import Action from "../Action.svelte";
   import { isVerbose } from "../verbose-action";
-  import { actionToValue } from "$lib/chord-editor/action-serializer";
+  import { actionToValue } from "$lib/chord-editor/chord-sync";
 
   let {
     currentAction = undefined,

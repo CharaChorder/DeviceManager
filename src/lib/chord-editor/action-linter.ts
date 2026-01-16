@@ -128,6 +128,27 @@ export function actionLinter(config?: Parameters<typeof linter>[1]) {
             message: `Phrase changed`,
           });
         }
+
+        if (chord.aliases) {
+          diagnostics.push({
+            from: chord.phrase.range[0],
+            to: chord.phrase.range[1],
+            severity: "warning",
+            markClass: "chord-alias",
+            message: `Alias of ${chord.aliases.length} chord(s)`,
+            actions: chord.aliases.map((alias) => ({
+              name: `Go to ${view.state.doc.sliceString(alias.range[0], alias.input?.range[1] ?? alias.range[1])}`,
+              apply(view) {
+                view.dispatch({
+                  selection: {
+                    anchor: alias.range[0],
+                  },
+                  scrollIntoView: true,
+                });
+              },
+            })),
+          });
+        }
       }
     }
     return diagnostics;

@@ -10,6 +10,10 @@ export const parsedChordsField = StateField.define<ParseResult>({
     return {
       chords: [],
       removed: [],
+      aliases: new Map(),
+      compounds: new Map(),
+      inputs: new Map(),
+      exact: new Map(),
     };
   },
   update(value, transaction) {
@@ -23,7 +27,13 @@ export const parsedChordsField = StateField.define<ParseResult>({
       codes !== transaction.startState.field(actionMetaPlugin.field).codes ||
       deviceChords !== transaction.startState.field(deviceChordField)
     ) {
-      return parseCharaChords(transaction.state, ids, codes, deviceChords);
+      return parseCharaChords(
+        syntaxTree(transaction.state),
+        ids,
+        codes,
+        deviceChords,
+        (from, to) => transaction.state.doc.sliceString(from, to),
+      );
     }
     return mapParseResult(value, transaction.changes);
   },

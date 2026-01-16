@@ -27,11 +27,8 @@ import { syntaxHighlighting } from "@codemirror/language";
 import { deviceChordField } from "./chord-sync-plugin";
 import { actionMetaPlugin } from "./action-meta-plugin";
 import { parsedChordsField } from "./parsed-chords-plugin";
-import { changesPanel } from "./changes-panel";
-import {
-  parseCompressed,
-  stringifyCompressed,
-} from "$lib/serial/serialization";
+import { changesPanel } from "./changes-panel.svelte";
+import { searchKeymap } from "@codemirror/search";
 
 const serializedFields = {
   history: historyField,
@@ -44,11 +41,8 @@ export interface EditorConfig {
   autocomplete(query: string | undefined): void;
 }
 
-export async function loadPersistentState(
-  params: EditorConfig,
-): Promise<EditorState> {
-  const stored = localStorage.getItem(params.storeName);
-  const config = {
+export function createConfig(params: EditorConfig) {
+  return {
     extensions: [
       actionMetaPlugin.plugin,
       deviceChordField,
@@ -86,14 +80,20 @@ export async function loadPersistentState(
           borderColor: "var(--md-sys-color-on-surface)",
         },
       }),
-      keymap.of([...standardKeymap, ...historyKeymap]),
+      keymap.of([...standardKeymap, ...historyKeymap, ...searchKeymap]),
     ],
   } satisfies EditorStateConfig;
+}
+
+export async function loadPersistentState(
+  params: EditorConfig,
+): Promise<EditorState> {
+  const stored = await getState(params.storeName);
+  const config = createConfig(params);
 
   if (stored) {
     try {
-      const parsed = await parseCompressed(new Blob([stored]));
-      return EditorState.fromJSON(parsed, config, serializedFields);
+      return EditorState.fromJSON(stored, config, serializedFields);
     } catch (e) {
       console.error("Failed to parse persistent state:", e);
     }
@@ -109,13 +109,10 @@ export function persistentStatePlugin(storeName: string) {
         .pipe(
           debounceTime(500),
           mergeMap(() =>
-            stringifyCompressed(this.view.state.toJSON(serializedFields)),
+            storeState(storeName, this.view.state.toJSON(serializedFields)),
           ),
-          mergeMap((blob) => blob.text()),
         )
-        .subscribe((value) => {
-          localStorage.setItem(storeName, value);
-        });
+        .subscribe(() => {});
 
       constructor(readonly view: EditorView) {}
 
@@ -130,4 +127,59 @@ export function persistentStatePlugin(storeName: string) {
       }
     },
   );
+}
+
+const dbName = "chord-state";
+const dbVersion = 1;
+const storeName = "state";
+
+async function openDb(): Promise<IDBDatabase> {
+  const dbRequest = indexedDB.open(dbName, dbVersion);
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    dbRequest.onsuccess = () => resolve(dbRequest.result);
+    dbRequest.onerror = () => reject(dbRequest.error);
+    dbRequest.onupgradeneeded = () => {
+      const db = dbRequest.result;
+      if (!db.objectStoreNames.contains(storeName)) {
+        db.createObjectStore(storeName);
+      }
+    };
+  });
+}
+
+async function getState<T>(name: string): Promise<T | undefined> {
+  const db = await openDb();
+  try {
+    const readTransaction = db.transaction([storeName], "readonly");
+    const store = readTransaction.objectStore(storeName);
+    const itemRequest = store.get(name);
+    const result = await new Promise<T | undefined>((resolve) => {
+      itemRequest.onsuccess = () => resolve(itemRequest.result);
+      itemRequest.onerror = () => resolve(undefined);
+    });
+    return result;
+  } catch (e) {
+    console.error(e);
+    return undefined;
+  } finally {
+    db.close();
+  }
+}
+
+async function storeState<T>(name: string, state: T): Promise<void> {
+  const db = await openDb();
+  try {
+    const putTransaction = db.transaction([storeName], "readwrite");
+    const putStore = putTransaction.objectStore(storeName);
+    const putRequest = putStore.put(state, name);
+    await new Promise<void>((resolve, reject) => {
+      putRequest.onsuccess = () => resolve();
+      putRequest.onerror = () => reject(putRequest.error);
+    });
+    putTransaction.commit();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    db.close();
+  }
 }

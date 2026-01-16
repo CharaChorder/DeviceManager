@@ -132,6 +132,10 @@ export function mapChordMeta(chord: ChordMeta, change: ChangeDesc): ChordMeta {
 export interface ParseResult {
   chords: ChordMeta[];
   removed: CharaChordFile["chords"];
+  aliases: Map<string, ChordMeta[]>;
+  compounds: Map<number, ChordMeta>;
+  inputs: Map<string, ChordMeta>;
+  exact: Map<string, ChordMeta>;
 }
 
 export function mapParseResult(

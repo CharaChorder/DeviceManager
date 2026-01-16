@@ -1,27 +1,39 @@
 import type { CharaChordFile } from "$lib/share/chara-file";
 import { StateEffect, StateField } from "@codemirror/state";
+import { actionMetaPlugin } from "./action-meta-plugin";
+import { syncCharaChords } from "./chord-sync";
+import type { EditorView } from "@codemirror/view";
 
-export const chordSyncEffect = StateEffect.define<CharaChordFile["chords"]>();
+const chordSyncEffect = StateEffect.define<CharaChordFile["chords"]>();
+
+export function editorSyncChords(
+  view: EditorView,
+  newDeviceChords: CharaChordFile["chords"],
+) {
+  const { ids, codes } = view.state.field(actionMetaPlugin.field);
+  const oldDeviceChords = view.state.field(deviceChordField);
+  const changes = syncCharaChords(
+    oldDeviceChords,
+    newDeviceChords,
+    ids,
+    codes,
+    view.state.doc.toString(),
+  );
+  view.dispatch({
+    effects: chordSyncEffect.of(newDeviceChords),
+    changes,
+  });
+}
 
 export const deviceChordField = StateField.define<CharaChordFile["chords"]>({
   create() {
     return [];
   },
   update(value, transaction) {
-    // save initial device chords
-    // compare new device chords with initial device chords
-    // take changed/new/removed chords
-    // compare current editor chords with initial device chords
-    // compare two change sets
-    // apply removals if the chord didn't change on either end
-    // apply
     return (
       transaction.effects.findLast((it) => it.is(chordSyncEffect))?.value ??
       value
     );
-  },
-  compare(a, b) {
-    return JSON.stringify(a) === JSON.stringify(b);
   },
   toJSON(value) {
     return value;
