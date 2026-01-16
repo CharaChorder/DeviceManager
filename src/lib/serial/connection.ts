@@ -55,7 +55,10 @@ export const syncStatus: Writable<
   "done" | "error" | "downloading" | "uploading"
 > = writable("done");
 
-export const deviceMeta = writable<VersionMeta | undefined>(undefined);
+export const deviceMeta = persistentWritable<VersionMeta | undefined>(
+  "current-meta",
+  undefined,
+);
 
 export interface ProgressInfo {
   max: number;
