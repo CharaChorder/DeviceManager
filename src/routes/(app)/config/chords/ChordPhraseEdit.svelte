@@ -187,8 +187,13 @@
   let supportsAutospace = $derived(
     semverGte($deviceMeta?.version ?? "0.0.0", "2.1.0"),
   );
+  let supportsAutospaceV2 = $derived(
+    semverGte($deviceMeta?.version ?? "0.0.0", "3.0.0-gamma.5"),
+  );
   let hasAutospace = $derived(
-    isPrintable || chord.phrase.at(-1) === JOIN_ACTION,
+    supportsAutospaceV2
+      ? chord.phrase.at(-1) !== NO_CONCATENATOR_ACTION
+      : isPrintable || chord.phrase.at(-1) === JOIN_ACTION,
   );
 
   function isHidden(action: number, index: number, array: number[]) {
@@ -228,8 +233,10 @@
             moveCursor(cursorPosition + 1, true);
           }
         }
-        await tick();
-        resolveAutospace(autospace);
+        if (!supportsAutospaceV2) {
+          await tick();
+          resolveAutospace(autospace);
+        }
       }}
     />
   {/if}
@@ -265,8 +272,24 @@
     <AutospaceSelector
       variant="end"
       value={!hasAutospace}
-      onchange={(event) =>
-        resolveAutospace((event.target as HTMLInputElement).checked)}
+      onchange={async (event) => {
+        if (supportsAutospaceV2) {
+          if ((event.target as HTMLInputElement).checked) {
+            if (chord.phrase.at(-1) === NO_CONCATENATOR_ACTION) {
+              deleteAction(chord.phrase.length - 1);
+              await tick();
+              moveCursor(cursorPosition, true);
+            }
+          } else {
+            if (chord.phrase.at(-1) !== NO_CONCATENATOR_ACTION) {
+              insertAction(chord.phrase.length, NO_CONCATENATOR_ACTION);
+              moveCursor(cursorPosition, true);
+            }
+          }
+        } else {
+          resolveAutospace((event.target as HTMLInputElement).checked);
+        }
+      }}
     />
   {/if}
   <sup>•</sup>
