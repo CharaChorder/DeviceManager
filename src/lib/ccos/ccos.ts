@@ -1,7 +1,6 @@
 import { getMeta } from "$lib/meta/meta-storage";
 import type { SerialPortLike } from "$lib/serial/device";
 import type {
-  CCOSInEvent,
   CCOSInitEvent,
   CCOSKeyPressEvent,
   CCOSKeyReleaseEvent,
@@ -11,7 +10,7 @@ import { KEYCODE_TO_SCANCODE, SCANCODE_TO_KEYCODE } from "./ccos-interop";
 
 const device = "zero_wasm";
 
-class CCOSKeyboardEvent extends KeyboardEvent {
+export class CCOSKeyboardEvent extends KeyboardEvent {
   constructor(...params: ConstructorParameters<typeof KeyboardEvent>) {
     super(...params);
   }
@@ -26,7 +25,46 @@ const MASK_GUI = 0b1000_1000;
 export class CCOS implements SerialPortLike {
   private readonly currKeys = new Set<number>();
 
-  private readonly layout = new Map<string, string>();
+  private readonly layout = new Map<string, string>([
+    ...Array.from(
+      { length: 26 },
+      (_, i) =>
+        [
+          JSON.stringify([`Key${String.fromCharCode(65 + i)}`, "Shift"]),
+          String.fromCharCode(65 + i),
+        ] as const,
+    ),
+    ...Array.from(
+      { length: 10 },
+      (_, i) => [JSON.stringify([`Key${i}`]), i.toString()] as const,
+    ),
+
+    [JSON.stringify(["Space"]), " "],
+    [JSON.stringify(["Backquote"]), "`"],
+    [JSON.stringify(["Minus"]), "-"],
+    [JSON.stringify(["Comma"]), ","],
+    [JSON.stringify(["Period"]), "."],
+    [JSON.stringify(["Semicolon"]), ";"],
+    [JSON.stringify(["Equal"]), "="],
+
+    [JSON.stringify(["Backquote", "Shift"]), "~"],
+    [JSON.stringify(["Minus", "Shift"]), "_"],
+    [JSON.stringify(["Comma", "Shift"]), "<"],
+    [JSON.stringify(["Period", "Shift"]), ">"],
+    [JSON.stringify(["Semicolon", "Shift"]), ":"],
+    [JSON.stringify(["Equal", "Shift"]), "+"],
+
+    [JSON.stringify(["Digit0", "Shift"]), ")"],
+    [JSON.stringify(["Digit1", "Shift"]), "!"],
+    [JSON.stringify(["Digit2", "Shift"]), "@"],
+    [JSON.stringify(["Digit3", "Shift"]), "#"],
+    [JSON.stringify(["Digit4", "Shift"]), "$"],
+    [JSON.stringify(["Digit5", "Shift"]), "%"],
+    [JSON.stringify(["Digit6", "Shift"]), "^"],
+    [JSON.stringify(["Digit7", "Shift"]), "&"],
+    [JSON.stringify(["Digit8", "Shift"]), "*"],
+    [JSON.stringify(["Digit9", "Shift"]), "("],
+  ]);
 
   private readonly worker = new Worker("/ccos-worker.js", { type: "module" });
 
@@ -126,7 +164,6 @@ export class CCOS implements SerialPortLike {
           this.controller?.enqueue(event.data);
           return;
         }
-        console.log("CCOS worker message", event.data);
         switch (event.data.type) {
           case "ready": {
             this.resolveReady();
@@ -220,7 +257,7 @@ export class CCOS implements SerialPortLike {
 }
 
 export async function fetchCCOS(
-  version = ".2.2.0-beta.12+266bdda",
+  version = "3.0.0-rc.0",
   fetch: typeof window.fetch = window.fetch,
 ): Promise<CCOS | undefined> {
   const meta = await getMeta(device, version, fetch);

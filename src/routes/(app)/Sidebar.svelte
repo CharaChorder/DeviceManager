@@ -18,6 +18,11 @@
     ],
     [
       {
+        href: "/editor/",
+        icon: "playground_2",
+        title: "Emulator",
+      },
+      {
         href: import.meta.env.VITE_LEARN_URL,
         icon: "school",
         title: "Learn",

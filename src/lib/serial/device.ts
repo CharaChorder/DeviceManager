@@ -147,7 +147,7 @@ export class CharaDevice {
   version!: string;
   company!: "CHARACHORDER" | "FORGE";
   device!: "ONE" | "TWO" | "LITE" | "X" | "M4G" | "ENGINE" | "ZERO";
-  chipset!: "M0" | "S2" | "S3";
+  chipset!: "M0" | "S2" | "S3" | "WASM";
   keyCount!: 90 | 67 | 256;
   layerCount = 3;
   profileCount = 1;
@@ -157,7 +157,7 @@ export class CharaDevice {
   }
 
   constructor(
-    private readonly port: SerialPortLike,
+    readonly port: SerialPortLike,
     public baudRate = 115200,
   ) {}
 

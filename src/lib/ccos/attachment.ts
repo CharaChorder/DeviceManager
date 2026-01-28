@@ -1,26 +1,35 @@
 import type { Attachment } from "svelte/attachments";
-import { browser } from "$app/environment";
-import { persistentWritable } from "$lib/storage";
+import type { CharaDevice } from "$lib/serial/device";
+import type { CCOS, CCOSKeyboardEvent } from "./ccos";
+import type { ReplayRecorder } from "$lib/charrecorder/core/recorder";
 
-export const emulatedCCOS = persistentWritable("emulatedCCOS", false);
-
-export function ccosKeyInterceptor() {
-  return ((element: Window) => {
-    const ccos = browser
-      ? import("./ccos").then((module) => module.fetchCCOS(".test"))
-      : Promise.resolve(undefined);
+export function ccosKeyInterceptor(
+  port: CharaDevice | undefined,
+  recorder: ReplayRecorder,
+) {
+  return ((element: HTMLElement) => {
+    const ccos =
+      port?.port && "handleKeyEvent" in port?.port
+        ? (port.port as CCOS)
+        : undefined;
+    console.log("Attaching CCOS key interceptor", ccos);
 
     function onEvent(event: KeyboardEvent) {
-      ccos.then((it) => it?.handleKeyEvent(event));
+      ccos?.handleKeyEvent(event);
+      if (!event.defaultPrevented) {
+        recorder.next(event);
+      }
     }
 
-    element.addEventListener("keydown", onEvent, true);
-    element.addEventListener("keyup", onEvent, true);
+    if (ccos) {
+      element.addEventListener("keydown", onEvent, true);
+      element.addEventListener("keyup", onEvent, true);
+      element.add;
+    }
 
     return () => {
-      ccos.then((it) => it?.destroy());
       element.removeEventListener("keydown", onEvent, true);
       element.removeEventListener("keyup", onEvent, true);
     };
-  }) satisfies Attachment<Window>;
+  }) satisfies Attachment<HTMLElement>;
 }

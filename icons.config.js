@@ -57,6 +57,7 @@ const config = {
     "graphic_eq",
     "mail",
     "calculate",
+    "playground_2",
     "open_in_browser",
     "chevron_backward",
     "chevron_forward",

@@ -5,17 +5,16 @@
   import TrackChords from "$lib/charrecorder/TrackChords.svelte";
   import TrackRollingWpm from "$lib/charrecorder/TrackRollingWpm.svelte";
   import { fade } from "svelte/transition";
+  import { initSerial, serialPort } from "$lib/serial/connection";
+  import { tick } from "svelte";
+  import { ccosKeyInterceptor } from "$lib/ccos/attachment";
 
   let recorder: ReplayRecorder = $state(new ReplayRecorder());
   let replay: Replay | undefined = $state();
 
   let wpm = $state(0);
+  let cc0Loading = $state(false);
   let chords: InferredChord[] = $state([]);
-
-  function handleRawKey(event: KeyboardEvent) {
-    event.preventDefault();
-    keyEvent(event);
-  }
 
   function keyEvent(event: KeyboardEvent) {
     if (event.key === "Tab") {
@@ -47,15 +46,60 @@
     a.download = "replay.json";
     a.click();
   }
+
+  async function connectCC0(event: MouseEvent) {
+    cc0Loading = true;
+    try {
+      await tick();
+      if ($serialPort) {
+        $serialPort?.close();
+        $serialPort = undefined;
+      }
+      const { fetchCCOS } = await import("$lib/ccos/ccos");
+      const ccos = await fetchCCOS();
+      if (ccos) {
+        try {
+          await initSerial(ccos, !event.shiftKey);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } finally {
+      cc0Loading = false;
+    }
+  }
 </script>
 
 <svelte:head>
   <title>Editor</title>
 </svelte:head>
-<svelte:window onkeydown={handleRawKey} onkeyup={handleRawKey} />
 
 <section>
-  <h2>Editor</h2>
+  <h2>
+    CCOS Emulator
+    {#if $serialPort?.chipset === "WASM"}
+      <small>(Emulator Active)</small>
+    {:else}
+      <button class="primary" disabled={cc0Loading} onclick={connectCC0}>
+        <span class="icon">play_arrow</span>
+        Boot CCOS Emulator</button
+      >
+    {/if}
+  </h2>
+
+  <p style:max-width="600px">
+    Try a (limited) demo of CCOS running directly in your browser.<br /><span
+      style:color="var(--md-sys-color-primary)"
+      >Chording requires an <b>NKRO Keyboard</b> to work properly.</span
+    >
+    <br />Browsers usually report key timings with limited accuracy to revent
+    fingerprinting, which can impact chording.
+    <br /><i>Results may vary.</i>
+    <br />
+    Use sidebar tabs to configure <a href="/config/chords/">Chords</a>,
+    <a href="/config/layout/">Layout</a>
+    and <a href="/config/settings/">Settings</a>.
+  </p>
 
   {#if replay}
     <div class="replay" transition:fade={{ duration: 100 }}>
@@ -66,7 +110,9 @@
   {#key recorder}
     <div
       class="editor"
+      tabindex="-1"
       out:fade={{ duration: 100 }}
+      {@attach ccosKeyInterceptor($serialPort, recorder)}
       style:opacity={replay ? 0 : undefined}
     >
       <CharRecorder replay={recorder.player} cursor={true} keys={true}>
@@ -95,15 +141,38 @@
     width: 100%;
   }
 
+  a {
+    display: inline;
+    padding: 0;
+    color: var(--md-sys-color-primary);
+  }
+
+  small {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--md-sys-color-primary);
+    font-weight: 500;
+    font-size: 0.6em;
+  }
+
+  button.primary {
+    display: inline-flex;
+    background: none;
+    color: var(--md-sys-color-primary);
+  }
+
   .replay,
   .editor {
-    position: absolute;
-    top: 3em;
-    left: 0;
     transition: opacity 0.1s;
+    margin: 4px;
+    outline: 1px solid var(--md-sys-color-outline);
     padding: 16px;
     padding-bottom: 5em;
-    padding-left: 0;
+
+    &:focus-within {
+      outline: 2px solid var(--md-sys-color-primary);
+    }
   }
 
   .toolbar {

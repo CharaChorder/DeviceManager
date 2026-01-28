@@ -46,15 +46,6 @@
     element?.closest<HTMLElement>("[popover]")?.hidePopover();
   }
 
-  async function connectCC0(event: MouseEvent) {
-    const { fetchCCOS } = await import("$lib/ccos/ccos");
-    closePopover();
-    const ccos = await fetchCCOS();
-    if (ccos) {
-      connect(ccos, !event.shiftKey);
-    }
-  }
-
   async function connectDevice(event: MouseEvent) {
     const port = await navigator.serial.requestPort({
       filters: event.shiftKey ? [] : [...PORT_FILTERS.values()],

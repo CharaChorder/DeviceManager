@@ -26,6 +26,7 @@ process.env["VITE_LATEST_FIRMWARE"] = "1.1.4";
 process.env["VITE_STORE_URL"] = "https://www.charachorder.com/";
 process.env["VITE_MATRIX_URL"] = "https://charachorder.io/";
 process.env["VITE_FIRMWARE_URL"] = "https://charachorder.io/firmware";
+process.env["VITE_DISCORD_URL"] = "https://discord.gg/CharaChorder";
 
 export default defineConfig({
   build: {

@@ -117,6 +117,25 @@
   </div>
   <ul>
     <li>
+      <a
+        href={import.meta.env.VITE_DISCORD_URL}
+        rel="noreferrer"
+        target="_blank"
+      >
+        <svg
+          class="discord-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 126.64 96"
+        >
+          <path
+            fill="currentColor"
+            d="m81 0-3 7Q63 4 49 7l-4-7-26 8Q-4 45 1 80q14 10 32 16l6-11-10-5 2-2q33 13 64 0l3 2-11 5 7 11q17-5 32-16 4-40-19-72-12-5-26-8M42 65q-10-1-11-12 0-15 11-13c11 2 12 6 12 13q-1 11-12 12m42 0q-10-1-11-12 0-15 11-13c11 2 12 6 12 13q-1 11-12 12"
+          /></svg
+        >
+        Discord</a
+      >
+    </li>
+    <li>
       <a href={import.meta.env.VITE_BUGS_URL} rel="noreferrer" target="_blank"
         ><span class="icon">bug_report</span> Bugs</a
       >
@@ -167,6 +186,11 @@
   }
 
   $sync-border-radius: 16px;
+
+  .discord-icon {
+    margin: 5px;
+    inline-size: 14px;
+  }
 
   .sync-box {
     display: flex;
