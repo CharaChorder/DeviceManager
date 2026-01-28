@@ -88,9 +88,10 @@
   {#if ports.length !== 0}
     <h4>Recent Devices</h4>
     <div class="devices">
+      <!--
       <div class="device">
         <button onclick={connectCC0}> CC0</button>
-      </div>
+      </div>-->
       {#each ports as port}
         <div class="device">
           <button
@@ -115,7 +116,7 @@
     <button onclick={connectDevice} class="primary"
       ><span class="icon">add</span>Connect</button
     >
-    <a href="/ccos/zero_wasm/"><span class="icon">add</span>Virtual Device</a>
+    <!--<a href="/ccos/zero_wasm/"><span class="icon">add</span>Virtual Device</a>-->
   </div>
 </div>
 
