@@ -169,6 +169,7 @@
     }
 
     &:not(.raw) :global(.cm-line) {
+      vertical-align: middle;
       columns: 2;
       text-align: center;
     }
@@ -181,6 +182,7 @@
       padding-block: 8px;
       width: 100%;
       text-wrap: wrap;
+      text-wrap-style: stable;
       white-space: pre-wrap;
       word-break: break-word;
 
