@@ -36,14 +36,6 @@
         external: true,
       },
     ],
-    [
-      { href: "/editor", icon: "edit_document", title: "Editor", wip: true },
-      { href: "/chat", icon: "chat", title: "Chat", wip: true },
-      { href: "/learn", icon: "school", title: "Learn", wip: true },
-    ],
-    /*[
-      { href: "/plugin", icon: "code", title: "Plugin", wip: true },
-    ],*/
   ] satisfies {
     href: string;
     icon: string;

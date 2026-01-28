@@ -183,11 +183,11 @@ export class CharaDevice {
       this.company = company as typeof this.company;
       this.device = device as typeof this.device;
       this.chipset = chipset as typeof this.chipset;
-      if (semverGte(this.version, "2.2.0-beta.4")) {
-        this.profileCount = this.chipset === "M0" ? 2 : 3;
+      if (semverGte(this.version, "2.2.0-beta.4") && this.chipset !== "M0") {
+        this.profileCount = 3;
       }
-      if (semverGte(this.version, "2.2.0-beta.20")) {
-        this.layerCount = this.chipset === "M0" ? 3 : 4;
+      if (semverGte(this.version, "2.2.0-beta.20") && this.chipset !== "M0") {
+        this.layerCount = 4;
       }
       this.keyCount = KEY_COUNTS[this.device];
     } catch (e) {
