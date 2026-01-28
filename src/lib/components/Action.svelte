@@ -53,6 +53,12 @@
       <br />
       <small>{info.description}</small>
     {/if}
+    {#if info.breaking}
+      <br />&nbsp;<i>Prevents prepended autospaces</i>
+    {/if}
+    {#if info.separator || info.breaking}
+      <br />&nbsp;<i>Stops autocorrect</i>
+    {/if}
   {:else}
     <b>Unknown Action</b><br />
     {#if info.code > 1023}
@@ -200,13 +206,13 @@
       display: -webkit-box;
       opacity: 0.9;
       max-width: 15ch;
+      -webkit-line-clamp: 2; /* number of lines to show */
+      line-clamp: 2;
       overflow: hidden;
       font-style: italic;
       font-size: 12px;
       text-align: left;
       text-overflow: ellipsis;
-      -webkit-line-clamp: 2; /* number of lines to show */
-      line-clamp: 2;
       -webkit-box-orient: vertical;
     }
   }

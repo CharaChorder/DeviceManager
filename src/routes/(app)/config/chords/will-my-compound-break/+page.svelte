@@ -47,19 +47,6 @@
     font-weight: bold;
   }
 
-  .chord {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .compound {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
   p {
     max-width: 600px;
   }
