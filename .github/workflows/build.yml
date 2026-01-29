@@ -52,6 +52,8 @@ jobs:
 
       - name: Publish Branch
         if: ${{ !github.event.pull_request.head.repo.fork }}
-        run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/ref/${GITHUB_REF##*/}
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/ref/$BRANCH_NAME
       - name: Publish Commit
         run: rsync -rav --mkpath --delete build/ deploy@charachorder.io:/home/deploy/ref/${{ github.sha }}
