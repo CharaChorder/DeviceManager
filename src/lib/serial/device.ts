@@ -522,6 +522,7 @@ export class CharaDevice {
   async updateFirmware(
     file: ArrayBuffer,
     progress: (transferred: number, total: number) => void,
+    throttle = false,
   ): Promise<void> {
     while (this.lock) {
       await this.lock;
@@ -568,16 +569,14 @@ export class CharaDevice {
         });
 
         const chunkSize = 1024;
-        const promises = [];
         for (let i = 0; i < file.byteLength; i += chunkSize) {
           const chunk = file.slice(i, i + chunkSize);
-          promises.push(
-            writer
-              .write(new Uint8Array(chunk))
-              .then(() => progress(i + chunk.byteLength, file.byteLength)),
-          );
+          if (throttle) {
+            await writer.ready;
+          }
+          await writer.write(new Uint8Array(chunk));
+          progress(i + chunk.byteLength, file.byteLength);
         }
-        await Promise.all(promises);
 
         serialLog.update((it) => {
           it.push({
