@@ -564,7 +564,6 @@ export class CharaDevice {
 
       const writer = this.port.writable!.getWriter();
       try {
-        const log: SerialLogEntry[] = [];
         const start = performance.now();
         writer.write(new TextEncoder().encode(`RST OTA\r\n`));
 
@@ -575,11 +574,11 @@ export class CharaDevice {
         const chunkSize = 128;
         const chunks: Promise<void>[] = [];
         for (let i = 0; i < file.byteLength; i += chunkSize) {
-          const chunk = file.slice(i, i + chunkSize);
+          const size = Math.min(chunkSize, file.byteLength - i);
           chunks.push(
             writer
-              .write(new Uint8Array(chunk))
-              .then(() => progress(i + chunk.byteLength, file.byteLength)),
+              .write(new Uint8Array(file, i, size))
+              .then(() => progress(i + size, file.byteLength)),
           );
         }
         await Promise.all(chunks);
