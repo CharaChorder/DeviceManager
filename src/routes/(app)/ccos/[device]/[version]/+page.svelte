@@ -56,13 +56,9 @@
     retries = 2;
     while (retries-- > 0 && !success) {
       try {
-        await port.updateFirmware(
-          file,
-          (transferred, total) => {
-            progress = transferred / total;
-          },
-          retries === 0,
-        );
+        await port.updateFirmware(file, (transferred, total) => {
+          progress = transferred / total;
+        });
 
         success = true;
       } catch (e) {
