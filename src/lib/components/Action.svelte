@@ -4,17 +4,20 @@
   import { osLayout } from "$lib/os-layout";
   import { isVerbose } from "./verbose-action";
   import { actionTooltip } from "$lib/title";
+  import ActionTooltip from "./action/ActionTooltip.svelte";
 
   let {
     action,
     display,
     ignoreIcon = false,
     inText = false,
+    withPopover = true,
   }: {
     action: string | number | KeyInfo;
     display: "inline-keys" | "keys" | "verbose";
     ignoreIcon?: boolean;
     inText?: boolean;
+    withPopover?: boolean;
   } = $props();
 
   let retrievedInfo = $derived(
@@ -35,39 +38,13 @@
   let icon = $derived(ignoreIcon ? undefined : info.icon);
   let dynamicMapping = $derived(info.keyCode && $osLayout.get(info.keyCode));
   let hasPopover = $derived(
-    !retrievedInfo || !info.id || info.title || info.description,
+    withPopover &&
+      (!retrievedInfo || !info.id || info.title || info.description),
   );
 </script>
 
 {#snippet popover()}
-  {#if retrievedInfo}
-    {#if info.icon || info.display || !info.id}
-      &lt;<b>{info.id ?? `0x${info.code.toString(16)}`}</b>&gt;
-    {/if}
-    {#if info.title}
-      {info.title}
-    {/if}
-    {#if info.variant === "left"}
-      (Left)
-    {:else if info.variant === "right"}
-      (Right)
-    {/if}
-    {#if info.description}
-      <br />
-      <small>{info.description}</small>
-    {/if}
-    {#if info.breaking}
-      <br />&nbsp;<i>Prevents prepended autospaces</i>
-    {/if}
-    {#if info.separator || info.breaking}
-      <br />&nbsp;<i>Stops autocorrect</i>
-    {/if}
-  {:else}
-    <b>Unknown Action</b><br />
-    {#if info.code > 1023}
-      This action cannot be translated and will be ingored.
-    {/if}
-  {/if}
+  <ActionTooltip valid={!!retrievedInfo} {info} />
 {/snippet}
 
 {#snippet kbdText()}

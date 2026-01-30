@@ -10,18 +10,14 @@ import Action from "$lib/components/Action.svelte";
 import type { Range } from "@codemirror/state";
 import { parsedChordsField } from "./parsed-chords-plugin";
 import { iterActions } from "./parse-meta";
+import type { KeyInfo } from "$lib/serial/keymap-codes";
 
 export class ActionWidget extends WidgetType {
   component?: {};
 
-  constructor(readonly id: string | number) {
+  constructor(readonly info: KeyInfo) {
     super();
-    this.id = id;
   }
-
-  /*override eq(other: ActionWidget) {
-    return this.id == other.id;
-  }*/
 
   toDOM() {
     if (this.component) {
@@ -32,13 +28,14 @@ export class ActionWidget extends WidgetType {
 
     this.component = mount(Action, {
       target: element,
-      props: { action: this.id, display: "keys", inText: true },
+      props: {
+        action: this.info,
+        display: "keys",
+        inText: true,
+        withPopover: false,
+      },
     });
     return element;
-  }
-
-  override ignoreEvent() {
-    return true;
   }
 
   override destroy() {
@@ -63,7 +60,7 @@ function actionWidgets(view: EditorView) {
         }
         if (action.info && action.explicit) {
           const deco = Decoration.replace({
-            widget: new ActionWidget(action.code),
+            widget: new ActionWidget(action.info),
           });
           widgets.push(deco.range(action.range[0], action.range[1]));
         }
