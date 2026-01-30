@@ -589,6 +589,7 @@ export class CharaDevice {
           const chunk = file.slice(i, i + chunkSize);
           if (throttle) {
             await writer.ready;
+            await new Promise((resolve) => setTimeout(resolve, 1));
           }
           await writer.write(new Uint8Array(chunk));
           progress(i + chunk.byteLength, file.byteLength);
