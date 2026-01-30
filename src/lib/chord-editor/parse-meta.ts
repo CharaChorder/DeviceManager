@@ -152,25 +152,35 @@ export function mapParseResult(
   };
 }
 
-export function iterActions(
+export function iterActions<T = void>(
   chord: ChordMeta,
-  callback: (action: ActionMeta) => void,
-) {
+  callback: (action: ActionMeta) => T | void,
+): T | undefined {
   if (chord.input) {
     for (const action of chord.input.actions) {
-      callback(action);
+      const result = callback(action);
+      if (result !== undefined) {
+        return result;
+      }
     }
   }
   if (chord.compounds) {
     for (const compound of chord.compounds) {
       for (const action of compound.actions) {
-        callback(action);
+        const result = callback(action);
+        if (result !== undefined) {
+          return result;
+        }
       }
     }
   }
   if (chord.phrase) {
     for (const action of chord.phrase.actions) {
-      callback(action);
+      const result = callback(action);
+      if (result !== undefined) {
+        return result;
+      }
     }
   }
+  return undefined;
 }

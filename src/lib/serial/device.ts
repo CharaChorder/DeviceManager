@@ -158,7 +158,7 @@ export class CharaDevice {
 
   constructor(
     readonly port: SerialPortLike,
-    public baudRate = 115200,
+    public baudRate = navigator.userAgent.includes("Mac") ? 38400 : 115200,
   ) {}
 
   async init() {
@@ -621,9 +621,8 @@ export class CharaDevice {
         });
       } finally {
         writer.releaseLock();
+        await this.suspend();
       }
-
-      await this.suspend();
     } finally {
       delete this.lock;
       resolveLock!(true);
