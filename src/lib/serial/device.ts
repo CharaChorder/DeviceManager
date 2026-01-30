@@ -583,12 +583,17 @@ export class CharaDevice {
           return it;
         });
 
-        const chunkSize = 128;
+        const chunkSize = 1024;
+        const promises = [];
         for (let i = 0; i < file.byteLength; i += chunkSize) {
           const chunk = file.slice(i, i + chunkSize);
-          await writer.write(new Uint8Array(chunk));
-          progress(i + chunk.byteLength, file.byteLength);
+          promises.push(
+            writer
+              .write(new Uint8Array(chunk))
+              .then(() => progress(i + chunk.byteLength, file.byteLength)),
+          );
         }
+        await Promise.all(promises);
 
         serialLog.update((it) => {
           it.push({
