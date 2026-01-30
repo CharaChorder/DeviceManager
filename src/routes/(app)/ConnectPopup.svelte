@@ -10,6 +10,7 @@
   import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialog";
   import { onMount } from "svelte";
   import { persistentWritable } from "$lib/storage";
+  import { goto } from "$app/navigation";
 
   let ports = $state<SerialPort[]>([]);
   let element: HTMLDivElement | undefined = $state();
@@ -47,6 +48,10 @@
   }
 
   async function connectDevice(event: MouseEvent) {
+    if (event.altKey) {
+      goto("/terminal/");
+      return;
+    }
     const port = await navigator.serial.requestPort({
       filters: event.shiftKey ? [] : [...PORT_FILTERS.values()],
     });

@@ -14,18 +14,22 @@
   import type { KeymapCategory } from "$lib/meta/types/actions";
   import Action from "../Action.svelte";
   import { isVerbose } from "../verbose-action";
-  import { actionToValue } from "$lib/chord-editor/action-serializer";
+  import { actionToValue } from "$lib/chord-editor/chord-sync";
 
   let {
     currentAction = undefined,
     nextAction = undefined,
+    queryFilter = undefined,
+    ignoreIcon,
     autofocus = false,
     onselect,
     onclose,
   }: {
     currentAction?: number;
+    queryFilter?: string;
     nextAction?: number;
     autofocus?: boolean;
+    ignoreIcon?: boolean;
     onselect?: (id: number) => void;
     onclose?: () => void;
   } = $props();
@@ -41,6 +45,14 @@
 
   $effect(() => {
     createIndex($KEYMAP_CODES);
+  });
+
+  let didClear = true;
+  $effect(() => {
+    if (queryFilter !== undefined || !didClear) {
+      searchBox.value = queryFilter ?? "";
+      search();
+    }
   });
 
   async function createIndex(codes: Map<number, KeyInfo>) {
@@ -60,6 +72,7 @@
         (category) => [category, []] as [KeymapCategory, KeyInfo[]],
       ),
     );
+    didClear = searchBox.value === "";
     const result =
       searchBox.value === ""
         ? Array.from($KEYMAP_CODES.keys())
@@ -167,7 +180,7 @@
         <li>Action code is out of range</li>
       {/if}
     {/if}
-    {#each results as [category, actions] (category)}
+    {#each results as [category, actions] (actions)}
       {#if actions.length > 0}
         <div class="category">
           <h3>{category.name}</h3>
@@ -191,7 +204,7 @@
                     }
                   : undefined}
               >
-                <Action {action} display="verbose"></Action>
+                <Action {action} display="verbose" {ignoreIcon}></Action>
               </button>
             {/each}
           </ul>

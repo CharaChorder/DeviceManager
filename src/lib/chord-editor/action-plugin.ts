@@ -7,37 +7,35 @@ import {
 } from "@codemirror/view";
 import { mount, unmount } from "svelte";
 import Action from "$lib/components/Action.svelte";
-import { syntaxTree } from "@codemirror/language";
 import type { Range } from "@codemirror/state";
+import { parsedChordsField } from "./parsed-chords-plugin";
+import { iterActions } from "./parse-meta";
+import type { KeyInfo } from "$lib/serial/keymap-codes";
 
 export class ActionWidget extends WidgetType {
   component?: {};
-  element?: HTMLElement;
 
-  constructor(readonly id: string | number) {
+  constructor(readonly info: KeyInfo) {
     super();
-    this.id = id;
-  }
-
-  override eq(other: ActionWidget) {
-    return this.id == other.id;
   }
 
   toDOM() {
-    if (!this.element) {
-      this.element = document.createElement("span");
-      this.element.style.paddingInline = "2px";
-
-      this.component = mount(Action, {
-        target: this.element,
-        props: { action: this.id, display: "keys", inText: true },
-      });
+    if (this.component) {
+      unmount(this.component);
     }
-    return this.element;
-  }
+    const element = document.createElement("span");
+    element.style.paddingInline = "2px";
 
-  override ignoreEvent() {
-    return true;
+    this.component = mount(Action, {
+      target: element,
+      props: {
+        action: this.info,
+        display: "keys",
+        inText: true,
+        withPopover: false,
+      },
+    });
+    return element;
   }
 
   override destroy() {
@@ -50,29 +48,24 @@ export class ActionWidget extends WidgetType {
 function actionWidgets(view: EditorView) {
   const widgets: Range<Decoration>[] = [];
   for (const { from, to } of view.visibleRanges) {
-    syntaxTree(view.state).iterate({
-      from,
-      to,
-      enter: (node) => {
-        if (node.name !== "ExplicitAction") return;
-        const value =
-          node.node.getChild("ActionId") ??
-          node.node.getChild("HexNumber") ??
-          node.node.getChild("DecimalNumber");
-        if (!value) return;
-        if (!node.node.getChild("ExplicitDelimEnd")) {
+    for (const chord of view.state.field(parsedChordsField).chords) {
+      if (chord.range[1] < from || chord.range[0] > to) continue;
+      iterActions(chord, (action) => {
+        if (
+          view.state.selection.ranges.some(
+            (r) => r.from <= action.range[1] && r.to > action.range[0],
+          )
+        ) {
           return;
         }
-
-        const id = view.state.doc.sliceString(value.from, value.to);
-        let deco = Decoration.replace({
-          widget: new ActionWidget(
-            value.name === "ActionId" ? id : parseInt(id),
-          ),
-        });
-        widgets.push(deco.range(node.from, node.to));
-      },
-    });
+        if (action.info && action.explicit) {
+          const deco = Decoration.replace({
+            widget: new ActionWidget(action.info),
+          });
+          widgets.push(deco.range(action.range[0], action.range[1]));
+        }
+      });
+    }
   }
   return Decoration.set(widgets);
 }
@@ -89,7 +82,9 @@ export const actionPlugin = ViewPlugin.fromClass(
       if (
         update.docChanged ||
         update.viewportChanged ||
-        syntaxTree(update.startState) != syntaxTree(update.state)
+        update.selectionSet ||
+        update.startState.field(parsedChordsField) !=
+          update.state.field(parsedChordsField)
       )
         this.decorations = actionWidgets(update.view);
     }
