@@ -14,6 +14,7 @@
   import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialog";
   import { persistentWritable } from "$lib/storage";
   import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
 
   let ports = $state<SerialPort[]>([]);
   let element: HTMLDivElement | undefined = $state();
@@ -53,6 +54,10 @@
   }
 
   async function connectDevice(event: MouseEvent, serial: Serial) {
+    if (event.altKey) {
+      goto("/terminal/");
+      return;
+    }
     const port = await serial.requestPort({
       filters: event.shiftKey ? [] : [...PORT_FILTERS.values()],
     });
