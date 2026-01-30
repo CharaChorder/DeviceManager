@@ -29,6 +29,7 @@ import { actionMetaPlugin } from "./action-meta-plugin";
 import { parsedChordsField } from "./parsed-chords-plugin";
 import { changesPanel } from "./changes-panel.svelte";
 import { searchKeymap } from "@codemirror/search";
+import { actionHover } from "./action-tooltip";
 
 const serializedFields = {
   history: historyField,
@@ -47,6 +48,7 @@ export function createConfig(params: EditorConfig) {
       actionMetaPlugin.plugin,
       deviceChordField,
       parsedChordsField,
+      actionHover,
       changesPanel(),
       lintGutter(),
       params.rawCode ? [lineNumbers()] : [delimPlugin, actionPlugin],
