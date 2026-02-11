@@ -12,7 +12,7 @@
     themeFromSourceColor,
   } from "@material/material-color-utilities";
   import { canAutoConnect, getViablePorts } from "$lib/serial/device";
-  import { initSerial } from "$lib/serial/connection";
+  import { initSerial, serialObject } from "$lib/serial/connection";
   import type { LayoutData } from "./$types";
   import { browser } from "$app/environment";
   import "tippy.js/animations/shift-away.css";
@@ -74,8 +74,12 @@
       webManifestLink = await initPwa();
     }
 
-    if (browser && $userPreferences.autoConnect && (await canAutoConnect())) {
-      const [port] = await getViablePorts();
+    if (
+      browser &&
+      $userPreferences.autoConnect &&
+      (await canAutoConnect($serialObject))
+    ) {
+      const [port] = await getViablePorts($serialObject);
       await initSerial(port!, true);
     }
 

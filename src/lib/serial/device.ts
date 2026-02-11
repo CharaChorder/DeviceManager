@@ -7,7 +7,6 @@ import {
   stringifyChordActions,
   stringifyPhrase,
 } from "$lib/serial/chord";
-import { browser } from "$app/environment";
 import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialog";
 import semverGte from "semver/functions/gte";
 
@@ -71,23 +70,8 @@ const KEY_COUNTS = {
   ZERO: 256,
 } as const;
 
-if (
-  browser &&
-  navigator.serial === undefined &&
-  import.meta.env.TAURI_FAMILY !== undefined
-) {
-  await import("./tauri-serial");
-}
-
-if (browser && navigator.serial === undefined && navigator.usb !== undefined) {
-  // @ts-expect-error polyfill
-  navigator.serial = await import("web-serial-polyfill").then(
-    ({ serial }) => serial,
-  );
-}
-
-export async function getViablePorts(): Promise<SerialPort[]> {
-  return navigator.serial.getPorts().then((ports) =>
+export async function getViablePorts(serial: Serial): Promise<SerialPort[]> {
+  return serial.getPorts().then((ports) =>
     ports.filter((it) => {
       const { usbProductId, usbVendorId } = it.getInfo();
       for (const filter of PORT_FILTERS.values()) {
@@ -109,8 +93,8 @@ type LengthArray<T, N extends number, R extends T[] = []> = number extends N
     ? R
     : LengthArray<T, N, [T, ...R]>;
 
-export async function canAutoConnect() {
-  return getViablePorts().then((it) => it.length === 1);
+export async function canAutoConnect(serial: Serial) {
+  return getViablePorts(serial).then((it) => it.length === 1);
 }
 
 async function timeout<T>(promise: Promise<T>, ms: number): Promise<T> {

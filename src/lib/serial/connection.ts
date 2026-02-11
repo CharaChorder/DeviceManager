@@ -1,4 +1,4 @@
-import { get, writable } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 import { CharaDevice, type SerialPortLike } from "$lib/serial/device";
 import type { Chord } from "$lib/serial/chord";
 import type { Writable } from "svelte/store";
@@ -7,12 +7,27 @@ import { persistentWritable } from "$lib/storage";
 import { userPreferences } from "$lib/preferences";
 import { getMeta } from "$lib/meta/meta-storage";
 import type { VersionMeta } from "$lib/meta/types/meta";
+import { serial as serialPolyfill } from "web-serial-polyfill";
 
 export const serialPort = writable<CharaDevice | undefined>();
 
-navigator.serial?.addEventListener("disconnect", async (event) => {
+export const forceWebUSB = persistentWritable("force-webusb", false);
+
+async function onSerialDisconnect() {
   serialPort.set(undefined);
-});
+}
+
+export const serialObject = derived<typeof forceWebUSB, Serial>(
+  forceWebUSB,
+  (forceWebUSB) =>
+    forceWebUSB || !("serial" in navigator)
+      ? (serialPolyfill as any as Serial)
+      : navigator.serial,
+);
+
+if ("serial" in navigator) {
+  navigator.serial.addEventListener("disconnect", onSerialDisconnect);
+}
 
 export interface SerialLogEntry {
   type: "input" | "output" | "system";

@@ -1,21 +1,27 @@
 <script lang="ts">
   import LL from "$i18n/i18n-svelte";
   import { preference, userPreferences } from "$lib/preferences";
-  import { initSerial } from "$lib/serial/connection";
+  import {
+    forceWebUSB,
+    initSerial,
+    serialObject,
+  } from "$lib/serial/connection";
   import {
     getPortName,
     PORT_FILTERS,
     type SerialPortLike,
   } from "$lib/serial/device";
   import { showConnectionFailedDialog } from "$lib/dialogs/connection-failed-dialog";
-  import { onMount } from "svelte";
   import { persistentWritable } from "$lib/storage";
+  import { browser } from "$app/environment";
 
   let ports = $state<SerialPort[]>([]);
   let element: HTMLDivElement | undefined = $state();
+  let supportsWebSerial = browser && "serial" in navigator;
+  let supportsWebUSB = browser && "usb" in navigator;
 
-  onMount(() => {
-    refreshPorts();
+  $effect(() => {
+    refreshPorts($serialObject);
   });
 
   let hasDiscoveredAutoConnect = persistentWritable(
@@ -29,8 +35,8 @@
     }
   });
 
-  async function refreshPorts() {
-    ports = await navigator.serial.getPorts();
+  async function refreshPorts(serial: Serial) {
+    ports = await serial.getPorts();
   }
 
   async function connect(port: SerialPortLike, withSync: boolean) {
@@ -46,13 +52,13 @@
     element?.closest<HTMLElement>("[popover]")?.hidePopover();
   }
 
-  async function connectDevice(event: MouseEvent) {
-    const port = await navigator.serial.requestPort({
+  async function connectDevice(event: MouseEvent, serial: Serial) {
+    const port = await serial.requestPort({
       filters: event.shiftKey ? [] : [...PORT_FILTERS.values()],
     });
     if (!port) return;
     closePopover();
-    refreshPorts();
+    refreshPorts(serial);
     connect(port, true);
   }
 </script>
@@ -60,55 +66,79 @@
 <div
   bind:this={element}
   class="device-list"
-  onmouseenter={() => refreshPorts()}
+  onmouseenter={() => refreshPorts($serialObject)}
   role="region"
 >
-  {#if ports.length === 1}
+  {#if supportsWebSerial || supportsWebUSB}
     <fieldset class:promote={!$hasDiscoveredAutoConnect}>
-      <label
-        ><input type="checkbox" use:preference={"autoConnect"} />
-        <div class="title">{$LL.deviceManager.AUTO_CONNECT()}</div>
-      </label>
+      {#if ports.length === 1}
+        <label
+          ><input type="checkbox" use:preference={"autoConnect"} />
+          <div class="title">{$LL.deviceManager.AUTO_CONNECT()}</div>
+        </label>
 
-      <label
-        ><input type="checkbox" use:preference={"backup"} />
-        <div class="title">{@html $LL.backup.AUTO_BACKUP()}</div>
+        <label
+          ><input type="checkbox" use:preference={"backup"} />
+          <div class="title">{@html $LL.backup.AUTO_BACKUP()}</div>
+        </label>
+      {/if}
+
+      <label title="You can try this if you have trouble with the connection."
+        ><input
+          type="checkbox"
+          disabled={!supportsWebSerial}
+          checked={!supportsWebSerial || $forceWebUSB}
+          onchange={(event) => {
+            $forceWebUSB = (event.target as HTMLInputElement).checked;
+          }}
+        />
+        <div class="title">WebUSB Fallback</div>
       </label>
     </fieldset>
-  {/if}
-  {#if ports.length !== 0}
-    <h4>Recent Devices</h4>
-    <div class="devices">
-      <!--
+    {#if ports.length !== 0}
+      <h4>Recent Devices</h4>
+      <div class="devices">
+        <!--
       <div class="device">
         <button onclick={connectCC0}> CC0</button>
       </div>-->
-      {#each ports as port}
-        <div class="device">
-          <button
-            onclick={(event) => {
-              connect(port, !event.shiftKey);
-            }}
-          >
-            {getPortName(port)}</button
-          >
-          <button
-            class="error"
-            onclick={() => {
-              port.forget();
-              refreshPorts();
-            }}><span class="icon">visibility_off</span> Hide</button
-          >
-        </div>
-      {/each}
+        {#each ports as port}
+          <div class="device">
+            <button
+              onclick={(event) => {
+                connect(port, !event.shiftKey);
+              }}
+            >
+              {getPortName(port)}</button
+            >
+            <button
+              class="error"
+              onclick={() => {
+                port.forget();
+                refreshPorts($serialObject);
+              }}><span class="icon">visibility_off</span> Hide</button
+            >
+          </div>
+        {/each}
+      </div>
+    {/if}
+    <div class="pair">
+      <button
+        onclick={(event) => connectDevice(event, $serialObject)}
+        class="primary"><span class="icon">add</span>Connect</button
+      >
+      <!--<a href="/ccos/zero_wasm/"><span class="icon">add</span>Virtual Device</a>-->
     </div>
+    {#if !supportsWebSerial}
+      <p>Browser with limited support detected.</p>
+    {/if}
+  {:else}
+    <p><b>Your browser is missing support for critical features.</b></p>
+    <p>
+      Please use a Chromium-based browser such as Chrome, Edge or Chromium
+      instead.
+    </p>
   {/if}
-  <div class="pair">
-    <button onclick={connectDevice} class="primary"
-      ><span class="icon">add</span>Connect</button
-    >
-    <!--<a href="/ccos/zero_wasm/"><span class="icon">add</span>Virtual Device</a>-->
-  </div>
 </div>
 
 <style lang="scss">

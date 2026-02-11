@@ -1,6 +1,6 @@
 <script lang="ts">
   import { downloadBackup } from "$lib/backup/backup";
-  import { initSerial, serialPort } from "$lib/serial/connection";
+  import { initSerial, serialObject, serialPort } from "$lib/serial/connection";
   import { fade, slide } from "svelte/transition";
   import { lt as semverLt } from "semver";
   import type { LoaderOptions, ESPLoader } from "esptool-js";
@@ -95,9 +95,9 @@
     }
   }
 
-  async function connect() {
+  async function connect(serial: Serial) {
     try {
-      const port = await navigator.serial.requestPort();
+      const port = await serial.requestPort();
       await initSerial(port!, true);
       step = 1;
     } catch (e) {
@@ -138,9 +138,9 @@
     step = 4;
   }
 
-  async function espBootloader() {
+  async function espBootloader(serial: Serial) {
     $serialPort?.forget();
-    const port = await navigator.serial.requestPort();
+    const port = await serial.requestPort();
     port.open({ baudRate: 1200 });
   }
 
@@ -172,8 +172,8 @@
     return espLoader;
   }
 
-  async function flashImages() {
-    const port = await navigator.serial.requestPort();
+  async function flashImages(serial: Serial) {
+    const port = await serial.requestPort();
     try {
       const esptool = data.meta.update.esptool!;
       espLoader = await connectEsp(port);
@@ -202,8 +202,8 @@
     }
   }
 
-  async function eraseSPI() {
-    const port = await navigator.serial.requestPort();
+  async function eraseSPI(serial: Serial) {
+    const port = await serial.requestPort();
     try {
       console.log(data.meta);
       const spiFlash = data.meta.spiFlash!;
@@ -314,7 +314,7 @@
       <section>
         <ol>
           <li>
-            <button class="inline-button" onclick={connect}
+            <button class="inline-button" onclick={() => connect($serialObject)}
               ><span class="icon">usb</span>Connect</button
             >
             your device
@@ -367,17 +367,17 @@
         </p>
 
         <div class="esp-buttons">
-          <button onclick={espBootloader}
+          <button onclick={() => espBootloader($serialObject)}
             ><span class="icon">memory</span>ESP Bootloader</button
           >
-          <button onclick={flashImages}
+          <button onclick={() => flashImages($serialObject)}
             ><span class="icon">developer_board</span>Flash Images</button
           >
           <label
             ><input type="checkbox" id="erase" bind:checked={eraseAll} />Erase
             All</label
           >
-          <button onclick={eraseSPI}
+          <button onclick={() => eraseSPI($serialObject)}
             ><span class="icon">developer_board</span>Erase SPI Flash</button
           >
         </div>
