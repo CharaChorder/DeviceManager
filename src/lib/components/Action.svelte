@@ -118,6 +118,10 @@
 {/if}
 
 <style lang="scss">
+  :global(*):has(> kbd:not(.inline-kbd).in-text) {
+    --ch: 1ch;
+  }
+
   kbd:not(.inline-kbd) {
     transition: color 250ms ease;
     padding-block: auto;
@@ -126,8 +130,11 @@
     &.in-text {
       display: inline-flex;
       vertical-align: middle;
+      margin-inline: calc(var(--ch) * 0.25);
       margin-block: auto;
+      padding-inline: 0;
       padding-block: revert;
+      width: calc(var(--ch) * 1.5);
     }
   }
 

@@ -51,10 +51,9 @@ export function createConfig(params: EditorConfig) {
       actionHover,
       changesPanel(),
       lintGutter(),
-      params.rawCode ? [lineNumbers()] : [delimPlugin, actionPlugin],
+      params.rawCode ? [lineNumbers()] : [/*delimPlugin,*/ actionPlugin],
       chordLanguageSupport(),
       actionLinter({
-        delay: 100,
         markerFilter(diagnostics) {
           return diagnostics.filter((it) => it.from !== it.to);
         },

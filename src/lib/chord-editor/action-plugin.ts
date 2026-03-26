@@ -24,7 +24,7 @@ export class ActionWidget extends WidgetType {
       unmount(this.component);
     }
     const element = document.createElement("span");
-    element.style.paddingInline = "2px";
+    //element.style.paddingInline = "2px";
 
     this.component = mount(Action, {
       target: element,
@@ -43,6 +43,10 @@ export class ActionWidget extends WidgetType {
       unmount(this.component);
     }
   }
+
+  override ignoreEvent() {
+    return false;
+  }
 }
 
 function actionWidgets(view: EditorView) {
@@ -51,13 +55,6 @@ function actionWidgets(view: EditorView) {
     for (const chord of view.state.field(parsedChordsField).chords) {
       if (chord.range[1] < from || chord.range[0] > to) continue;
       iterActions(chord, (action) => {
-        if (
-          view.state.selection.ranges.some(
-            (r) => r.from <= action.range[1] && r.to > action.range[0],
-          )
-        ) {
-          return;
-        }
         if (action.info && action.explicit) {
           const deco = Decoration.replace({
             widget: new ActionWidget(action.info),
