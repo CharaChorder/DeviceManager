@@ -5,6 +5,7 @@
   import { lt as semverLt } from "semver";
   import type { LoaderOptions, ESPLoader } from "esptool-js";
   import ProgressButton from "$lib/ProgressButton.svelte";
+  import FactoryKit from "./FactoryKit.svelte";
 
   let { data } = $props();
 
@@ -352,6 +353,10 @@
           </li>
         </ol>
       </section>
+    {/if}
+
+    {#if data.meta.update.esptool}
+      <FactoryKit meta={data.meta as any} />
     {/if}
 
     {#if false && data.meta.update.esptool}

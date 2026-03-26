@@ -107,6 +107,7 @@ const config = {
     "delete_sweep",
     "print",
     "restore_from_trash",
+    "factory",
     "history",
     "history_toggle_off",
     "text_to_speech",
