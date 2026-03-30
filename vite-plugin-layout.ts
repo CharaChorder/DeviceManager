@@ -29,6 +29,7 @@ export interface VisualLayoutSwitch extends Positionable {
     s: number;
     d: number;
   };
+  rotationAnchor?: true;
 }
 
 const fileRegex = /\.(layout\.yml)$/;
@@ -53,6 +54,7 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
     name: layout.name,
     size: [0, 0],
     keys: [],
+    fixedKeys: [],
   };
 
   let y = 0;
@@ -80,13 +82,16 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
       } else if ("switch" in info) {
         const cx = x + ox + 1;
         const cy = y + oy + 1;
+        if (info.rotationAnchor) {
+          compiled.rotationAnchor = [cx, cy];
+        }
         for (const [i, id] of [
           info.switch.s,
           info.switch.w,
           info.switch.n,
           info.switch.e,
         ].entries()) {
-          compiled.keys.push({
+          (info.rotationAnchor ? compiled.fixedKeys : compiled.keys).push({
             id,
             shape: "quarter-circle",
             cornerRadius: 0,
@@ -96,7 +101,7 @@ export function compileLayout(layout: VisualLayout): CompiledLayout {
           });
         }
         if (info.switch.d !== undefined) {
-          compiled.keys.push({
+          (info.rotationAnchor ? compiled.fixedKeys : compiled.keys).push({
             id: info.switch.d,
             shape: "square",
             cornerRadius: 0.5,

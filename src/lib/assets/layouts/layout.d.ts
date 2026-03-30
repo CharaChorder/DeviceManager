@@ -2,6 +2,8 @@ export interface CompiledLayout {
   name: string;
   size: [number, number];
   keys: CompiledLayoutKey[];
+  fixedKeys: CompiledLayoutKey[];
+  rotationAnchor?: [number, number];
 }
 
 export interface CompiledLayoutKey {

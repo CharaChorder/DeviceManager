@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { deviceLayout } from "$lib/serial/connection";
+  import { deviceLayout, deviceMeta } from "$lib/serial/connection";
   import { dev } from "$app/environment";
   import ActionSelector from "$lib/components/layout/ActionSelector.svelte";
   import { get } from "svelte/store";
   import KeyboardKey from "$lib/components/layout/KeyboardKey.svelte";
   import { getContext, mount, unmount } from "svelte";
   import type { VisualLayoutConfig } from "./visual-layout.js";
-  import { changes, ChangeType, layout } from "$lib/undo-redo";
+  import { changes, ChangeType, layout, settings } from "$lib/undo-redo";
   import { fly } from "svelte/transition";
   import { expoOut } from "svelte/easing";
   import { activeLayer, activeProfile } from "$lib/serial/connection";
@@ -14,6 +14,7 @@
     CompiledLayout,
     CompiledLayoutKey,
   } from "$lib/assets/layouts/layout.d.ts";
+  import { setting } from "$lib/setting.js";
 
   const { scale, margin, strokeWidth, fontSize, iconFontSize } =
     getContext<VisualLayoutConfig>("visual-layout-config");
@@ -190,6 +191,70 @@
 
   let focusKey: CompiledLayoutKey;
   let groupParent: SVGElement;
+  let rotationSetting = $derived(
+    $deviceMeta?.settings
+      .find((it) => it.name === "misc")
+      ?.items.find((it) => it.name === "device rotation"),
+  );
+  let settingRotation = $derived(
+    rotationSetting
+      ? ($settings[$activeProfile]?.[rotationSetting.id]?.value ?? 90)
+      : 90,
+  );
+  let draggingRotation = $state(90);
+  let isDragging = $state(false);
+  let rotation = $derived(isDragging ? draggingRotation : settingRotation);
+  let dragOffset = 0;
+
+  function calcDragOffset(event: MouseEvent) {
+    const offset = groupParent.getBoundingClientRect();
+    const centerX =
+      offset.x +
+      (layoutInfo.rotationAnchor?.[0] ?? 0) *
+        scale *
+        (offset.width / (layoutInfo.size[0] * scale));
+    const centerY =
+      offset.y +
+      (layoutInfo.rotationAnchor?.[1] ?? 0) *
+        scale *
+        (offset.height / (layoutInfo.size[1] * scale));
+    return (
+      Math.atan2(event.x - centerX, event.y - centerY) * (180 / Math.PI) + 90
+    );
+  }
+
+  function dragRotation(event: MouseEvent) {
+    if (!isDragging) return;
+    const value = Math.min(
+      180,
+      Math.max(0, Math.round(calcDragOffset(event) - dragOffset)),
+    );
+    if (draggingRotation !== value) {
+      draggingRotation = value;
+    }
+  }
+
+  function dragEnable(event: MouseEvent) {
+    dragOffset = calcDragOffset(event) - rotation;
+    draggingRotation = rotation;
+    isDragging = true;
+  }
+  function dragDisable() {
+    isDragging = false;
+    if (settingRotation !== draggingRotation) {
+      changes.update((changes) => {
+        changes.push([
+          {
+            type: ChangeType.Setting,
+            id: rotationSetting!.id,
+            setting: draggingRotation,
+            profile: get(activeProfile),
+          },
+        ]);
+        return changes;
+      });
+    }
+  }
 </script>
 
 <svelte:window on:keydown={navigate} />
@@ -199,8 +264,58 @@
   viewBox="0 0 {layoutInfo.size[0] * scale} {layoutInfo.size[1] * scale}"
   bind:this={groupParent}
   transition:fly={{ y: 48, easing: expoOut }}
+  onmousemove={dragRotation}
+  onmouseup={dragDisable}
 >
-  {#each layoutInfo.keys as key, i}
+  <g
+    transform-origin="{(layoutInfo.rotationAnchor?.[0] ?? 0) *
+      scale} {(layoutInfo.rotationAnchor?.[1] ?? 0) * scale}"
+    transform="rotate({-(rotation - 90)})"
+    class="group"
+  >
+    {#each layoutInfo.keys as key, i}
+      <KeyboardKey
+        {i}
+        {key}
+        onfocusin={() => (focusKey = key)}
+        onclick={() => edit(i)}
+        onkeypress={({ key }) => {
+          if (key === "Enter") {
+            edit(i);
+          }
+        }}
+      />
+    {/each}
+    {#if rotationSetting}
+      <rect
+        role="button"
+        tabindex="-1"
+        onmousedown={dragEnable}
+        class="handle"
+        x={(layoutInfo.size[0] * scale) / 2 - (0.5 * scale) / 2}
+        y={layoutInfo.size[1] * scale + margin - 0.05 * scale}
+        width={0.5 * scale}
+        height={0.05 * scale}
+        ry={0.025 * scale}
+        fill="currentColor"
+        stroke="currentColor"
+        stroke-width={strokeWidth}
+      />
+      {#if isDragging}
+        <text
+          transition:fly={{ y: 2, easing: expoOut }}
+          class="handle-label"
+          text-anchor="middle"
+          font-size={fontSize}
+          fill="currentColor"
+          x={(layoutInfo.size[0] * scale) / 2}
+          y={layoutInfo.size[1] * scale + margin * 3}>{rotation - 90}°</text
+        >
+      {/if}
+    {/if}
+  </g>
+
+  {#each layoutInfo.fixedKeys as key, i}
     <KeyboardKey
       {i}
       {key}
@@ -221,5 +336,28 @@
     width: calc(min(100%, 35cm));
     max-height: calc(100% - 170px);
     overflow: visible;
+  }
+
+  .handle {
+    opacity: 0.3;
+    transition: opacity 0.1s;
+    cursor: grab;
+  }
+
+  .handle:hover {
+    opacity: 0.5;
+  }
+
+  .handle:active {
+    opacity: 1;
+    cursor: grabbing;
+  }
+
+  .handle:focus {
+    outline: none;
+  }
+
+  .handle-label {
+    user-select: none;
   }
 </style>
