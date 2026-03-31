@@ -17,14 +17,14 @@
   const highlight = getContext<Writable<Set<number>> | undefined>("highlight");
 
   let {
-    i,
     key,
+    flipped = false,
     onclick,
     onkeypress,
     onfocusin,
   }: {
-    i: number;
     key: CompiledLayoutKey;
+    flipped?: boolean;
     onclick: MouseEventHandler<SVGGElement>;
     onkeypress: KeyboardEventHandler<SVGGElement>;
     onfocusin: FocusEventHandler<SVGGElement>;
@@ -44,7 +44,10 @@
   {onkeypress}
   {onfocusin}
   role="button"
-  tabindex={i + 1}
+  tabindex={key.id + 1}
+  transform={flipped ? "rotate(180)" : undefined}
+  transform-origin="center"
+  data-id={key.id}
 >
   {#if key.shape === "square"}
     <rect
@@ -122,6 +125,9 @@
   path,
   g {
     transform-box: fill-box;
+  }
+
+  path {
     transform-origin: top left;
   }
 

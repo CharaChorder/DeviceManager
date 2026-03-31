@@ -14,7 +14,6 @@
     CompiledLayout,
     CompiledLayoutKey,
   } from "$lib/assets/layouts/layout.d.ts";
-  import { setting } from "$lib/setting.js";
 
   const { scale, margin, strokeWidth, fontSize, iconFontSize } =
     getContext<VisualLayoutConfig>("visual-layout-config");
@@ -120,9 +119,13 @@
   }
 
   function edit(index: number) {
-    const keyInfo = layoutInfo.keys[index];
+    const keyInfo =
+      layoutInfo.keys.find(({ id }) => id === index) ??
+      layoutInfo.fixedKeys.find(({ id }) => id === index);
     if (!keyInfo) return;
-    const clickedGroup = groupParent.children.item(index) as SVGGElement;
+    const clickedGroup = groupParent.querySelector(
+      `g[data-id="${index}"]`,
+    ) as SVGGElement;
     const nextAction =
       get(layout)[get(activeProfile)]![get(activeLayer)]?.[keyInfo.id];
     const currentAction =
@@ -190,7 +193,8 @@
   }
 
   let focusKey: CompiledLayoutKey;
-  let groupParent: SVGElement;
+  let groupParent: SVGGElement;
+  let rotationTarget: SVGCircleElement;
   let rotationSetting = $derived(
     $deviceMeta?.settings
       .find((it) => it.name === "misc")
@@ -201,26 +205,43 @@
       ? ($settings[$activeProfile]?.[rotationSetting.id]?.value ?? 90)
       : 90,
   );
+
+  let flippedSetting = $derived(
+    $deviceMeta?.settings
+      .find((it) => it.name === "misc")
+      ?.items.find((it) => it.name === "device orientation"),
+  );
+  let flipped = $derived(
+    flippedSetting
+      ? $settings[$activeProfile]?.[flippedSetting.id]?.value !== 0
+      : false,
+  );
+
   let draggingRotation = $state(90);
   let isDragging = $state(false);
   let rotation = $derived(isDragging ? draggingRotation : settingRotation);
   let dragOffset = 0;
 
   function calcDragOffset(event: MouseEvent) {
-    const offset = groupParent.getBoundingClientRect();
-    const centerX =
-      offset.x +
-      (layoutInfo.rotationAnchor?.[0] ?? 0) *
-        scale *
-        (offset.width / (layoutInfo.size[0] * scale));
-    const centerY =
-      offset.y +
-      (layoutInfo.rotationAnchor?.[1] ?? 0) *
-        scale *
-        (offset.height / (layoutInfo.size[1] * scale));
-    return (
-      Math.atan2(event.x - centerX, event.y - centerY) * (180 / Math.PI) + 90
-    );
+    const offset = rotationTarget.getBoundingClientRect();
+    const cx = offset.x + offset.width / 2;
+    const cy = offset.y + offset.height / 2;
+    const a = Math.atan2(event.x - cx, event.y - cy) * (180 / Math.PI) + 90;
+    return flipped ? (a + 180) % 360 : a;
+  }
+
+  function toggleFlip() {
+    changes.update((changes) => {
+      changes.push([
+        {
+          type: ChangeType.Setting,
+          id: flippedSetting!.id,
+          setting: flipped ? 0 : 1,
+          profile: get(activeProfile),
+        },
+      ]);
+      return changes;
+    });
   }
 
   function dragRotation(event: MouseEvent) {
@@ -261,73 +282,96 @@
 
 <svg
   class="print"
-  viewBox="0 0 {layoutInfo.size[0] * scale} {layoutInfo.size[1] * scale}"
-  bind:this={groupParent}
+  viewBox="0 {flipped ? margin * -3 : 0} {layoutInfo.size[0] *
+    scale} {layoutInfo.size[1] * scale}"
   transition:fly={{ y: 48, easing: expoOut }}
   onmousemove={dragRotation}
   onmouseup={dragDisable}
 >
   <g
+    bind:this={groupParent}
+    transform="rotate({flipped ? 180 : 0})"
     transform-origin="{(layoutInfo.rotationAnchor?.[0] ?? 0) *
-      scale} {(layoutInfo.rotationAnchor?.[1] ?? 0) * scale}"
-    transform="rotate({-(rotation - 90)})"
-    class="group"
+      scale} {(layoutInfo.size[1] * scale) / 2}"
   >
-    {#each layoutInfo.keys as key, i}
-      <KeyboardKey
-        {i}
-        {key}
-        onfocusin={() => (focusKey = key)}
-        onclick={() => edit(i)}
-        onkeypress={({ key }) => {
-          if (key === "Enter") {
-            edit(i);
-          }
-        }}
-      />
-    {/each}
-    {#if rotationSetting}
-      <rect
-        role="button"
-        tabindex="-1"
-        onmousedown={dragEnable}
-        class="handle"
-        x={(layoutInfo.size[0] * scale) / 2 - (0.5 * scale) / 2}
-        y={layoutInfo.size[1] * scale + margin - 0.05 * scale}
-        width={0.5 * scale}
-        height={0.05 * scale}
-        ry={0.025 * scale}
-        fill="currentColor"
-        stroke="currentColor"
-        stroke-width={strokeWidth}
-      />
-      {#if isDragging}
-        <text
-          transition:fly={{ y: 2, easing: expoOut }}
-          class="handle-label"
-          text-anchor="middle"
-          font-size={fontSize}
+    <g
+      transform-origin="{(layoutInfo.rotationAnchor?.[0] ?? 0) *
+        scale} {(layoutInfo.rotationAnchor?.[1] ?? 0) * scale}"
+      transform="rotate({-(rotation - 90)})"
+      class="group"
+    >
+      {#each layoutInfo.keys as key}
+        <KeyboardKey
+          {key}
+          {flipped}
+          onfocusin={() => (focusKey = key)}
+          onclick={() => edit(key.id)}
+          onkeypress={(event) => {
+            if (event.key === "Enter") {
+              edit(key.id);
+            }
+          }}
+        />
+      {/each}
+      {#if rotationSetting}
+        <rect
+          role="button"
+          tabindex="-1"
+          onmousedown={dragEnable}
+          ondblclick={toggleFlip}
+          class="handle"
+          x={(layoutInfo.size[0] * scale) / 2 - (0.5 * scale) / 2}
+          y={layoutInfo.size[1] * scale + margin - 0.05 * scale}
+          width={0.5 * scale}
+          height={0.05 * scale}
+          ry={0.025 * scale}
           fill="currentColor"
-          x={(layoutInfo.size[0] * scale) / 2}
-          y={layoutInfo.size[1] * scale + margin * 3}>{rotation - 90}°</text
-        >
+          stroke="currentColor"
+          stroke-width={strokeWidth}
+        />
+        {#if isDragging}
+          {@const x = (layoutInfo.size[0] * scale) / 2}
+          {@const y = layoutInfo.size[1] * scale + margin * (flipped ? 2 : 3)}
+          <text
+            transition:fly={{ y: 2, easing: expoOut }}
+            transform={flipped ? "rotate(180)" : undefined}
+            transform-origin="{x} {y}"
+            class="handle-label"
+            text-anchor="middle"
+            font-size={fontSize}
+            fill="currentColor"
+            {x}
+            {y}>{rotation - 90}°</text
+          >
+        {/if}
       {/if}
-    {/if}
-  </g>
-
-  {#each layoutInfo.fixedKeys as key, i}
-    <KeyboardKey
-      {i}
-      {key}
-      onfocusin={() => (focusKey = key)}
-      onclick={() => edit(i)}
-      onkeypress={({ key }) => {
-        if (key === "Enter") {
-          edit(i);
-        }
-      }}
+    </g>
+    <circle
+      bind:this={rotationTarget}
+      cx={(layoutInfo.rotationAnchor?.[0] ?? 0) * scale}
+      cy={(layoutInfo.rotationAnchor?.[1] ?? 0) * scale}
+      r="0"
     />
-  {/each}
+
+    <g
+      transform="rotate({flipped ? 180 : 0})"
+      transform-origin="{(layoutInfo.rotationAnchor?.[0] ?? 0) *
+        scale} {(layoutInfo.rotationAnchor?.[1] ?? 0) * scale}"
+    >
+      {#each layoutInfo.fixedKeys as key}
+        <KeyboardKey
+          {key}
+          onfocusin={() => (focusKey = key)}
+          onclick={() => edit(key.id)}
+          onkeypress={(event) => {
+            if (event.key === "Enter") {
+              edit(key.id);
+            }
+          }}
+        />
+      {/each}
+    </g>
+  </g>
 </svg>
 
 <style lang="scss">
