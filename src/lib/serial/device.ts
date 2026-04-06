@@ -19,7 +19,7 @@ export const PORT_FILTERS: Map<string, SerialPortFilter> = new Map([
   ["X", { usbProductId: 0x818b, usbVendorId: 0x303a }],
   ["M4G S3 (pre-production)", { usbProductId: 0x1001, usbVendorId: 0x303a }],
   ["M4G S3", { usbProductId: 0x829a, usbVendorId: 0x303a }],
-  ["T4G S2", { usbProductId: 0x82f2, usbVendorId: 0x303a }],
+  ["CCB S2", { usbProductId: 0x82f2, usbVendorId: 0x303a }],
 ]);
 
 const DEVICE_ALIASES = new Map<string, Set<string>>([
@@ -30,7 +30,7 @@ const DEVICE_ALIASES = new Map<string, Set<string>>([
   ["CCX", new Set(["X", "ccx"])],
   ["M4G", new Set(["M4G S3", "m4g_s3", "M4G S3 (pre-production)"])],
   ["M4G (right)", new Set(["M4GR S3", "m4gr_s3"])],
-  ["T4G", new Set(["T4G S2", "t4g_s2"])],
+  ["CCB", new Set(["T4G S2", "t4g_s2", "CCB S2", "ccb s2"])],
 ]);
 
 export function getName(alias: string): string {
@@ -67,6 +67,7 @@ const KEY_COUNTS = {
   M4G: 90,
   M4GR: 90,
   T4G: 7,
+  CCB: 7,
   ZERO: 256,
 } as const;
 

@@ -1,4 +1,4 @@
-name: T4G
+name: CCB
 col:
   - row:
       - switch: { e: 3, n: 5, w: 4, s: 6 }

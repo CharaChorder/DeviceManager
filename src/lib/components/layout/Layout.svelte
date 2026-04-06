@@ -36,8 +36,8 @@
       import("$lib/assets/layouts/m4gr.layout.yml").then(
         (it) => it.default as CompiledLayout,
       ),
-    T4G: () =>
-      import("$lib/assets/layouts/t4g.layout.yml").then(
+    CCB: () =>
+      import("$lib/assets/layouts/ccb.layout.yml").then(
         (it) => it.default as CompiledLayout,
       ),
   };
