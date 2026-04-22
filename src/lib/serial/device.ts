@@ -143,7 +143,7 @@ export class CharaDevice {
 
   constructor(
     readonly port: SerialPortLike,
-    public baudRate = 115200,
+    public baudRate = 921600,
   ) {}
 
   async init() {
@@ -388,6 +388,11 @@ export class CharaDevice {
       stringifyPhrase(chord.phrase),
     ]);
     if (status !== "0") throw new Error(`Failed with status ${status}`);
+  }
+
+  async getProgress() {
+    const [status] = await this.send(1, ["CML", "C5"]);
+    return Number.parseFloat(status);
   }
 
   async deleteChord(chord: Pick<Chord, "actions">) {

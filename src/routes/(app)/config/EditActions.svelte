@@ -20,6 +20,7 @@
     sync,
     syncProgress,
     syncStatus,
+    waitForDevice,
   } from "$lib/serial/connection";
   import ProgressButton from "$lib/ProgressButton.svelte";
   import { tick } from "svelte";
@@ -136,6 +137,7 @@
         empty.add(id);
       }
     }
+
     changes.update((changes) => {
       changes.push([
         ...empty.keys().map(
@@ -241,6 +243,8 @@
       const progressMax = layoutChanges + settingChanges + chordChanges;
 
       let progressCurrent = 0;
+
+      await waitForDevice(port);
 
       function updateProgress() {
         syncProgress.set({

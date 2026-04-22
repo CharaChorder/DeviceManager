@@ -8,6 +8,7 @@ import { userPreferences } from "$lib/preferences";
 import { getMeta } from "$lib/meta/meta-storage";
 import type { VersionMeta } from "$lib/meta/types/meta";
 import { serial as serialPolyfill } from "web-serial-polyfill";
+import semverGte from "semver/functions/gte";
 
 export const serialPort = writable<CharaDevice | undefined>();
 
@@ -91,6 +92,20 @@ export async function initSerial(port: SerialPortLike, withSync: boolean) {
   }
 }
 
+export async function waitForDevice(device: CharaDevice) {
+  if (semverGte(device.version, "3.1.0")) {
+    const startProgress = await device.getProgress();
+    let total = startProgress;
+    while (total < 1.0) {
+      total = await device.getProgress();
+      syncProgress.set({
+        max: 1.0 - startProgress,
+        current: total - startProgress,
+      });
+    }
+  }
+}
+
 export async function sync() {
   const device = get(serialPort);
   if (!device) return;
@@ -100,6 +115,9 @@ export async function sync() {
     device.version.toString(),
   );
   deviceMeta.set(meta);
+
+  await waitForDevice(device);
+
   const chordCount = await device.getChordCount();
 
   const maxSettings = meta.settings
