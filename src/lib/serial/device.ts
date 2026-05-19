@@ -1,5 +1,5 @@
 import { LineBreakTransformer } from "$lib/serial/line-break-transformer";
-import { serialLog, type SerialLogEntry } from "$lib/serial/connection";
+import { serialLog } from "$lib/serial/connection";
 import type { Chord } from "$lib/serial/chord";
 import {
   parseChordActions,
@@ -143,12 +143,15 @@ export class CharaDevice {
 
   constructor(
     readonly port: SerialPortLike,
-    public baudRate = navigator.userAgent.includes("Mac") ? 38400 : 115200,
+    public baudRate = 921600,
   ) {}
 
   async init() {
     try {
-      await this.port.open({ baudRate: this.baudRate });
+      await this.port.open({
+        baudRate: this.baudRate,
+        parity: "even",
+      });
       const info = this.port.getInfo();
       serialLog.update((it) => {
         it.push({
@@ -554,48 +557,37 @@ export class CharaDevice {
 
       const writer = this.port.writable!.getWriter();
       try {
-        const start = performance.now();
-        writer.write(new TextEncoder().encode(`RST OTA\r\n`));
+        await writer.write(new TextEncoder().encode(`RST OTA\r\n`));
+        serialLog.update((it) => {
+          it.push({
+            type: "input",
+            value: "RST OTA",
+          });
+          return it;
+        });
 
         // Wait for the device to be ready
         const signal = await this.reader.read();
-        const signalTime = performance.now();
+        serialLog.update((it) => {
+          it.push({
+            type: "output",
+            value: signal.value!.trim(),
+          });
+          return it;
+        });
 
         const chunkSize = 128;
-        const chunks: Promise<void>[] = [];
         for (let i = 0; i < file.byteLength; i += chunkSize) {
-          const size = Math.min(chunkSize, file.byteLength - i);
-          chunks.push(
-            writer
-              .write(new Uint8Array(file, i, size))
-              .then(() => progress(i + size, file.byteLength)),
-          );
+          const chunk = file.slice(i, i + chunkSize);
+          await writer.write(new Uint8Array(chunk));
+          progress(i + chunk.byteLength, file.byteLength);
         }
-        await Promise.all(chunks);
 
         serialLog.update((it) => {
-          it.push(
-            {
-              type: "input",
-              value: "RST OTA",
-            },
-            {
-              type: "system",
-              value: `+${(signalTime - start).toFixed(0)} ms`,
-            },
-            {
-              type: "output",
-              value: signal.value!.trim(),
-            },
-            {
-              type: "system",
-              value: `+${(performance.now() - signalTime).toFixed(0)} ms`,
-            },
-            {
-              type: "input",
-              value: `...${file.byteLength} bytes`,
-            },
-          );
+          it.push({
+            type: "input",
+            value: `...${file.byteLength} bytes`,
+          });
           return it;
         });
 
@@ -622,8 +614,9 @@ export class CharaDevice {
         });
       } finally {
         writer.releaseLock();
-        await this.suspend();
       }
+
+      await this.suspend();
     } finally {
       delete this.lock;
       resolveLock!(true);
