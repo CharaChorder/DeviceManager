@@ -73,7 +73,8 @@ export async function assembleFactoryKit(
     zip.file(file, dataPromise);
   }
 
-  const esptoolScript = ".\\esptool\\esptool.exe";
+  const esptoolScript =
+    os === "Windows" ? ".\\esptool\\esptool.exe" : "esptool";
   const port = "%1";
   const ext = os === "Windows" ? "bat" : "sh";
   zip.file(
