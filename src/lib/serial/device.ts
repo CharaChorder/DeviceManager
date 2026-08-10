@@ -148,7 +148,10 @@ export class CharaDevice {
 
   async init() {
     try {
-      await this.port.open({ baudRate: this.baudRate });
+      await this.port.open({
+        baudRate: this.baudRate,
+        parity: "even",
+      });
       const info = this.port.getInfo();
       serialLog.update((it) => {
         it.push({

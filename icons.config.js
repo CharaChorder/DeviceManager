@@ -6,6 +6,7 @@ const config = {
   icons: [
     "rocket_launch",
     "deployed_code_update",
+    "difference",
     "adjust",
     "add",
     "piano",

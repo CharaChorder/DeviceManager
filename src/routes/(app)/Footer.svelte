@@ -15,6 +15,7 @@
   } from "$lib/serial/connection";
   import { fade, slide } from "svelte/transition";
   import ConnectPopup from "./ConnectPopup.svelte";
+  import { goto } from "$app/navigation";
 
   let locale = $state(
     (browser && (localStorage.getItem("locale") as Locales)) || detectLocale(),
@@ -49,6 +50,8 @@
   function disconnect(event: MouseEvent) {
     if (event.shiftKey) {
       sync();
+    } else if (event.altKey) {
+      goto("/terminal/");
     } else {
       $serialPort?.close();
       $serialPort = undefined;

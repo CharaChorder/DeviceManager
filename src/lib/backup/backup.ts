@@ -6,15 +6,9 @@ import type {
   CharaSettingsFile,
 } from "$lib/share/chara-file.js";
 import type { Change } from "$lib/undo-redo.js";
-import {
-  changes,
-  ChangeType,
-  chords,
-  layout,
-  settings,
-} from "$lib/undo-redo.js";
+import { changes, ChangeType, layout, settings } from "$lib/undo-redo.js";
 import { get } from "svelte/store";
-import { activeProfile, serialPort } from "../serial/connection";
+import { activeProfile, deviceChords, serialPort } from "../serial/connection";
 import { csvLayoutToJson, isCsvLayout } from "$lib/backup/compat/legacy-layout";
 import { isCsvChords, csvChordsToJson } from "./compat/legacy-chords";
 
@@ -60,7 +54,7 @@ export function createChordBackup(): CharaChordFile {
   return {
     charaVersion: 1,
     type: "chords",
-    chords: get(chords).map((it) => [it.actions, it.phrase]),
+    chords: get(deviceChords).map((it) => [it.actions, it.phrase]),
   };
 }
 
@@ -168,7 +162,9 @@ export function restoreFromFile(
 export function getChangesFromChordFile(file: CharaChordFile) {
   const changes: Change[] = [];
   const existingChords = new Set(
-    get(chords).map(({ phrase, actions }) => JSON.stringify([actions, phrase])),
+    get(deviceChords).map(({ phrase, actions }) =>
+      JSON.stringify([actions, phrase]),
+    ),
   );
   for (const [input, output] of file.chords) {
     if (existingChords.has(JSON.stringify([input, output]))) {

@@ -1,4 +1,5 @@
 import { compressActions, decompressActions } from "../serialization/actions";
+import type { KeyInfo } from "./keymap-codes";
 
 export interface Chord {
   actions: number[];
@@ -56,6 +57,103 @@ export function deserializeActions(native: bigint): number[] {
   return actions;
 }
 
+const compoundHashItems = 3;
+const maxChordInputItems = 12;
+const actionBits = 10;
+const actionMask = (1 << actionBits) - 1;
+
+/**
+ * Applies the compound value to a **valid** chord input
+ */
+export function applyCompound(actions: number[], compound: number): number[] {
+  const result = [...actions];
+  for (let i = 0; i < compoundHashItems; i++) {
+    result[i] = (compound >>> (i * actionBits)) & actionMask;
+  }
+  result[compoundHashItems] = 0;
+  return result;
+}
+
+/**
+ * Extracts the compound value from a chord input, if present
+ */
+export function splitCompound(
+  actions: number[],
+): [inputs: number[], compound: number | undefined] {
+  if (actions[compoundHashItems] != 0) {
+    return [
+      actions.slice(
+        Math.max(
+          0,
+          actions.findIndex((it) => it !== 0),
+        ),
+      ),
+      undefined,
+    ];
+  }
+
+  let compound = 0;
+  for (let i = 0; i < compoundHashItems; i++) {
+    compound |= (actions[i] ?? 0) << (i * actionBits);
+  }
+
+  return [
+    actions.slice(
+      actions.findIndex((it, i) => i > compoundHashItems && it !== 0),
+    ),
+    compound === 0 ? undefined : compound,
+  ];
+}
+
+export function willBeValidChordInput(
+  inputCount: number,
+  hasCompound: boolean,
+): boolean {
+  return (
+    inputCount > 0 &&
+    inputCount <= maxChordInputItems - (hasCompound ? compoundHashItems + 1 : 0)
+  );
+}
+
+const ACTION_JOIN = 574;
+const ACTION_KSC_00 = 256;
+
+export function hasConcatenator(
+  actions: number[],
+  ids: Map<number, KeyInfo>,
+): boolean {
+  const lastAction = actions.at(-1);
+  for (const action of actions) {
+    if (!ids.get(action)?.printable) {
+      if (actions.length == 0) {
+        return false;
+      }
+      return lastAction == ACTION_JOIN;
+    }
+  }
+  return lastAction != ACTION_KSC_00;
+}
+
+/**
+ * Composes a chord input from a list of actions and an optional compound value
+ * to a valid chord input
+ */
+export function composeChordInput(
+  actions: number[],
+  compound?: number,
+): number[] {
+  const result = [
+    ...Array.from(
+      {
+        length: Math.max(0, maxChordInputItems - actions.length),
+      },
+      () => 0,
+    ),
+    ...actions.slice(0, maxChordInputItems).sort((a, b) => a - b),
+  ];
+  return compound !== undefined ? applyCompound(result, compound) : result;
+}
+
 /**
  * Hashes a chord input the same way as CCOS
  */
@@ -72,5 +170,6 @@ export function hashChord(actions: number[]) {
   if ((hash & 0xff) === 0xff) {
     hash ^= 0xff;
   }
-  return hash & 0x3fff_ffff;
+  hash &= 0x3fff_ffff;
+  return hash === 0 ? 1 : hash;
 }
