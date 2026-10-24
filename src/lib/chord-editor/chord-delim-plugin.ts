@@ -135,11 +135,15 @@ export const delimPlugin = ViewPlugin.fromClass(
         const chordNode = syntaxTree(view.state).resolve(
           view.posAtDOM(event.target),
         );
-        const delimNode = (
-          chordNode.name === "ActionString"
-            ? chordNode.parent?.parent
-            : chordNode
-        )?.getChild("PhraseDelim");
+        // the widget maps back onto the PhraseDelim token itself; the
+        // ActionString branch covers clicks resolved inside the input
+        const delimNode =
+          chordNode.name === "PhraseDelim"
+            ? chordNode
+            : (chordNode.name === "ActionString"
+                ? chordNode.parent?.parent
+                : chordNode
+              )?.getChild("PhraseDelim");
         if (!delimNode) return;
         const joinNode = getJoinNode(view, delimNode);
         if (!event.target.checked && !joinNode) {
