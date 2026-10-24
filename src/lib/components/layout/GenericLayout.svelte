@@ -82,7 +82,8 @@
     else return;
 
     event.preventDefault();
-    if (!focusKey) (groupParent.firstChild as SVGGElement).focus();
+    if (!focusKey)
+      (groupParent.querySelector("g.key-group") as SVGGElement).focus();
     const [focusX, focusY] = getCenter(focusKey);
 
     let bestDistance = Infinity;
@@ -112,7 +113,10 @@
       isOptimalAngle = angleDelta <= Number.EPSILON;
     }
 
-    const node = groupParent.children.item(bestCandidate);
+    const target = layoutInfo.keys[bestCandidate];
+    const node =
+      target &&
+      groupParent.querySelector(`g.key-group[data-id="${target.id}"]`);
     if (node instanceof SVGGElement) {
       node.focus();
     }

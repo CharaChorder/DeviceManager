@@ -1,5 +1,4 @@
 <script>
-  // @ts-expect-error no types here
   import { useRegisterSW } from "virtual:pwa-register/svelte";
 
   const { needRefresh, updateServiceWorker, offlineReady } = useRegisterSW();
