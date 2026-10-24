@@ -2,7 +2,7 @@
   import { downloadBackup } from "$lib/backup/backup";
   import { initSerial, serialObject, serialPort } from "$lib/serial/connection";
   import { fade, slide } from "svelte/transition";
-  import { lt as semverLt } from "semver";
+  import { isUpgradeAllowed } from "$lib/versioning";
   import type { LoaderOptions, ESPLoader } from "esptool-js";
   import ProgressButton from "$lib/ProgressButton.svelte";
   import FactoryKit from "./FactoryKit.svelte";
@@ -14,7 +14,9 @@
   let error = $state<Error | undefined>(undefined);
 
   let isTooOld = $derived(
-    $serialPort ? semverLt($serialPort.version, "2.0.0") : false,
+    $serialPort
+      ? !isUpgradeAllowed($serialPort.version, data.meta.version)
+      : false,
   );
 
   let unsafeUpdate = $state(false);
@@ -241,8 +243,17 @@
       >
       {#if isTooOld}
         <div class="error" transition:slide>
-          Your device's firmware is too old to be updated via OTA. Follow the
-          instruction below to update it manually.
+          {#if data.previousMajor}
+            Firmware updates can advance at most one major version at a time.
+            Update to
+            <a href="../{data.previousMajor}/">{data.previousMajor}</a>
+            first, then OTA to <b class="version">{data.meta.version}</b> from there.
+          {:else}
+            Your device's firmware is too old to jump directly to
+            <b class="version">{data.meta.version}</b>. Updates can advance at
+            most one major version at a time. Use the recovery options below as
+            a last resort.
+          {/if}
         </div>
       {:else if $serialPort && isCorrectDevice}
         <div transition:slide>
@@ -297,11 +308,9 @@
       {/if}
     </section>
 
-    {#if !isTooOld}
-      <label class="unsafe-opt-in"
-        ><input type="checkbox" /> Unsafe recovery options</label
-      >
-    {/if}
+    <label class="unsafe-opt-in"
+      ><input type="checkbox" /> Unsafe recovery options (last resort)</label
+    >
   {/if}
 
   <div class="unsafe-updates">
