@@ -53,6 +53,12 @@ export function deserializeActions(native: bigint): number[] {
     native >>= 10n;
   }
 
+  // the wire layout stores actions in the high slots, so the deserialized
+  // array starts with the zero padding
+  while (actions.length > 0 && actions[0] === 0) {
+    actions.shift();
+  }
+
   return actions;
 }
 

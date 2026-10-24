@@ -13,6 +13,8 @@ export class LineBreakTransformer {
 
   // noinspection JSUnusedGlobalSymbols
   flush(controller: TransformStreamDefaultController) {
-    controller.enqueue(this.chunks);
+    if (this.chunks.length > 0) {
+      controller.enqueue(this.chunks);
+    }
   }
 }

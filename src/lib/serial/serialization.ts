@@ -12,7 +12,7 @@ export async function stringifyCompressed<T>(chords: T): Promise<Blob> {
  * Decompress JSON.parse with gzip
  */
 export async function parseCompressed<T>(blob: Blob): Promise<T> {
-  const stream = blob.stream().pipeThrough(new DecompressionStream("deflate"));
+  const stream = blob.stream().pipeThrough(new DecompressionStream("gzip"));
   return await new Response(stream).json();
 }
 
