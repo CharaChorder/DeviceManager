@@ -1,9 +1,11 @@
+import { get } from "svelte/store";
 import { KEYMAP_IDS } from "$lib/serial/keymap-codes";
 import type { CharaChordFile } from "$lib/share/chara-file";
 
 const SPECIAL_KEYS = new Map<string, string>([[" ", "SPACE"]]);
 
 export function csvChordsToJson(csv: string): CharaChordFile {
+  const keymapIds = get(KEYMAP_IDS);
   return {
     charaVersion: 1,
     type: "chords",
@@ -15,12 +17,12 @@ export function csvChordsToJson(csv: string): CharaChordFile {
         return [
           input!
             .split("+")
-            .map((it) => KEYMAP_IDS.get(it.trim())?.code ?? 0)
+            .map((it) => keymapIds.get(it.trim())?.code ?? 0)
             .sort((a, b) => a - b),
           output!
             .trim()
             .split("")
-            .map((it) => KEYMAP_IDS.get(SPECIAL_KEYS.get(it) ?? it)?.code ?? 0),
+            .map((it) => keymapIds.get(SPECIAL_KEYS.get(it) ?? it)?.code ?? 0),
         ];
       }),
   };
