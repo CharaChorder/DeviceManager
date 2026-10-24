@@ -41,13 +41,13 @@
         );
         tauriPkgs = nixpkgs.legacyPackages.${system};
         libraries = with tauriPkgs; [
-          webkitgtk
+          webkitgtk_4_1
           gtk3
           cairo
           gdk-pixbuf
           glib
           dbus
-          openssl_3
+          openssl
           librsvg
         ];
         packages =
@@ -62,11 +62,11 @@
             wget
             pkg-config
             dbus
-            openssl_3
+            openssl
             glib
             gtk3
-            libsoup_2_4
-            webkitgtk
+            libsoup_3
+            webkitgtk_4_1
             librsvg
             # serial plugin
             udev
@@ -75,8 +75,15 @@
       {
         devShell = pkgs.mkShell {
           buildInputs = packages;
+          # Playwright browsers for the Vitest browser projects (UI + emulator specs).
+          # npm `playwright` is pinned to the driver version in flake.lock's nixpkgs
+          # (`nix eval nixpkgs#playwright-driver.version`), so the npm package and the
+          # Nix browsers always speak the same browser build numbers.
+          nativeBuildInputs = [pkgs.playwright-driver.browsers];
           shellHook = ''
             #export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
+            export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
+            export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
           '';
         };
       }

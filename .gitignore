@@ -12,3 +12,4 @@ venv
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 src/lib/assets/icons.min.woff2
+/coverage/

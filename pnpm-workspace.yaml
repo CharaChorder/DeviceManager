@@ -1,2 +1,9 @@
-onlyBuiltDependencies:
-  - svelte-preprocess
+allowBuilds:
+  svelte-preprocess: true
+  # vite/vitest need the esbuild binary
+  esbuild: true
+  # cypress is a leftover dev dependency: no Cypress specs exist, its binary
+  # download is never used
+  cypress: false
+  # file-watching native addon, not used headless
+  "@parcel/watcher": false
