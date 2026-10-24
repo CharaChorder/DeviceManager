@@ -8,6 +8,9 @@ export function serializeActionArray(array: ActionArray): Uint8Array {
   writer.setUint32(0, array.length);
 
   if (array.length === 0) {
+    // the type byte must stay decodable: an empty array round-trips as an
+    // empty number array
+    writer.setUint8(4, CHARA_FILE_TYPES.indexOf("number"));
     return out;
   } else if (typeof array[0] === "number") {
     writer.setUint8(4, CHARA_FILE_TYPES.indexOf("number"));

@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest";
-import { deserializeActionArray, serializeActionArray } from "./action-array";
+import { describe, expect, it } from "vitest";
+import {
+  concatUint8Arrays,
+  deserializeActionArray,
+  serializeActionArray,
+} from "./action-array";
 
 describe("action array", () => {
   it("should work with number arrays", () => {
@@ -13,6 +17,17 @@ describe("action array", () => {
       [],
       [[]],
     ]);
+  });
+
+  it("should work with an empty array", () => {
+    expect(deserializeActionArray(serializeActionArray([]))).toEqual([]);
+  });
+
+  it("should work with the compression boundaries", () => {
+    const numbers = [32, 255, 256, 1023, 8191];
+    expect(deserializeActionArray(serializeActionArray(numbers))).toEqual(
+      numbers,
+    );
   });
 
   it("should compress back and forth", () => {
@@ -29,6 +44,22 @@ describe("action array", () => {
       [34, 63],
       [332, 34],
     ]);
+  });
+
+  it("should work with deep nesting", () => {
+    const deep = [[[[32, 33], [43]], [[]]]];
+    expect(deserializeActionArray(serializeActionArray(deep))).toEqual(deep);
+  });
+
+  it("should continue from the given cursor", () => {
+    const raw = concatUint8Arrays(
+      serializeActionArray([32, 33]),
+      serializeActionArray([34, 35]),
+    );
+    const cursor = { pos: 0 };
+    expect(deserializeActionArray(raw, cursor)).toEqual([32, 33]);
+    expect(deserializeActionArray(raw, cursor)).toEqual([34, 35]);
+    expect(cursor.pos).toBe(raw.length);
   });
 
   it("should compress a full layout", () => {
@@ -60,5 +91,17 @@ describe("action array", () => {
     expect(
       deserializeActionArray(serializeActionArray(layout as number[][])),
     ).toEqual(layout);
+  });
+});
+
+describe("concatUint8Arrays", () => {
+  it("should concatenate in order", () => {
+    expect(
+      concatUint8Arrays(
+        new Uint8Array([1, 2]),
+        new Uint8Array(),
+        new Uint8Array([3]),
+      ),
+    ).toEqual(new Uint8Array([1, 2, 3]));
   });
 });
