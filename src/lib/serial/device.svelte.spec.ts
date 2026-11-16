@@ -251,14 +251,17 @@ describe("CharaDevice lifecycle commands", () => {
 });
 
 describe("CharaDevice OTA update", () => {
-  it("streams the firmware image in chunks with progress", async () => {
+  async function captureImage(total: number) {
     const [device, port] = deviceFor(HANDSHAKE);
     await device.init();
 
-    const total = 300;
-    const file = new Uint8Array(total).fill(0xab).buffer;
+    // 0xab is not printable, so the mock routes every chunk to onBytes
+    // instead of treating it as a text command.
+    const image = new Uint8Array(total).fill(0xab);
+    const chunks: Uint8Array[] = [];
     let bytesReceived = 0;
     port.onBytes = (chunk) => {
+      chunks.push(chunk);
       bytesReceived += chunk.length;
       if (bytesReceived >= total) port.respond("OTA OK");
     };
@@ -268,19 +271,46 @@ describe("CharaDevice OTA update", () => {
     };
 
     const progress: [number, number][] = [];
-    await device.updateFirmware(file, (done, tot) =>
+    await device.updateFirmware(image.buffer, (done, tot) =>
       progress.push([done, tot]),
     );
+    return { port, image, chunks, progress };
+  }
 
-    expect(progress).toEqual([
-      [128, 300],
-      [256, 300],
-      [300, 300],
-    ]);
+  it("streams the firmware image in chunks with progress", async () => {
+    // 4095 + 256: the tail is a multiple of the 64-byte USB packet and must
+    // be split, otherwise macOS still appends a zero-length packet.
+    const total = 4095 + 256;
+    const { port, image, chunks, progress } = await captureImage(total);
+
+    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.every((chunk) => chunk.length % 64 !== 0)).toBe(true);
+    const received = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
+    let offset = 0;
+    for (const chunk of chunks) {
+      received.set(chunk, offset);
+      offset += chunk.length;
+    }
+    expect(received).toEqual(image);
+    expect(progress.at(-1)).toEqual([total, total]);
+    expect(progress.map(([done]) => done)).toEqual(
+      chunks.map((_, i) =>
+        chunks.slice(0, i + 1).reduce((n, c) => n + c.length, 0),
+      ),
+    );
     expect(port.commands).toEqual(
       expect.arrayContaining(["RST OTA", "RST RESTART"]),
     );
   });
+
+  it.each([64, 128, 256, 512, 1024])(
+    "does not write a multiple of the USB packet for a %i-byte image",
+    async (total) => {
+      const { chunks, image } = await captureImage(total);
+      expect(chunks.every((chunk) => chunk.length % 64 !== 0)).toBe(true);
+      expect(chunks.reduce((n, c) => n + c.length, 0)).toBe(image.length);
+    },
+  );
 
   it("fails when the device reports an update failure", async () => {
     const [device, port] = deviceFor(HANDSHAKE);
@@ -288,10 +318,22 @@ describe("CharaDevice OTA update", () => {
     port.onCommand = (command) => {
       if (command === "RST OTA") port.respond("OTA READY");
     };
-    port.onBytes = () => port.respond("OTA FAILED");
+    port.onBytes = () =>
+      port.respond("OTA FAIL END 1a2b ESP_ERR_OTA_VALIDATE_FAILED");
+    const closesBefore = port.closeCount;
     await expect(
       device.updateFirmware(new Uint8Array(8).buffer, () => {}),
-    ).rejects.toThrow("OTA FAILED");
+    ).rejects.toThrow("OTA FAIL END 1a2b ESP_ERR_OTA_VALIDATE_FAILED");
+    expect(port.closeCount).toBeGreaterThan(closesBefore);
+
+    // The port must accept a new connection. Leaving it open surfaces
+    // InvalidStateError ("The port is already open") on the next Connect.
+    port.onCommand = (command) => {
+      if (command === "RAM") port.respond("RAM 7");
+    };
+    const opensBefore = port.openCount;
+    expect(await device.getRamBytesAvailable()).toBe(7);
+    expect(port.openCount).toBeGreaterThan(opensBefore);
   });
 });
 

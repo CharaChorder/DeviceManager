@@ -58,6 +58,20 @@ export function getPortName(port: SerialPort): string {
   )}/0x${usbProductId?.toString(16)})`;
 }
 
+/**
+ * Full-speed USB bulk packet size. macOS appends a zero-length packet after
+ * a write whose length is a multiple of this. The keyboard's TinyUSB CDC
+ * stack then delivers a corrupted image, `esp_ota_end` returns
+ * `ESP_ERR_OTA_VALIDATE_FAILED`, and the running firmware is left unchanged.
+ */
+const USB_FULL_SPEED_PACKET = 64;
+
+/**
+ * OTA write size. Must not be a multiple of {@link USB_FULL_SPEED_PACKET}.
+ * 128, 256, 512, and 1024 are multiples and fail validation on macOS.
+ */
+const OTA_CHUNK_SIZE = 4095;
+
 const KEY_COUNTS = {
   ONE: 90,
   TWO: 90,
@@ -540,80 +554,107 @@ export class CharaDevice {
     try {
       if (this.suspendDebounceId) {
         clearTimeout(this.suspendDebounceId);
+        delete this.suspendDebounceId;
       } else {
         await this.wake();
       }
 
-      serialLog.update((it) => {
-        it.push({
-          type: "system",
-          value: "OTA Update",
-        });
-        return it;
-      });
-
-      const writer = this.port.writable!.getWriter();
+      let updateError: unknown;
       try {
-        await writer.write(new TextEncoder().encode(`RST OTA\r\n`));
         serialLog.update((it) => {
           it.push({
-            type: "input",
-            value: "RST OTA",
+            type: "system",
+            value: "OTA Update",
           });
           return it;
         });
 
-        // Wait for the device to be ready
-        const signal = await this.reader.read();
-        serialLog.update((it) => {
-          it.push({
-            type: "output",
-            value: signal.value!.trim(),
+        const writer = this.port.writable!.getWriter();
+        try {
+          await writer.write(new TextEncoder().encode(`RST OTA\r\n`));
+          serialLog.update((it) => {
+            it.push({
+              type: "input",
+              value: "RST OTA",
+            });
+            return it;
           });
-          return it;
-        });
 
-        const chunkSize = 128;
-        for (let i = 0; i < file.byteLength; i += chunkSize) {
-          const chunk = file.slice(i, i + chunkSize);
-          await writer.write(new Uint8Array(chunk));
-          progress(i + chunk.byteLength, file.byteLength);
+          // Wait for the device to be ready
+          const signal = await this.reader.read();
+          serialLog.update((it) => {
+            it.push({
+              type: "output",
+              value: signal.value!.trim(),
+            });
+            return it;
+          });
+
+          for (let offset = 0; offset < file.byteLength; ) {
+            let size = Math.min(OTA_CHUNK_SIZE, file.byteLength - offset);
+            // A short tail of 64, 128, 256, ... is still a multiple of the
+            // USB packet and would get the same zero-length packet.
+            if (size % USB_FULL_SPEED_PACKET === 0) {
+              size -= 1;
+            }
+            const chunk = file.slice(offset, offset + size);
+            await writer.write(new Uint8Array(chunk));
+            offset += chunk.byteLength;
+            progress(offset, file.byteLength);
+          }
+
+          serialLog.update((it) => {
+            it.push({
+              type: "input",
+              value: `...${file.byteLength} bytes`,
+            });
+            return it;
+          });
+
+          const result = (await this.reader.read()).value!.trim();
+          serialLog.update((it) => {
+            it.push({
+              type: "output",
+              value: result!,
+            });
+            return it;
+          });
+
+          if (result !== "OTA OK") {
+            throw new Error(result);
+          }
+
+          await writer.write(new TextEncoder().encode(`RST RESTART\r\n`));
+          serialLog.update((it) => {
+            it.push({
+              type: "input",
+              value: "RST RESTART",
+            });
+            return it;
+          });
+        } catch (error) {
+          updateError = error;
+        } finally {
+          writer.releaseLock();
         }
-
-        serialLog.update((it) => {
-          it.push({
-            type: "input",
-            value: `...${file.byteLength} bytes`,
-          });
-          return it;
-        });
-
-        const result = (await this.reader.read()).value!.trim();
-        serialLog.update((it) => {
-          it.push({
-            type: "output",
-            value: result!,
-          });
-          return it;
-        });
-
-        if (result !== "OTA OK") {
-          throw new Error(result);
-        }
-
-        await writer.write(new TextEncoder().encode(`RST RESTART\r\n`));
-        serialLog.update((it) => {
-          it.push({
-            type: "input",
-            value: "RST RESTART",
-          });
-          return it;
-        });
       } finally {
-        writer.releaseLock();
+        // Failure used to throw before suspend(), leaving the port open.
+        // The next Connect then fails with InvalidStateError until reload.
+        try {
+          await this.suspend();
+        } catch (closeError) {
+          console.error(closeError);
+          try {
+            await this.port.close();
+          } catch {
+            // Already closed, or the reader lock is still held.
+          }
+          updateError ??= closeError;
+        }
       }
-
-      await this.suspend();
+      if (updateError) {
+        throw updateError;
+      }
     } finally {
       delete this.lock;
       resolveLock!(true);
