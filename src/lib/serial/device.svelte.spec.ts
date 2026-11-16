@@ -273,6 +273,17 @@ describe("OTA transfer shaping", () => {
 });
 
 describe("CharaDevice OTA update", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function stubUserAgent(userAgent: string) {
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      userAgent,
+    });
+  }
+
   async function captureImage(total: number) {
     const [device, port] = deviceFor(HANDSHAKE);
     await device.init();
@@ -299,29 +310,53 @@ describe("CharaDevice OTA update", () => {
     return { port, image, chunks, progress };
   }
 
-  it("streams the firmware image in chunks with progress", async () => {
-    const total = 300;
-    const { port, image, chunks, progress } = await captureImage(total);
+  it.each([
+    [
+      "non-Mac",
+      "Linux",
+      [
+        [127, 300],
+        [254, 300],
+        [300, 300],
+      ],
+    ],
+    [
+      "Macintosh",
+      "Macintosh",
+      [
+        [63, 300],
+        [126, 300],
+        [189, 300],
+        [252, 300],
+        [300, 300],
+      ],
+    ],
+  ] as const)(
+    "streams the firmware image in %s chunks with progress",
+    async (_host, userAgent, expected) => {
+      stubUserAgent(userAgent);
+      const total = 300;
+      const { port, image, chunks, progress } = await captureImage(total);
 
-    expect(chunks.every((chunk) => chunk.length % 64 !== 0)).toBe(true);
-    const received = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
-    let offset = 0;
-    for (const chunk of chunks) {
-      received.set(chunk, offset);
-      offset += chunk.length;
-    }
-    expect(received).toEqual(image);
-    expect(progress).toEqual([
-      [127, 300],
-      [254, 300],
-      [300, 300],
-    ]);
-    expect(port.commands).toEqual(
-      expect.arrayContaining(["RST OTA", "RST RESTART"]),
-    );
-  });
+      expect(chunks.every((chunk) => chunk.length % 64 !== 0)).toBe(true);
+      const received = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
+      let offset = 0;
+      for (const chunk of chunks) {
+        received.set(chunk, offset);
+        offset += chunk.length;
+      }
+      expect(received).toEqual(image);
+      expect(progress).toEqual(expected);
+      expect(port.commands).toEqual(
+        expect.arrayContaining(["RST OTA", "RST RESTART"]),
+      );
+    },
+  );
 
   it("fails when the device reports an update failure", async () => {
+    // A Macintosh host retries every plan, waiting 2s between attempts.
+    // Pin a non-Mac agent so a reported failure still stops after one try.
+    stubUserAgent("Linux");
     const [device, port] = deviceFor(HANDSHAKE);
     await device.init();
     port.onCommand = (command) => {
