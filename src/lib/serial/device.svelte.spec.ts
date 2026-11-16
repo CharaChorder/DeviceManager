@@ -3,8 +3,11 @@ import {
   canAutoConnect,
   CharaDevice,
   getName,
+  getOtaTransferPlans,
   getPortName,
   getViablePorts,
+  MAC_OTA_PLANS,
+  otaWriteByteCount,
   PORT_FILTERS,
 } from "$lib/serial/device";
 import { stringifyChordActions, stringifyPhrase } from "$lib/serial/chord";
@@ -250,6 +253,25 @@ describe("CharaDevice lifecycle commands", () => {
   });
 });
 
+describe("OTA transfer shaping", () => {
+  it("uses mac plans on Macintosh hosts", () => {
+    const ua = navigator.userAgent;
+    vi.stubGlobal("navigator", {
+      ...navigator,
+      userAgent: `${ua} Macintosh`,
+    });
+    expect(getOtaTransferPlans()).toEqual(MAC_OTA_PLANS);
+    vi.unstubAllGlobals();
+  });
+
+  it("never writes a USB packet-multiple chunk", () => {
+    expect(otaWriteByteCount(128, 128)).toBe(127);
+    expect(otaWriteByteCount(64, 64)).toBe(63);
+    expect(otaWriteByteCount(300, 63)).toBe(63);
+    expect(otaWriteByteCount(2, 63)).toBe(2);
+  });
+});
+
 describe("CharaDevice OTA update", () => {
   async function captureImage(total: number) {
     const [device, port] = deviceFor(HANDSHAKE);
@@ -278,12 +300,9 @@ describe("CharaDevice OTA update", () => {
   }
 
   it("streams the firmware image in chunks with progress", async () => {
-    // 4095 + 256: the tail is a multiple of the 64-byte USB packet and must
-    // be split, otherwise macOS still appends a zero-length packet.
-    const total = 4095 + 256;
+    const total = 300;
     const { port, image, chunks, progress } = await captureImage(total);
 
-    expect(chunks.length).toBeGreaterThan(1);
     expect(chunks.every((chunk) => chunk.length % 64 !== 0)).toBe(true);
     const received = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
     let offset = 0;
@@ -292,25 +311,15 @@ describe("CharaDevice OTA update", () => {
       offset += chunk.length;
     }
     expect(received).toEqual(image);
-    expect(progress.at(-1)).toEqual([total, total]);
-    expect(progress.map(([done]) => done)).toEqual(
-      chunks.map((_, i) =>
-        chunks.slice(0, i + 1).reduce((n, c) => n + c.length, 0),
-      ),
-    );
+    expect(progress).toEqual([
+      [127, 300],
+      [254, 300],
+      [300, 300],
+    ]);
     expect(port.commands).toEqual(
       expect.arrayContaining(["RST OTA", "RST RESTART"]),
     );
   });
-
-  it.each([64, 128, 256, 512, 1024])(
-    "does not write a multiple of the USB packet for a %i-byte image",
-    async (total) => {
-      const { chunks, image } = await captureImage(total);
-      expect(chunks.every((chunk) => chunk.length % 64 !== 0)).toBe(true);
-      expect(chunks.reduce((n, c) => n + c.length, 0)).toBe(image.length);
-    },
-  );
 
   it("fails when the device reports an update failure", async () => {
     const [device, port] = deviceFor(HANDSHAKE);
